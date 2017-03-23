@@ -1,0 +1,270 @@
+# Dialog script for nodeway::vhacdscout::1.0 automatically generated 08/13/16 02:29:31
+
+{
+    name	nodeway::vhacdscout::1.0
+    script	nodeway::vhacdscout::1.0
+    label	"V-HACD Scout"
+
+    help {
+	""
+    }
+
+    inputlabel	1	"Convex Hulls"
+    inputlabel	2	"Original Geometry"
+    inputlabel	3	"Sub-Network Input #3"
+    inputlabel	4	"Sub-Network Input #4"
+
+    group {
+	name	"hidden"
+	label	"Hidden"
+	invisibletab
+
+	parm {
+	    name	"is0connected"
+	    label	"Is 0 Connected?"
+	    type	toggle
+	    joinnext
+	    default	{ "0" }
+	    range	{ 0 1 }
+	    export	none
+	}
+	parm {
+	    name	"sepparm2"
+	    label	"Separator"
+	    type	separator
+	    default	{ "" }
+	    range	{ 0 1 }
+	    export	none
+	}
+	parm {
+	    name	"is1connected"
+	    label	"Is 1 Connected?"
+	    type	toggle
+	    joinnext
+	    default	{ "0" }
+	    range	{ 0 1 }
+	    export	none
+	}
+	parm {
+	    name	"sepparm7"
+	    label	"Separator"
+	    type	separator
+	    default	{ "" }
+	    range	{ 0 1 }
+	    export	none
+	}
+    }
+
+    parm {
+	name	"titleupper"
+	label	"Separator"
+	type	separator
+	default	{ "" }
+	range	{ 0 1 }
+	export	none
+    }
+    parm {
+	name	"title"
+	label	"title"
+	type	label
+	nolabel
+	default	{ "V-HACD SCOUT v1.0" }
+	hidewhen	"{ is0connected == 0 }"
+	range	{ 0 1 }
+	export	none
+    }
+    parm {
+	name	"errormessage"
+	label	"errormessage"
+	type	label
+	nolabel
+	default	{ "SORRY... INPUT 0 ALWAYS NEEDS TO BE CONNECTED." }
+	hidewhen	"{ is0connected == 1 }"
+	range	{ 0 1 }
+	export	none
+    }
+    parm {
+	name	"titlelower"
+	label	"Separator"
+	type	separator
+	default	{ "" }
+	range	{ 0 1 }
+	export	none
+    }
+    groupsimple {
+	name	"mainsection"
+	label	"Main"
+	hidewhentab	"{ is0connected == 0 }"
+
+	parm {
+	    name	"createhullcountattribute"
+	    label	"Create Hull Count Attribute"
+	    type	toggle
+	    joinnext
+	    default	{ "0" }
+	    help	"Creates detail attribute that contains information about how many convex hulls were detected."
+	    range	{ 0 1 }
+	    export	none
+	}
+	parm {
+	    name	"sepparm3"
+	    label	"Separator"
+	    type	separator
+	    default	{ "" }
+	    range	{ 0 1 }
+	    export	none
+	}
+	parm {
+	    name	"createbundlecountattribute"
+	    label	"Create Bundle Count Attribute"
+	    type	toggle
+	    joinnext
+	    default	{ "0" }
+	    help	"Creates detail attribute that counts bundles."
+	    hidewhen	"{ is1connected == 0 }"
+	    range	{ 0 1 }
+	    export	none
+	}
+	parm {
+	    name	"sepparm8"
+	    label	"Separator"
+	    type	separator
+	    default	{ "" }
+	    hidewhen	"{ is1connected == 0 }"
+	    range	{ 0 1 }
+	    export	none
+	}
+	parm {
+	    name	"createhullidattribute"
+	    label	"Create Hull ID Attribute"
+	    type	toggle
+	    joinnext
+	    default	{ "0" }
+	    help	"Creates primitive attribute that helps identify to which convex hull polygons belongs."
+	    range	{ 0 1 }
+	    export	none
+	}
+	parm {
+	    name	"sepparm4"
+	    label	"Separator"
+	    type	separator
+	    default	{ "" }
+	    range	{ 0 1 }
+	    export	none
+	}
+	parm {
+	    name	"creategrouppereachhull"
+	    label	"Group Per Hull"
+	    type	toggle
+	    joinnext
+	    default	{ "0" }
+	    help	"Creates group per each detected convex hull."
+	    range	{ 0 1 }
+	    export	none
+	    parmtag	{ "script_callback" "hou.phm().groupPerHull.Callback(kwargs)" }
+	    parmtag	{ "script_callback_language" "python" }
+	}
+	parm {
+	    name	"sepparm5"
+	    label	"Separator"
+	    type	separator
+	    default	{ "" }
+	    range	{ 0 1 }
+	    export	none
+	}
+	parm {
+	    name	"specifyhullgroupname"
+	    label	"Name"
+	    type	string
+	    default	{ "hull_" }
+	    help	"Pick partial name of generated groups."
+	    hidewhen	"{ creategrouppereachhull == 0 }"
+	    range	{ 0 1 }
+	    export	none
+	}
+	parm {
+	    name	"creategrouppereachhullbundle"
+	    label	"Group Per Bundle"
+	    type	toggle
+	    joinnext
+	    default	{ "0" }
+	    help	"Creates group per each detected convex hull bundle."
+	    hidewhen	"{ is1connected == 0 }"
+	    range	{ 0 1 }
+	    export	none
+	    parmtag	{ "script_callback" "hou.phm().groupPerBundle.Callback(kwargs)" }
+	    parmtag	{ "script_callback_language" "python" }
+	}
+	parm {
+	    name	"sepparm6"
+	    label	"Separator"
+	    type	separator
+	    default	{ "" }
+	    hidewhen	"{ is1connected == 0 }"
+	    range	{ 0 1 }
+	    export	none
+	}
+	parm {
+	    name	"specifybundlegroupname"
+	    label	"Name"
+	    type	string
+	    default	{ "bundle_" }
+	    help	"Pick partial name of generated groups."
+	    hidewhen	"{ is1connected == 0 } { creategrouppereachhullbundle == 0 }"
+	    range	{ 0 1 }
+	    export	none
+	}
+    }
+
+    groupsimple {
+	name	"additionalsection"
+	label	"Additional"
+	hidewhentab	"{ is0connected == 0 }"
+
+	parm {
+	    name	"adddescription"
+	    label	"Description"
+	    type	toggle
+	    joinnext
+	    default	{ "0" }
+	    help	"Additional description displayed bellow node name in network view."
+	    range	{ 0 1 }
+	    export	none
+	    parmtag	{ "script_callback" "hou.phm().description.Callback(kwargs)" }
+	    parmtag	{ "script_callback_language" "python" }
+	}
+	parm {
+	    name	"sepparm"
+	    label	"Separator"
+	    type	separator
+	    default	{ "" }
+	    range	{ 0 1 }
+	    export	none
+	}
+	parm {
+	    name	"cleandescription"
+	    label	"Clean"
+	    type	button
+	    default	{ "1" }
+	    help	"Cleans message field."
+	    hidewhen	"{ adddescription == 0 }"
+	    range	{ 0 1 }
+	    export	none
+	    parmtag	{ "script_callback" "hou.phm().description.SetDefaultState(hou.pwd())" }
+	    parmtag	{ "script_callback_language" "python" }
+	}
+	parm {
+	    name	"descriptionmessage"
+	    label	"Message"
+	    type	string
+	    default	{ "" }
+	    help	"Message content that will be displayed below node name in network view."
+	    hidewhen	"{ adddescription == 0 }"
+	    range	{ 0 1 }
+	    export	none
+	    parmtag	{ "editor" "1" }
+	    parmtag	{ "editorlines" "5-25" }
+	}
+    }
+
+}

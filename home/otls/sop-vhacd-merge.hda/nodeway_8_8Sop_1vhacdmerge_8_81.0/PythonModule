@@ -1,0 +1,12 @@
+import toolutils
+
+#from nodeway.hda.common import __Inputs__ as inputs
+from nodeway.hda.common import Description as description
+from nodeway.hda.common import Author as author
+from nodeway.hda.vhacd.common import CuspNormals as cuspNormals
+#reload(inputs)
+reload(description)
+reload(author)
+reload(cuspNormals)
+
+inputs = toolutils.createModuleFromSection('inputs', kwargs['type'], '__Inputs__.py')

@@ -1,0 +1,14 @@
+Operator:     nodeway::vhacddebug::1.0
+Label:        V-HACD Debug
+Path:         oplib:/nodeway::Sop/vhacddebug::1.0?nodeway::Sop/vhacddebug::1.0
+Icon:         opdef:/nodeway::Sop/vhacddebug::1.0?IconImage
+Table:        Sop
+License:      
+Extra:        
+User:         
+Inputs:       1 to 2
+Subnet:       true
+Python:       false
+Empty:        false
+Modified:     Thu Feb 23 16:51:34 2017
+

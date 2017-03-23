@@ -1,0 +1,11 @@
+this = kwargs['node']
+
+# make sure that we got required inputs connected
+this.hdaModule().inputs.CheckInputs(this)
+
+one = this.parm('is0connected').eval()
+two = this.parm('is1connected').eval()
+if  one == 0 or two == 0:
+    this.parm('errorlevel').set(0)
+else:
+    this.parm('errorlevel').set(-1)

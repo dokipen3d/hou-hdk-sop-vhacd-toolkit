@@ -1,0 +1,2 @@
+this = kwargs['node']
+this.hdaModule().inputs.CheckInputs(this)  

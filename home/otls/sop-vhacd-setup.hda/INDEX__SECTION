@@ -1,0 +1,14 @@
+Operator:     nodeway::vhacdsetup::1.0
+Label:        V-HACD Setup
+Path:         oplib:/nodeway::Sop/vhacdsetup::1.0?nodeway::Sop/vhacdsetup::1.0
+Icon:         opdef:/nodeway::Sop/vhacdsetup::1.0?IconImage
+Table:        Sop
+License:      
+Extra:        
+User:         
+Inputs:       1 to 1
+Subnet:       true
+Python:       false
+Empty:        false
+Modified:     Sat Aug 13 02:29:18 2016
+

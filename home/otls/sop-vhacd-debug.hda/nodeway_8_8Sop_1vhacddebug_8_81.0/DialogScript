@@ -1,0 +1,316 @@
+# Dialog script for nodeway::vhacddebug::1.0 automatically generated
+
+{
+    name	nodeway::vhacddebug::1.0
+    script	nodeway::vhacdvisualize::1.0
+    label	"V-HACD Debug"
+
+    help {
+	""
+    }
+
+    inputlabel	1	"Convex Hulls"
+    inputlabel	2	"Original Geometry"
+    inputlabel	3	"Sub-Network Input #3"
+    inputlabel	4	"Sub-Network Input #4"
+
+    group {
+	name	"hidden"
+	label	"Hidden"
+	invisibletab
+
+	parm {
+	    name	"is0connected"
+	    label	"Is 0 Connected?"
+	    type	toggle
+	    default	{ "0" }
+	    range	{ 0 1 }
+	}
+	parm {
+	    name	"is1connected"
+	    label	"Is 1 Connected?"
+	    type	toggle
+	    default	{ "0" }
+	    range	{ 0 1 }
+	}
+	parm {
+	    name	"uniquedebuggroupname1"
+	    label	"Debug Group Name 1"
+	    type	string
+	    default	{ "" }
+	    range	{ 0 1 }
+	}
+	parm {
+	    name	"uniquedebuggroupname2"
+	    label	"Debug Group Name 2"
+	    type	string
+	    default	{ "" }
+	    range	{ 0 1 }
+	}
+    }
+
+    parm {
+	name	"titleupper"
+	label	"Separator"
+	type	separator
+	invisible
+	default	{ "" }
+	range	{ 0 1 }
+    }
+    parm {
+	name	"title"
+	label	"title"
+	type	label
+	invisible
+	nolabel
+	default	{ "V-HACD DEBUG v1.0" }
+	hidewhen	"{ is0connected == 0 }"
+	range	{ 0 1 }
+    }
+    parm {
+	name	"errormessage"
+	label	"errormessage"
+	type	label
+	invisible
+	nolabel
+	default	{ "SORRY... INPUT 0 ALWAYS NEEDS TO BE CONNECTED." }
+	hidewhen	"{ is0connected == 1 }"
+	range	{ 0 1 }
+    }
+    parm {
+	name	"titlelower"
+	label	"Separator"
+	type	separator
+	invisible
+	default	{ "" }
+	range	{ 0 1 }
+    }
+    groupsimple {
+	name	"filtersection"
+	label	"Filter"
+	hidewhentab	"{ is0connected == 0 }"
+
+	parm {
+	    name	"filtermode"
+	    label	"Mode"
+	    type	ordinal
+	    default	{ "0" }
+	    menu	{
+		"0"	"By Group"
+		"1"	"By Bundle ID"
+	    }
+	    range	{ 0 1 }
+	    parmtag	{ "script_callback" "hou.phm().filterMode.Callback(kwargs)" }
+	    parmtag	{ "script_callback_language" "python" }
+	}
+	parm {
+	    name	"primitivegroupinput0and1"
+	    label	"Primitive Group"
+	    type	string
+	    default	{ "" }
+	    help	"Requires primitive group that exists on both, convex hull and original geometry."
+	    hidewhen	"{ filtermode == 1 }"
+	    menureplace	{
+		[ "from nodeway.hda.common import GroupMenu" ]
+		[ "reload(GroupMenu)" ]
+		[ "" ]
+		[ "return GroupMenu.PrimitiveGroupMenu(kwargs)" ]
+		language	python
+	    }
+	    range	{ 0 1 }
+	}
+	parm {
+	    name	"bundleidpattern"
+	    label	"Pattern"
+	    type	string
+	    default	{ "" }
+	    hidewhen	"{ filtermode == 0 }"
+	    range	{ 0 1 }
+	}
+    }
+
+    groupsimple {
+	name	"mainsection"
+	label	"Main"
+	hidewhentab	"{ is0connected == 0 }"
+
+	parm {
+	    name	"showhullidattribute"
+	    label	"Show Hull ID Attribute"
+	    type	toggle
+	    joinnext
+	    default	{ "0" }
+	    help	"Adds random color to each convex hull."
+	    disablewhen	"{ showbundleidattribute == 1 }"
+	    range	{ 0 1 }
+	}
+	parm {
+	    name	"sepparm"
+	    label	"Separator"
+	    type	separator
+	    default	{ "" }
+	    range	{ 0 1 }
+	}
+	parm {
+	    name	"showbundleidattribute"
+	    label	"Show Bundle ID Attribute"
+	    type	toggle
+	    joinnext
+	    default	{ "0" }
+	    help	"Adds random color to each convex hull bundle."
+	    disablewhen	"{ showhullidattribute == 1 }"
+	    range	{ 0 1 }
+	}
+	parm {
+	    name	"sepparm2"
+	    label	"Separator"
+	    type	separator
+	    default	{ "" }
+	    range	{ 0 1 }
+	}
+	parm {
+	    name	"explodehullid"
+	    label	"Explode Hull ID Attribute"
+	    type	toggle
+	    joinnext
+	    default	{ "0" }
+	    help	"Pushes convex hulls out from the center to create an exploded view. "
+	    disablewhen	"{ explodebundleid == 1 }"
+	    range	{ 0 1 }
+	    parmtag	{ "script_callback" "hou.phm().explodeHullID.Callback(kwargs)" }
+	    parmtag	{ "script_callback_language" "python" }
+	}
+	parm {
+	    name	"sepparm6"
+	    label	"Separator"
+	    type	separator
+	    default	{ "" }
+	    range	{ 0 1 }
+	}
+	parm {
+	    name	"explodehullidpower"
+	    label	"Power"
+	    type	float
+	    default	{ "0" }
+	    help	"Sets how much power should be used to pull convex hulls away."
+	    hidewhen	"{ explodehullid == 0 }"
+	    range	{ 0 10 }
+	}
+	parm {
+	    name	"explodebundleid"
+	    label	"Explode Bundle ID Attribute"
+	    type	toggle
+	    joinnext
+	    default	{ "0" }
+	    help	"Pushes convex hulls and original geometry out from the center to create an exploded view."
+	    disablewhen	"{ explodehullid == 1 }"
+	    range	{ 0 1 }
+	    parmtag	{ "script_callback" "hou.phm().explodeBundleID.Callback(kwargs)" }
+	    parmtag	{ "script_callback_language" "python" }
+	}
+	parm {
+	    name	"sepparm4"
+	    label	"Separator"
+	    type	separator
+	    default	{ "" }
+	    range	{ 0 1 }
+	}
+	parm {
+	    name	"explodebundleidpower"
+	    label	"Power"
+	    type	float
+	    default	{ "0" }
+	    help	"Sets how much power should be used to pull convex hulls and original geometry away."
+	    hidewhen	"{ explodebundleid == 0 }"
+	    range	{ 0! 40 }
+	}
+	parm {
+	    name	"explodemode"
+	    label	"Mode"
+	    type	ordinal
+	    default	{ "0" }
+	    help	"If second input is connected you can pick what is currently visible when exploding."
+	    hidewhen	"{ explodebundleid == 0 } { is1connected == 0 }"
+	    menu	{
+		"0"	"All"
+		"1"	"Convex Hulls"
+		"2"	"Original Geometry"
+	    }
+	    range	{ 0 1 }
+	}
+    }
+
+    groupsimple {
+	name	"additionalsection"
+	label	"Additional"
+	hidewhentab	"{ is0connected == 0 }"
+
+	parm {
+	    name	"cuspnormals"
+	    label	"Cusp Normals"
+	    type	toggle
+	    joinnext
+	    default	{ "0" }
+	    help	"Use it to sharpen or smooth vertex normals of the geometry. "
+	    range	{ 0 1 }
+	    parmtag	{ "script_callback" "hou.phm().cuspNormals.Callback(kwargs)" }
+	    parmtag	{ "script_callback_language" "python" }
+	}
+	parm {
+	    name	"sepparm5"
+	    label	"Separator"
+	    type	separator
+	    default	{ "" }
+	    range	{ 0 1 }
+	}
+	parm {
+	    name	"angle"
+	    label	"Angle"
+	    type	float
+	    default	{ "40" }
+	    hidewhen	"{ cuspnormals == 0 }"
+	    range	{ 0! 40 }
+	}
+	parm {
+	    name	"adddescription"
+	    label	"Description"
+	    type	toggle
+	    joinnext
+	    default	{ "0" }
+	    help	"Additional description displayed bellow node name in network view."
+	    range	{ 0 1 }
+	    parmtag	{ "script_callback" "hou.phm().description.Callback(kwargs)" }
+	    parmtag	{ "script_callback_language" "python" }
+	}
+	parm {
+	    name	"sepparm3"
+	    label	"Separator"
+	    type	separator
+	    default	{ "" }
+	    range	{ 0 1 }
+	}
+	parm {
+	    name	"cleandescription"
+	    label	"Clean"
+	    type	button
+	    default	{ "1" }
+	    help	"Cleans message field."
+	    hidewhen	"{ adddescription == 0 }"
+	    range	{ 0 1 }
+	    parmtag	{ "script_callback" "hou.phm().description.SetDefaultState(hou.pwd())" }
+	    parmtag	{ "script_callback_language" "python" }
+	}
+	parm {
+	    name	"descriptionmessage"
+	    label	"Message"
+	    type	string
+	    default	{ "" }
+	    help	"Message content that will be displayed below node name in network view."
+	    hidewhen	"{ adddescription == 0 }"
+	    range	{ 0 1 }
+	    parmtag	{ "editor" "1" }
+	    parmtag	{ "editorlines" "5-25" }
+	}
+    }
+
+}

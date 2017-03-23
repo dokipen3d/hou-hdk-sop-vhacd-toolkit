@@ -1,0 +1,15 @@
+Operator:     nodeway::vhacdscout::1.0
+Label:        V-HACD Scout
+Path:         oplib:/nodeway::Sop/vhacdscout::1.0?nodeway::Sop/vhacdscout::1.0
+Icon:         opdef:/nodeway::Sop/vhacdscout::1.0?IconImage
+Table:        Sop
+License:      
+Extra:        
+User:         
+Inputs:       1 to 2
+Outputs:      2
+Subnet:       true
+Python:       false
+Empty:        false
+Modified:     Sat Aug 13 02:29:33 2016
+

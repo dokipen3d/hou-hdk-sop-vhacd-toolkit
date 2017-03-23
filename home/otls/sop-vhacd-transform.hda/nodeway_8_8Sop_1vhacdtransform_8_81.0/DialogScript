@@ -1,0 +1,367 @@
+# Dialog script for nodeway::vhacdtransform::1.0 automatically generated 07/06/16 02:28:23
+
+{
+    name	nodeway::vhacdtransform::1.0
+    script	nodeway::vhacdtransform::1.0
+    label	"V-HACD Transform"
+
+    help {
+	""
+    }
+    bindhandle group xform "Transformer" input "movetool_candidate(1) ownerop('transform_convex_hulls') owneropgroup('group')"
+    bindhandle px xform "Transformer" px "movetool_candidate(1) ownerop('transform_convex_hulls') owneropgroup('group')"
+    bindhandle py xform "Transformer" py "movetool_candidate(1) ownerop('transform_convex_hulls') owneropgroup('group')"
+    bindhandle pz xform "Transformer" pz "movetool_candidate(1) ownerop('transform_convex_hulls') owneropgroup('group')"
+    bindhandle rx xform "Transformer" rx "movetool_candidate(1) ownerop('transform_convex_hulls') owneropgroup('group')"
+    bindhandle ry xform "Transformer" ry "movetool_candidate(1) ownerop('transform_convex_hulls') owneropgroup('group')"
+    bindhandle rz xform "Transformer" rz "movetool_candidate(1) ownerop('transform_convex_hulls') owneropgroup('group')"
+    bindhandle shear1 xform "Transformer" shear_xy "movetool_candidate(1) ownerop('transform_convex_hulls') owneropgroup('group')"
+    bindhandle shear2 xform "Transformer" shear_xz "movetool_candidate(1) ownerop('transform_convex_hulls') owneropgroup('group')"
+    bindhandle shear3 xform "Transformer" shear_yz "movetool_candidate(1) ownerop('transform_convex_hulls') owneropgroup('group')"
+    bindhandle sx xform "Transformer" sx "movetool_candidate(1) ownerop('transform_convex_hulls') owneropgroup('group')"
+    bindhandle sy xform "Transformer" sy "movetool_candidate(1) ownerop('transform_convex_hulls') owneropgroup('group')"
+    bindhandle sz xform "Transformer" sz "movetool_candidate(1) ownerop('transform_convex_hulls') owneropgroup('group')"
+    bindhandle xOrd xform "Transformer" trs_order "movetool_candidate(1) ownerop('transform_convex_hulls') owneropgroup('group')"
+    bindhandle tx xform "Transformer" tx "movetool_candidate(1) ownerop('transform_convex_hulls') owneropgroup('group')"
+    bindhandle ty xform "Transformer" ty "movetool_candidate(1) ownerop('transform_convex_hulls') owneropgroup('group')"
+    bindhandle tz xform "Transformer" tz "movetool_candidate(1) ownerop('transform_convex_hulls') owneropgroup('group')"
+    bindhandle scale xform "Transformer" uniform_scale "movetool_candidate(1) ownerop('transform_convex_hulls') owneropgroup('group')"
+    bindhandle rOrd xform "Transformer" xyz_order "movetool_candidate(1) ownerop('transform_convex_hulls') owneropgroup('group')"
+
+    inputlabel	1	"Convex Hulls"
+    inputlabel	2	"Original Geometry"
+    inputlabel	3	"Sub-Network Input #3"
+    inputlabel	4	"Sub-Network Input #4"
+
+    group {
+	name	"hidden"
+	label	"Hidden"
+	invisibletab
+
+	parm {
+	    name	"is0connected"
+	    label	"Is 0 Connected?"
+	    type	toggle
+	    joinnext
+	    default	{ "0" }
+	    range	{ 0 1 }
+	    export	none
+	}
+	parm {
+	    name	"sepparm2"
+	    label	"Separator"
+	    type	separator
+	    default	{ "" }
+	    range	{ 0 1 }
+	    export	none
+	}
+	parm {
+	    name	"is1connected"
+	    label	"Is 1 Connected?"
+	    type	toggle
+	    joinnext
+	    default	{ "0" }
+	    range	{ 0 1 }
+	    export	none
+	}
+	parm {
+	    name	"sepparm3"
+	    label	"Separator"
+	    type	separator
+	    default	{ "" }
+	    range	{ 0 1 }
+	    export	none
+	}
+	parm {
+	    name	"errorlevel"
+	    label	"Error Level"
+	    type	integer
+	    default	{ "0" }
+	    range	{ -1! 1 }
+	    export	none
+	}
+	parm {
+	    name	"uniquetransformgroupname1"
+	    label	"Xform Group Name"
+	    type	string
+	    default	{ "" }
+	    range	{ 0 1 }
+	    export	none
+	}
+	parm {
+	    name	"uniquetransformgroupname2"
+	    label	"Xform Group Name"
+	    type	string
+	    default	{ "" }
+	    range	{ 0 1 }
+	    export	none
+	}
+    }
+
+    parm {
+	name	"titleupper"
+	label	"Separator"
+	type	separator
+	default	{ "" }
+	range	{ 0 1 }
+	export	none
+    }
+    parm {
+	name	"title"
+	label	"title"
+	type	label
+	nolabel
+	default	{ "V-HACD TRANSFORM v1.0" }
+	hidewhen	"{ errorlevel != -1 }"
+	range	{ 0 1 }
+	export	none
+    }
+    parm {
+	name	"errormessage"
+	label	"errormessage"
+	type	label
+	nolabel
+	default	{ "SORRY... BOTH INPUTS ALWAYS NEEDS TO BE CONNECTED." }
+	hidewhen	"{ errorlevel == -1 }"
+	range	{ 0 1 }
+	export	none
+    }
+    parm {
+	name	"titlelower"
+	label	"Separator"
+	type	separator
+	default	{ "" }
+	range	{ 0 1 }
+	export	none
+    }
+    groupsimple {
+	name	"filtersection"
+	label	"Filter"
+	hidewhentab	"{ is0connected == 0 } { is1connected == 0 }"
+
+	parm {
+	    name	"group"
+	    label	"Group"
+	    type	string
+	    invisible
+	    default	{ "" }
+	    menutoggle	{
+		[ "opmenu -l transform_convex_hulls group" ]
+	    }
+	    range	{ 0 1 }
+	    export	none
+	    parmtag	{ "autoscope" "0000000000000000" }
+	    parmtag	{ "script_action" "import soputils\nkwargs['geometrytype'] = kwargs['node'].parmTuple('grouptype')\nkwargs['inputindex'] = 0\nsoputils.selectGroupParm(kwargs)" }
+	    parmtag	{ "script_action_help" "Select geometry from an available viewport.\nShift-click to turn on Select Groups." }
+	    parmtag	{ "script_action_icon" "BUTTONS_reselect" }
+	}
+	parm {
+	    name	"grouptype"
+	    label	"Group Type"
+	    type	ordinal
+	    invisible
+	    default	{ "guess" }
+	    menu	{
+		"guess"	"Guess from Group"
+		"breakpoints"	"Breakpoints"
+		"edges"	"Edges"
+		"points"	"Points"
+		"prims"	"Primitives"
+	    }
+	    range	{ 0 1 }
+	    export	none
+	    parmtag	{ "autoscope" "0000000000000000" }
+	}
+	parm {
+	    name	"filtermode"
+	    label	"Mode"
+	    type	ordinal
+	    default	{ "0" }
+	    menu	{
+		"0"	"By Group"
+		"1"	"By Bundle ID"
+	    }
+	    range	{ 0 1 }
+	    export	none
+	    parmtag	{ "script_callback" "hou.phm().filterMode.Callback(kwargs)" }
+	    parmtag	{ "script_callback_language" "python" }
+	}
+	parm {
+	    name	"primitivegroupinput0and1"
+	    label	"Primitive Group"
+	    type	string
+	    default	{ "" }
+	    help	"Requires primitive group that exists on both, convex hull and original geometry."
+	    hidewhen	"{ filtermode == 1 }"
+	    menureplace	{
+		[ "from nodeway.hda.common import GroupMenu" ]
+		[ "reload(GroupMenu)" ]
+		[ "" ]
+		[ "return GroupMenu.PrimitiveGroupMenu(kwargs)" ]
+		language	python
+	    }
+	    range	{ 0 1 }
+	    export	none
+	}
+	parm {
+	    name	"bundleidpattern"
+	    label	"Pattern"
+	    type	string
+	    default	{ "" }
+	    hidewhen	"{ filtermode == 0 }"
+	    range	{ 0 1 }
+	    export	none
+	}
+    }
+
+    groupsimple {
+	name	"mainsection"
+	label	"Main"
+	hidewhentab	"{ is0connected == 0 } { is1connected == 0 }"
+
+	parm {
+	    name	"xOrd"
+	    label	"Transform Order"
+	    type	ordinal
+	    joinnext
+	    default	{ "srt" }
+	    menu	{
+		"srt"	"Scale Rot Trans"
+		"str"	"Scale Trans Rot"
+		"rst"	"Rot Scale Trans"
+		"rts"	"Rot Trans Scale"
+		"tsr"	"Trans Scale Rot"
+		"trs"	"Trans Rot Scale"
+	    }
+	    range	{ 0 1 }
+	    export	none
+	    parmtag	{ "autoscope" "0000000000000000" }
+	}
+	parm {
+	    name	"rOrd"
+	    label	"Rotate Order"
+	    type	ordinal
+	    nolabel
+	    default	{ "xyz" }
+	    menu	{
+		"xyz"	"Rx Ry Rz"
+		"xzy"	"Rx Rz Ry"
+		"yxz"	"Ry Rx Rz"
+		"yzx"	"Ry Rz Rx"
+		"zxy"	"Rz Rx Ry"
+		"zyx"	"Rz Ry Rx"
+	    }
+	    range	{ 0 1 }
+	    export	none
+	    parmtag	{ "autoscope" "0000000000000000" }
+	}
+	parm {
+	    name	"t"
+	    label	"Translate"
+	    type	vector
+	    size	3
+	    default	{ "0" "0" "0" }
+	    range	{ -1 1 }
+	    export	none
+	    parmtag	{ "autoscope" "0000000000000000" }
+	}
+	parm {
+	    name	"r"
+	    label	"Rotate"
+	    type	vector
+	    size	3
+	    default	{ "0" "0" "0" }
+	    range	{ 0 360 }
+	    export	none
+	    parmtag	{ "autoscope" "0000000000000000" }
+	}
+	parm {
+	    name	"s"
+	    label	"Scale"
+	    type	vector
+	    size	3
+	    default	{ "1" "1" "1" }
+	    range	{ -1 1 }
+	    export	none
+	    parmtag	{ "autoscope" "0000000000000000" }
+	}
+	parm {
+	    name	"shear"
+	    label	"Shear"
+	    type	float
+	    size	3
+	    default	{ "0" "0" "0" }
+	    range	{ 0 10 }
+	    export	none
+	    parmtag	{ "autoscope" "0000000000000000" }
+	}
+	parm {
+	    name	"p"
+	    label	"Pivot"
+	    type	vector
+	    size	3
+	    default	{ "0" "0" "0" }
+	    range	{ -1 1 }
+	    export	none
+	    parmtag	{ "autoscope" "0000000000000000" }
+	}
+	parm {
+	    name	"scale"
+	    label	"Uniform Scale"
+	    type	float
+	    default	{ "1" }
+	    range	{ 0 10 }
+	    export	none
+	    parmtag	{ "autoscope" "0000000000000000" }
+	}
+    }
+
+    groupsimple {
+	name	"additionalsection"
+	label	"Additional"
+	hidewhentab	"{ is0connected == 0 } { is1connected == 0 }"
+
+	parm {
+	    name	"adddescription"
+	    label	"Description"
+	    type	toggle
+	    joinnext
+	    default	{ "0" }
+	    range	{ 0 1 }
+	    export	none
+	    parmtag	{ "script_callback" "hou.phm().description.Callback(kwargs)" }
+	    parmtag	{ "script_callback_language" "python" }
+	}
+	parm {
+	    name	"sepparm"
+	    label	"Separator"
+	    type	separator
+	    default	{ "" }
+	    range	{ 0 1 }
+	    export	none
+	}
+	parm {
+	    name	"cleandescription"
+	    label	"Clean"
+	    type	button
+	    default	{ "1" }
+	    hidewhen	"{ adddescription == 0 }"
+	    range	{ 0 1 }
+	    export	none
+	    parmtag	{ "script_callback" "hou.phm().description.SetDefaultState(hou.pwd())" }
+	    parmtag	{ "script_callback_language" "python" }
+	}
+	parm {
+	    name	"descriptionmessage"
+	    label	"Message"
+	    type	string
+	    default	{ "" }
+	    hidewhen	"{ adddescription == 0 }"
+	    range	{ 0 1 }
+	    export	none
+	    parmtag	{ "editor" "1" }
+	    parmtag	{ "editorlines" "5-25" }
+	}
+    }
+
+}

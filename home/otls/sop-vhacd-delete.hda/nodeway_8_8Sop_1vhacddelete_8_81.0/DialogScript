@@ -1,0 +1,227 @@
+# Dialog script for nodeway::vhacddelete::1.0 automatically generated 07/06/16 02:27:13
+
+{
+    name	nodeway::vhacddelete::1.0
+    script	nodeway::vhacddelete::1.0
+    label	"V-HACD Delete"
+
+    help {
+	""
+    }
+
+    inputlabel	1	"Convex Hulls"
+    inputlabel	2	"Original Geometry"
+    inputlabel	3	"Sub-Network Input #3"
+    inputlabel	4	"Sub-Network Input #4"
+
+    group {
+	name	"hidden"
+	label	"Hidden"
+	invisibletab
+
+	parm {
+	    name	"is0connected"
+	    label	"Is 0 Connected?"
+	    type	toggle
+	    default	{ "0" }
+	    range	{ 0 1 }
+	    export	none
+	}
+	parm {
+	    name	"is1connected"
+	    label	"Is 1 Connected?"
+	    type	toggle
+	    default	{ "0" }
+	    range	{ 0 1 }
+	    export	none
+	}
+	parm {
+	    name	"uniquedeletegroupname1"
+	    label	"Delete 1 Group Name"
+	    type	string
+	    default	{ "" }
+	    range	{ 0 1 }
+	    export	none
+	}
+	parm {
+	    name	"uniquedeletegroupname2"
+	    label	"Delete 2 Group Name"
+	    type	string
+	    default	{ "" }
+	    range	{ 0 1 }
+	    export	none
+	}
+    }
+
+    parm {
+	name	"titleupper"
+	label	"Separator"
+	type	separator
+	default	{ "" }
+	range	{ 0 1 }
+	export	none
+    }
+    parm {
+	name	"title"
+	label	"title"
+	type	label
+	nolabel
+	default	{ "V-HACD DELETE v1.0" }
+	hidewhen	"{ is0connected == 0 }"
+	range	{ 0 1 }
+	export	none
+    }
+    parm {
+	name	"errormessage"
+	label	"errormessage"
+	type	label
+	nolabel
+	default	{ "SORRY... BOTH INPUTS ALWAYS NEEDS TO BE CONNECTED." }
+	hidewhen	"{ is0connected == 1 }"
+	range	{ 0 1 }
+	export	none
+    }
+    parm {
+	name	"titlelower"
+	label	"Separator"
+	type	separator
+	default	{ "" }
+	range	{ 0 1 }
+	export	none
+    }
+    groupsimple {
+	name	"filtersection"
+	label	"Filter"
+	hidewhentab	"{ is0connected == 0 }"
+
+	parm {
+	    name	"filtermode"
+	    label	"Mode"
+	    type	ordinal
+	    default	{ "0" }
+	    menu	{
+		"0"	"By Group"
+		"1"	"By Bundle ID"
+	    }
+	    range	{ 0 1 }
+	    export	none
+	    parmtag	{ "script_callback" "hou.phm().filterMode.Callback(kwargs)" }
+	    parmtag	{ "script_callback_language" "python" }
+	}
+	parm {
+	    name	"primitivegroupinput0and1"
+	    label	"Primitive Group"
+	    type	string
+	    default	{ "" }
+	    hidewhen	"{ filtermode == 1 }"
+	    menureplace	{
+		[ "from nodeway.hda.common import GroupMenu" ]
+		[ "reload(GroupMenu)" ]
+		[ "" ]
+		[ "return GroupMenu.PrimitiveGroupMenu(kwargs)" ]
+		language	python
+	    }
+	    range	{ 0 1 }
+	    export	none
+	}
+	parm {
+	    name	"bundleidpattern"
+	    label	"Pattern"
+	    type	string
+	    default	{ "" }
+	    hidewhen	"{ filtermode == 0 }"
+	    range	{ 0 1 }
+	    export	none
+	}
+    }
+
+    groupsimple {
+	name	"mainsection"
+	label	"Main"
+	hidewhentab	"{ is0connected == 0 }"
+
+	parm {
+	    name	"negate"
+	    label	"Operation"
+	    type	ordinal
+	    default	{ "dele" }
+	    menu	{
+		"dele"	"Delete Selected"
+		"keep"	"Delete Non-Selected"
+	    }
+	    range	{ 0 1 }
+	    export	none
+	    parmtag	{ "autoscope" "0000000000000000" }
+	}
+	parm {
+	    name	"removegrp"
+	    label	"Delete Unused Groups"
+	    type	toggle
+	    joinnext
+	    default	{ "on" }
+	    range	{ 0 1 }
+	    export	none
+	    parmtag	{ "autoscope" "0000000000000000" }
+	}
+	parm {
+	    name	"sepparm2"
+	    label	"Separator"
+	    type	separator
+	    default	{ "" }
+	    range	{ 0 1 }
+	    export	none
+	}
+    }
+
+    groupsimple {
+	name	"additionalsection"
+	label	"Additional"
+	hidewhentab	"{ is0connected == 0 }"
+
+	parm {
+	    name	"adddescription"
+	    label	"Description"
+	    type	toggle
+	    joinnext
+	    default	{ "0" }
+	    help	"Additional description displayed bellow node name in network view."
+	    range	{ 0 1 }
+	    export	none
+	    parmtag	{ "script_callback" "hou.phm().description.Callback(kwargs)" }
+	    parmtag	{ "script_callback_language" "python" }
+	}
+	parm {
+	    name	"sepparm"
+	    label	"Separator"
+	    type	separator
+	    default	{ "" }
+	    range	{ 0 1 }
+	    export	none
+	}
+	parm {
+	    name	"cleandescription"
+	    label	"Clean"
+	    type	button
+	    default	{ "1" }
+	    help	"Cleans message field."
+	    hidewhen	"{ adddescription == 0 }"
+	    range	{ 0 1 }
+	    export	none
+	    parmtag	{ "script_callback" "hou.phm().description.SetDefaultState(hou.pwd())" }
+	    parmtag	{ "script_callback_language" "python" }
+	}
+	parm {
+	    name	"descriptionmessage"
+	    label	"Message"
+	    type	string
+	    default	{ "" }
+	    help	"Message content that will be displayed below node name in network view."
+	    hidewhen	"{ adddescription == 0 }"
+	    range	{ 0 1 }
+	    export	none
+	    parmtag	{ "editor" "1" }
+	    parmtag	{ "editorlines" "5-25" }
+	}
+    }
+
+}
