@@ -3,24 +3,24 @@
 	Based on https://github.com/kmammou/v-hacd
 
 	IMPORTANT! ------------------------------------------
-	DO NOT MODIFY THIS FILE.
-	Doing so may break every extension that uses it as a base or utility.
-	Modify it ONLY when you know what you are doing. That means NEVER!
+	* Macros starting and ending with '____' shouldn't be used anywhere outside of this file.
+	* External macros used:		
+		GET_SOP_Namespace()				- comes from "Macros_Namespace.h"
+		DECLARE_SOP_Namespace_Start()	- comes from "Macros_Namespace.h"
+		DECLARE_SOP_Namespace_End		- comes from "Macros_Namespace.h"
+		__DECLARE__Filter_Section_PRM()
+		__DECLARE_Main_Section_PRM()
+		__DECLARE_Additional_Section_PRM()
+		DECLARE_DescriptionPRM()		- comes from "Macros_DescriptionPRM.h"
+		__DECLARE_Debug_Section_PRM()
 	-----------------------------------------------------
 
-	TODO! -----------------------------------------------	
-	-----------------------------------------------------
-
-	Author: 	Nodeway (2016)
-
-	Email:		nodeway@hotmail.com
-	Vimeo:		https://vimeo.com/nodeway
-	Twitter:	https://twitter.com/nodeway
-	Github:		https://github.com/nodeway
+	Author: 	SNOWFLAKE
+	Email:		snowflake@outlook.com
 
 	LICENSE ------------------------------------------
 
-	Copyright (c) 2016 Nodeway
+	Copyright (c) 2016-2017 SNOWFLAKE
 	All rights reserved.
 
 	Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -38,32 +38,18 @@
 INCLUDES                                                           |
 ----------------------------------------------------------------- */
 
-#include "../../hou-hdk-common/Operators/SOP/NW_SOP_Operator.h"
-#include "../VHADC/public/VHACD.h"
+#include "SOP_VHACDEngine_Operator.h"
+#include "../../hou-hdk-common/source/SOP/Macros_FloatPRM.h"
+#include "../../hou-hdk-common/source/SOP/Macros_IntegerPRM.h"
+#include "../../hou-hdk-common/source/SOP/Macros_SeparatorPRM.h"
+#include "../../hou-hdk-common/source/SOP/Macros_SwitcherPRM.h"
+#include "../../hou-hdk-common/source/SOP/Macros_TogglePRM.h"
 
 /* -----------------------------------------------------------------
-USING                                                              |
+DEFINES                                                            |
 ----------------------------------------------------------------- */
 
-using namespace VHACD;
-
-/* -----------------------------------------------------------------
-V-HACD ENGINE SPECIFIC DEFINES                                     |
------------------------------------------------------------------ */
-
-#define SOP_VHACDENGINE_NAME												VHACDEngine
-#define SOP_VHACDENGINE_DATE												"2016"
-// internal/external/icon name
-#define SOP_VHACDENGINE_OP_SMALLNAME										"nodeway::vhacdengine::1.0"
-#define SOP_VHACDENGINE_OP_BIGNAME											"V-HACD Engine"
-#define SOP_VHACDENGINE_OP_ICONNAME											"SOP_VHACDEngine.jpg"
-// title
-#define SOP_VHACDENGINE_OP_TITLE											"V-HACD ENGINE v1.0"
-// submenu
-#define SOP_VHACDENGINE_SUBMENUPATH											"Convex Decomposition"
-// inputs
-#define SOP_VHACDENGINE_OP_INPUTNAME0										"Geometry"
-// parameters
+#define SOP_Operator												GET_SOP_Namespace()::SOP_VHACDEngine_Operator
 
 #define SOP_VHACDENGINE_OP_SMALLPOLYGONS_TOLERANCE							0.000001f
 
@@ -147,3 +133,72 @@ V-HACD ENGINE SPECIFIC DEFINES                                     |
 #define SOP_VHACDENGINE_OP_REPORTMODE_SMALLNAME								"reportmode"
 #define SOP_VHACDENGINE_OP_REPORTMODE_BIGNAME								"Mode"
 #define SOP_VHACDENGINE_OP_REPORTMODE_HELPTEXT								"How detailed report will be printed."
+
+/* -----------------------------------------------------------------
+PARAMETERS                                                         |
+----------------------------------------------------------------- */
+
+DECLARE_SOP_Namespace_Start()
+
+	namespace UI
+	{
+		__DECLARE__Filter_Section_PRM(4)
+		DECLARE_Custom_Toggle_OFF_Join_PRM(SOP_VHACDENGINE_OP_ALLOWPRMOVERRIDE_SMALLNAME, SOP_VHACDENGINE_OP_ALLOWPRMOVERRIDE_BIGNAME, 0, SOP_VHACDENGINE_OP_ALLOWOVERRIDE_HELPTEXT, allowParametersOverride)
+		DECLARE_Custom_Separator_PRM(SOP_VHACDENGINE_OP_ALLOWPRMOVERRIDE_SEPARATOR_SMALLNAME, allowParametersOverride)
+
+		DECLARE_Custom_Toggle_OFF_Join_PRM(SOP_VHACDENGINE_OP_POLYGONIZE_SMALLNAME, SOP_VHACDENGINE_OP_POLYGONIZE_BIGNAME, 0, SOP_VHACDENGINE_OP_POLYGONIZE_HELPTEXT, polygonize)
+		DECLARE_Custom_Separator_PRM(SOP_VHACDENGINE_OP_POLYGONIZE_SEPARATOR_SMALLNAME, polygonize)
+
+		__DECLARE_Main_Section_PRM(14)
+		static auto		modeChoiceMenuParm_Name = PRM_Name(SOP_VHACDENGINE_OP_DECOMPOSITIONMODE_SMALLNAME, SOP_VHACDENGINE_OP_DECOMPOSITIONMODE_BIGNAME);
+		static auto		modeChoiceMenuParm_Range = PRM_Range(PRM_RANGE_RESTRICTED, 0, PRM_RANGE_RESTRICTED, 1);
+		static PRM_Name modeChoiceMenuParm_Choices[] =
+		{
+			PRM_Name("0", "Voxel"),
+			PRM_Name("1", "Tetrahedron"),
+			PRM_Name(0)
+		};
+		static auto		modeChoiceMenuParm_ChoiceList = PRM_ChoiceList(PRM_CHOICELIST_SINGLE, modeChoiceMenuParm_Choices);
+		auto			modeChoiceMenu_Parameter = PRM_Template(PRM_ORD, 1, &modeChoiceMenuParm_Name, 0, &modeChoiceMenuParm_ChoiceList, &modeChoiceMenuParm_Range, 0, 0, 1, SOP_VHACDENGINE_OP_DECOMPOSITIONMODE_HELPTEXT);
+
+		DECLARE_Custom_Int_MinR_to_MaxR_PRM(SOP_VHACDENGINE_OP_RESOLUTION_SMALLNAME, SOP_VHACDENGINE_OP_RESOLUTION_BIGNAME, SOP_VHACDENGINE_OP_RESOLUTION_RANGEMIN, SOP_VHACDENGINE_OP_RESOLUTION_RANGEMAX, SOP_VHACDENGINE_OP_RESOLUTION_DEFAULT, SOP_VHACDENGINE_OP_RESOLUTION_HELPTEXT, resolution)
+		DECLARE_Custom_Int_MinR_to_MaxR_PRM(SOP_VHACDENGINE_OP_DEPTH_SMALLNAME, SOP_VHACDENGINE_OP_DEPTH_BIGNAME, SOP_VHACDENGINE_OP_DEPTH_RANGEMIN, SOP_VHACDENGINE_OP_DEPTH_RANGEMAX, SOP_VHACDENGINE_OP_DEPTH_DEFAULT, SOP_VHACDENGINE_OP_DEPTH_HELPTEXT, depth)
+		DECLARE_Custom_FLOAT_0R_to_1R_PRM(SOP_VHACDENGINE_OP_CONCAVITY_SMALLNAME, SOP_VHACDENGINE_OP_CONCAVITY_BIGNAME, SOP_VHACDENGINE_OP_CONCAVITY_DEFAULT, SOP_VHACDENGINE_OP_CONCAVITY_HELPTEXT, concavity)
+		DECLARE_Custom_Int_MinR_to_MaxR_PRM(SOP_VHACDENGINE_OP_PLANEDOWNSAMPLING_SMALLNAME, SOP_VHACDENGINE_OP_PLANEDOWNSAMPLING_BIGNAME, SOP_VHACDENGINE_OP_PLANEDOWNSAMPLING_RANGEMIN, SOP_VHACDENGINE_OP_PLANEDOWNSAMPLING_RANGEMAX, SOP_VHACDENGINE_OP_PLANEDOWNSAMPLING_DEFAULT, SOP_VHACDENGINE_OP_PLANEDOWNSAMPLING_HELPTEXT, planeDownsampling)
+		DECLARE_Custom_Int_MinR_to_MaxR_PRM(SOP_VHACDENGINE_OP_CONVEXHULLDOWNSAMPLING_SMALLNAME, SOP_VHACDENGINE_OP_CONVEXHULLDOWNSAMPLING_BIGNAME, SOP_VHACDENGINE_OP_CONVEXHULLDOWNSAMPLING_RANGEMIN, SOP_VHACDENGINE_OP_CONVEXHULLDOWNSAMPLING_RANGEMAX, SOP_VHACDENGINE_OP_CONVEXHULLDOWNSAMPLING_DEFAULT, SOP_VHACDENGINE_OP_CONVEXHULLDOWNSAMPLING_HELPTEXT, convexHullDownsampling)
+		DECLARE_Custom_FLOAT_0R_to_1R_PRM(SOP_VHACDENGINE_OP_ALPHA_SMALLNAME, SOP_VHACDENGINE_OP_ALPHA_BIGNAME, SOP_VHACDENGINE_OP_ALPHA_DEFAULT, SOP_VHACDENGINE_OP_ALPHA_HELPTEXT, alpha)
+		DECLARE_Custom_FLOAT_0R_to_1R_PRM(SOP_VHACDENGINE_OP_BETA_SMALLNAME, SOP_VHACDENGINE_OP_BETA_BIGNAME, SOP_VHACDENGINE_OP_BETA_DEFAULT, SOP_VHACDENGINE_OP_BETA_HELPTEXT, beta)
+		DECLARE_Custom_FLOAT_0R_to_1R_PRM(SOP_VHACDENGINE_OP_GAMMA_SMALLNAME, SOP_VHACDENGINE_OP_GAMMA_BIGNAME, SOP_VHACDENGINE_OP_GAMMA_DEFAULT, SOP_VHACDENGINE_OP_GAMMA_HELPTEXT, gamma)
+		DECLARE_Custom_Int_MinR_to_MaxR_PRM(SOP_VHACDENGINE_OP_MAXTRIANGLECOUNT_SMALLNAME, SOP_VHACDENGINE_OP_MAXTRIANGLECOUNT_BIGNAME, SOP_VHACDENGINE_OP_MAXTRIANGLECOUNT_RANGEMIN, SOP_VHACDENGINE_OP_MAXTRIANGLECOUNT_RANGEMAX, SOP_VHACDENGINE_OP_MAXTRIANGLECOUNT_DEFAULT, SOP_VHACDENGINE_OP_MAXTRIANGLECOUNT_HELPTEXT, maxTriangleCount)
+		DECLARE_Custom_FLOAT_0R_to_MaxR_PRM(SOP_VHACDENGINE_OP_ADAPTIVESAMPLING_SMALLNAME, SOP_VHACDENGINE_OP_ADAPTIVESAMPLING_BIGNAME, SOP_VHACDENGINE_OP_ADAPTIVESAMPLING_RANGEMAX, SOP_VHACDENGINE_OP_ADAPTIVESAMPLING_DEFAULT, SOP_VHACDENGINE_OP_ADAPTIVESAMPLING_HELPTEXT, adaptiveSampling)
+		DECLARE_Custom_Toggle_OFF_Join_PRM(SOP_VHACDENGINE_OP_PCA_SMALLNAME, SOP_VHACDENGINE_OP_PCA_BIGNAME, 0, SOP_VHACDENGINE_OP_PCA_HELPTEXT, normalizeMesh)
+		DECLARE_Custom_Separator_PRM(SOP_VHACDENGINE_OP_PCA_SEPARATOR_SMALLNAME, normalizeMeshSeparator)
+		DECLARE_Custom_Toggle_ON_Join_PRM(SOP_VHACDENGINE_OP_OPENCL_SMALLNAME, SOP_VHACDENGINE_OP_OPENCL_BIGNAME, 0, SOP_VHACDENGINE_OP_OPENCL_HELPTEXT, useOpenCL)
+		DECLARE_Custom_Separator_PRM(SOP_VHACDENGINE_OP_OPENCL_SEPARATOR_SMALLNAME, useOpenCLSeparator)
+
+		__DECLARE_Additional_Section_PRM(4)
+		DECLARE_DescriptionPRM(SOP_Operator)
+
+		__DECLARE_Debug_Section_PRM(3)
+		DECLARE_Custom_Toggle_with_Separator_PRM(SOP_VHACDENGINE_OP_REPORTTOCONSOLE_SMALLNAME, SOP_VHACDENGINE_OP_REPORTTOCONSOLE_BIGNAME, SOP_VHACDENGINE_OP_REPORTTOCONSOLESEPARATOR_SMALLNAME, 0, SOP_VHACDENGINE_OP_REPORTTOCONSOLE_HELPTEXT, consoleReport)
+
+		static auto		reportModeChoiceMenuParm_Name = PRM_Name(SOP_VHACDENGINE_OP_REPORTMODE_SMALLNAME, SOP_VHACDENGINE_OP_REPORTMODE_BIGNAME);
+		static auto		reportModeChoiceMenuParm_Range = PRM_Range(PRM_RANGE_RESTRICTED, 0, PRM_RANGE_RESTRICTED, 2);
+		static PRM_Name reportModeChoiceMenuParm_Choices[] =
+		{
+			PRM_Name("0", "Full"),
+			PRM_Name("1", "Details Only"),
+			PRM_Name("2", "Progress Only"),
+			PRM_Name(0)
+		};
+		static auto		reportModeChoiceMenuParm_ChoiceList = PRM_ChoiceList(PRM_CHOICELIST_SINGLE, reportModeChoiceMenuParm_Choices);
+		auto			reportModeChoiceMenu_Parameter = PRM_Template(PRM_ORD, 1, &reportModeChoiceMenuParm_Name, 0, &reportModeChoiceMenuParm_ChoiceList, &reportModeChoiceMenuParm_Range, 0, 0, 1, SOP_VHACDENGINE_OP_REPORTMODE_HELPTEXT);
+	}
+
+DECLARE_SOP_Namespace_End
+
+/* -----------------------------------------------------------------
+UNDEFINES                                                          |
+----------------------------------------------------------------- */
+
+#undef SOP_Operator

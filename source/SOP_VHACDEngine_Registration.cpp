@@ -2,27 +2,17 @@
 	This is a place where you should create and register all SOP's, Selectors and their custom states.
 
 	IMPORTANT! ------------------------------------------
-	DO NOT MODIFY THIS FILE.
-	Doing so may break every extension that uses it as a base or utility.
-	Modify it ONLY when you know what you are doing. That means NEVER!
-
-	#define WIP - Comment this directive if you don't want to compile operators that are used as test subjects or are still work in progress
-	#define FINAL - Do not touch this. 
-	-----------------------------------------------------	
-
-	TODO! -----------------------------------------------	
+	* Macros starting and ending with '____' shouldn't be used anywhere outside of this file.
+	* External macros used:
+		GET_SOP_Namespace() - comes from "Macros_Namespace.h"
 	-----------------------------------------------------
 
-	Author: 	Nodeway (2016)
-
-	Email:		nodeway@hotmail.com
-	Vimeo:		https://vimeo.com/nodeway
-	Twitter:	https://twitter.com/nodeway
-	Github:		https://github.com/nodeway
+	Author: 	SNOWFLAKE
+	Email:		snowflake@outlook.com
 
 	LICENSE ------------------------------------------
 
-	Copyright (c) 2016 Nodeway
+	Copyright (c) 2016-2017 SNOWFLAKE
 	All rights reserved.
 
 	Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -35,43 +25,56 @@
 */
 
 /* -----------------------------------------------------------------
-REGISTRATION SPECIFIC DEFINES                                      |
------------------------------------------------------------------ */
-
-#define FINAL
-
-/* -----------------------------------------------------------------
 INCLUDES                                                           |
 ----------------------------------------------------------------- */
 
 #include <UT/UT_DSOVersion.h>
+#include <OP/OP_OperatorTable.h>
 
-#include "../hou-hdk-common/NW_MustHave.h"
-#include "../hou-hdk-common/Operators/SOP/Base/NW_SOP_Operator.h"
-#include "Operator/SOP_VHACDEngine_Operator.h"
-
-#ifdef FINAL
-#include "../hou-hdk-common/NW_MustHave.cpp"
-#include "../hou-hdk-common/Operators/SOP/Base/NW_SOP_Operator.cpp"
-#include "Operator/SOP_VHACDEngine_Operator.cpp"
-#endif 
+#include "SOP_VHACDEngine_Operator.h"
 
 /* -----------------------------------------------------------------
-USING                                                              |
+DEFINES                                                            |
 ----------------------------------------------------------------- */
 
-GET_SOP_NAMESPACE()
+#define SOP_Operator		GET_SOP_Namespace()::SOP_VHACDEngine_Operator
+#define SOP_SmallName		"vhacd::engine::1.0"
+#define SOP_BigName			"Engine (v-hacd)"
+#define SOP_TabMenuPath		"Convex Decomposition"
 
 /* -----------------------------------------------------------------
-SOP REGISTRATION                                                   |
+REGISTRATION                                                       |
 ----------------------------------------------------------------- */
 
-auto 
-newSopOperator(OP_OperatorTable* table)
+auto newSopOperator(OP_OperatorTable* table)
 -> void
 {
 	auto success = false;
 
-	auto sopVHACDEngine = new OP_Operator(SOP_VHACDENGINE_OP_SMALLNAME, SOP_VHACDENGINE_OP_BIGNAME, SOP_OPERATOR_NAME(SOP_VHACDENGINE_NAME)::Create_Operator, SOP_OPERATOR_NAME(SOP_VHACDENGINE_NAME)::parametersList, 1, 1, 0, OP_FLAG_GENERATOR, 0, 1, SOP_VHACDENGINE_SUBMENUPATH);				
-	success = table->addOperator(sopVHACDEngine);
+	auto sop = new OP_Operator
+	(
+		SOP_SmallName,
+		SOP_BigName,
+		SOP_Operator::CreateOperator,
+		SOP_Operator::parametersList,
+		1, // min inputs 
+		1, // max inputs
+		0,
+		OP_FLAG_GENERATOR, // type of node
+		0,
+		1, // outputs count
+		SOP_TabMenuPath
+	);
+
+	success = table->addOperator(sop);
+	//table->addOpHidden(sop->getName());	
 }
+
+/* -----------------------------------------------------------------
+UNDEFINES                                                          |
+----------------------------------------------------------------- */
+
+#undef SOP_TabMenuPath
+#undef SOP_BigName
+#undef SOP_SmallName
+#undef SOP_Operator
