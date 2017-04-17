@@ -56,9 +56,7 @@ else()
 		"$ENV{GIT_PATH}/hou-hdk-common/source/SOP/Macros_SeparatorPRM.h"		
 		"$ENV{GIT_PATH}/hou-hdk-common/source/SOP/Macros_SwitcherPRM.h"
 		"$ENV{GIT_PATH}/hou-hdk-common/source/SOP/Macros_TogglePRM.h"
-		"$ENV{GIT_PATH}/hou-hdk-common/source/SOP/Macros_UpdateParmsFlags.h"
-		"$ENV{GIT_PATH}/hou-hdk-common/source/SOP/SOP_Base_Operator.h"
-		"$ENV{GIT_PATH}/hou-hdk-common/source/SOP/SOP_Base_Operator.cpp"		
+		"$ENV{GIT_PATH}/hou-hdk-common/source/SOP/Macros_UpdateParmsFlags.h"	
 	)
 	
 	# get all 3rd party source files

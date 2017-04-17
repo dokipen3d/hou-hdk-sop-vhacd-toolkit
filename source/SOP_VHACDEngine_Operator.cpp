@@ -52,9 +52,13 @@ INCLUDES                                                           |
 #include <OP/OP_AutoLockInputs.h>
 
 #include "SOP_VHACDEngine_Parameters.h"
+#include "../../hou-hdk-common/source/SOP/Macros_ParameterList.h"
 #include "../../hou-hdk-common/source/Utility_GeometryTesting.h"
 #include "../../hou-hdk-common/source/Utility_AttributeAccessing.h"
 #include "../../hou-hdk-common/source/Utility_ParameterAccessing.h"
+
+#include "../../hou-hdk-common/source/Enum_NodeErrorLevel.h"
+#include "../../hou-hdk-common/source/Enum_AttributeClass.h"
 
 /* -----------------------------------------------------------------
 DEFINES                                                            |
@@ -63,7 +67,7 @@ DEFINES                                                            |
 #define SOP_Operator		GET_SOP_Namespace()::SOP_VHACDEngine_Operator
 #define VHACD_Logger		GET_SOP_Namespace()::SOP_VHACDEngine_Logger
 #define VHACD_Callback		GET_SOP_Namespace()::SOP_VHACDEngine_Callback
-#define SOP_Base_Operator	GET_SOP_Namespace()::SOP_Base_Operator
+#define SOP_Base_Operator	SOP_Node
 #define SOP_InputName_0		"Geometry"
 #define SOP_IconName		"SOP_VHACD.png"
 
@@ -210,12 +214,12 @@ SOP_Operator::Pull_IntPRM(GU_Detail* geometry, const PRM_Template& parameter, bo
 
 	if (!interfaceonly)
 	{
-		GA_RWAttributeRef attributeReference;
+		//GA_RWAttributeRef attributeReference;
 		GA_RWHandleI attributeHandle;
 
 		// check is there attribute with the name that matches parameter name
-		// if it exist, use it as parm value, otherwise use UI value
-		auto success = Find_IntegerPrimitiveAttribute(geometry, parameter.getToken(), attributeReference, attributeHandle, HOU_NODE_ERROR_LEVEL::None, time);
+		// if it exist, use it as parm value, otherwise use UI value		
+		auto success = ATTRIB_ACCESS::Find::IntATT(this, geometry, GA_AttributeOwner::GA_ATTRIB_PRIMITIVE, parameter.getToken(), attributeHandle, HOU_NODE_ERROR_LEVEL::None);
 		if (success)
 		{
 			currentIntValue = attributeHandle.get(GA_Offset(0));
@@ -237,14 +241,14 @@ SOP_Operator::Pull_FloatPRM(GU_Detail* geometry, const PRM_Template& parameter, 
 
 	if (!interfaceonly)
 	{
-		GA_RWAttributeRef attributeReference;
+		//GA_RWAttributeRef attributeReference;
 		GA_RWHandleR attributeHandle;
 
 		// check is there attribute with the name that matches parameter name
-		// if it exist, use it as parm value, otherwise use UI value
-		auto success = this->Find_FloatPrimitiveAttribute(geometry, parameter.getToken(), attributeReference, attributeHandle, HOU_NODE_ERROR_LEVEL::None, time);
+		// if it exist, use it as parm value, otherwise use UI value		
+		auto success = ATTRIB_ACCESS::Find::FloatATT(this, geometry, GA_AttributeOwner::GA_ATTRIB_PRIMITIVE, parameter.getToken(), attributeHandle, HOU_NODE_ERROR_LEVEL::None);
 		if (success)
-		{
+		{			
 			currentFloatValue = attributeHandle.get(GA_Offset(0));
 			auto currentRangeValue = parameter.getRangePtr();
 
@@ -374,8 +378,9 @@ SOP_Operator::Prepare_DataForVHACD(GU_Detail* geometry, UT_AutoInterrupt progres
 	_points.clear();
 	_triangles.clear();
 
-	// get position attribute	
-	auto success = Find_VectorPointAttribute(geometry, "P", _positionReference, _positionHandle, HOU_NODE_ERROR_LEVEL::None, time);
+	// get position attribute		
+	//auto success = Find_VectorPointAttribute(geometry, "P", _positionReference, _positionHandle, HOU_NODE_ERROR_LEVEL::None, time);
+	auto success = ATTRIB_ACCESS::Find::Vec3ATT(this, geometry, GA_AttributeOwner::GA_ATTRIB_POINT, "P", _positionHandle);
 	if (success && error() < UT_ERROR_WARNING)
 	{
 		// store positions, as continuous list from 0 to last, without breaking it per primitive		

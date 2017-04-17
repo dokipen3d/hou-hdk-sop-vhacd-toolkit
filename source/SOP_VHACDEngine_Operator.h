@@ -37,17 +37,18 @@
 INCLUDES                                                           |
 ----------------------------------------------------------------- */
 
-#include "../../hou-hdk-common/source/SOP/SOP_Base_Operator.h"
-#include "../../hou-hdk-common/source/SOP/Macros_CookMySop.h"
-#include "../../hou-hdk-common/source/SOP/Macros_DescriptionPRM.h"
-#include "../../hou-hdk-common/source/SOP/Macros_ParameterList.h"
-#include "../../hou-hdk-common/source/SOP/Macros_UpdateParmsFlags.h"
+#include <SOP/SOP_Node.h>
 
 #include <vector>
 #include <string>
 #include <iomanip>
 
 #include "../3rdParty/include/VHACD.h"
+
+#include "../../hou-hdk-common/source/SOP/Macros_Namespace.h"
+#include "../../hou-hdk-common/source/SOP/Macros_CookMySop.h"
+#include "../../hou-hdk-common/source/SOP/Macros_DescriptionPRM.h"
+#include "../../hou-hdk-common/source/SOP/Macros_UpdateParmsFlags.h"
 
 /* -----------------------------------------------------------------
 FORWARDS                                                           |
@@ -85,11 +86,11 @@ DECLARE_SOP_Namespace_Start()
 		bool						_showOperationProgress;
 	};
 
-	class SOP_VHACDEngine_Operator : public SOP_Base_Operator
+	class SOP_VHACDEngine_Operator : public SOP_Node
 	{
-		DECLARE_DescriptionPRM_Callback()		
-		DECLARE_UpdateParmsFlags()
 		DECLARE_CookMySop()
+		DECLARE_DescriptionPRM_Callback()		
+		DECLARE_UpdateParmsFlags()		
 
 		// TODO: Do I still need this?
 		DECLARE_Switch_VisibilityState()
