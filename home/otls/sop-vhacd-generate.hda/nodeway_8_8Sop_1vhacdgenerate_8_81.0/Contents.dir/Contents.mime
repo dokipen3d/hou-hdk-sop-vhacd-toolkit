@@ -20,39 +20,35 @@ Content-Type: text/plain
 Sop
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1.init"
+Content-Disposition: attachment; filename="hdaroot.init"
 Content-Type: text/plain
 
 type = nodeway::vhacdgenerate::1.0
 matchesdef = 0
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1.def"
+Content-Disposition: attachment; filename="hdaroot.def"
 Content-Type: text/plain
 
 sopflags sopflags = 
 comment ""
-position 2.43458 -16.3911
-connectornextid 3
-flags =  lock off model off template off footprint off xray off bypass on display on render on highlight off unload off savedata off compress off exposed on
+position -0.00443851 -0.359194
+connectornextid 0
+flags =  lock off model off template off footprint off xray off bypass off display on render on highlight off unload off savedata off compress on colordefault on exposed on
 outputsNamed3
 {
-1 "output1"
-2 "output2"
 }
 inputsNamed3
 {
-0 	convert2 1 1 "input1"
 }
 inputs
 {
-0 	convert2 0 1
 }
 stat
 {
-  create 1468808509
-  modify 1468828004
-  author nodeway@lv-422
+  create 1492596086
+  modify 1492596145
+  author nodeway@lv-426
   access 0777
 }
 color UT_Color RGB 0.8 0.8 0.8 
@@ -61,7 +57,317 @@ exprlanguage hscript
 end
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1.userdata"
+Content-Disposition: attachment; filename="hdaroot.spareparmdef"
+Content-Type: text/plain
+
+    group {
+	name	"hidden2"
+	label	"Hidden"
+	invisibletab
+
+	parm {
+	    name	"is0connected"
+	    baseparm
+	    label	"Is 0 Connected?"
+	    joinnext
+	    export	none
+	}
+	parm {
+	    name	"sepparm3"
+	    baseparm
+	    label	"Separator"
+	    export	none
+	}
+	parm {
+	    name	"collectedpolygounsgroupname"
+	    baseparm
+	    label	"Group Name"
+	    export	none
+	}
+    }
+
+    parm {
+	name	"sepparm"
+	baseparm
+	label	"Separator"
+	export	none
+    }
+    parm {
+	name	"title"
+	baseparm
+	label	"title"
+	nolabel
+	export	none
+    }
+    parm {
+	name	"errormessage"
+	baseparm
+	label	"errormessage"
+	nolabel
+	export	none
+    }
+    parm {
+	name	"sepparm2"
+	baseparm
+	label	"Separator"
+	export	none
+    }
+    groupsimple {
+	name	"filtersection2"
+	label	"Filter"
+	hidewhentab	"{ is0connected == 0 }"
+	grouptag	{ "group_type" "simple" }
+
+	parm {
+	    name	"primitivegroupinput0"
+	    baseparm
+	    label	"Primitive Group"
+	    export	none
+	}
+	parm {
+	    name	"processmode"
+	    baseparm
+	    label	"Process Mode"
+	    export	none
+	}
+	parm {
+	    name	"polygonize"
+	    baseparm
+	    label	"Polygonize"
+	    joinnext
+	    export	none
+	}
+	parm {
+	    name	"sepparm4"
+	    baseparm
+	    label	"Separator"
+	    export	none
+	}
+    }
+
+    groupsimple {
+	name	"mainsection2"
+	label	"Main"
+	hidewhentab	"{ is0connected == 0 }"
+	grouptag	{ "group_type" "simple" }
+
+	parm {
+	    name	"decompositionmode"
+	    baseparm
+	    label	"Decomposition Mode"
+	    export	none
+	}
+	parm {
+	    name	"resolution"
+	    baseparm
+	    label	"Resolution"
+	    export	none
+	}
+	parm {
+	    name	"depth"
+	    baseparm
+	    label	"Depth"
+	    export	none
+	}
+	parm {
+	    name	"concativity"
+	    baseparm
+	    label	"Concativity"
+	    export	none
+	}
+	parm {
+	    name	"planedownsampling"
+	    baseparm
+	    label	"Plane Downsampling"
+	    export	none
+	}
+	parm {
+	    name	"convexhulldownsampling"
+	    baseparm
+	    label	"Convex Hull Downsampling"
+	    export	none
+	}
+	parm {
+	    name	"alpha"
+	    baseparm
+	    label	"Alpha"
+	    export	none
+	}
+	parm {
+	    name	"beta"
+	    baseparm
+	    label	"Beta"
+	    export	none
+	}
+	parm {
+	    name	"gamma"
+	    baseparm
+	    label	"Gamma"
+	    export	none
+	}
+	parm {
+	    name	"maxtrianglecount"
+	    baseparm
+	    label	"Max Triangle Count"
+	    export	none
+	}
+	parm {
+	    name	"adaptivesampling"
+	    baseparm
+	    label	"Adaptive Sampling"
+	    export	none
+	}
+	parm {
+	    name	"normalizemesh"
+	    baseparm
+	    label	"Normalize Mesh"
+	    joinnext
+	    export	none
+	}
+	parm {
+	    name	"sepparm7"
+	    baseparm
+	    label	"Separator"
+	    export	none
+	}
+	parm {
+	    name	"useopencl"
+	    baseparm
+	    label	"Use OpenCL"
+	    joinnext
+	    export	none
+	}
+	parm {
+	    name	"sepparm12"
+	    baseparm
+	    label	"Separator"
+	    export	none
+	}
+    }
+
+    groupsimple {
+	name	"additionalsection2"
+	label	"Additional"
+	hidewhentab	"{ is0connected == 0 }"
+	grouptag	{ "group_type" "simple" }
+
+	parm {
+	    name	"cuspnormals"
+	    baseparm
+	    label	"Cusp Normals"
+	    joinnext
+	    export	none
+	}
+	parm {
+	    name	"sepparm10"
+	    baseparm
+	    label	"Separator"
+	    export	none
+	}
+	parm {
+	    name	"angle"
+	    baseparm
+	    label	"Angle"
+	    export	none
+	}
+	parm {
+	    name	"adddescription"
+	    baseparm
+	    label	"Description"
+	    joinnext
+	    export	none
+	}
+	parm {
+	    name	"sepparm6"
+	    baseparm
+	    label	"Separator"
+	    export	none
+	}
+	parm {
+	    name	"cleandescription"
+	    baseparm
+	    label	"Clean"
+	    export	none
+	}
+	parm {
+	    name	"descriptionmessage"
+	    baseparm
+	    label	"Message"
+	    export	none
+	}
+    }
+
+    groupsimple {
+	name	"debugsection2"
+	label	"Debug"
+	hidewhentab	"{ is0connected == 0 }"
+	grouptag	{ "group_type" "simple" }
+
+	parm {
+	    name	"showdetailedreport"
+	    baseparm
+	    label	"Show Detailed Report"
+	    joinnext
+	    export	none
+	}
+	parm {
+	    name	"sepparm11"
+	    baseparm
+	    label	"Separator"
+	    export	none
+	}
+	parm {
+	    name	"reportmode"
+	    baseparm
+	    label	"Mode"
+	    export	none
+	}
+    }
+
+    groupsimple {
+	name	"authorinfo"
+	label	"Author"
+
+	parm {
+	    name	"name"
+	    label	"name"
+	    type	label
+	    nolabel
+	    default	{ "Name: Nodeway (2016)" }
+	}
+	parm {
+	    name	"email"
+	    label	"email"
+	    type	label
+	    nolabel
+	    default	{ "Email: nodeway@hotmail.com" }
+	}
+	parm {
+	    name	"twitter"
+	    label	"twitter"
+	    type	label
+	    nolabel
+	    default	{ "Twitter: twitter.com/nodeway" }
+	}
+	parm {
+	    name	"separator"
+	    label	"separator"
+	    type	label
+	    nolabel
+	    default	{ " --------------" }
+	}
+	parm {
+	    name	"tutorial"
+	    label	"tutorial"
+	    type	label
+	    nolabel
+	    default	{ "Tutorial: vimeo.com/" }
+	}
+    }
+
+
+--HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
+Content-Disposition: attachment; filename="hdaroot.userdata"
 Content-Type: text/plain
 
 {
@@ -72,49 +378,51 @@ Content-Type: text/plain
 }
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1/create_hull_bundle_id_attribute.netboxinit"
+Content-Disposition: attachment; filename="hdaroot/create_hull_bundle_id_attribute.netboxinit"
 Content-Type: text/plain
 
 2
 2
 {
 	color := "UT_Color RGB 0.8 0.6 0 ";
+	autofit := 1;
 	height := 1.7618824867966647;
 	width := 11.350588506721058;
+	comment := create_hull_bundle_id_attribute;
 	y_position := 2.5879527840256937;
 	minimized := 0;
 	x_position := -0.59182955224037093;
 }
 {
   create 1456090687
-  modify 1468827839
+  modify 1492596099
   author nodeway@lv-422
   access 0777
 }
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1.inp"
+Content-Disposition: attachment; filename="hdaroot.inp"
 Content-Type: text/plain
 
 1
-0 4.8212480545043945 14.827953338623047 0 5534 __NO_OWNER_NETWORK_BOX__
+0 4.8212480545043945 14.827953338623047 2 0 __NO_OWNER_NETWORK_BOX__ "FROMOUTPUT"
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1/as_one_piece.init"
+Content-Disposition: attachment; filename="hdaroot/as_one_piece.init"
 Content-Type: text/plain
 
 type = attribwrangle
 matchesdef = 1
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1/as_one_piece.def"
+Content-Disposition: attachment; filename="hdaroot/as_one_piece.def"
 Content-Type: text/plain
 
 sopflags sopflags = 
 comment ""
 position 0.405819 2.98796
-connectornextid 209
-flags =  lock off model off template off footprint off xray off bypass off display off render off highlight off unload off savedata off compress off exposed on
+connectornextid 1
+flags =  lock off model off template off footprint off xray off bypass off display off render off highlight off unload off savedata off compress off colordefault off exposed on
 outputsNamed3
 {
 4 "output1"
@@ -140,7 +448,7 @@ exprlanguage hscript
 end
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1/as_one_piece.spareparmdef"
+Content-Disposition: attachment; filename="hdaroot/as_one_piece.spareparmdef"
 Content-Type: text/plain
 
     groupsimple {
@@ -153,7 +461,6 @@ Content-Type: text/plain
 	    type	string
 	    default	{ "`opname(\".\")`" }
 	    range	{ 0 1 }
-	    export	none
 	}
 	parm {
 	    name	"hullbundleidname"
@@ -161,7 +468,6 @@ Content-Type: text/plain
 	    type	string
 	    default	{ "" }
 	    range	{ 0 1 }
-	    export	none
 	}
     }
 
@@ -308,9 +614,21 @@ Content-Type: text/plain
 	}
     }
 
+    parm {
+	name	"vex_inplace"
+	baseparm
+	label	"Compute Results In Place"
+	export	none
+    }
+    parm {
+	name	"vex_selectiongroup"
+	baseparm
+	label	"Output Selection Group"
+	export	none
+    }
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1/as_one_piece.chn"
+Content-Disposition: attachment; filename="hdaroot/as_one_piece.chn"
 Content-Type: text/plain
 
 {
@@ -326,7 +644,7 @@ Content-Type: text/plain
   }
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1/as_one_piece.parm"
+Content-Disposition: attachment; filename="hdaroot/as_one_piece.parm"
 Content-Type: text/plain
 
 {
@@ -365,6 +683,8 @@ vex_cwdpath	[ 0	locks=0 ]	(	.	)
 vex_outputmask	[ 0	locks=0 ]	(	*	)
 vex_updatenmls	[ 0	locks=0 ]	(	"off"	)
 vex_matchattrib	[ 0	locks=0 ]	(	id	)
+vex_inplace	[ 0	locks=0 ]	(	"off"	)
+vex_selectiongroup	[ 0	locks=0 ]	(	""	)
 userdata	[ 0	locks=0 ]	(	0	)
 opname	[ 0	locks=0	autoscope=1 ]	(	[ opname	as_one_piece ] 	)
 hullbundleidname	[ 8	locks=0	autoscope=1 ]	(	bundle_id	)
@@ -372,13 +692,13 @@ folder1	[ 0	locks=0 ]	(	0	0	)
 }
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1/as_one_piece.netbox"
+Content-Disposition: attachment; filename="hdaroot/as_one_piece.netbox"
 Content-Type: text/plain
 
 create_hull_bundle_id_attribute
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1/as_one_piece.userdata"
+Content-Disposition: attachment; filename="hdaroot/as_one_piece.userdata"
 Content-Type: text/plain
 
 {
@@ -389,21 +709,21 @@ Content-Type: text/plain
 }
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1/transfer_bundle_id_to_hull.init"
+Content-Disposition: attachment; filename="hdaroot/transfer_bundle_id_to_hull.init"
 Content-Type: text/plain
 
 type = attribwrangle
 matchesdef = 1
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1/transfer_bundle_id_to_hull.def"
+Content-Disposition: attachment; filename="hdaroot/transfer_bundle_id_to_hull.def"
 Content-Type: text/plain
 
 sopflags sopflags = 
 comment ""
 position 2.38874 -2.41432
-connectornextid 143
-flags =  lock off model off template off footprint off xray off bypass off display off render off highlight off unload off savedata off compress off exposed on
+connectornextid 2
+flags =  lock off model off template off footprint off xray off bypass off display off render off highlight off unload off savedata off compress off colordefault off exposed on
 outputsNamed3
 {
 4 "output1"
@@ -431,7 +751,7 @@ exprlanguage hscript
 end
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1/transfer_bundle_id_to_hull.spareparmdef"
+Content-Disposition: attachment; filename="hdaroot/transfer_bundle_id_to_hull.spareparmdef"
 Content-Type: text/plain
 
     groupsimple {
@@ -444,7 +764,6 @@ Content-Type: text/plain
 	    type	string
 	    default	{ "`opname(\".\")`" }
 	    range	{ 0 1 }
-	    export	none
 	}
 	parm {
 	    name	"hullbundleidname"
@@ -452,7 +771,6 @@ Content-Type: text/plain
 	    type	string
 	    default	{ "" }
 	    range	{ 0 1 }
-	    export	none
 	}
     }
 
@@ -599,9 +917,21 @@ Content-Type: text/plain
 	}
     }
 
+    parm {
+	name	"vex_inplace"
+	baseparm
+	label	"Compute Results In Place"
+	export	none
+    }
+    parm {
+	name	"vex_selectiongroup"
+	baseparm
+	label	"Output Selection Group"
+	export	none
+    }
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1/transfer_bundle_id_to_hull.chn"
+Content-Disposition: attachment; filename="hdaroot/transfer_bundle_id_to_hull.chn"
 Content-Type: text/plain
 
 {
@@ -617,7 +947,7 @@ Content-Type: text/plain
   }
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1/transfer_bundle_id_to_hull.parm"
+Content-Disposition: attachment; filename="hdaroot/transfer_bundle_id_to_hull.parm"
 Content-Type: text/plain
 
 {
@@ -658,6 +988,8 @@ vex_cwdpath	[ 0	locks=0 ]	(	.	)
 vex_outputmask	[ 0	locks=0 ]	(	*	)
 vex_updatenmls	[ 0	locks=0 ]	(	"off"	)
 vex_matchattrib	[ 0	locks=0 ]	(	id	)
+vex_inplace	[ 0	locks=0 ]	(	"off"	)
+vex_selectiongroup	[ 0	locks=0 ]	(	""	)
 userdata	[ 0	locks=0 ]	(	0	)
 opname	[ 0	locks=0	autoscope=1 ]	(	[ opname	transfer_bundle_id_to_hull ] 	)
 hullbundleidname	[ 0	locks=0	autoscope=1 ]	(	bundle_id	)
@@ -665,7 +997,7 @@ folder1	[ 0	locks=0 ]	(	0	0	)
 }
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1/transfer_bundle_id_to_hull.userdata"
+Content-Disposition: attachment; filename="hdaroot/transfer_bundle_id_to_hull.userdata"
 Content-Type: text/plain
 
 {
@@ -676,21 +1008,21 @@ Content-Type: text/plain
 }
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1/transfer_bundle_id_to_original_piece.init"
+Content-Disposition: attachment; filename="hdaroot/transfer_bundle_id_to_original_piece.init"
 Content-Type: text/plain
 
 type = attribwrangle
 matchesdef = 1
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1/transfer_bundle_id_to_original_piece.def"
+Content-Disposition: attachment; filename="hdaroot/transfer_bundle_id_to_original_piece.def"
 Content-Type: text/plain
 
 sopflags sopflags = 
 comment ""
 position 6.38813 -2.41432
-connectornextid 143
-flags =  lock off model off template off footprint off xray off bypass off display off render off highlight off unload off savedata off compress off exposed on
+connectornextid 2
+flags =  lock off model off template off footprint off xray off bypass off display off render off highlight off unload off savedata off compress off colordefault off exposed on
 outputsNamed3
 {
 4 "output1"
@@ -718,7 +1050,7 @@ exprlanguage hscript
 end
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1/transfer_bundle_id_to_original_piece.spareparmdef"
+Content-Disposition: attachment; filename="hdaroot/transfer_bundle_id_to_original_piece.spareparmdef"
 Content-Type: text/plain
 
     groupsimple {
@@ -731,7 +1063,6 @@ Content-Type: text/plain
 	    type	string
 	    default	{ "`opname(\".\")`" }
 	    range	{ 0 1 }
-	    export	none
 	}
 	parm {
 	    name	"hullbundleidname"
@@ -739,7 +1070,6 @@ Content-Type: text/plain
 	    type	string
 	    default	{ "" }
 	    range	{ 0 1 }
-	    export	none
 	}
     }
 
@@ -886,9 +1216,21 @@ Content-Type: text/plain
 	}
     }
 
+    parm {
+	name	"vex_inplace"
+	baseparm
+	label	"Compute Results In Place"
+	export	none
+    }
+    parm {
+	name	"vex_selectiongroup"
+	baseparm
+	label	"Output Selection Group"
+	export	none
+    }
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1/transfer_bundle_id_to_original_piece.chn"
+Content-Disposition: attachment; filename="hdaroot/transfer_bundle_id_to_original_piece.chn"
 Content-Type: text/plain
 
 {
@@ -904,7 +1246,7 @@ Content-Type: text/plain
   }
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1/transfer_bundle_id_to_original_piece.parm"
+Content-Disposition: attachment; filename="hdaroot/transfer_bundle_id_to_original_piece.parm"
 Content-Type: text/plain
 
 {
@@ -946,6 +1288,8 @@ vex_cwdpath	[ 0	locks=0 ]	(	.	)
 vex_outputmask	[ 0	locks=0 ]	(	*	)
 vex_updatenmls	[ 0	locks=0 ]	(	"off"	)
 vex_matchattrib	[ 0	locks=0 ]	(	id	)
+vex_inplace	[ 0	locks=0 ]	(	"off"	)
+vex_selectiongroup	[ 0	locks=0 ]	(	""	)
 userdata	[ 0	locks=0 ]	(	0	)
 opname	[ 0	locks=0	autoscope=1 ]	(	[ opname	transfer_bundle_id_to_original_piece ] 	)
 hullbundleidname	[ 0	locks=0	autoscope=1 ]	(	bundle_id	)
@@ -953,7 +1297,7 @@ folder1	[ 0	locks=0 ]	(	0	0	)
 }
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1/transfer_bundle_id_to_original_piece.userdata"
+Content-Disposition: attachment; filename="hdaroot/transfer_bundle_id_to_original_piece.userdata"
 Content-Type: text/plain
 
 {
@@ -964,21 +1308,21 @@ Content-Type: text/plain
 }
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1/for_each_group.init"
+Content-Disposition: attachment; filename="hdaroot/for_each_group.init"
 Content-Type: text/plain
 
 type = foreach
 matchesdef = 0
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1/for_each_group.def"
+Content-Disposition: attachment; filename="hdaroot/for_each_group.def"
 Content-Type: text/plain
 
 sopflags sopflags = 
 comment ""
 position 8.38883 2.98796
-connectornextid 125
-flags =  lock off model off template off footprint off xray off bypass off display off render off highlight off unload off savedata off compress off exposed on
+connectornextid 1
+flags =  lock off model off template off footprint off xray off bypass off display off render off highlight off unload off savedata off compress on colordefault off exposed on
 outputsNamed3
 {
 4 "output1"
@@ -1004,7 +1348,7 @@ exprlanguage hscript
 end
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1/for_each_group.parm"
+Content-Disposition: attachment; filename="hdaroot/for_each_group.parm"
 Content-Type: text/plain
 
 {
@@ -1024,48 +1368,48 @@ stopcondition	[ 0	locks=0 ]	(	0	)
 }
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1/for_each_group.netbox"
+Content-Disposition: attachment; filename="hdaroot/for_each_group.netbox"
 Content-Type: text/plain
 
 create_hull_bundle_id_attribute
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1/for_each_group.userdata"
+Content-Disposition: attachment; filename="hdaroot/for_each_group.userdata"
 Content-Type: text/plain
 
 {
 	"___Version___":{
 		"type":"string",
-		"value":"15.5.523"
+		"value":"16.0.557"
 	}
 }
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1/for_each_group.inp"
+Content-Disposition: attachment; filename="hdaroot/for_each_group.inp"
 Content-Type: text/plain
 
 4
-0 1 6 0 5511 __NO_OWNER_NETWORK_BOX__
-1 2 6.0999999046325684 0 5512 __NO_OWNER_NETWORK_BOX__
-2 3 6.1999998092651367 0 5513 __NO_OWNER_NETWORK_BOX__
-3 4 6.3000001907348633 0 5514 __NO_OWNER_NETWORK_BOX__
+0 1 6 2 0 __NO_OWNER_NETWORK_BOX__ "FROMOUTPUT"
+1 2 6.0999999046325684 2 0 __NO_OWNER_NETWORK_BOX__ "FROMOUTPUT"
+2 3 6.1999998092651367 2 0 __NO_OWNER_NETWORK_BOX__ "FROMOUTPUT"
+3 4 6.3000001907348633 2 0 __NO_OWNER_NETWORK_BOX__ "FROMOUTPUT"
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1/for_each_group/as_one_piece.init"
+Content-Disposition: attachment; filename="hdaroot/for_each_group/as_one_piece.init"
 Content-Type: text/plain
 
 type = attribwrangle
 matchesdef = 1
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1/for_each_group/as_one_piece.def"
+Content-Disposition: attachment; filename="hdaroot/for_each_group/as_one_piece.def"
 Content-Type: text/plain
 
 sopflags sopflags = 
 comment ""
 position 1.44118 0.611769
-connectornextid 93
-flags =  lock off model off template off footprint off xray off bypass off display on render on highlight off unload off savedata off compress off exposed on
+connectornextid 0
+flags =  lock off model off template off footprint off xray off bypass off display on render on highlight off unload off savedata off compress off colordefault off exposed on
 outputsNamed3
 {
 4 "output1"
@@ -1091,7 +1435,7 @@ exprlanguage hscript
 end
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1/for_each_group/as_one_piece.spareparmdef"
+Content-Disposition: attachment; filename="hdaroot/for_each_group/as_one_piece.spareparmdef"
 Content-Type: text/plain
 
     groupsimple {
@@ -1104,7 +1448,6 @@ Content-Type: text/plain
 	    type	string
 	    default	{ "`opname(\".\")`" }
 	    range	{ 0 1 }
-	    export	none
 	}
 	parm {
 	    name	"hullbundleidname"
@@ -1112,7 +1455,6 @@ Content-Type: text/plain
 	    type	string
 	    default	{ "" }
 	    range	{ 0 1 }
-	    export	none
 	}
 	parm {
 	    name	"currentbundleidvalue"
@@ -1120,7 +1462,6 @@ Content-Type: text/plain
 	    type	integer
 	    default	{ "0" }
 	    range	{ 0 10 }
-	    export	none
 	}
     }
 
@@ -1267,9 +1608,21 @@ Content-Type: text/plain
 	}
     }
 
+    parm {
+	name	"vex_inplace"
+	baseparm
+	label	"Compute Results In Place"
+	export	none
+    }
+    parm {
+	name	"vex_selectiongroup"
+	baseparm
+	label	"Output Selection Group"
+	export	none
+    }
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1/for_each_group/as_one_piece.chn"
+Content-Disposition: attachment; filename="hdaroot/for_each_group/as_one_piece.chn"
 Content-Type: text/plain
 
 {
@@ -1292,7 +1645,7 @@ Content-Type: text/plain
   }
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1/for_each_group/as_one_piece.parm"
+Content-Disposition: attachment; filename="hdaroot/for_each_group/as_one_piece.parm"
 Content-Type: text/plain
 
 {
@@ -1333,6 +1686,8 @@ vex_cwdpath	[ 0	locks=0 ]	(	.	)
 vex_outputmask	[ 0	locks=0 ]	(	*	)
 vex_updatenmls	[ 0	locks=0 ]	(	"off"	)
 vex_matchattrib	[ 0	locks=0 ]	(	id	)
+vex_inplace	[ 0	locks=0 ]	(	"off"	)
+vex_selectiongroup	[ 0	locks=0 ]	(	""	)
 userdata	[ 0	locks=0 ]	(	0	)
 opname	[ 0	locks=0	autoscope=1 ]	(	[ opname	as_one_piece ] 	)
 hullbundleidname	[ 8	locks=0	autoscope=1 ]	(	bundle_id	)
@@ -1341,7 +1696,7 @@ folder1	[ 0	locks=0 ]	(	0	0	)
 }
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1/for_each_group/as_one_piece.userdata"
+Content-Disposition: attachment; filename="hdaroot/for_each_group/as_one_piece.userdata"
 Content-Type: text/plain
 
 {
@@ -1352,21 +1707,21 @@ Content-Type: text/plain
 }
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1/IN_Geometry.init"
+Content-Disposition: attachment; filename="hdaroot/IN_Geometry.init"
 Content-Type: text/plain
 
 type = null
 matchesdef = 0
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1/IN_Geometry.def"
+Content-Disposition: attachment; filename="hdaroot/IN_Geometry.def"
 Content-Type: text/plain
 
 sopflags sopflags = 
 comment ""
 position 4.46125 13.6086
-connectornextid 3
-flags =  lock off model off template off footprint off xray off bypass off display off render off highlight off unload off savedata off compress off exposed on
+connectornextid 0
+flags =  lock off model off template off footprint off xray off bypass off display off render off highlight off unload off savedata off compress on colordefault off exposed on
 outputsNamed3
 {
 1 "output1"
@@ -1392,7 +1747,7 @@ exprlanguage hscript
 end
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1/IN_Geometry.parm"
+Content-Disposition: attachment; filename="hdaroot/IN_Geometry.parm"
 Content-Type: text/plain
 
 {
@@ -1402,32 +1757,32 @@ cacheinput	[ 0	locks=0 ]	(	"off"	)
 }
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1/IN_Geometry.userdata"
+Content-Disposition: attachment; filename="hdaroot/IN_Geometry.userdata"
 Content-Type: text/plain
 
 {
 	"___Version___":{
 		"type":"string",
-		"value":"15.5.523"
+		"value":"16.0.557"
 	}
 }
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1/OUT_Convex_Hulls.init"
+Content-Disposition: attachment; filename="hdaroot/OUT_Convex_Hulls.init"
 Content-Type: text/plain
 
 type = output
 matchesdef = 0
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1/OUT_Convex_Hulls.def"
+Content-Disposition: attachment; filename="hdaroot/OUT_Convex_Hulls.def"
 Content-Type: text/plain
 
 sopflags sopflags = 
 comment ""
 position 2.43209 -9.38769
-connectornextid 3
-flags =  lock off model off template off footprint off xray off bypass off display off render off highlight off unload off savedata off compress off exposed on
+connectornextid 0
+flags =  lock off model off template off footprint off xray off bypass off display off render off highlight off unload off savedata off compress on colordefault off exposed on
 outputsNamed3
 {
 1 "output1"
@@ -1453,7 +1808,7 @@ exprlanguage hscript
 end
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1/OUT_Convex_Hulls.parm"
+Content-Disposition: attachment; filename="hdaroot/OUT_Convex_Hulls.parm"
 Content-Type: text/plain
 
 {
@@ -1462,32 +1817,32 @@ outputidx	[ 0	locks=0 ]	(	0	)
 }
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1/OUT_Convex_Hulls.userdata"
+Content-Disposition: attachment; filename="hdaroot/OUT_Convex_Hulls.userdata"
 Content-Type: text/plain
 
 {
 	"___Version___":{
 		"type":"string",
-		"value":"15.5.523"
+		"value":"16.0.557"
 	}
 }
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1/OUT_Original_Geometry.init"
+Content-Disposition: attachment; filename="hdaroot/OUT_Original_Geometry.init"
 Content-Type: text/plain
 
 type = output
 matchesdef = 0
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1/OUT_Original_Geometry.def"
+Content-Disposition: attachment; filename="hdaroot/OUT_Original_Geometry.def"
 Content-Type: text/plain
 
 sopflags sopflags = 
 comment ""
 position 6.38813 -5.39282
 connectornextid 2
-flags =  lock off model off template off footprint off xray off bypass off display off render off highlight off unload off savedata off compress off exposed on
+flags =  lock off model off template off footprint off xray off bypass off display off render off highlight off unload off savedata off compress on colordefault off exposed on
 outputsNamed3
 {
 1 "output1"
@@ -1513,7 +1868,7 @@ exprlanguage hscript
 end
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1/OUT_Original_Geometry.parm"
+Content-Disposition: attachment; filename="hdaroot/OUT_Original_Geometry.parm"
 Content-Type: text/plain
 
 {
@@ -1522,32 +1877,32 @@ outputidx	[ 0	locks=0 ]	(	1	)
 }
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1/OUT_Original_Geometry.userdata"
+Content-Disposition: attachment; filename="hdaroot/OUT_Original_Geometry.userdata"
 Content-Type: text/plain
 
 {
 	"___Version___":{
 		"type":"string",
-		"value":"15.5.523"
+		"value":"16.0.557"
 	}
 }
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1/foreach_end1.init"
+Content-Disposition: attachment; filename="hdaroot/foreach_end1.init"
 Content-Type: text/plain
 
 type = block_end
 matchesdef = 0
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1/foreach_end1.def"
+Content-Disposition: attachment; filename="hdaroot/foreach_end1.def"
 Content-Type: text/plain
 
 sopflags sopflags = 
 comment ""
 position 2.43209 -4.40222
-connectornextid 73
-flags =  lock off model off template off footprint off xray off bypass off display off render off highlight off unload off savedata off compress off exposed on
+connectornextid 1
+flags =  lock off model off template off footprint off xray off bypass off display off render off highlight off unload off savedata off compress on colordefault off exposed on
 outputsNamed3
 {
 2 "output1"
@@ -1573,7 +1928,7 @@ exprlanguage hscript
 end
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1/foreach_end1.parm"
+Content-Disposition: attachment; filename="hdaroot/foreach_end1.parm"
 Content-Type: text/plain
 
 {
@@ -1594,35 +1949,36 @@ resetcookpass	[ 0	locks=0 ]	(	0	)
 dosinglepass	[ 0	locks=0 ]	(	"off"	)
 singlepass	[ 0	locks=0 ]	(	0	)
 stopcondition	[ 0	locks=0 ]	(	0	)
+multithread	[ 0	locks=0 ]	(	"off"	)
 }
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1/foreach_end1.userdata"
+Content-Disposition: attachment; filename="hdaroot/foreach_end1.userdata"
 Content-Type: text/plain
 
 {
 	"___Version___":{
 		"type":"string",
-		"value":"15.5.523"
+		"value":"16.0.557"
 	}
 }
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1/foreach_begin1.init"
+Content-Disposition: attachment; filename="hdaroot/foreach_begin1.init"
 Content-Type: text/plain
 
 type = block_begin
 matchesdef = 0
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1/foreach_begin1.def"
+Content-Disposition: attachment; filename="hdaroot/foreach_begin1.def"
 Content-Type: text/plain
 
 sopflags sopflags = 
 comment ""
 position 2.38874 -0.384959
 connectornextid 2
-flags =  lock off model off template off footprint off xray off bypass off display off render off highlight off unload off savedata off compress off exposed on
+flags =  lock off model off template off footprint off xray off bypass off display off render off highlight off unload off savedata off compress on colordefault off exposed on
 outputsNamed3
 {
 0 "output1"
@@ -1648,7 +2004,7 @@ exprlanguage hscript
 end
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1/foreach_begin1.parm"
+Content-Disposition: attachment; filename="hdaroot/foreach_begin1.parm"
 Content-Type: text/plain
 
 {
@@ -1656,35 +2012,36 @@ version 0.8
 method	[ 0	locks=0 ]	(	"piece"	)
 blockpath	[ 0	locks=0 ]	(	../foreach_end1	)
 createmetablock	[ 0	locks=0 ]	(	0	)
+label1	[ 0	locks=0 ]	(	"iteration, numiteration, value, ivalue"	)
 }
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1/foreach_begin1.userdata"
+Content-Disposition: attachment; filename="hdaroot/foreach_begin1.userdata"
 Content-Type: text/plain
 
 {
 	"___Version___":{
 		"type":"string",
-		"value":"15.5.523"
+		"value":"16.0.557"
 	}
 }
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1/per_each_piece.init"
+Content-Disposition: attachment; filename="hdaroot/per_each_piece.init"
 Content-Type: text/plain
 
 type = connectivity
 matchesdef = 0
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1/per_each_piece.def"
+Content-Disposition: attachment; filename="hdaroot/per_each_piece.def"
 Content-Type: text/plain
 
 sopflags sopflags = 
 comment ""
 position 4.40115 2.98796
 connectornextid 2
-flags =  lock off model off template off footprint off xray off bypass off display off render off highlight off unload off savedata off compress off exposed on
+flags =  lock off model off template off footprint off xray off bypass off display off render off highlight off unload off savedata off compress on colordefault off exposed on
 outputsNamed3
 {
 1 "output1"
@@ -1710,51 +2067,52 @@ exprlanguage hscript
 end
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1/per_each_piece.parm"
+Content-Disposition: attachment; filename="hdaroot/per_each_piece.parm"
 Content-Type: text/plain
 
 {
 version 0.8
 connecttype	[ 0	locks=0 ]	(	"prim"	)
 attribname	[ 0	locks=0	autoscope=1 ]	(	bundle_id	)
+createvarmap	[ 0	locks=0 ]	(	"on"	)
 varname	[ 0	locks=0 ]	(	""	)
 seamgroup	[ 0	locks=0 ]	(	""	)
 byuv	[ 0	locks=0 ]	(	"off"	)
 }
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1/per_each_piece.netbox"
+Content-Disposition: attachment; filename="hdaroot/per_each_piece.netbox"
 Content-Type: text/plain
 
 create_hull_bundle_id_attribute
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1/per_each_piece.userdata"
+Content-Disposition: attachment; filename="hdaroot/per_each_piece.userdata"
 Content-Type: text/plain
 
 {
 	"___Version___":{
 		"type":"string",
-		"value":"15.5.523"
+		"value":"16.0.557"
 	}
 }
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1/separate_geometry.init"
+Content-Disposition: attachment; filename="hdaroot/separate_geometry.init"
 Content-Type: text/plain
 
 type = delete
 matchesdef = 0
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1/separate_geometry.def"
+Content-Disposition: attachment; filename="hdaroot/separate_geometry.def"
 Content-Type: text/plain
 
 sopflags sopflags = 
 comment ""
 position 4.4487 10.5748
 connectornextid 2
-flags =  lock off model off template off footprint off xray off bypass off display off render off highlight off unload off savedata off compress off exposed on
+flags =  lock off model off template off footprint off xray off bypass off display off render off highlight off unload off savedata off compress on colordefault off exposed on
 outputsNamed3
 {
 1 "output1"
@@ -1780,7 +2138,7 @@ exprlanguage hscript
 end
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1/separate_geometry.chn"
+Content-Disposition: attachment; filename="hdaroot/separate_geometry.chn"
 Content-Type: text/plain
 
 {
@@ -1828,7 +2186,7 @@ Content-Type: text/plain
   }
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1/separate_geometry.parm"
+Content-Disposition: attachment; filename="hdaroot/separate_geometry.parm"
 Content-Type: text/plain
 
 {
@@ -1862,32 +2220,32 @@ keeppoints	[ 0	locks=0 ]	(	"off"	)
 }
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1/separate_geometry.userdata"
+Content-Disposition: attachment; filename="hdaroot/separate_geometry.userdata"
 Content-Type: text/plain
 
 {
 	"___Version___":{
 		"type":"string",
-		"value":"15.5.523"
+		"value":"16.0.557"
 	}
 }
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1/switch_process_mode.init"
+Content-Disposition: attachment; filename="hdaroot/switch_process_mode.init"
 Content-Type: text/plain
 
 type = switch
 matchesdef = 0
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1/switch_process_mode.def"
+Content-Disposition: attachment; filename="hdaroot/switch_process_mode.def"
 Content-Type: text/plain
 
 sopflags sopflags = 
 comment ""
 position 4.42575 0.615161
 connectornextid 4
-flags =  lock off model off template off footprint off xray off bypass off display off render off highlight off unload off savedata off compress off exposed on
+flags =  lock off model off template off footprint off xray off bypass off display off render off highlight off unload off savedata off compress on colordefault off exposed on
 outputsNamed3
 {
 0 "output1"
@@ -1917,7 +2275,7 @@ exprlanguage hscript
 end
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1/switch_process_mode.chn"
+Content-Disposition: attachment; filename="hdaroot/switch_process_mode.chn"
 Content-Type: text/plain
 
 {
@@ -1930,7 +2288,7 @@ Content-Type: text/plain
   }
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1/switch_process_mode.parm"
+Content-Disposition: attachment; filename="hdaroot/switch_process_mode.parm"
 Content-Type: text/plain
 
 {
@@ -1939,32 +2297,32 @@ input	[ 8	locks=0 ]	(	[ input	0 ] 	)
 }
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1/switch_process_mode.userdata"
+Content-Disposition: attachment; filename="hdaroot/switch_process_mode.userdata"
 Content-Type: text/plain
 
 {
 	"___Version___":{
 		"type":"string",
-		"value":"15.5.523"
+		"value":"16.0.557"
 	}
 }
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1/fix_original_normals.init"
+Content-Disposition: attachment; filename="hdaroot/fix_original_normals.init"
 Content-Type: text/plain
 
 type = facet
 matchesdef = 0
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1/fix_original_normals.def"
+Content-Disposition: attachment; filename="hdaroot/fix_original_normals.def"
 Content-Type: text/plain
 
 sopflags sopflags = 
 comment ""
 position 6.42872 -4.38647
 connectornextid 2
-flags =  lock off model off template off footprint off xray off bypass off display off render off highlight off unload off savedata off compress off exposed on
+flags =  lock off model off template off footprint off xray off bypass off display off render off highlight off unload off savedata off compress on colordefault off exposed on
 outputsNamed3
 {
 1 "output1"
@@ -1990,7 +2348,7 @@ exprlanguage hscript
 end
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1/fix_original_normals.parm"
+Content-Disposition: attachment; filename="hdaroot/fix_original_normals.parm"
 Content-Type: text/plain
 
 {
@@ -2014,32 +2372,32 @@ reversenml	[ 0	locks=0 ]	(	"off"	)
 }
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1/fix_original_normals.userdata"
+Content-Disposition: attachment; filename="hdaroot/fix_original_normals.userdata"
 Content-Type: text/plain
 
 {
 	"___Version___":{
 		"type":"string",
-		"value":"15.5.523"
+		"value":"16.0.557"
 	}
 }
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1/for_each_group/IN_EACH.init"
+Content-Disposition: attachment; filename="hdaroot/for_each_group/IN_EACH.init"
 Content-Type: text/plain
 
 type = each
 matchesdef = 0
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1/for_each_group/IN_EACH.def"
+Content-Disposition: attachment; filename="hdaroot/for_each_group/IN_EACH.def"
 Content-Type: text/plain
 
 sopflags sopflags = 
 comment ""
 position 1.44118 2.18824
 connectornextid 2
-flags =  lock off model off template off footprint off xray off bypass off display off render off highlight off unload off savedata off compress off exposed on
+flags =  lock off model off template off footprint off xray off bypass off display off render off highlight off unload off savedata off compress on colordefault off exposed on
 outputsNamed3
 {
 1 "output1"
@@ -2065,7 +2423,7 @@ exprlanguage hscript
 end
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1/for_each_group/IN_EACH.chn"
+Content-Disposition: attachment; filename="hdaroot/for_each_group/IN_EACH.chn"
 Content-Type: text/plain
 
 {
@@ -2120,7 +2478,7 @@ Content-Type: text/plain
   }
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1/for_each_group/IN_EACH.parm"
+Content-Disposition: attachment; filename="hdaroot/for_each_group/IN_EACH.parm"
 Content-Type: text/plain
 
 {
@@ -2135,18 +2493,18 @@ eachpoint	[ 0	locks=0	autoscope=0 ]	(	[ eachpoint	0 ] 	)
 }
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1/for_each_group/IN_EACH.userdata"
+Content-Disposition: attachment; filename="hdaroot/for_each_group/IN_EACH.userdata"
 Content-Type: text/plain
 
 {
 	"___Version___":{
 		"type":"string",
-		"value":"15.5.523"
+		"value":"16.0.557"
 	}
 }
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1/for_each_group.order"
+Content-Disposition: attachment; filename="hdaroot/for_each_group.order"
 Content-Type: text/plain
 
 2
@@ -2154,27 +2512,27 @@ IN_EACH
 as_one_piece
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1/for_each_group.net"
+Content-Disposition: attachment; filename="hdaroot/for_each_group.net"
 Content-Type: text/plain
 
 1
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1/remove_extracted_group_name.init"
+Content-Disposition: attachment; filename="hdaroot/remove_extracted_group_name.init"
 Content-Type: text/plain
 
 type = group
 matchesdef = 0
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1/remove_extracted_group_name.def"
+Content-Disposition: attachment; filename="hdaroot/remove_extracted_group_name.def"
 Content-Type: text/plain
 
 sopflags sopflags = 
 comment ""
 position 4.43527 9.61708
-connectornextid 41
-flags =  lock off model off template off footprint off xray off bypass off display off render off highlight on unload off savedata off compress off exposed on
+connectornextid 1
+flags =  lock off model off template off footprint off xray off bypass off display off render off highlight on unload off savedata off compress on colordefault off exposed on
 outputsNamed3
 {
 2 "output1"
@@ -2200,7 +2558,7 @@ exprlanguage hscript
 end
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1/remove_extracted_group_name.chn"
+Content-Disposition: attachment; filename="hdaroot/remove_extracted_group_name.chn"
 Content-Type: text/plain
 
 {
@@ -2231,7 +2589,7 @@ Content-Type: text/plain
   }
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1/remove_extracted_group_name.parm"
+Content-Disposition: attachment; filename="hdaroot/remove_extracted_group_name.parm"
 Content-Type: text/plain
 
 {
@@ -2306,32 +2664,32 @@ type	[ 0	locks=0 ]	(	1	)
 }
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1/remove_extracted_group_name.userdata"
+Content-Disposition: attachment; filename="hdaroot/remove_extracted_group_name.userdata"
 Content-Type: text/plain
 
 {
 	"___Version___":{
 		"type":"string",
-		"value":"15.5.523"
+		"value":"16.0.557"
 	}
 }
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1/cusp_normals.init"
+Content-Disposition: attachment; filename="hdaroot/cusp_normals.init"
 Content-Type: text/plain
 
 type = vertex
 matchesdef = 0
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1/cusp_normals.def"
+Content-Disposition: attachment; filename="hdaroot/cusp_normals.def"
 Content-Type: text/plain
 
 sopflags sopflags = 
 comment ""
 position 2.42647 -8.38317
-connectornextid 33
-flags =  lock off model off template off footprint off xray off bypass off display off render off highlight off unload off savedata off compress off exposed on
+connectornextid 1
+flags =  lock off model off template off footprint off xray off bypass off display off render off highlight off unload off savedata off compress on colordefault off exposed on
 outputsNamed3
 {
 2 "output1"
@@ -2357,7 +2715,7 @@ exprlanguage hscript
 end
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1/cusp_normals.chn"
+Content-Disposition: attachment; filename="hdaroot/cusp_normals.chn"
 Content-Type: text/plain
 
 {
@@ -2450,7 +2808,7 @@ Content-Type: text/plain
   }
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1/cusp_normals.parm"
+Content-Disposition: attachment; filename="hdaroot/cusp_normals.parm"
 Content-Type: text/plain
 
 {
@@ -2470,32 +2828,32 @@ angle	[ 8	locks=0 ]	(	[ angle	40 ] 	)
 }
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1/cusp_normals.userdata"
+Content-Disposition: attachment; filename="hdaroot/cusp_normals.userdata"
 Content-Type: text/plain
 
 {
 	"___Version___":{
 		"type":"string",
-		"value":"15.5.523"
+		"value":"16.0.557"
 	}
 }
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1/collect_free_points.init"
+Content-Disposition: attachment; filename="hdaroot/collect_free_points.init"
 Content-Type: text/plain
 
 type = group
 matchesdef = 0
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1/collect_free_points.def"
+Content-Disposition: attachment; filename="hdaroot/collect_free_points.def"
 Content-Type: text/plain
 
 sopflags sopflags = 
 comment ""
 position 2.38874 -3.38725
-connectornextid 30
-flags =  lock off model off template off footprint off xray off bypass off display off render off highlight on unload off savedata off compress off exposed on
+connectornextid 1
+flags =  lock off model off template off footprint off xray off bypass off display off render off highlight on unload off savedata off compress on colordefault off exposed on
 outputsNamed3
 {
 2 "output1"
@@ -2521,7 +2879,7 @@ exprlanguage hscript
 end
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1/collect_free_points.chn"
+Content-Disposition: attachment; filename="hdaroot/collect_free_points.chn"
 Content-Type: text/plain
 
 {
@@ -2552,7 +2910,7 @@ Content-Type: text/plain
   }
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1/collect_free_points.parm"
+Content-Disposition: attachment; filename="hdaroot/collect_free_points.parm"
 Content-Type: text/plain
 
 {
@@ -2627,32 +2985,32 @@ type	[ 0	locks=0 ]	(	1	)
 }
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1/collect_free_points.userdata"
+Content-Disposition: attachment; filename="hdaroot/collect_free_points.userdata"
 Content-Type: text/plain
 
 {
 	"___Version___":{
 		"type":"string",
-		"value":"15.5.523"
+		"value":"16.0.557"
 	}
 }
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1/delete_free_points.init"
+Content-Disposition: attachment; filename="hdaroot/delete_free_points.init"
 Content-Type: text/plain
 
 type = delete
 matchesdef = 0
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1/delete_free_points.def"
+Content-Disposition: attachment; filename="hdaroot/delete_free_points.def"
 Content-Type: text/plain
 
 sopflags sopflags = 
 comment ""
 position 2.43209 -5.38922
 connectornextid 2
-flags =  lock off model off template off footprint off xray off bypass off display off render off highlight off unload off savedata off compress off exposed on
+flags =  lock off model off template off footprint off xray off bypass off display off render off highlight off unload off savedata off compress on colordefault off exposed on
 outputsNamed3
 {
 1 "output1"
@@ -2678,7 +3036,7 @@ exprlanguage hscript
 end
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1/delete_free_points.chn"
+Content-Disposition: attachment; filename="hdaroot/delete_free_points.chn"
 Content-Type: text/plain
 
 {
@@ -2700,7 +3058,7 @@ Content-Type: text/plain
   }
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1/delete_free_points.parm"
+Content-Disposition: attachment; filename="hdaroot/delete_free_points.parm"
 Content-Type: text/plain
 
 {
@@ -2734,32 +3092,32 @@ keeppoints	[ 0	locks=0 ]	(	"off"	)
 }
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1/delete_free_points.userdata"
+Content-Disposition: attachment; filename="hdaroot/delete_free_points.userdata"
 Content-Type: text/plain
 
 {
 	"___Version___":{
 		"type":"string",
-		"value":"15.5.523"
+		"value":"16.0.557"
 	}
 }
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1/generate_unique_names.init"
+Content-Disposition: attachment; filename="hdaroot/generate_unique_names.init"
 Content-Type: text/plain
 
 type = python
 matchesdef = 0
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1/generate_unique_names.def"
+Content-Disposition: attachment; filename="hdaroot/generate_unique_names.def"
 Content-Type: text/plain
 
 sopflags sopflags = 
 comment ""
 position 4.42053 12.598
-connectornextid 86
-flags =  lock off model off template off footprint off xray off bypass off display off render off highlight off unload off savedata off compress off exposed on
+connectornextid 1
+flags =  lock off model off template off footprint off xray off bypass off display off render off highlight off unload off savedata off compress on colordefault off exposed on
 outputsNamed3
 {
 4 "output1"
@@ -2785,7 +3143,7 @@ exprlanguage hscript
 end
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1/generate_unique_names.parm"
+Content-Disposition: attachment; filename="hdaroot/generate_unique_names.parm"
 Content-Type: text/plain
 
 {
@@ -2872,32 +3230,32 @@ parent.parm('collectedpolygounsgroupname').set(groupName)"	)
 }
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1/generate_unique_names.userdata"
+Content-Disposition: attachment; filename="hdaroot/generate_unique_names.userdata"
 Content-Type: text/plain
 
 {
 	"___Version___":{
 		"type":"string",
-		"value":"15.5.523"
+		"value":"16.0.557"
 	}
 }
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1/delete_unneded_group.init"
+Content-Disposition: attachment; filename="hdaroot/delete_unneded_group.init"
 Content-Type: text/plain
 
 type = group
 matchesdef = 0
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1/delete_unneded_group.def"
+Content-Disposition: attachment; filename="hdaroot/delete_unneded_group.def"
 Content-Type: text/plain
 
 sopflags sopflags = 
 comment ""
 position 2.42647 -6.38659
-connectornextid 30
-flags =  lock off model off template off footprint off xray off bypass off display off render off highlight on unload off savedata off compress off exposed on
+connectornextid 1
+flags =  lock off model off template off footprint off xray off bypass off display off render off highlight on unload off savedata off compress on colordefault off exposed on
 outputsNamed3
 {
 2 "output1"
@@ -2923,7 +3281,7 @@ exprlanguage hscript
 end
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1/delete_unneded_group.chn"
+Content-Disposition: attachment; filename="hdaroot/delete_unneded_group.chn"
 Content-Type: text/plain
 
 {
@@ -2954,7 +3312,7 @@ Content-Type: text/plain
   }
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1/delete_unneded_group.parm"
+Content-Disposition: attachment; filename="hdaroot/delete_unneded_group.parm"
 Content-Type: text/plain
 
 {
@@ -3029,32 +3387,32 @@ type	[ 0	locks=0 ]	(	1	)
 }
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1/delete_unneded_group.userdata"
+Content-Disposition: attachment; filename="hdaroot/delete_unneded_group.userdata"
 Content-Type: text/plain
 
 {
 	"___Version___":{
 		"type":"string",
-		"value":"15.5.523"
+		"value":"16.0.557"
 	}
 }
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1/VHACDENGINE.init"
+Content-Disposition: attachment; filename="hdaroot/VHACDENGINE.init"
 Content-Type: text/plain
 
-type = nodeway::vhacdengine::1.0
+type = merge
 matchesdef = 0
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1/VHACDENGINE.def"
+Content-Disposition: attachment; filename="hdaroot/VHACDENGINE.def"
 Content-Type: text/plain
 
 sopflags sopflags = 
 comment ""
 position 0.426353 -1.39765
 connectornextid 2
-flags =  lock off model off template off footprint off xray off bypass off display off render off highlight off unload off savedata off compress off exposed on
+flags =  lock off model off template off footprint off xray off bypass off display off render off highlight off unload off savedata off compress on colordefault off exposed on
 outputsNamed3
 {
 1 "output1"
@@ -3080,189 +3438,23 @@ exprlanguage hscript
 end
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1/VHACDENGINE.spareparmdef"
+Content-Disposition: attachment; filename="hdaroot/VHACDENGINE.spareparmdef"
 Content-Type: text/plain
 
-    parm {
-	name	"titleupper"
-	baseparm
-	label	""
-	export	none
-    }
-    parm {
-	name	"title"
-	baseparm
-	label	""
-	export	none
-    }
-    parm {
-	name	"input0notconnected"
-	baseparm
-	label	""
-	export	none
-    }
-    parm {
-	name	"titlelower"
-	baseparm
-	label	""
-	export	none
-    }
     groupsimple {
 	name	"filtersection2"
 	label	"Filter"
 
-	parm {
-	    name	"allowparametersoverride"
-	    baseparm
-	    label	"Allow Parameters Override"
-	    joinnext
-	    export	none
-	}
-	parm {
-	    name	"allowparametersoverrideseparator"
-	    baseparm
-	    label	""
-	    export	none
-	}
-	parm {
-	    name	"polygonize"
-	    baseparm
-	    label	"Polygonize"
-	    joinnext
-	    export	none
-	}
-	parm {
-	    name	"polygonizeseparator"
-	    baseparm
-	    label	""
-	    export	none
-	}
 	groupsimple {
 	    name	"mainsection2"
 	    label	"Main"
 
-	    parm {
-		name	"decompositionmode"
-		baseparm
-		label	"Mode"
-		export	none
-	    }
-	    parm {
-		name	"resolution"
-		baseparm
-		label	"Resolution"
-		export	none
-	    }
-	    parm {
-		name	"depth"
-		baseparm
-		label	"Depth"
-		export	none
-	    }
-	    parm {
-		name	"concavity"
-		baseparm
-		label	"Concavity"
-		export	none
-	    }
-	    parm {
-		name	"planedownsampling"
-		baseparm
-		label	"Plane Downsampling"
-		export	none
-	    }
-	    parm {
-		name	"convexhulldownsampling"
-		baseparm
-		label	"ConvexHull Downsampling"
-		export	none
-	    }
-	    parm {
-		name	"alpha"
-		baseparm
-		label	"Alpha"
-		export	none
-	    }
-	    parm {
-		name	"beta"
-		baseparm
-		label	"Beta"
-		export	none
-	    }
-	    parm {
-		name	"gamma"
-		baseparm
-		label	"Gamma"
-		export	none
-	    }
-	    parm {
-		name	"maxtrianglecount"
-		baseparm
-		label	"Max Triangle Count"
-		export	none
-	    }
-	    parm {
-		name	"adaptivesampling"
-		baseparm
-		label	"Adaptive Sampling"
-		export	none
-	    }
-	    parm {
-		name	"normalizemesh"
-		baseparm
-		label	"Normalize Mesh"
-		joinnext
-		export	none
-	    }
-	    parm {
-		name	"normalizemeshseparator"
-		baseparm
-		label	""
-		export	none
-	    }
-	    parm {
-		name	"useopencl"
-		baseparm
-		label	"Use OpenCL"
-		export	none
-	    }
 	}
 
-	parm {
-	    name	"useopenclseparator"
-	    baseparm
-	    label	""
-	    export	none
-	}
 	groupsimple {
 	    name	"additionalsection2"
 	    label	"Additional"
 
-	    parm {
-		name	"adddescription"
-		baseparm
-		label	"Description"
-		joinnext
-		export	none
-	    }
-	    parm {
-		name	"adddescriptionseparator"
-		baseparm
-		label	""
-		export	none
-	    }
-	    parm {
-		name	"clean"
-		baseparm
-		label	"Clean"
-		export	none
-	    }
-	    parm {
-		name	"descriptionmessage"
-		baseparm
-		label	"Message"
-		export	none
-	    }
 	}
 
     }
@@ -3271,61 +3463,12 @@ Content-Type: text/plain
 	name	"debugsection2"
 	label	"Debug"
 
-	parm {
-	    name	"detailedreport"
-	    baseparm
-	    label	"Show Detailed Report"
-	    joinnext
-	    export	none
-	}
-	parm {
-	    name	"detailedreportseparator"
-	    baseparm
-	    label	""
-	    export	none
-	}
-	parm {
-	    name	"reportmode"
-	    baseparm
-	    label	"Mode"
-	    export	none
-	}
     }
 
     groupsimple {
 	name	"authorsection2"
 	label	"Author"
 
-	parm {
-	    name	"basedon"
-	    baseparm
-	    label	""
-	    export	none
-	}
-	parm {
-	    name	"blankspace"
-	    baseparm
-	    label	""
-	    export	none
-	}
-	parm {
-	    name	"author"
-	    baseparm
-	    label	""
-	    export	none
-	}
-	parm {
-	    name	"authoremailadress"
-	    baseparm
-	    label	""
-	    export	none
-	}
-	parm {
-	    name	"authortwitterlink"
-	    baseparm
-	    label	""
-	    export	none
-	}
     }
 
     parm {
@@ -3334,7 +3477,6 @@ Content-Type: text/plain
 	type	float
 	default	{ "0" }
 	range	{ 0 10 }
-	export	none
     }
     parm {
 	name	"collapsesmallpolygons"
@@ -3342,7 +3484,6 @@ Content-Type: text/plain
 	type	float
 	default	{ "0" }
 	range	{ 0 10 }
-	export	none
     }
     parm {
 	name	"pretriangulategeometry"
@@ -3350,11 +3491,129 @@ Content-Type: text/plain
 	type	float
 	default	{ "0" }
 	range	{ 0 10 }
-	export	none
+    }
+    parm {
+	name	"decompositionmode"
+	label	"decompositionmode"
+	type	float
+	default	{ "0" }
+	range	{ 0 10 }
+    }
+    parm {
+	name	"resolution"
+	label	"resolution"
+	type	float
+	default	{ "0" }
+	range	{ 0 10 }
+    }
+    parm {
+	name	"depth"
+	label	"depth"
+	type	float
+	default	{ "0" }
+	range	{ 0 10 }
+    }
+    parm {
+	name	"concavity"
+	label	"concavity"
+	type	float
+	default	{ "0" }
+	range	{ 0 10 }
+    }
+    parm {
+	name	"planedownsampling"
+	label	"planedownsampling"
+	type	float
+	default	{ "0" }
+	range	{ 0 10 }
+    }
+    parm {
+	name	"convexhulldownsampling"
+	label	"convexhulldownsampling"
+	type	float
+	default	{ "0" }
+	range	{ 0 10 }
+    }
+    parm {
+	name	"alpha"
+	label	"alpha"
+	type	float
+	default	{ "0" }
+	range	{ 0 10 }
+    }
+    parm {
+	name	"beta"
+	label	"beta"
+	type	float
+	default	{ "0" }
+	range	{ 0 10 }
+    }
+    parm {
+	name	"gamma"
+	label	"gamma"
+	type	float
+	default	{ "0" }
+	range	{ 0 10 }
+    }
+    parm {
+	name	"maxtrianglecount"
+	label	"maxtrianglecount"
+	type	float
+	default	{ "0" }
+	range	{ 0 10 }
+    }
+    parm {
+	name	"adaptivesampling"
+	label	"adaptivesampling"
+	type	float
+	default	{ "0" }
+	range	{ 0 10 }
+    }
+    parm {
+	name	"normalizemesh"
+	label	"normalizemesh"
+	type	float
+	default	{ "0" }
+	range	{ 0 10 }
+    }
+    parm {
+	name	"useopencl"
+	label	"useopencl"
+	type	float
+	default	{ "0" }
+	range	{ 0 10 }
+    }
+    parm {
+	name	"detailedreport"
+	label	"detailedreport"
+	type	float
+	default	{ "0" }
+	range	{ 0 10 }
+    }
+    parm {
+	name	"reportmode"
+	label	"reportmode"
+	type	float
+	default	{ "0" }
+	range	{ 0 10 }
+    }
+    parm {
+	name	"allowparametersoverride"
+	label	"allowparametersoverride"
+	type	float
+	default	{ "0" }
+	range	{ 0 10 }
+    }
+    parm {
+	name	"polygonize"
+	label	"polygonize"
+	type	float
+	default	{ "0" }
+	range	{ 0 10 }
     }
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1/VHACDENGINE.chn"
+Content-Disposition: attachment; filename="hdaroot/VHACDENGINE.chn"
 Content-Type: text/plain
 
 {
@@ -3475,21 +3734,19 @@ Content-Type: text/plain
   }
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1/VHACDENGINE.parm"
+Content-Disposition: attachment; filename="hdaroot/VHACDENGINE.parm"
 Content-Type: text/plain
 
 {
 version 0.8
-titleupper	[ 0	locks=0 ]	(	)
-title	[ 0	locks=0 ]	(	"V-HACD ENGINE v1.0"	)
-input0notconnected	[ 0	locks=0 ]	(	"SORRY... INPUT 0 NEEDS TO BE CONNECTED."	)
-titlelower	[ 0	locks=0 ]	(	)
-filtersection	[ 0	locks=0 ]	(	0	)
-allowparametersoverride	[ 8	locks=0 ]	(	[ allowparametersoverride	0 ] 	)
-allowparametersoverrideseparator	[ 0	locks=0 ]	(	)
-polygonize	[ 8	locks=0 ]	(	[ polygonize	0 ] 	)
-polygonizeseparator	[ 0	locks=0 ]	(	)
-mainsection	[ 0	locks=0 ]	(	0	)
+filtersection2	[ 0	locks=0 ]	(	0	)
+mainsection2	[ 0	locks=0 ]	(	0	)
+additionalsection2	[ 0	locks=0 ]	(	0	)
+debugsection2	[ 0	locks=0 ]	(	0	)
+authorsection2	[ 0	locks=0 ]	(	0	)
+collapsetolerance	[ 0	locks=0 ]	(	9.9999999999999995e-07	)
+collapsesmallpolygons	[ 8	locks=0 ]	(	1	)
+pretriangulategeometry	[ 8	locks=0 ]	(	1	)
 decompositionmode	[ 8	locks=0 ]	(	[ decompositionmode	0 ] 	)
 resolution	[ 8	locks=0 ]	(	[ resolution	100000 ] 	)
 depth	[ 8	locks=0 ]	(	[ depth	20 ] 	)
@@ -3502,63 +3759,40 @@ gamma	[ 8	locks=0 ]	(	[ gamma	0.00125 ] 	)
 maxtrianglecount	[ 8	locks=0 ]	(	[ maxtrianglecount	64 ] 	)
 adaptivesampling	[ 8	locks=0 ]	(	[ adaptivesampling	0.0001 ] 	)
 normalizemesh	[ 8	locks=0 ]	(	[ normalizemesh	0 ] 	)
-normalizemeshseparator	[ 0	locks=0 ]	(	)
 useopencl	[ 8	locks=0 ]	(	[ useopencl	1 ] 	)
-useopenclseparator	[ 0	locks=0 ]	(	)
-additionalsection	[ 0	locks=0 ]	(	0	)
-adddescription	[ 0	locks=0 ]	(	"on"	)
-adddescriptionseparator	[ 0	locks=0 ]	(	)
-clean	[ 0	locks=0 ]	(	0	)
-descriptionmessage	[ 0	locks=0 ]	(	"This is the heart of the V-HACD Generate.
-It uses compiled library developed by Khaled Mamou.
-For more information check node help."	)
-debugsection	[ 0	locks=0 ]	(	0	)
 detailedreport	[ 8	locks=0 ]	(	[ detailedreport	0 ] 	)
-detailedreportseparator	[ 0	locks=0 ]	(	)
 reportmode	[ 8	locks=0 ]	(	[ reportmode	0 ] 	)
-authorsection	[ 0	locks=0 ]	(	0	)
-basedon	[ 0	locks=0 ]	(	"Based On: https://github.com/kmammou/v-hacd"	)
-blankspace	[ 0	locks=0 ]	(	""	)
-author	[ 0	locks=0 ]	(	"Nodeway (2016)"	)
-authoremailadress	[ 0	locks=0 ]	(	"Email: nodeway@hotmail.com"	)
-authortwitterlink	[ 0	locks=0 ]	(	"Twitter: twitter.com/nodeway"	)
-filtersection2	[ 0	locks=0 ]	(	0	)
-mainsection2	[ 0	locks=0 ]	(	0	)
-additionalsection2	[ 0	locks=0 ]	(	0	)
-debugsection2	[ 0	locks=0 ]	(	0	)
-authorsection2	[ 0	locks=0 ]	(	0	)
-collapsetolerance	[ 0	locks=0 ]	(	9.9999999999999995e-07	)
-collapsesmallpolygons	[ 8	locks=0 ]	(	1	)
-pretriangulategeometry	[ 8	locks=0 ]	(	1	)
+allowparametersoverride	[ 8	locks=0 ]	(	[ allowparametersoverride	0 ] 	)
+polygonize	[ 8	locks=0 ]	(	[ polygonize	0 ] 	)
 }
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1/VHACDENGINE.userdata"
+Content-Disposition: attachment; filename="hdaroot/VHACDENGINE.userdata"
 Content-Type: text/plain
 
 {
 	"___Version___":{
 		"type":"string",
-		"value":"15.5.523"
+		"value":"16.0.557"
 	}
 }
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1/TEMP_FILTER.init"
+Content-Disposition: attachment; filename="hdaroot/TEMP_FILTER.init"
 Content-Type: text/plain
 
 type = python
 matchesdef = 0
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1/TEMP_FILTER.def"
+Content-Disposition: attachment; filename="hdaroot/TEMP_FILTER.def"
 Content-Type: text/plain
 
 sopflags sopflags = 
 comment ""
 position 4.43527 7.60965
-connectornextid 5
-flags =  lock off model off template off footprint off xray off bypass off display on render on highlight off unload off savedata off compress off exposed on
+connectornextid 1
+flags =  lock off model off template off footprint off xray off bypass off display on render on highlight off unload off savedata off compress on colordefault off exposed on
 outputsNamed3
 {
 4 "output1"
@@ -3584,7 +3818,7 @@ exprlanguage hscript
 end
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1/TEMP_FILTER.spareparmdef"
+Content-Disposition: attachment; filename="hdaroot/TEMP_FILTER.spareparmdef"
 Content-Type: text/plain
 
     groupsimple {
@@ -3597,7 +3831,6 @@ Content-Type: text/plain
 	    type	string
 	    default	{ "" }
 	    range	{ 0 1 }
-	    export	none
 	}
 	parm {
 	    name	"areaname"
@@ -3605,7 +3838,6 @@ Content-Type: text/plain
 	    type	string
 	    default	{ "" }
 	    range	{ 0 1 }
-	    export	none
 	}
     }
 
@@ -3617,7 +3849,7 @@ Content-Type: text/plain
     }
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1/TEMP_FILTER.parm"
+Content-Disposition: attachment; filename="hdaroot/TEMP_FILTER.parm"
 Content-Type: text/plain
 
 {
@@ -3682,18 +3914,18 @@ areaname	[ 0	locks=0	autoscope=1 ]	(	area	)
 }
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1/TEMP_FILTER.userdata"
+Content-Disposition: attachment; filename="hdaroot/TEMP_FILTER.userdata"
 Content-Type: text/plain
 
 {
 	"___Version___":{
 		"type":"string",
-		"value":"15.5.523"
+		"value":"16.0.557"
 	}
 }
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1.order"
+Content-Disposition: attachment; filename="hdaroot.order"
 Content-Type: text/plain
 
 21
@@ -3720,7 +3952,7 @@ VHACDENGINE
 TEMP_FILTER
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="vhacdgenerate1.net"
+Content-Disposition: attachment; filename="hdaroot.net"
 Content-Type: text/plain
 
 1

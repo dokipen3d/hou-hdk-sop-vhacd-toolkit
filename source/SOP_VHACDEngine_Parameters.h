@@ -58,9 +58,9 @@ DEFINES                                                            |
 #define SOP_VHACDENGINE_OP_ALLOWPRMOVERRIDE_SEPARATOR_SMALLNAME				"allowparametersoverrideseparator"
 #define SOP_VHACDENGINE_OP_ALLOWOVERRIDE_HELPTEXT							"Turn on/off possibility to override parameters with primitive attributes found on incoming geometry."
 
-#define SOP_VHACDENGINE_OP_POLYGONIZE_SMALLNAME								"polygonize"
-#define SOP_VHACDENGINE_OP_POLYGONIZE_BIGNAME								"Polygonize"
-#define SOP_VHACDENGINE_OP_POLYGONIZE_SEPARATOR_SMALLNAME					"polygonizeseparator"
+#define SOP_VHACDENGINE_OP_POLYGONIZE_SMALLNAME								"converttopolygons"
+#define SOP_VHACDENGINE_OP_POLYGONIZE_BIGNAME								"Convert To Polygons"
+#define SOP_VHACDENGINE_OP_POLYGONIZE_SEPARATOR_SMALLNAME					"converttopolygonsseparator"
 #define SOP_VHACDENGINE_OP_POLYGONIZE_HELPTEXT								"Convert all incoming geometry to polygons."
 
 #define SOP_VHACDENGINE_OP_DECOMPOSITIONMODE_SMALLNAME						"decompositionmode"
@@ -89,7 +89,7 @@ DEFINES                                                            |
 #define SOP_VHACDENGINE_OP_PLANEDOWNSAMPLING_DEFAULT						4
 #define SOP_VHACDENGINE_OP_PLANEDOWNSAMPLING_HELPTEXT						"Controls the granularity of the search for the 'best' clipping plane."
 #define SOP_VHACDENGINE_OP_CONVEXHULLDOWNSAMPLING_SMALLNAME					"convexhulldownsampling"
-#define SOP_VHACDENGINE_OP_CONVEXHULLDOWNSAMPLING_BIGNAME					"ConvexHull Downsampling"
+#define SOP_VHACDENGINE_OP_CONVEXHULLDOWNSAMPLING_BIGNAME					"Convex Hull Downsampling"
 #define SOP_VHACDENGINE_OP_CONVEXHULLDOWNSAMPLING_RANGEMIN					1
 #define SOP_VHACDENGINE_OP_CONVEXHULLDOWNSAMPLING_RANGEMAX					16
 #define SOP_VHACDENGINE_OP_CONVEXHULLDOWNSAMPLING_DEFAULT					4
@@ -126,11 +126,11 @@ DEFINES                                                            |
 #define SOP_VHACDENGINE_OP_OPENCL_SEPARATOR_SMALLNAME						"useopenclseparator"
 #define SOP_VHACDENGINE_OP_OPENCL_HELPTEXT									"Enable/disable OpenCL acceleration."
 
-#define SOP_VHACDENGINE_OP_REPORTTOCONSOLE_SMALLNAME						"detailedreport"
+#define SOP_VHACDENGINE_OP_REPORTTOCONSOLE_SMALLNAME						"showprocessreport"
 #define SOP_VHACDENGINE_OP_REPORTTOCONSOLE_BIGNAME							"Show Detailed Report"
-#define SOP_VHACDENGINE_OP_REPORTTOCONSOLESEPARATOR_SMALLNAME				"detailedreportseparator"
+#define SOP_VHACDENGINE_OP_REPORTTOCONSOLESEPARATOR_SMALLNAME				"showprocessreportseparator"
 #define SOP_VHACDENGINE_OP_REPORTTOCONSOLE_HELPTEXT							"Prints report in console window, which is more detailed than the information it sends to status bar."
-#define SOP_VHACDENGINE_OP_REPORTMODE_SMALLNAME								"reportmode"
+#define SOP_VHACDENGINE_OP_REPORTMODE_SMALLNAME								"processreportmode"
 #define SOP_VHACDENGINE_OP_REPORTMODE_BIGNAME								"Mode"
 #define SOP_VHACDENGINE_OP_REPORTMODE_HELPTEXT								"How detailed report will be printed."
 
@@ -146,8 +146,8 @@ DECLARE_SOP_Namespace_Start()
 		DECLARE_Custom_Toggle_OFF_Join_PRM(SOP_VHACDENGINE_OP_ALLOWPRMOVERRIDE_SMALLNAME, SOP_VHACDENGINE_OP_ALLOWPRMOVERRIDE_BIGNAME, 0, SOP_VHACDENGINE_OP_ALLOWOVERRIDE_HELPTEXT, allowParametersOverride)
 		DECLARE_Custom_Separator_PRM(SOP_VHACDENGINE_OP_ALLOWPRMOVERRIDE_SEPARATOR_SMALLNAME, allowParametersOverride)
 
-		DECLARE_Custom_Toggle_OFF_Join_PRM(SOP_VHACDENGINE_OP_POLYGONIZE_SMALLNAME, SOP_VHACDENGINE_OP_POLYGONIZE_BIGNAME, 0, SOP_VHACDENGINE_OP_POLYGONIZE_HELPTEXT, polygonize)
-		DECLARE_Custom_Separator_PRM(SOP_VHACDENGINE_OP_POLYGONIZE_SEPARATOR_SMALLNAME, polygonize)
+		DECLARE_Custom_Toggle_OFF_Join_PRM(SOP_VHACDENGINE_OP_POLYGONIZE_SMALLNAME, SOP_VHACDENGINE_OP_POLYGONIZE_BIGNAME, 0, SOP_VHACDENGINE_OP_POLYGONIZE_HELPTEXT, convertToPolygons)
+		DECLARE_Custom_Separator_PRM(SOP_VHACDENGINE_OP_POLYGONIZE_SEPARATOR_SMALLNAME, convertToPolygons)
 
 		__DECLARE_Main_Section_PRM(14)
 		static auto		modeChoiceMenuParm_Name = PRM_Name(SOP_VHACDENGINE_OP_DECOMPOSITIONMODE_SMALLNAME, SOP_VHACDENGINE_OP_DECOMPOSITIONMODE_BIGNAME);
@@ -180,15 +180,15 @@ DECLARE_SOP_Namespace_Start()
 		DECLARE_DescriptionPRM(SOP_Operator)
 
 		__DECLARE_Debug_Section_PRM(3)
-		DECLARE_Custom_Toggle_with_Separator_PRM(SOP_VHACDENGINE_OP_REPORTTOCONSOLE_SMALLNAME, SOP_VHACDENGINE_OP_REPORTTOCONSOLE_BIGNAME, SOP_VHACDENGINE_OP_REPORTTOCONSOLESEPARATOR_SMALLNAME, 0, SOP_VHACDENGINE_OP_REPORTTOCONSOLE_HELPTEXT, consoleReport)
+		DECLARE_Custom_Toggle_with_Separator_PRM(SOP_VHACDENGINE_OP_REPORTTOCONSOLE_SMALLNAME, SOP_VHACDENGINE_OP_REPORTTOCONSOLE_BIGNAME, SOP_VHACDENGINE_OP_REPORTTOCONSOLESEPARATOR_SMALLNAME, 0, SOP_VHACDENGINE_OP_REPORTTOCONSOLE_HELPTEXT, showProcessReport)
 
 		static auto		reportModeChoiceMenuParm_Name = PRM_Name(SOP_VHACDENGINE_OP_REPORTMODE_SMALLNAME, SOP_VHACDENGINE_OP_REPORTMODE_BIGNAME);
 		static auto		reportModeChoiceMenuParm_Range = PRM_Range(PRM_RANGE_RESTRICTED, 0, PRM_RANGE_RESTRICTED, 2);
 		static PRM_Name reportModeChoiceMenuParm_Choices[] =
 		{
-			PRM_Name("0", "Full"),
+			PRM_Name("0", "Progress Only"),
 			PRM_Name("1", "Details Only"),
-			PRM_Name("2", "Progress Only"),
+			PRM_Name("2", "Full"),						
 			PRM_Name(0)
 		};
 		static auto		reportModeChoiceMenuParm_ChoiceList = PRM_ChoiceList(PRM_CHOICELIST_SINGLE, reportModeChoiceMenuParm_Choices);

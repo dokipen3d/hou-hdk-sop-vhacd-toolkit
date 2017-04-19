@@ -113,8 +113,8 @@ PARAMETERLIST_Start(SOP_Operator)
 	UI::filterSectionSwitcher_Parameter,
 	UI::allowParametersOverrideToggle_Parameter,
 	UI::allowParametersOverrideSeparator_Parameter,
-	UI::polygonizeToggle_Parameter,
-	UI::polygonizeSeparator_Parameter,
+	UI::convertToPolygonsToggle_Parameter,
+	UI::convertToPolygonsSeparator_Parameter,
 
 	UI::mainSectionSwitcher_Parameter,
 	UI::modeChoiceMenu_Parameter,
@@ -137,8 +137,8 @@ PARAMETERLIST_Start(SOP_Operator)
 	PARAMETERLIST_DescriptionPRM(UI),
 
 	UI::debugSectionSwitcher_Parameter,
-	UI::consoleReportToggle_Parameter,
-	UI::consoleReportSeparator_Parameter,
+	UI::showProcessReportToggle_Parameter,
+	UI::showProcessReportSeparator_Parameter,
 	UI::reportModeChoiceMenu_Parameter,
 
 // TODO: Do I still need this?
@@ -173,7 +173,7 @@ SOP_Operator::updateParmsFlags()
 	if (is0Connected)
 	{
 		// set output report state
-		PRM_ACCESS::Get::IntPRM(this, _currentShowReportValueState, UI::consoleReportToggle_Parameter, currentTime);
+		PRM_ACCESS::Get::IntPRM(this, _currentShowReportValueState, UI::showProcessReportToggle_Parameter, currentTime);
 		visibilityState = this->_currentShowReportValueState ? 1 : 0;
 		changed |= setVisibleState(UI::reportModeChoiceMenu_Parameter.getToken(), visibilityState);
 	}
@@ -344,7 +344,7 @@ SOP_Operator::Setup_VHACD(GU_Detail* geometry, fpreal time)
 
 	// debug parameters
 #define VHACD_ReportModeHelper(showmsg, showoverallprogress, showstageprogress, showoperationprogress) this->_loggerVHACD._showMsg = showmsg; this->_callbackVHACD._showOverallProgress = showoverallprogress; this->_callbackVHACD._showStageProgress = showstageprogress; this->_callbackVHACD._showOperationProgress = showoperationprogress;	
-	PRM_ACCESS::Get::IntPRM(this, _currentShowReportValueState, UI::consoleReportToggle_Parameter, time);
+	PRM_ACCESS::Get::IntPRM(this, _currentShowReportValueState, UI::showProcessReportToggle_Parameter, time);
 	if (this->_currentShowReportValueState)
 	{		
 		PRM_ACCESS::Get::IntPRM(this, _currentReportModeChoiceValueState, UI::reportModeChoiceMenu_Parameter, time);
@@ -431,8 +431,8 @@ SOP_Operator::Generate_ConvexHulls(GU_Detail* geometry, UT_AutoInterrupt progres
 	// get interface
 	_interfaceVHACD = VHACD::CreateVHACD();
 
-	bool success = _interfaceVHACD->Compute(&_points[0], 3, _points.size() / 3, &_triangles[0], 3, _triangles.size() / 3, _parametersVHACD);
-	if (success && _interfaceVHACD->GetNConvexHulls())
+	bool success = _interfaceVHACD->Compute(&_points[0], 3, (unsigned int)_points.size() / 3, &_triangles[0], 3, (unsigned int)_triangles.size() / 3, _parametersVHACD);
+	if (success)
 	{
 		auto hullCount = _interfaceVHACD->GetNConvexHulls();
 
@@ -455,7 +455,7 @@ SOP_Operator::Generate_ConvexHulls(GU_Detail* geometry, UT_AutoInterrupt progres
 
 			success = Draw_ConvexHull(geometry, id, currentHull, progress);
 			if (!success && error() > UT_ERROR_NONE) return error();
-		}
+		}		
 	}
 	else
 	{
@@ -545,7 +545,7 @@ SOP_Operator::cookMySop(OP_Context& context)
 			
 			// do we want only polygons or do we try to convert anything to polygons?
 			//Get_IntPRM(_polygonizeValueState, ____sop_ui::polygonizeToggle_Parameter, currentTime);
-			PRM_ACCESS::Get::IntPRM(this, _polygonizeValueState, UI::polygonizeToggle_Parameter, currentTime);
+			PRM_ACCESS::Get::IntPRM(this, _polygonizeValueState, UI::convertToPolygonsToggle_Parameter, currentTime);
 			if (_polygonizeValueState)
 			{
 				GEO_ConvertParms parms;
