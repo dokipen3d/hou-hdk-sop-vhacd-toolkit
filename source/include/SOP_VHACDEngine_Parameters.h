@@ -39,11 +39,11 @@ INCLUDES                                                           |
 ----------------------------------------------------------------- */
 
 #include "SOP_VHACDEngine_Operator.h"
-#include "../../hou-hdk-common/source/SOP/Macros_FloatPRM.h"
-#include "../../hou-hdk-common/source/SOP/Macros_IntegerPRM.h"
-#include "../../hou-hdk-common/source/SOP/Macros_SeparatorPRM.h"
-#include "../../hou-hdk-common/source/SOP/Macros_SwitcherPRM.h"
-#include "../../hou-hdk-common/source/SOP/Macros_TogglePRM.h"
+#include <SOP/Macros_FloatPRM.h>
+#include <SOP/Macros_IntegerPRM.h>
+#include <SOP/Macros_SeparatorPRM.h>
+#include <SOP/Macros_SwitcherPRM.h>
+#include <SOP/Macros_TogglePRM.h>
 
 /* -----------------------------------------------------------------
 DEFINES                                                            |

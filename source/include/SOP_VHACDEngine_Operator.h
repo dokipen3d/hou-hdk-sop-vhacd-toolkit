@@ -43,12 +43,12 @@ INCLUDES                                                           |
 #include <string>
 #include <iomanip>
 
-#include "../3rdParty/include/VHACD.h"
+#include <VHACD.h>
 
-#include "../../hou-hdk-common/source/SOP/Macros_Namespace.h"
-#include "../../hou-hdk-common/source/SOP/Macros_CookMySop.h"
-#include "../../hou-hdk-common/source/SOP/Macros_DescriptionPRM.h"
-#include "../../hou-hdk-common/source/SOP/Macros_UpdateParmsFlags.h"
+#include <SOP/Macros_Namespace.h>
+#include <SOP/Macros_CookMySop.h>
+#include <SOP/Macros_DescriptionPRM.h>
+#include <SOP/Macros_UpdateParmsFlags.h>
 
 /* -----------------------------------------------------------------
 FORWARDS                                                           |

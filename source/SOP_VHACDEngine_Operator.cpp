@@ -52,13 +52,13 @@ INCLUDES                                                           |
 #include <OP/OP_AutoLockInputs.h>
 
 #include "SOP_VHACDEngine_Parameters.h"
-#include "../../hou-hdk-common/source/SOP/Macros_ParameterList.h"
-#include "../../hou-hdk-common/source/Utility_GeometryTesting.h"
-#include "../../hou-hdk-common/source/Utility_AttributeAccessing.h"
-#include "../../hou-hdk-common/source/Utility_ParameterAccessing.h"
+#include <SOP/Macros_ParameterList.h>
+#include <Utility_GeometryTesting.h>
+#include <Utility_AttributeAccessing.h>
+#include <Utility_ParameterAccessing.h>
 
-#include "../../hou-hdk-common/source/Enum_NodeErrorLevel.h"
-#include "../../hou-hdk-common/source/Enum_AttributeClass.h"
+#include <Enum_NodeErrorLevel.h>
+#include <Enum_AttributeClass.h>
 
 /* -----------------------------------------------------------------
 DEFINES                                                            |
