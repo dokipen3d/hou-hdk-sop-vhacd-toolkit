@@ -4,14 +4,6 @@
 
 	IMPORTANT! ------------------------------------------
 	* Macros starting and ending with '____' shouldn't be used anywhere outside of this file.
-	* External macros used:
-		DECLARE_SOP_Namespace_Start()		- comes from "Macros_Namespace.h"
-		DECLARE_SOP_Namespace_End			- comes from "Macros_Namespace.h"	
-
-		DECLARE_DescriptionPRM_Callback()	- comes from "Macros_DescriptionPRM.h"
-		DECLARE_UpdateParmsFlags()			- comes from "Macros_UpdateParmsFlags.h"
-		DECLARE_Switch_VisibilityState()	- comes from "Macros_UpdateParmsFlags.h"
-		DECLARE_CookMySop()					- comes from "Macros_CookMySop.h"
 	-----------------------------------------------------
 
 	Author: 	SNOWFLAKE
@@ -33,18 +25,25 @@
 
 #pragma once
 
+#ifndef ____sop_vhacdengine_h____
+#define ____sop_vhacdengine_h____
+
 /* -----------------------------------------------------------------
 INCLUDES                                                           |
 ----------------------------------------------------------------- */
 
+// SESI
 #include <SOP/SOP_Node.h>
 
+// std
 #include <vector>
 #include <string>
 #include <iomanip>
 
+// 3rdParty
 #include <VHACD.h>
 
+// hou-hdk-common
 #include <SOP/Macros_Namespace.h>
 #include <SOP/Macros_CookMySop.h>
 #include <SOP/Macros_DescriptionPRM.h>
@@ -62,58 +61,55 @@ DECLARATION                                                        |
 
 DECLARE_SOP_Namespace_Start()
 
-	class SOP_VHACDEngine_Logger : public VHACD::IVHACD::IUserLogger
+	class VHACDEngine_Logger : public VHACD::IVHACD::IUserLogger
 	{
 	public:
-		SOP_VHACDEngine_Logger();
-		~SOP_VHACDEngine_Logger() override;
+		VHACDEngine_Logger();
+		~VHACDEngine_Logger() override;
 
 		void						Log(const char* const msg) override;
 
-		bool						_showMsg;
+		bool						showMsg;
 	};
 
-	class SOP_VHACDEngine_Callback : public VHACD::IVHACD::IUserCallback
+	class VHACDEngine_Callback : public VHACD::IVHACD::IUserCallback
 	{
 	public:
-		SOP_VHACDEngine_Callback();
-		~SOP_VHACDEngine_Callback() override;
+		VHACDEngine_Callback();
+		~VHACDEngine_Callback() override;
 
 		void						Update(const double overallProgress, const double stageProgress, const double operationProgress, const char* const stage, const char* const operation) override;
 
-		bool						_showOverallProgress;
-		bool						_showStageProgress;
-		bool						_showOperationProgress;
+		bool						showOverallProgress;
+		bool						showStageProgress;
+		bool						showOperationProgress;
 	};
 
-	class SOP_VHACDEngine_Operator : public SOP_Node
+	class SOP_VHACDEngine : public SOP_Node
 	{
 		DECLARE_CookMySop()
 		DECLARE_DescriptionPRM_Callback()		
 		DECLARE_UpdateParmsFlags()		
 
-		// TODO: Do I still need this?
-		DECLARE_Switch_VisibilityState()
-
 	protected:
-		SOP_VHACDEngine_Operator(OP_Network* network, const char* name, OP_Operator* op);
-		virtual ~SOP_VHACDEngine_Operator() override;
+		SOP_VHACDEngine(OP_Network* network, const char* name, OP_Operator* op);
+		virtual ~SOP_VHACDEngine() override;
 
 	public:
-		static OP_Node*				CreateOperator(OP_Network* network, const char* name, OP_Operator* op);
+		static OP_Node*				CreateMe(OP_Network* network, const char* name, OP_Operator* op);
 
 		static PRM_Template parametersList[];
 
 	private:
 		virtual const char*			inputLabel(unsigned input) const override;
 
-		exint						Pull_IntPRM(GU_Detail* geometry, const PRM_Template& parameter, bool interfaceonly = false, fpreal time = 0);
-		fpreal						Pull_FloatPRM(GU_Detail* geometry, const PRM_Template& parameter, bool interfaceonly = false, fpreal time = 0);
-		bool						Prepare_Geometry(GU_Detail* geometry, UT_AutoInterrupt progress);
-		void						Setup_VHACD(GU_Detail* geometry, fpreal time);
-		bool						Prepare_DataForVHACD(GU_Detail* geometry, UT_AutoInterrupt progress, fpreal time);
-		OP_ERROR					Generate_ConvexHulls(GU_Detail* geometry, UT_AutoInterrupt progress);
-		bool						Draw_ConvexHull(GU_Detail* geometry, int hullid, VHACD::IVHACD::ConvexHull hull, UT_AutoInterrupt progress);
+		exint						PullIntPRM(GU_Detail* geometry, const PRM_Template& parameter, bool interfaceonly = false, fpreal time = 0);
+		fpreal						PullFloatPRM(GU_Detail* geometry, const PRM_Template& parameter, bool interfaceonly = false, fpreal time = 0);
+		bool						PrepareGeometry(GU_Detail* geometry, UT_AutoInterrupt progress);
+		void						SetupVHACD(GU_Detail* geometry, fpreal time);
+		bool						PrepareDataForVHACD(GU_Detail* geometry, UT_AutoInterrupt progress, fpreal time);
+		OP_ERROR					GenerateConvexHulls(GU_Detail* geometry, UT_AutoInterrupt progress);
+		bool						DrawConvexHull(GU_Detail* geometry, int hullid, VHACD::IVHACD::ConvexHull hull, UT_AutoInterrupt progress);
 			
 		VHACD::IVHACD::Parameters	_parametersVHACD;
 		VHACD::IVHACD*				_interfaceVHACD;
@@ -123,13 +119,14 @@ DECLARE_SOP_Namespace_Start()
 		GA_RWAttributeRef			_positionReference;
 		GA_RWHandleV3				_positionHandle;
 
-		bool						_currentAllowParametersOverrideValueState;
-		bool						_polygonizeValueState;
+		bool						_currentAllowParametersOverrideValueState;		
 		bool						_currentShowReportValueState;
 		int							_currentReportModeChoiceValueState;	
 
-		SOP_VHACDEngine_Logger		_loggerVHACD;
-		SOP_VHACDEngine_Callback	_callbackVHACD;
+		VHACDEngine_Logger			_loggerVHACD;
+		VHACDEngine_Callback		_callbackVHACD;
 	};
 
 DECLARE_SOP_Namespace_End
+
+#endif // !____sop_vhacdengine_h____

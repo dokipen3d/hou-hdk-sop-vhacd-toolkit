@@ -23,7 +23,7 @@
 DEFAULTS                                                           |
 ------------------------------------------------------------------]]
 
-Project(SOP_VHACD)
+Project(SOP_VHACDEngine)
 
 # set available compile configuration types
 set(CMAKE_CONFIGURATION_TYPES "Debug;Release;RelWithDebInfo")

@@ -3,8 +3,6 @@
 
 	IMPORTANT! ------------------------------------------
 	* Macros starting and ending with '____' shouldn't be used anywhere outside of this file.
-	* External macros used:
-		GET_SOP_Namespace() - comes from "Macros_Namespace.h"
 	-----------------------------------------------------
 
 	Author: 	SNOWFLAKE
@@ -28,16 +26,18 @@
 INCLUDES                                                           |
 ----------------------------------------------------------------- */
 
+// SESI
 #include <UT/UT_DSOVersion.h>
 #include <OP/OP_OperatorTable.h>
 
-#include "SOP_VHACDEngine_Operator.h"
+// this
+#include "SOP_VHACDEngine.h"
 
 /* -----------------------------------------------------------------
 DEFINES                                                            |
 ----------------------------------------------------------------- */
 
-#define SOP_Operator		GET_SOP_Namespace()::SOP_VHACDEngine_Operator
+#define SOP_Operator		GET_SOP_Namespace()::SOP_VHACDEngine
 #define SOP_SmallName		"vhacd::engine::1.0"
 #define SOP_BigName			"Engine (v-hacd)"
 #define SOP_TabMenuPath		"Toolkit/Convex Decomposition"
@@ -46,8 +46,8 @@ DEFINES                                                            |
 REGISTRATION                                                       |
 ----------------------------------------------------------------- */
 
-auto newSopOperator(OP_OperatorTable* table)
--> void
+void 
+newSopOperator(OP_OperatorTable* table)
 {
 	auto success = false;
 
@@ -55,14 +55,14 @@ auto newSopOperator(OP_OperatorTable* table)
 	(
 		SOP_SmallName,
 		SOP_BigName,
-		SOP_Operator::CreateOperator,
+		SOP_Operator::CreateMe,
 		SOP_Operator::parametersList,
-		1, // min inputs 
-		1, // max inputs
+		1,								// min inputs 
+		1,								// max inputs
 		0,
-		OP_FLAG_GENERATOR, // type of node
+		0,								// type of node OP_FLAG_GENERATOR (BE CAREFUL WITH THIS LITTLE FUCKER)
 		0,
-		1, // outputs count
+		1,								// outputs count
 		SOP_TabMenuPath
 	);
 

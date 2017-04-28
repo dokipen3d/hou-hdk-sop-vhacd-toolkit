@@ -2,6 +2,11 @@
 * Requires [hou-hdk-common](https://github.com/sebastianswann/hou-hdk-common) repository
 * Read other requiments on mentioned above repository
 
+**Currently supported platforms:**
+- [x] Windows
+- [ ] Apple
+- [ ] Linux
+
 **TODO:**
 - [ ] update HDAs
 - [ ] update Python scripts
