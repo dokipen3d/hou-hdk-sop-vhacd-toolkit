@@ -43,7 +43,7 @@ HELPERS                                                            |
 
 Macro(HDK_MODULE_GET_3RDPARTY_STATIC_LIBS _dir)
 	File(GLOB_RECURSE ____module_3rdparty_static_libs____
-		"${_dir}/lib/*.lib"
+		"${_dir}/*.lib"
 	)
 EndMacro()
 

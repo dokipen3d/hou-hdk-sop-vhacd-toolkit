@@ -38,13 +38,13 @@ INCLUDES                                                           |
 #include <OP/OP_AutoLockInputs.h>
 
 // hou-hdk-common
-#include <SOP/Macros_ParameterList.h>
-#include <Utility_GeometryTesting.h>
-#include <Utility_AttributeAccessing.h>
-#include <Utility_ParameterAccessing.h>
+#include <Macros/ParameterList.h>
+#include <Utility/GeometryTesting.h>
+#include <Utility/AttributeAccessing.h>
+#include <Utility/ParameterAccessing.h>
 
-#include <Enum_NodeErrorLevel.h>
-#include <Enum_AttributeClass.h>
+#include <Enums/NodeErrorLevel.h>
+#include <Enums/AttributeClass.h>
 
 // this
 #include "Parameters.h"
@@ -121,8 +121,7 @@ PARAMETERLIST_Start(SOP_Operator)
 	UI::normalizeMeshToggle_Parameter,
 	UI::normalizeMeshSeparator_Parameter,
 	UI::useOpenCLToggle_Parameter,
-	UI::useOpenCLSeparator_Parameter,
-
+	UI::useOpenCLSeparator_Parameter,	
 	UI::additionalSectionSwitcher_Parameter,
 	PARAMETERLIST_DescriptionPRM(UI),
 
@@ -157,6 +156,8 @@ SOP_Operator::updateParmsFlags()
 	return changed;
 }
 
+IMPLEMENT_DescriptionPRM_Callback(SOP_Operator, UI)
+
 /* -----------------------------------------------------------------
 OPERATOR INITIALIZATION                                            |
 ----------------------------------------------------------------- */
@@ -169,8 +170,6 @@ SOP_Operator::CreateMe(OP_Network* network, const char* name, OP_Operator* op) {
 
 const char* 
 SOP_Operator::inputLabel(unsigned input) const { return SOP_InputName_0; }
-
-IMPLEMENT_DescriptionPRM_Callback(SOP_Operator, UI)
 
 /* -----------------------------------------------------------------
 HELPERS                                                            |
@@ -242,7 +241,7 @@ SOP_Operator::PrepareGeometry(GU_Detail* geometry, UT_AutoInterrupt progress)
 		// make sure we can escape the loop
 		if (progress.wasInterrupted())
 		{
-			addError(SOP_MESSAGE, "Operation interrupted");
+			addError(SOP_ErrorCodes::SOP_MESSAGE, "Operation interrupted");
 			return false;
 		}
 
@@ -254,7 +253,7 @@ SOP_Operator::PrepareGeometry(GU_Detail* geometry, UT_AutoInterrupt progress)
 			auto currentVertexCount = currentPoly->getVertexRange().getEntries();
 			if (currentVertexCount > 3)
 			{
-				addError(SOP_MESSAGE, "Internal triangulation failure. Polygons with 4 or more vertices detected.");
+				addError(SOP_ErrorCodes::SOP_MESSAGE, "Internal triangulation failure. Polygons with 4 or more vertices detected.");
 				return false;
 			}
 
@@ -285,7 +284,7 @@ SOP_Operator::PrepareGeometry(GU_Detail* geometry, UT_AutoInterrupt progress)
 
 	// is there anything left after preparation?		
 	bool success = GDP_TEST::IsEnoughPrimitives(this, geometry, HOU_NODE_ERROR_LEVEL::Warning, 1, UT_String("After removing zero area and open polygons there are no other primitives left."));
-	if ((success && error() >= UT_ERROR_WARNING) || (!success && error() >= UT_ERROR_NONE)) return false;
+	if ((success && error() >= UT_ErrorSeverity::UT_ERROR_WARNING) || (!success && error() >= UT_ErrorSeverity::UT_ERROR_NONE)) return false;
 
 	return	GDP_TEST::IsEnoughPoints(this, gdp, HOU_NODE_ERROR_LEVEL::Warning, 4, UT_String("Not enough points to create hull."));	
 }
@@ -296,18 +295,18 @@ SOP_Operator::SetupVHACD(GU_Detail* geometry, fpreal time)
 	PRM_ACCESS::Get::IntPRM(this, _currentAllowParametersOverrideValueState, UI::allowParametersOverrideToggle_Parameter, time);
 
 	// main parameters
-	_parametersVHACD.m_mode						= PullIntPRM(geometry, UI::modeChoiceMenu_Parameter, !this->_currentAllowParametersOverrideValueState, time);
-	_parametersVHACD.m_resolution				= PullIntPRM(geometry, UI::resolutionInteger_Parameter, !this->_currentAllowParametersOverrideValueState, time);
-	_parametersVHACD.m_depth					= PullIntPRM(geometry, UI::depthInteger_Parameter, !this->_currentAllowParametersOverrideValueState, time);
-	_parametersVHACD.m_concavity				= PullFloatPRM(geometry, UI::concavityFloat_Parameter, !this->_currentAllowParametersOverrideValueState, time);
-	_parametersVHACD.m_planeDownsampling		= PullIntPRM(geometry, UI::planeDownsamplingInteger_Parameter, !this->_currentAllowParametersOverrideValueState, time);
-	_parametersVHACD.m_convexhullDownsampling	= PullIntPRM(geometry, UI::convexHullDownsamplingInteger_Parameter, !this->_currentAllowParametersOverrideValueState, time);
-	_parametersVHACD.m_alpha					= PullFloatPRM(geometry, UI::alphaFloat_Parameter, !this->_currentAllowParametersOverrideValueState, time);
-	_parametersVHACD.m_beta						= PullFloatPRM(geometry, UI::betaFloat_Parameter, !this->_currentAllowParametersOverrideValueState, time);
-	_parametersVHACD.m_gamma					= PullFloatPRM(geometry, UI::gammaFloat_Parameter, !this->_currentAllowParametersOverrideValueState, time);
-	_parametersVHACD.m_maxNumVerticesPerCH		= PullIntPRM(geometry, UI::maxTriangleCountInteger_Parameter, !this->_currentAllowParametersOverrideValueState, time);
-	_parametersVHACD.m_minVolumePerCH			= PullFloatPRM(geometry, UI::adaptiveSamplingFloat_Parameter, !this->_currentAllowParametersOverrideValueState, time);
-	_parametersVHACD.m_pca						= PullIntPRM(geometry, UI::normalizeMeshToggle_Parameter, !this->_currentAllowParametersOverrideValueState, time);
+	this->_parametersVHACD.m_mode					= PullIntPRM(geometry, UI::modeChoiceMenu_Parameter, !this->_currentAllowParametersOverrideValueState, time);
+	this->_parametersVHACD.m_resolution				= PullIntPRM(geometry, UI::resolutionInteger_Parameter, !this->_currentAllowParametersOverrideValueState, time);
+	this->_parametersVHACD.m_depth					= PullIntPRM(geometry, UI::depthInteger_Parameter, !this->_currentAllowParametersOverrideValueState, time);
+	this->_parametersVHACD.m_concavity				= PullFloatPRM(geometry, UI::concavityFloat_Parameter, !this->_currentAllowParametersOverrideValueState, time);
+	this->_parametersVHACD.m_planeDownsampling		= PullIntPRM(geometry, UI::planeDownsamplingInteger_Parameter, !this->_currentAllowParametersOverrideValueState, time);
+	this->_parametersVHACD.m_convexhullDownsampling	= PullIntPRM(geometry, UI::convexHullDownsamplingInteger_Parameter, !this->_currentAllowParametersOverrideValueState, time);
+	this->_parametersVHACD.m_alpha					= PullFloatPRM(geometry, UI::alphaFloat_Parameter, !this->_currentAllowParametersOverrideValueState, time);
+	this->_parametersVHACD.m_beta					= PullFloatPRM(geometry, UI::betaFloat_Parameter, !this->_currentAllowParametersOverrideValueState, time);
+	this->_parametersVHACD.m_gamma					= PullFloatPRM(geometry, UI::gammaFloat_Parameter, !this->_currentAllowParametersOverrideValueState, time);
+	this->_parametersVHACD.m_maxNumVerticesPerCH	= PullIntPRM(geometry, UI::maxTriangleCountInteger_Parameter, !this->_currentAllowParametersOverrideValueState, time);
+	this->_parametersVHACD.m_minVolumePerCH			= PullFloatPRM(geometry, UI::adaptiveSamplingFloat_Parameter, !this->_currentAllowParametersOverrideValueState, time);
+	this->_parametersVHACD.m_pca					= PullIntPRM(geometry, UI::normalizeMeshToggle_Parameter, !this->_currentAllowParametersOverrideValueState, time);
 	
 	PRM_ACCESS::Get::IntPRM(this, _parametersVHACD.m_oclAcceleration, UI::useOpenCLToggle_Parameter, time);
 
@@ -319,15 +318,15 @@ SOP_Operator::SetupVHACD(GU_Detail* geometry, fpreal time)
 		PRM_ACCESS::Get::IntPRM(this, _currentReportModeChoiceValueState, UI::reportModeChoiceMenu_Parameter, time);
 		switch (this->_currentReportModeChoiceValueState)
 		{
-		case 1:
-		{ VHACD_ReportModeHelper(true, false, false, false) }
-		break;
-		case 2:
-		{ VHACD_ReportModeHelper(false, true, true, true) }
-		break;
-		default:
-		{ VHACD_ReportModeHelper(true, true, true, true) }
-		break;
+			case 1:
+				{ VHACD_ReportModeHelper(true, false, false, false) }
+				break;
+			case 2:
+				{ VHACD_ReportModeHelper(false, true, true, true) }
+				break;
+			default:
+				{ VHACD_ReportModeHelper(true, true, true, true) }
+				break;
 		}
 	}
 	else { VHACD_ReportModeHelper(false, false, false, false) }
@@ -338,9 +337,9 @@ bool
 SOP_Operator::PrepareDataForVHACD(GU_Detail* geometry, UT_AutoInterrupt progress, fpreal time)
 {
 	/*
-	Store data as indexed face set representation.
-	We need three times more to handle cases where a different list of triangles is defined for positions, normals and texture coordinates.
-	Not that I use it here, but it seems to be required.
+		Store data as indexed face set representation.
+		We need three times more to handle cases where a different list of triangles is defined for positions, normals and texture coordinates.
+		Not that I use it here, but it seems to be required.
 	*/
 
 	// clear containers to make sure nothing is cached
@@ -349,7 +348,7 @@ SOP_Operator::PrepareDataForVHACD(GU_Detail* geometry, UT_AutoInterrupt progress
 
 	// get position attribute
 	auto success = ATTRIB_ACCESS::Find::Vec3ATT(this, geometry, GA_AttributeOwner::GA_ATTRIB_POINT, "P", _positionHandle);
-	if (success && error() < UT_ERROR_WARNING)
+	if (success && error() < UT_ErrorSeverity::UT_ERROR_WARNING)
 	{
 		// store positions, as continuous list from 0 to last, without breaking it per primitive		
 		this->_points.reserve(geometry->getNumPoints() * 3);
@@ -360,7 +359,7 @@ SOP_Operator::PrepareDataForVHACD(GU_Detail* geometry, UT_AutoInterrupt progress
 			// make sure we can escape the loop
 			if (progress.wasInterrupted())
 			{
-				addWarning(SOP_MESSAGE, "Operation interrupted");
+				addWarning(SOP_ErrorCodes::SOP_MESSAGE, "Operation interrupted");
 				return false;
 			}
 
@@ -380,7 +379,7 @@ SOP_Operator::PrepareDataForVHACD(GU_Detail* geometry, UT_AutoInterrupt progress
 			// make sure we can escape the loop
 			if (progress.wasInterrupted())
 			{
-				addWarning(SOP_MESSAGE, "Operation interrupted");
+				addWarning(SOP_ErrorCodes::SOP_MESSAGE, "Operation interrupted");
 				return false;
 			}
 
@@ -411,7 +410,7 @@ SOP_Operator::GenerateConvexHulls(GU_Detail* geometry, UT_AutoInterrupt progress
 			if (progress.wasInterrupted())
 			{
 				this->_interfaceVHACD->Cancel();
-				addWarning(SOP_MESSAGE, "Operation interrupted");
+				addWarning(SOP_ErrorCodes::SOP_MESSAGE, "Operation interrupted");
 				return this->error();
 			}
 
@@ -422,12 +421,12 @@ SOP_Operator::GenerateConvexHulls(GU_Detail* geometry, UT_AutoInterrupt progress
 			if (!currentHull.m_nPoints || !currentHull.m_nTriangles) continue;
 
 			success = DrawConvexHull(geometry, id, currentHull, progress);
-			if (!success && error() > UT_ERROR_NONE) return error();
+			if (!success && error() > UT_ErrorSeverity::UT_ERROR_NONE) return error();
 		}		
 	}
 	else
 	{
-		addError(SOP_MESSAGE, "Computation failed");
+		addError(SOP_ErrorCodes::SOP_MESSAGE, "Computation failed");
 		return error();
 	}
 
@@ -444,7 +443,7 @@ SOP_Operator::DrawConvexHull(GU_Detail* geometry, int hullid, VHACD::IVHACD::Con
 	auto start = geometry->appendPointBlock(hull.m_nPoints);
 
 	// make sure that we have at least 4 points, if we have less, than it's a flat geometry, so ignore it
-	if (GDP_TEST::IsEnoughPoints(this, geometry) && error() >= UT_ERROR_WARNING) return false;
+	if (GDP_TEST::IsEnoughPoints(this, geometry) && error() >= UT_ErrorSeverity::UT_ERROR_WARNING) return false;
 	
 	// set point positions				
 	int hullP = 0;
@@ -458,7 +457,7 @@ SOP_Operator::DrawConvexHull(GU_Detail* geometry, int hullid, VHACD::IVHACD::Con
 		if (progress.wasInterrupted())
 		{
 			this->_interfaceVHACD->Cancel();
-			addWarning(SOP_MESSAGE, "Operation interrupted");
+			addWarning(SOP_ErrorCodes::SOP_MESSAGE, "Operation interrupted");
 			return false;
 		}
 
@@ -477,14 +476,14 @@ SOP_Operator::DrawConvexHull(GU_Detail* geometry, int hullid, VHACD::IVHACD::Con
 		if (progress.wasInterrupted())
 		{
 			this->_interfaceVHACD->Cancel();
-			addWarning(SOP_MESSAGE, "Operation interrupted");
+			addWarning(SOP_ErrorCodes::SOP_MESSAGE, "Operation interrupted");
 			return false;
 		}
 
 		// create triangle
 		auto polygon = static_cast<GEO_PrimPoly*>(geometry->appendPrimitive(GEO_PRIMPOLY));
 		polygon->setSize(0);
-
+		
 		polygon->appendVertex(pOffsets[hull.m_triangles[t + 0]]);
 		polygon->appendVertex(pOffsets[hull.m_triangles[t + 1]]);
 		polygon->appendVertex(pOffsets[hull.m_triangles[t + 2]]);
@@ -504,11 +503,11 @@ SOP_Operator::cookMySop(OP_Context& context)
 {
 	DEFAULTS_CookMySop()
 		
-		if (duplicateSource(0, context) < UT_ERROR_WARNING && error() < UT_ERROR_WARNING)
+		if (duplicateSource(0, context) < UT_ErrorSeverity::UT_ERROR_WARNING && error() < UT_ErrorSeverity::UT_ERROR_WARNING)
 		{			
 			// make sure we got something to work on
 			bool success = GDP_TEST::IsEnoughPrimitives(this, gdp, HOU_NODE_ERROR_LEVEL::Error, 1, UT_String("Not enough primitives to create hull."));
-			if ((success && error() >= UT_ERROR_WARNING) || (!success && error() >= UT_ERROR_NONE)) return error();
+			if ((success && error() >= UT_ErrorSeverity::UT_ERROR_WARNING) || (!success && error() >= UT_ErrorSeverity::UT_ERROR_NONE)) return error();
 			
 			// do we want only polygons or do we try to convert anything to polygons?			
 			bool polygonizeValueState;
@@ -525,14 +524,14 @@ SOP_Operator::cookMySop(OP_Context& context)
 					// make sure we can escape the loop
 					if (progress.wasInterrupted())
 					{
-						addError(SOP_MESSAGE, "Operation interrupted");
+						addError(SOP_ErrorCodes::SOP_MESSAGE, "Operation interrupted");
 						return error();
 					}
 
 					// only polygons allowed
 					if (gdp->getPrimitive(primIt)->getTypeId() != GA_PRIMPOLY)
 					{
-						addError(SOP_MESSAGE, "Non-polygon geometry detected on input.");
+						addError(SOP_ErrorCodes::SOP_MESSAGE, "Non-polygon geometry detected on input.");
 						return error();
 					}
 				}
@@ -540,11 +539,11 @@ SOP_Operator::cookMySop(OP_Context& context)
 
 			// we need at least 4 points to get up from bed
 			success = GDP_TEST::IsEnoughPoints(this, gdp, HOU_NODE_ERROR_LEVEL::Warning, 4, UT_String("Not enough points to create hull."));
-			if ((success && error() >= UT_ERROR_WARNING) || (!success && error() >= UT_ERROR_NONE)) return error();
-
+			if ((success && error() >= UT_ErrorSeverity::UT_ERROR_WARNING) || (!success && error() >= UT_ErrorSeverity::UT_ERROR_NONE)) return error();
+			
 			// we should have only polygons now, but we need to make sure that they are all correct
 			success = PrepareGeometry(gdp, progress);
-			if ((success && error() >= UT_ERROR_WARNING) || (!success && error() >= UT_ERROR_NONE)) return error();
+			if ((success && error() >= UT_ErrorSeverity::UT_ERROR_WARNING) || (!success && error() >= UT_ErrorSeverity::UT_ERROR_NONE)) return error();
 
 			// get parameters and logger/callback
 			SetupVHACD(gdp, currentTime);
@@ -553,12 +552,12 @@ SOP_Operator::cookMySop(OP_Context& context)
 
 			// prepare data for V-HACD
 			success = PrepareDataForVHACD(gdp, progress, currentTime);
-			if ((success && error() >= UT_ERROR_WARNING) || (!success && error() >= UT_ERROR_NONE)) return error();
+			if ((success && error() >= UT_ErrorSeverity::UT_ERROR_WARNING) || (!success && error() >= UT_ErrorSeverity::UT_ERROR_NONE)) return error();
 
 			// lets make some hulls!
 			gdp->clear();
 			
-			if (GenerateConvexHulls(gdp, progress) >= UT_ERROR_WARNING && error() >= UT_ERROR_WARNING) return error();
+			if (GenerateConvexHulls(gdp, progress) >= UT_ErrorSeverity::UT_ERROR_WARNING && error() >= UT_ErrorSeverity::UT_ERROR_WARNING) return error();
 		}
 
 	return error();

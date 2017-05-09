@@ -7,7 +7,7 @@
 
 = Engine =
 
-""" Generates convex hulls by using V-HACD decomposition """
+""" Generate convex hulls by using V-HACD decomposition """
 
 @parameters
 

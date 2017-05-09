@@ -44,10 +44,10 @@ INCLUDES                                                           |
 #include <VHACD.h>
 
 // hou-hdk-common
-#include <SOP/Macros_Namespace.h>
-#include <SOP/Macros_CookMySop.h>
-#include <SOP/Macros_DescriptionPRM.h>
-#include <SOP/Macros_UpdateParmsFlags.h>
+#include <Macros/Namespace.h>
+#include <Macros/CookMySop.h>
+#include <Macros/DescriptionPRM.h>
+#include <Macros/UpdateParmsFlags.h>
 
 /* -----------------------------------------------------------------
 FORWARDS                                                           |
@@ -56,7 +56,7 @@ FORWARDS                                                           |
 class UT_AutoInterrupt;
 
 /* -----------------------------------------------------------------
-DECLARATION                                                        |
+LOGGER                                                             |
 ----------------------------------------------------------------- */
 
 DECLARE_SOP_Namespace_Start()
@@ -72,6 +72,14 @@ DECLARE_SOP_Namespace_Start()
 		bool						showMsg;
 	};
 
+DECLARE_SOP_Namespace_End
+
+/* -----------------------------------------------------------------
+CALLBACK                                                           |
+----------------------------------------------------------------- */
+
+DECLARE_SOP_Namespace_Start()
+
 	class VHACDEngine_Callback : public VHACD::IVHACD::IUserCallback
 	{
 	public:
@@ -84,6 +92,14 @@ DECLARE_SOP_Namespace_Start()
 		bool						showStageProgress;
 		bool						showOperationProgress;
 	};
+
+DECLARE_SOP_Namespace_End
+
+/* -----------------------------------------------------------------
+OPERATTOR                                                          |
+----------------------------------------------------------------- */
+
+DECLARE_SOP_Namespace_Start()
 
 	class SOP_VHACDEngine : public SOP_Node
 	{

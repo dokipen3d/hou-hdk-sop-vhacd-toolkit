@@ -35,9 +35,9 @@ Mode:
 	
 == Additional ==
 
-[Include:hdktemplates--soptemplate#adddescription]
-[Include:hdktemplates--soptemplate#cleandescription]
-[Include:hdktemplates--soptemplate#descriptionmessage]
+[Include:parameters--description#adddescription]
+[Include:parameters--description#cleandescription]
+[Include:parameters--description#descriptionmessage]
 
 @related
 - [Node:sop/vhacd--setup]
