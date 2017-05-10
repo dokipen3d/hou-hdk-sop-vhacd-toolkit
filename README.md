@@ -1,3 +1,7 @@
+# V-HACD toolkit for Houdini HDK implementation. #
+
+Overview [video](https://www.youtube.com/watch?v=6Elao25HN9Y&list=PLWInthQ-GtLhzoyqhaJAvzico8mkXMyDI&index=1) on YouTube.
+
 **IMPORTANT:**
 * Requires [hou-hdk-common](https://github.com/sebastianswann/hou-hdk-common) repository
 * Read other requiments on mentioned above repository
