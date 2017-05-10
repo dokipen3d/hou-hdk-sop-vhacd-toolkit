@@ -1,4 +1,4 @@
-# V-HACD toolkit for Houdini HDK implementation. #
+# V-HACD toolkit for Houdini. #
 
 Overview [video](https://www.youtube.com/watch?v=6Elao25HN9Y&list=PLWInthQ-GtLhzoyqhaJAvzico8mkXMyDI&index=1) on YouTube.
 
