@@ -1,0 +1,79 @@
+#type: node
+#context: sop
+#largeicon: opdef:/Sop/nodeway::vhacdgenerator::1.0?SOP_VHACDGenerator.svg
+
+= V-HACD Generator =
+
+""" Volumetric-Hierarchical Approximate Convex Decomposition """
+
+@overview OVERVIEW:
+
+The V-HACD Generator decomposes a 3D surface into a set of "near" convex parts.
+Node will also filter incoming geometry by removing all zero area and open polygons if it finds them.
+
+=== History ===
+
+V-HACD is a algorithm developed by Khaled Mammou => https://github.com/kmammou/v-hacd. 
+It was developed in 2012 and it was the next version of HACD algorithm, developed in 2011 also by Khaled, which was inspired by ACD algorithm developed in 2009 by John Ratcliff.
+
+Links:
+    - ACD: http://codesuppository.blogspot.com/2009/11/convex-decomposition-library-now.html
+    - HACD: http://kmamou.blogspot.com/2011/10/hacd-hierarchical-approximate-convex.html
+    - V-HACD: http://kmamou.blogspot.com/2014/11/v-hacd-v20-is-here.html
+
+=== User Interface ===
+
+User interface contains 5 sections + title area.
+
+TITLE:
+    This area, beside showing tool title, is used to show help or error information in some situations, to help guide user.
+    It shows also build version number. Small incremental change in build number (for example, v2.0 to v2.1 or v2.5) doesn't brake functionality of the tool. 
+    Full build number change (fo example, v1.0 to v2.0) brakes it.
+
+FILTER:
+    Contain parameters that are required to be set, otherwise tool will not function or will function inproperly.
+
+    ==== Parameters ==== 
+    - _Primitive Group_ - user defined selection of polygons that will be modified.
+    - _Polygonize_ - it will convert any non polygon geometry to polygons, so it could be processed by V-HACD.
+    - _Process Mode_ - how geometry will be processed by V-HACD Engine"
+        - _As One Piece_ - all parts of the model will be send at once and the resulting convex hulls will be generated from volume of all of them..
+        - _Per Each Piece_ - each part of the model will be send separately and the resulting convex hulls will be generated from volume of each part.
+        - _Per Each Group_ - each group of the model will be send separately and the resulting convex hulls will be generated from volume of all parts that each group contains.
+    
+    In Per Each Piece and Per Each Group modes, node support parameters override with primitive attributes. This allows to have multiple settings that will be executed by one V-HACD Generate node.    
+    The name of the attribute should be exactly the same like the name of the parameter it overrides. For convenience, there is a V-HACD Setup node.    
+    All parameters from main section, beside Use OpenCL, can be overriden.
+    
+MAIN:
+    Contains parameters that are fundamental for functionality of the tool.
+    
+    ==== Parameters ==== 
+    - _Decomposition Mode_ - 0: voxel-based approximate convex decomposition, 1: tetrahedron-based approximate convex decomposition.
+    - _Resolution_ - maximum number of voxels generated during the voxelization stage.
+    - _Depth_ - maximum number of clipping stages. During each split stage, all the model parts (with a concavity higher than the user defined threshold) are clipped according the "best" clipping plane.
+    - _Concavity_ - maximum concavity.
+    - _Plane Downsampling_ - controls the granularity of the search for the "best" clipping plane.
+    - _Convexhull Downsampling_ - controls the precision of the convex-hull generation process during the clipping plane selection stage.
+    - _Alpha_ - controls the bias toward clipping along symmetry planes.
+    - _Beta_ - controls the bias toward clipping along revolution axes.
+    - _Gamma_ - maximum allowed concavity during the merge stage.
+    - _ Max triangle Count_ - controls the maximum number of triangles per convex-hull.
+    - _Adaptive Sampling_ - controls the adaptive sampling of the generated convex-hulls.
+    - _Normalize Mesh_ - enable/disable normalizing the mesh before applying the convex decomposition.       
+    - _Use OpenCL_ - enable/disable OpenCL usage that is built in V-HACD library.
+    
+ADDITIONAL:
+    Some additional parameters that can be set. Most of them doesn't have anything common with basic functionality and purpose of the tool.
+  
+    ==== Parameters ==== 
+    - _Cusp Normals_ - use it to sharpen or smooth vertex normals of the geometry.    
+    - _Description_ - can be used to help visualize in network view that some operation (for example part of the model) is starting on this node. 
+      It will be displayed below node name and can have multiple lines.
+    
+DEBUG:
+    This section contains parameters that can be used to guide user in what is happening with the geometry after parameters are changed/applied.
+
+    ==== Parameters ==== 
+    - _Show Detailed Report_ - prints detailed information to console about what is happening durring convex decomposition computation.    
+    

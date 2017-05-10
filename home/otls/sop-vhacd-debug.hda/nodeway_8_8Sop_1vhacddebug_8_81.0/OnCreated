@@ -1,4 +1,0 @@
-this = kwargs['node']
-
-this.hdaModule().inputs.CheckInputs(this)  
-this.hdaModule().author.Populate(kwargs, 'json')

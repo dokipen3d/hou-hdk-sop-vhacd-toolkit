@@ -1,7 +1,7 @@
-Operator:     nodeway::vhacdscout::1.0
-Label:        V-HACD Scout
-Path:         oplib:/nodeway::Sop/vhacdscout::1.0?nodeway::Sop/vhacdscout::1.0
-Icon:         opdef:/nodeway::Sop/vhacdscout::1.0?IconImage
+Operator:     vhacd::scout::1.0
+Label:        Scout (v-hacd)
+Path:         oplib:/vhacd::Sop/scout::1.0?vhacd::Sop/scout::1.0
+Icon:         opdef:/vhacd::Sop/scout::1.0?IconImage
 Table:        Sop
 License:      
 Extra:        
@@ -11,5 +11,5 @@ Outputs:      2
 Subnet:       true
 Python:       false
 Empty:        false
-Modified:     Sat Aug 13 02:29:33 2016
+Modified:     Wed May 10 07:32:31 2017
 

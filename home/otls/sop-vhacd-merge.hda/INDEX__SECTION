@@ -1,7 +1,7 @@
-Operator:     nodeway::vhacdmerge::1.0
-Label:        V-HACD Merge
-Path:         oplib:/nodeway::Sop/vhacdmerge::1.0?nodeway::Sop/vhacdmerge::1.0
-Icon:         opdef:/nodeway::Sop/vhacdmerge::1.0?IconImage
+Operator:     vhacd::merge::1.0
+Label:        Merge (v-hacd)
+Path:         oplib:/vhacd::Sop/merge::1.0?vhacd::Sop/merge::1.0
+Icon:         opdef:/vhacd::Sop/merge::1.0?IconImage
 Table:        Sop
 License:      
 Extra:        
@@ -11,5 +11,5 @@ Outputs:      2
 Subnet:       true
 Python:       false
 Empty:        false
-Modified:     Wed Jul  6 02:27:45 2016
+Modified:     Wed May 10 08:02:02 2017
 

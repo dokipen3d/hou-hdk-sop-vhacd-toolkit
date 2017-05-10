@@ -1,7 +1,7 @@
-Operator:     nodeway::vhacdgenerate::1.0
-Label:        V-HACD Generate
-Path:         oplib:/nodeway::Sop/vhacdgenerate::1.0?nodeway::Sop/vhacdgenerate::1.0
-Icon:         opdef:/nodeway::Sop/vhacdgenerate::1.0?IconImage
+Operator:     vhacd::generate::1.0
+Label:        Generate (v-hacd)
+Path:         oplib:/vhacd::Sop/generate::1.0?vhacd::Sop/generate::1.0
+Icon:         opdef:/vhacd::Sop/generate::1.0?IconImage
 Table:        Sop
 License:      
 Extra:        
@@ -11,5 +11,5 @@ Outputs:      2
 Subnet:       true
 Python:       false
 Empty:        false
-Modified:     Wed Apr 19 12:02:27 2017
+Modified:     Wed May 10 08:02:36 2017
 

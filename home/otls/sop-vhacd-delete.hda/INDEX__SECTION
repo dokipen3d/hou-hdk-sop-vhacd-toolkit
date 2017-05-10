@@ -1,7 +1,7 @@
-Operator:     nodeway::vhacddelete::1.0
-Label:        V-HACD Delete
-Path:         oplib:/nodeway::Sop/vhacddelete::1.0?nodeway::Sop/vhacddelete::1.0
-Icon:         opdef:/nodeway::Sop/vhacddelete::1.0?IconImage
+Operator:     vhacd::delete::1.0
+Label:        Delete (v-hacd)
+Path:         oplib:/vhacd::Sop/delete::1.0?vhacd::Sop/delete::1.0
+Icon:         opdef:/vhacd::Sop/delete::1.0?IconImage
 Table:        Sop
 License:      
 Extra:        
@@ -11,5 +11,5 @@ Outputs:      2
 Subnet:       true
 Python:       false
 Empty:        false
-Modified:     Wed Jul  6 02:27:15 2016
+Modified:     Wed May 10 06:15:31 2017
 

@@ -40,7 +40,7 @@ DEFINES                                                            |
 #define SOP_Operator		GET_SOP_Namespace()::SOP_VHACDEngine
 #define SOP_SmallName		"vhacd::engine::1.0"
 #define SOP_BigName			"Engine (v-hacd)"
-#define SOP_TabMenuPath		"Toolkit/Convex Decomposition"
+#define SOP_TabMenuPath		"Toolkit/V-HACD"
 
 /* -----------------------------------------------------------------
 REGISTRATION                                                       |

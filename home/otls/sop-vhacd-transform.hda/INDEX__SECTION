@@ -1,7 +1,7 @@
-Operator:     nodeway::vhacdtransform::1.0
-Label:        V-HACD Transform
-Path:         oplib:/nodeway::Sop/vhacdtransform::1.0?nodeway::Sop/vhacdtransform::1.0
-Icon:         opdef:/nodeway::Sop/vhacdtransform::1.0?IconImage
+Operator:     vhacd::transform::1.0
+Label:        Transform (v-hacd)
+Path:         oplib:/vhacd::Sop/transform::1.0?vhacd::Sop/transform::1.0
+Icon:         opdef:/vhacd::Sop/transform::1.0?IconImage
 Table:        Sop
 License:      
 Extra:        
@@ -11,5 +11,5 @@ Outputs:      2
 Subnet:       true
 Python:       false
 Empty:        false
-Modified:     Wed Jul  6 02:28:27 2016
+Modified:     Wed May 10 06:16:41 2017
 
