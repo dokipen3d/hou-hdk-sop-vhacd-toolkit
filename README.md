@@ -1,5 +1,7 @@
 # V-HACD toolkit for Houdini. #
 
+![Example](/home/config/help/nodes/sop/vhacd-toolkit.gif)
+
 Overview [video](https://www.youtube.com/watch?v=6Elao25HN9Y&list=PLWInthQ-GtLhzoyqhaJAvzico8mkXMyDI&index=1) on YouTube.
 
 **IMPORTANT:**
