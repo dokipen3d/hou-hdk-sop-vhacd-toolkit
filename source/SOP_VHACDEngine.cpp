@@ -53,17 +53,19 @@ INCLUDES                                                           |
 DEFINES                                                            |
 ----------------------------------------------------------------- */
 
-#define SOP_Operator		GET_SOP_Namespace()::SOP_VHACDEngine
-#define VHACD_Logger		GET_SOP_Namespace()::VHACDEngine_Logger
-#define VHACD_Callback		GET_SOP_Namespace()::VHACDEngine_Callback
-#define SOP_Base_Operator	SOP_Node
-#define SOP_InputName_0		"Geometry"
-#define SOP_IconName		"SOP_VHACD.png"
+#define SOP_Operator					GET_SOP_Namespace()::SOP_VHACDEngine
+#define VHACD_Logger					GET_SOP_Namespace()::VHACDEngine_Logger
+#define VHACD_Callback					GET_SOP_Namespace()::VHACDEngine_Callback
+#define SOP_Base_Operator				SOP_Node
+#define SOP_InputName_0					"Geometry"
+#define SOP_IconName					"SOP_VHACD.png"
 
-#define UI					GET_SOP_Namespace()::UI
-#define PRM_ACCESS			GET_Base_Namespace()::Utility::PRM
-#define ATTRIB_ACCESS		GET_Base_Namespace()::Utility::Attribute
-#define GDP_TEST			GET_Base_Namespace()::Utility::Geometry::Test
+#define UI								GET_SOP_Namespace()::UI
+#define PRM_ACCESS						GET_Base_Namespace()::Utility::PRM
+#define ATTRIB_ACCESS					GET_Base_Namespace()::Utility::Attribute
+#define GDP_TEST						GET_Base_Namespace()::Utility::Geometry::Test
+
+#define THIS_SMALLPOLYGONS_TOLERANCE	0.000001f
 
 /* -----------------------------------------------------------------
 LOGGER                                                             |
@@ -100,6 +102,7 @@ PARAMETERS                                                         |
 ----------------------------------------------------------------- */
 
 PARAMETERLIST_Start(SOP_Operator)
+
 	UI::filterSectionSwitcher_Parameter,
 	UI::allowParametersOverrideToggle_Parameter,
 	UI::allowParametersOverrideSeparator_Parameter,
@@ -118,8 +121,8 @@ PARAMETERLIST_Start(SOP_Operator)
 	UI::gammaFloat_Parameter,
 	UI::maxTriangleCountInteger_Parameter,
 	UI::adaptiveSamplingFloat_Parameter,
-	UI::normalizeMeshToggle_Parameter,
-	UI::normalizeMeshSeparator_Parameter,
+	UI::normalizeMshToggle_Parameter,
+	UI::normalizeMshSeparator_Parameter,
 	UI::useOpenCLToggle_Parameter,
 	UI::useOpenCLSeparator_Parameter,	
 	UI::additionalSectionSwitcher_Parameter,
@@ -129,6 +132,7 @@ PARAMETERLIST_Start(SOP_Operator)
 	UI::showProcessReportToggle_Parameter,
 	UI::showProcessReportSeparator_Parameter,
 	UI::reportModeChoiceMenu_Parameter,
+
 PARAMETERLIST_End()
 
 bool 
@@ -163,13 +167,16 @@ OPERATOR INITIALIZATION                                            |
 ----------------------------------------------------------------- */
 
 SOP_Operator::~SOP_VHACDEngine() { }
-SOP_Operator::SOP_VHACDEngine(OP_Network* network, const char* name, OP_Operator* op) : SOP_Base_Operator(network, name, op) { op->setIconName(SOP_IconName); }
+SOP_Operator::SOP_VHACDEngine(OP_Network* network, const char* name, OP_Operator* op) : SOP_Base_Operator(network, name, op) 
+{ op->setIconName(SOP_IconName); }
 
 OP_Node* 
-SOP_Operator::CreateMe(OP_Network* network, const char* name, OP_Operator* op) { return new SOP_Operator(network, name, op); }
+SOP_Operator::CreateMe(OP_Network* network, const char* name, OP_Operator* op) 
+{ return new SOP_Operator(network, name, op); }
 
 const char* 
-SOP_Operator::inputLabel(unsigned input) const { return SOP_InputName_0; }
+SOP_Operator::inputLabel(unsigned input) const 
+{ return SOP_InputName_0; }
 
 /* -----------------------------------------------------------------
 HELPERS                                                            |
@@ -182,7 +189,6 @@ SOP_Operator::PullIntPRM(GU_Detail* geometry, const PRM_Template& parameter, boo
 
 	if (!interfaceonly)
 	{
-		//GA_RWAttributeRef attributeReference;
 		GA_RWHandleI attributeHandle;
 
 		// check is there attribute with the name that matches parameter name
@@ -269,7 +275,7 @@ SOP_Operator::PrepareGeometry(GU_Detail* geometry, UT_AutoInterrupt progress)
 		}
 
 		// collapse zero area and really tiny polygons + kill all open polygons
-		if (currentPoly->calcArea() <= (0.0f + SOP_VHACDENGINE_OP_SMALLPOLYGONS_TOLERANCE))
+		if (currentPoly->calcArea() <= (0.0f + THIS_SMALLPOLYGONS_TOLERANCE))
 		{
 			auto polys = geometry->newDetachedPrimitiveGroup();
 			auto points = geometry->newDetachedPointGroup();
@@ -283,10 +289,10 @@ SOP_Operator::PrepareGeometry(GU_Detail* geometry, UT_AutoInterrupt progress)
 	}
 
 	// is there anything left after preparation?		
-	bool success = GDP_TEST::IsEnoughPrimitives(this, geometry, HOU_NODE_ERROR_LEVEL::Warning, 1, UT_String("After removing zero area and open polygons there are no other primitives left."));
+	bool success = GDP_TEST::IsEnoughPrimitives(this, geometry, 1, UT_String("After removing zero area and open polygons there are no other primitives left."));
 	if ((success && error() >= UT_ErrorSeverity::UT_ERROR_WARNING) || (!success && error() >= UT_ErrorSeverity::UT_ERROR_NONE)) return false;
 
-	return	GDP_TEST::IsEnoughPoints(this, gdp, HOU_NODE_ERROR_LEVEL::Warning, 4, UT_String("Not enough points to create hull."));	
+	return	GDP_TEST::IsEnoughPoints(this, gdp, 4, UT_String("Not enough points to create hull."));	
 }
 
 void 
@@ -306,7 +312,7 @@ SOP_Operator::SetupVHACD(GU_Detail* geometry, fpreal time)
 	this->_parametersVHACD.m_gamma					= PullFloatPRM(geometry, UI::gammaFloat_Parameter, !this->_currentAllowParametersOverrideValueState, time);
 	this->_parametersVHACD.m_maxNumVerticesPerCH	= PullIntPRM(geometry, UI::maxTriangleCountInteger_Parameter, !this->_currentAllowParametersOverrideValueState, time);
 	this->_parametersVHACD.m_minVolumePerCH			= PullFloatPRM(geometry, UI::adaptiveSamplingFloat_Parameter, !this->_currentAllowParametersOverrideValueState, time);
-	this->_parametersVHACD.m_pca					= PullIntPRM(geometry, UI::normalizeMeshToggle_Parameter, !this->_currentAllowParametersOverrideValueState, time);
+	this->_parametersVHACD.m_pca					= PullIntPRM(geometry, UI::normalizeMshToggle_Parameter, !this->_currentAllowParametersOverrideValueState, time);
 	
 	PRM_ACCESS::Get::IntPRM(this, _parametersVHACD.m_oclAcceleration, UI::useOpenCLToggle_Parameter, time);
 
@@ -506,7 +512,7 @@ SOP_Operator::cookMySop(OP_Context& context)
 		if (duplicateSource(0, context) < UT_ErrorSeverity::UT_ERROR_WARNING && error() < UT_ErrorSeverity::UT_ERROR_WARNING)
 		{			
 			// make sure we got something to work on
-			bool success = GDP_TEST::IsEnoughPrimitives(this, gdp, HOU_NODE_ERROR_LEVEL::Error, 1, UT_String("Not enough primitives to create hull."));
+			bool success = GDP_TEST::IsEnoughPrimitives(this, gdp, 1, UT_String("Not enough primitives to create hull."));
 			if ((success && error() >= UT_ErrorSeverity::UT_ERROR_WARNING) || (!success && error() >= UT_ErrorSeverity::UT_ERROR_NONE)) return error();
 			
 			// do we want only polygons or do we try to convert anything to polygons?			
@@ -538,7 +544,7 @@ SOP_Operator::cookMySop(OP_Context& context)
 			}
 
 			// we need at least 4 points to get up from bed
-			success = GDP_TEST::IsEnoughPoints(this, gdp, HOU_NODE_ERROR_LEVEL::Warning, 4, UT_String("Not enough points to create hull."));
+			success = GDP_TEST::IsEnoughPoints(this, gdp, 4, UT_String("Not enough points to create hull."));
 			if ((success && error() >= UT_ErrorSeverity::UT_ERROR_WARNING) || (!success && error() >= UT_ErrorSeverity::UT_ERROR_NONE)) return error();
 			
 			// we should have only polygons now, but we need to make sure that they are all correct
@@ -566,6 +572,8 @@ SOP_Operator::cookMySop(OP_Context& context)
 /* -----------------------------------------------------------------
 UNDEFINES                                                          |
 ----------------------------------------------------------------- */
+
+#undef THIS_SMALLPOLYGONS_TOLERANCE
 
 #undef GDP_TEST
 #undef ATTRIB_ACCESS
