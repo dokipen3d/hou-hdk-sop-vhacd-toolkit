@@ -1,0 +1,539 @@
+# Dialog script for vhacd::setup::1.0 automatically generated
+
+{
+    name	vhacd::setup::1.0
+    script	vhacd::setup::1.0
+    label	"Setup (v-hacd)"
+
+    help {
+	""
+    }
+
+    inputlabel	1	Geometry
+    inputlabel	2	"Sub-Network Input #2"
+    inputlabel	3	"Sub-Network Input #3"
+    inputlabel	4	"Sub-Network Input #4"
+
+    group {
+	name	"hidden"
+	label	"Hidden"
+	invisibletab
+	tabbreak
+
+	parm {
+	    name	"is0connected"
+	    label	"Is 0 Connected?"
+	    type	toggle
+	    default	{ "1" }
+	    range	{ 0 1 }
+	}
+	parm {
+	    name	"jobgroupname"
+	    label	"Job Group Name"
+	    type	string
+	    default	{ "" }
+	    range	{ 0 1 }
+	}
+    }
+
+    groupsimple {
+	name	"filtersection"
+	label	"Filter"
+
+	parm {
+	    name	"primitivegroupinput0"
+	    label	"Primitive Group"
+	    type	string
+	    default	{ "" }
+	    menureplace	{
+		[ "from vhacd.common import GroupMenu" ]
+		[ "reload(GroupMenu)" ]
+		[ "" ]
+		[ "return GroupMenu.PrimitiveGroupMenu(kwargs)" ]
+		language	python
+	    }
+	    range	{ 0 1 }
+	}
+	parm {
+	    name	"sologroup"
+	    label	"Solo Group"
+	    type	toggle
+	    joinnext
+	    default	{ "0" }
+	    help	"Removes geometry not contained in specified group."
+	    range	{ 0 1 }
+	}
+	parm {
+	    name	"sepparm3"
+	    label	"Separator"
+	    type	separator
+	    default	{ "" }
+	    range	{ 0 1 }
+	}
+    }
+
+    groupsimple {
+	name	"mainsection"
+	label	"Main"
+
+	parm {
+	    name	"adddecompositionmodeattribute"
+	    label	"Add Decomposition Mode ATT"
+	    type	toggle
+	    joinnext
+	    default	{ "0" }
+	    help	"0: Voxel-based approximate convex decomposition, 1: Tetrahedron-based approximate convex decomposition"
+	    range	{ 0 1 }
+	    parmtag	{ "script_callback" "hou.phm().resetParameters.Callback(kwargs, 'decompositionmodevalue')" }
+	    parmtag	{ "script_callback_language" "python" }
+	}
+	parm {
+	    name	"sepparm2"
+	    label	"Separator"
+	    type	separator
+	    default	{ "" }
+	    range	{ 0 1 }
+	}
+	parm {
+	    name	"decompositionmodevalue"
+	    label	"Value"
+	    type	ordinal
+	    default	{ "0" }
+	    hidewhen	"{ adddecompositionmodeattribute == 0 }"
+	    menu	{
+		"0"	"Voxel"
+		"1"	"Tetrahedron"
+	    }
+	    range	{ 0 1 }
+	}
+	parm {
+	    name	"fallbackdecompositionmodevalue"
+	    label	"Fallback"
+	    type	integer
+	    default	{ "-1" }
+	    hidewhen	"{ adddecompositionmodeattribute == 0 }"
+	    range	{ -1! 1! }
+	}
+	parm {
+	    name	"addresolutionattribute"
+	    label	"Add Resolution ATT"
+	    type	toggle
+	    joinnext
+	    default	{ "0" }
+	    help	"Maximum number of voxels generated during voxelization stage."
+	    range	{ 0 1 }
+	    parmtag	{ "script_callback" "hou.phm().resetParameters.Callback(kwargs, 'resolutionvalue')" }
+	    parmtag	{ "script_callback_language" "python" }
+	}
+	parm {
+	    name	"sepparm11"
+	    label	"Separator"
+	    type	separator
+	    default	{ "" }
+	    range	{ 0 1 }
+	}
+	parm {
+	    name	"resolutionvalue"
+	    label	"Value"
+	    type	float
+	    default	{ "10000" }
+	    hidewhen	"{ addresolutionattribute == 0 }"
+	    range	{ 10000! 6.4e+07! }
+	}
+	parm {
+	    name	"fallbackresolutionvalue"
+	    label	"Fallback"
+	    type	integer
+	    default	{ "-1" }
+	    hidewhen	"{ addresolutionattribute == 0 }"
+	    range	{ -1! 6.4e+07! }
+	}
+	parm {
+	    name	"adddepthattribute"
+	    label	"Add Depth ATT"
+	    type	toggle
+	    joinnext
+	    default	{ "0" }
+	    help	"Maximum number of clipping stages. During each split stage, all the model parts (with a concavity higher than the user defined threshold) are clipped according the 'best' clipping plane."
+	    range	{ 0 1 }
+	    parmtag	{ "script_callback" "hou.phm().resetParameters.Callback(kwargs, 'depthvalue')" }
+	    parmtag	{ "script_callback_language" "python" }
+	}
+	parm {
+	    name	"sepparm5"
+	    label	"Separator"
+	    type	separator
+	    default	{ "" }
+	    range	{ 0 1 }
+	}
+	parm {
+	    name	"depthvalue"
+	    label	"Value"
+	    type	integer
+	    default	{ "20" }
+	    hidewhen	"{ adddepthattribute == 0 }"
+	    range	{ 1! 32! }
+	}
+	parm {
+	    name	"fallbackdepthvalue"
+	    label	"Fallback"
+	    type	integer
+	    default	{ "-1" }
+	    hidewhen	"{ adddepthattribute == 0 }"
+	    range	{ -1! 32! }
+	}
+	parm {
+	    name	"addconcavityattribute"
+	    label	"Add Concavity ATT"
+	    type	toggle
+	    joinnext
+	    default	{ "0" }
+	    help	"Maximum concavity."
+	    range	{ 0 1 }
+	    parmtag	{ "script_callback" "hou.phm().resetParameters.Callback(kwargs, 'concavityvalue')" }
+	    parmtag	{ "script_callback_language" "python" }
+	}
+	parm {
+	    name	"sepparm6"
+	    label	"Separator"
+	    type	separator
+	    default	{ "" }
+	    range	{ 0 1 }
+	}
+	parm {
+	    name	"concavityvalue"
+	    label	"Value"
+	    type	float
+	    default	{ "0.0025" }
+	    hidewhen	"{ addconcavityattribute == 0 }"
+	    range	{ 0! 1! }
+	}
+	parm {
+	    name	"fallbackconcavityvalue"
+	    label	"Fallback"
+	    type	float
+	    default	{ "-1" }
+	    hidewhen	"{ addconcavityattribute == 0 }"
+	    range	{ -1! 1! }
+	}
+	parm {
+	    name	"addplanedownsamplingattribute"
+	    label	"Add Plane Downsampling ATT"
+	    type	toggle
+	    joinnext
+	    default	{ "0" }
+	    help	"Controls the granularity of the search for the 'best' clipping plane."
+	    range	{ 0 1 }
+	    parmtag	{ "script_callback" "hou.phm().resetParameters.Callback(kwargs, 'planedownsamplingvalue')" }
+	    parmtag	{ "script_callback_language" "python" }
+	}
+	parm {
+	    name	"sepparm13"
+	    label	"Separator"
+	    type	separator
+	    default	{ "" }
+	    range	{ 0 1 }
+	}
+	parm {
+	    name	"planedownsamplingvalue"
+	    label	"Value"
+	    type	integer
+	    default	{ "4" }
+	    hidewhen	"{ addplanedownsamplingattribute == 0 }"
+	    range	{ 1! 16! }
+	}
+	parm {
+	    name	"fallbackplanedownsamplingvalue"
+	    label	"Fallback"
+	    type	integer
+	    default	{ "-1" }
+	    hidewhen	"{ addplanedownsamplingattribute == 0 }"
+	    range	{ -1! 16! }
+	}
+	parm {
+	    name	"addconvexhulldownsamplingattribute"
+	    label	"Add Convex Hull Downsampling ATT"
+	    type	toggle
+	    joinnext
+	    default	{ "0" }
+	    help	"Controls the precision of the convex-hull generation process during the clipping plane selection stage."
+	    range	{ 0 1 }
+	    parmtag	{ "script_callback" "hou.phm().resetParameters.Callback(kwargs, 'convexhulldownsamplingvalue')" }
+	    parmtag	{ "script_callback_language" "python" }
+	}
+	parm {
+	    name	"sepparm15"
+	    label	"Separator"
+	    type	separator
+	    default	{ "" }
+	    range	{ 0 1 }
+	}
+	parm {
+	    name	"convexhulldownsamplingvalue"
+	    label	"Value"
+	    type	integer
+	    default	{ "4" }
+	    hidewhen	"{ addconvexhulldownsamplingattribute == 0 }"
+	    range	{ 1! 16! }
+	}
+	parm {
+	    name	"fallbackconvexhulldownsamplingvalue"
+	    label	"Fallback"
+	    type	integer
+	    default	{ "-1" }
+	    hidewhen	"{ addconvexhulldownsamplingattribute == 0 }"
+	    range	{ -1! 16! }
+	}
+	parm {
+	    name	"addalphaattribute"
+	    label	"Add Alpha ATT"
+	    type	toggle
+	    joinnext
+	    default	{ "0" }
+	    help	"Controls the bias toward clipping along symmetry planes."
+	    range	{ 0 1 }
+	    parmtag	{ "script_callback" "hou.phm().resetParameters.Callback(kwargs, 'alphavalue')" }
+	    parmtag	{ "script_callback_language" "python" }
+	}
+	parm {
+	    name	"sepparm7"
+	    label	"Separator"
+	    type	separator
+	    default	{ "" }
+	    range	{ 0 1 }
+	}
+	parm {
+	    name	"alphavalue"
+	    label	"Value"
+	    type	float
+	    default	{ "0.5" }
+	    hidewhen	"{ addalphaattribute == 0 }"
+	    range	{ 0! 1! }
+	}
+	parm {
+	    name	"fallbackalphavalue"
+	    label	"Fallback"
+	    type	float
+	    default	{ "-1" }
+	    hidewhen	"{ addalphaattribute == 0 }"
+	    range	{ -1! 1! }
+	}
+	parm {
+	    name	"addbetaattribute"
+	    label	"Add Beta ATT"
+	    type	toggle
+	    joinnext
+	    default	{ "0" }
+	    help	"Controls the bias toward clipping along revolution axes."
+	    range	{ 0 1 }
+	    parmtag	{ "script_callback" "hou.phm().resetParameters.Callback(kwargs, 'betavalue')" }
+	    parmtag	{ "script_callback_language" "python" }
+	}
+	parm {
+	    name	"sepparm8"
+	    label	"Separator"
+	    type	separator
+	    default	{ "" }
+	    range	{ 0 1 }
+	}
+	parm {
+	    name	"betavalue"
+	    label	"Value"
+	    type	float
+	    default	{ "0.5" }
+	    hidewhen	"{ addbetaattribute == 0 }"
+	    range	{ 0! 1! }
+	}
+	parm {
+	    name	"fallbackbetavalue"
+	    label	"Fallback"
+	    type	float
+	    default	{ "-1" }
+	    hidewhen	"{ addbetaattribute == 0 }"
+	    range	{ -1! 1! }
+	}
+	parm {
+	    name	"addgammaattribute"
+	    label	"Add Gamma ATT"
+	    type	toggle
+	    joinnext
+	    default	{ "0" }
+	    help	"Maximum allowed concavity during the merge stage."
+	    range	{ 0 1 }
+	    parmtag	{ "script_callback" "hou.phm().resetParameters.Callback(kwargs, 'gammavalue')" }
+	    parmtag	{ "script_callback_language" "python" }
+	}
+	parm {
+	    name	"sepparm9"
+	    label	"Separator"
+	    type	separator
+	    default	{ "" }
+	    range	{ 0 1 }
+	}
+	parm {
+	    name	"gammavalue"
+	    label	"Value"
+	    type	float
+	    default	{ "0.00125" }
+	    hidewhen	"{ addgammaattribute == 0 }"
+	    range	{ 0! 1! }
+	}
+	parm {
+	    name	"fallbackgammavalue"
+	    label	"Fallback"
+	    type	float
+	    default	{ "-1" }
+	    hidewhen	"{ addgammaattribute == 0 }"
+	    range	{ -1! 1! }
+	}
+	parm {
+	    name	"addmaxtrianglecountattribute"
+	    label	"Add Max Triangle Count ATT"
+	    type	toggle
+	    joinnext
+	    default	{ "0" }
+	    help	"Controls the maximum number of triangles per convex-hull."
+	    range	{ 0 1 }
+	    parmtag	{ "script_callback" "hou.phm().resetParameters.Callback(kwargs, 'maxtrianglecountvalue')" }
+	    parmtag	{ "script_callback_language" "python" }
+	}
+	parm {
+	    name	"sepparm10"
+	    label	"Separator"
+	    type	separator
+	    default	{ "" }
+	    range	{ 0 1 }
+	}
+	parm {
+	    name	"maxtrianglecountvalue"
+	    label	"Value"
+	    type	integer
+	    default	{ "64" }
+	    hidewhen	"{ addmaxtrianglecountattribute == 0 }"
+	    range	{ 4! 1024! }
+	}
+	parm {
+	    name	"fallbackmaxtrianglecountvalue"
+	    label	"Fallback"
+	    type	integer
+	    default	{ "-1" }
+	    hidewhen	"{ addmaxtrianglecountattribute == 0 }"
+	    range	{ -1! 1024! }
+	}
+	parm {
+	    name	"addadaptivesamplingattribute"
+	    label	"Add Adaptive Sampling ATT"
+	    type	toggle
+	    joinnext
+	    default	{ "0" }
+	    help	"Controls the adaptive sampling of the generated convex-hulls."
+	    range	{ 0 1 }
+	    parmtag	{ "script_callback" "hou.phm().resetParameters.Callback(kwargs, 'adaptivesamplingvalue')" }
+	    parmtag	{ "script_callback_language" "python" }
+	}
+	parm {
+	    name	"sepparm14"
+	    label	"Separator"
+	    type	separator
+	    default	{ "" }
+	    range	{ 0 1 }
+	}
+	parm {
+	    name	"adaptivesamplingvalue"
+	    label	"Value"
+	    type	float
+	    default	{ "0.0001" }
+	    hidewhen	"{ addadaptivesamplingattribute == 0 }"
+	    range	{ 0! 0.01! }
+	}
+	parm {
+	    name	"fallbackadaptivesamplingvalue"
+	    label	"Fallback"
+	    type	float
+	    default	{ "-1" }
+	    hidewhen	"{ addadaptivesamplingattribute == 0 }"
+	    range	{ -1! 0.01! }
+	}
+	parm {
+	    name	"addnormalizemeshattribute"
+	    label	"Add Normalize Mesh ATT"
+	    type	toggle
+	    joinnext
+	    default	{ "0" }
+	    help	"Enable/disable normalizing the mesh before applying the convex decomposition."
+	    range	{ 0 1 }
+	    parmtag	{ "script_callback" "hou.phm().resetParameters.Callback(kwargs, 'normalizemeshvalue')" }
+	    parmtag	{ "script_callback_language" "python" }
+	}
+	parm {
+	    name	"sepparm12"
+	    label	"Separator"
+	    type	separator
+	    default	{ "" }
+	    range	{ 0 1 }
+	}
+	parm {
+	    name	"normalizemeshvalue"
+	    label	"Value"
+	    type	toggle
+	    default	{ "0" }
+	    hidewhen	"{ addnormalizemeshattribute == 0 }"
+	    range	{ 0 1 }
+	}
+	parm {
+	    name	"fallbacknormalizemeshvalue"
+	    label	"Fallback"
+	    type	integer
+	    default	{ "-1" }
+	    hidewhen	"{ addnormalizemeshattribute == 0 }"
+	    range	{ -1! 1! }
+	}
+    }
+
+    groupsimple {
+	name	"additionalsection"
+	label	"Additional"
+
+	parm {
+	    name	"adddescription"
+	    label	"Description"
+	    type	toggle
+	    joinnext
+	    default	{ "0" }
+	    help	"Add node information that will be visible below nodes name in network view."
+	    range	{ 0 1 }
+	    parmtag	{ "script_callback" "hou.phm().description.Callback(kwargs)" }
+	    parmtag	{ "script_callback_language" "python" }
+	}
+	parm {
+	    name	"sepparm"
+	    label	"Separator"
+	    type	separator
+	    default	{ "" }
+	    range	{ 0 1 }
+	}
+	parm {
+	    name	"cleandescriptionmessage"
+	    label	"Clean"
+	    type	button
+	    default	{ "1" }
+	    help	"Cleans message field."
+	    hidewhen	"{ adddescription == 0 }"
+	    range	{ 0 1 }
+	    parmtag	{ "script_callback" "hou.phm().description.SetDefaultState(hou.pwd())" }
+	    parmtag	{ "script_callback_language" "python" }
+	}
+	parm {
+	    name	"descriptionmessage"
+	    label	"Message"
+	    type	string
+	    default	{ "" }
+	    help	"Message that will be displayed."
+	    hidewhen	"{ adddescription == 0 }"
+	    range	{ 0 1 }
+	    parmtag	{ "editor" "1" }
+	    parmtag	{ "editorlines" "5-25" }
+	}
+    }
+
+}

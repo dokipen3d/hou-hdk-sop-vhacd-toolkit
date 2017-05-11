@@ -1,0 +1,75 @@
+#type: node
+#context: sop
+#internal: transfrom
+#icon: /nodes/sop/SOP_VHACD.png
+
+#tags: shape
+
+= Transform (v-hacd) =
+
+""" Transform convex hull/original geometry pairs. """
+
+@parameters
+
+== Filter ==
+
+Mode:
+	#id: filtermode
+
+	By Group:
+		#id: 0
+		Use group to select convex hulls.
+		
+	By Bundle ID:
+		#id: 1
+		Use Bundle ID attribute to select convex hulls.
+		
+[Include:parameters--group#primitivegroupinput0]
+
+Pattern:
+	#id: bundleidpattern
+	Numeric pattern that will be used to select convex hull bundles.
+
+== Main ==
+
+Transform Order:
+	#id: 2
+	Specify transform order in which transformations will be applied.
+	
+Translate:
+	#id: 3
+	Specify position.
+	
+Rotate:
+	#id: 4
+	Specify rotation.
+
+Scale:
+	#id: 5
+	Specify scale.
+	
+Shear:
+	#id: 6
+	Specify shear.
+	
+Pivot:
+	#id: 7
+	Specify pivot.	
+	
+Uniform Scale:
+	#id: 8
+	Specify uniform scale.		
+	
+== Additional ==
+
+[Include:parameters--description#adddescription]
+[Include:parameters--description#cleandescription]
+[Include:parameters--description#descriptionmessage]
+
+@related
+- [Node:sop/vhacd--setup]
+- [Node:sop/vhacd--generate]
+- [Node:sop/vhacd--scout]
+- [Node:sop/vhacd--merge]
+- [Node:sop/vhacd--debug]
+- [Node:sop/vhacd--delete]

@@ -1,0 +1,51 @@
+#type: node
+#context: sop
+#internal: scout
+#icon: /nodes/sop/SOP_VHACD.png
+
+= Scout (v-hacd) =
+
+""" Allows to gather and create information about convex hulls. """
+
+@overview
+
+Generate attributes and groups than can be furher used to processing convex hulls. 
+It can be useful in situations where convex hulls from multiple branches were merged, by using default Houdini merge SOP, and attributes/groups should be generated for them from scratch or refreshed.
+
+=== User Interface ===
+
+@parameters
+
+Add Hull Count ATT:
+    #id: createhullcountattribute
+    Create detail attribute called ((hull_id)) that contains information about how many convex hulls were detected.
+    
+Add Bundle Count ATT:
+    #id: createbundleidattribute
+    Create detail attribute called ((bundle_id)) that contains information about how many bundles were detected.
+    
+Add Hull ID Attribute:
+    #id: create hullidattribute
+    Create primitive attribute called ((hull_id)) that helps identify to which convex hull polygons belongs.
+    
+GRP Per Hull:
+    #id: creategrouppereachhull
+    Create group per each detected convex hull, grouping all polygons that particular convex hull contains.
+    
+    Name: 
+        #id: specifyhullgroupname
+        Pick partial name of generated groups.
+        
+GRP Per Bundle:
+    #id: creategrouppereachhullbudle
+    Create group per each detected convex hull bundle, grouping all convex hulls that particular bundle contains.
+    
+    Name:
+        #id: specifybundlegroupname
+        Pick partial name of generated groups.
+
+== Additional ==
+
+[Include:parameters--description#adddescription]
+[Include:parameters--description#cleandescription]
+[Include:parameters--description#descriptionmessage]  

@@ -1,0 +1,76 @@
+#type: node
+#context: sop
+#internal: debug
+#icon: /nodes/sop/SOP_VHACD.png
+
+= Debug (v-hacd) =
+
+""" Allows debug generated convex hulls. """
+
+@overview
+
+This tool is useful for debuging and visualizing generated with V-HACD Generate convex hulls.
+Only input 0 is required to be connected. Both inputs connected are required only for visualization/debugging of bundles.
+
+Exxamples:
+
+- Explode by Hull ID
+
+[Image:./vhacd-debug-explode-hullid.gif]
+
+- Explode by Bundle ID
+
+[Image:./vhacd-debug-explode-bundleid.gif]
+
+@parameters
+
+== Main ==          
+Show Hull ID ATT:
+    #id: showhullidattribute
+    Add random color to each convex hull. Requires ((hull_id)) attribute to be present on incoming geometry.
+    
+Show Bundle ID ATT: 
+    #id: showbundleidattribute
+    Add random color to each convex hull bundle. Requires ((bundle_id)) attribute to be present on incoming geometry.
+    
+Explode Hull ID ATT:
+    #id: explodehullid
+    Push convex hulls out from the center to create an exploded view. Requires ((hull_id)) attribute to be present on incoming geometry.
+    
+    Power: 
+        #id: explodehullidpower
+        Set how much power should be used to pull convex hulls away.
+        
+Explode Bundle ID ATT:
+    #id: explodebundleid 
+    Push convex hulls and original geometry out from the center to create an exploded view. Requires ((bundle_id)) attribute to be present on incoming geometry.
+    
+    Power: 
+        #id: explodebundleidpower
+        Set how much power should be used to pull convex hulls and original geometry away.
+        
+    Mode: 
+        #id: explodemode
+        If second input is connected you can pick what is currently visible when exploding.
+        
+        All:
+            #id: 0
+            Both, convex hulls and original geometry are visible, overlayed one over the other.
+        
+        Convex Hulls:
+            #id: 1
+            Only convex hulls are visible.
+            
+        Original Geometry:
+            #id: 2
+            Only Original geometry is visible.
+    
+== Additional ==
+
+Cusp Normals:
+    #id: cuspnormals
+    Sharpen or smooth vertex normals of the geometry.       
+      
+[Include:parameters--description#adddescription]
+[Include:parameters--description#cleandescription]
+[Include:parameters--description#descriptionmessage]        

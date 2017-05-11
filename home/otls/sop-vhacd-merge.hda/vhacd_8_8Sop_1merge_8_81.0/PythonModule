@@ -1,0 +1,8 @@
+import toolutils
+
+from vhacd.common import Description as description
+from vhacd.nodes.common import CuspNormals as cuspNormals
+reload(description)
+reload(cuspNormals)
+
+inputs = toolutils.createModuleFromSection('inputs', kwargs['type'], '__Inputs__.py')

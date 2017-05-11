@@ -1,0 +1,14 @@
+Operator:     vhacd::setup::1.0
+Label:        Setup (v-hacd)
+Path:         oplib:/vhacd::Sop/setup::1.0?vhacd::Sop/setup::1.0
+Icon:         opdef:/vhacd::Sop/setup::1.0?IconImage
+Table:        Sop
+License:      
+Extra:        
+User:         
+Inputs:       1 to 1
+Subnet:       true
+Python:       false
+Empty:        false
+Modified:     Wed May 10 06:10:04 2017
+
