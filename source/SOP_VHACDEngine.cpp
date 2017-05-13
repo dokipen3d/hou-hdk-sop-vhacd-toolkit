@@ -39,7 +39,7 @@ INCLUDES                                                           |
 
 // hou-hdk-common
 #include <Macros/ParameterList.h>
-#include <Utility/GeometryTesting.h>
+#include <Utility/GeometryProcessing.h>
 #include <Utility/AttributeAccessing.h>
 #include <Utility/ParameterAccessing.h>
 
@@ -63,9 +63,7 @@ DEFINES                                                            |
 #define UI								GET_SOP_Namespace()::UI
 #define PRM_ACCESS						GET_Base_Namespace()::Utility::PRM
 #define ATTRIB_ACCESS					GET_Base_Namespace()::Utility::Attribute
-#define GDP_TEST						GET_Base_Namespace()::Utility::Geometry::Test
-
-#define THIS_SMALLPOLYGONS_TOLERANCE	0.000001f
+#define GDP_UTILS						GET_Base_Namespace()::Utility::Geometry
 
 /* -----------------------------------------------------------------
 LOGGER                                                             |
@@ -238,61 +236,14 @@ SOP_Operator::PullFloatPRM(GU_Detail* geometry, const PRM_Template& parameter, b
 bool 
 SOP_Operator::PrepareGeometry(GU_Detail* geometry, UT_AutoInterrupt progress)
 {
-	// triangulate all...
-	geometry->convex();
-
-	// ... and make sure we really got only triangles
-	for (auto primIt : geometry->getPrimitiveRange())
-	{
-		// make sure we can escape the loop
-		if (progress.wasInterrupted())
-		{
-			addError(SOP_ErrorCodes::SOP_MESSAGE, "Operation interrupted");
-			return false;
-		}
-
-		auto currentPoly = (GEO_PrimPoly*)geometry->getGEOPrimitive(primIt);
-
-		if (currentPoly->isClosed())
-		{
-			// maybe we still got polygons with more than 3 vertices?
-			auto currentVertexCount = currentPoly->getVertexRange().getEntries();
-			if (currentVertexCount > 3)
-			{
-				addError(SOP_ErrorCodes::SOP_MESSAGE, "Internal triangulation failure. Polygons with 4 or more vertices detected.");
-				return false;
-			}
-
-			// collapse polygons with less than 3 vertices
-			if (currentVertexCount < 3)
-			{
-				auto nonTriPointsGroup = geometry->newDetachedPointGroup();
-				nonTriPointsGroup->addRange(currentPoly->getPointRange());
-
-				// TODO: distance probably needs to be calculated per polygon, because we may have big non triangles and this will not collapse them
-				geometry->fastConsolidatePoints(10.0f, nonTriPointsGroup);
-			}
-		}
-
-		// collapse zero area and really tiny polygons + kill all open polygons
-		if (currentPoly->calcArea() <= (0.0f + THIS_SMALLPOLYGONS_TOLERANCE))
-		{
-			auto polys = geometry->newDetachedPrimitiveGroup();
-			auto points = geometry->newDetachedPointGroup();
-
-			points->addRange(currentPoly->getPointRange());
-			geometry->fastConsolidatePoints(10.0f, points);
-
-			polys->addOffset(primIt);
-			geometry->removeZeroAreaFaces(polys, false);
-		}
-	}
-
+	auto success = GDP_UTILS::Modify::Triangulate(this, geometry, SMALLPOLYGONS_TOLERANCE, progress);
+	if ((success && error() >= UT_ErrorSeverity::UT_ERROR_WARNING) || (!success && error() >= UT_ErrorSeverity::UT_ERROR_NONE)) return false;
+	
 	// is there anything left after preparation?		
-	bool success = GDP_TEST::IsEnoughPrimitives(this, geometry, 1, UT_String("After removing zero area and open polygons there are no other primitives left."));
+	success = GDP_UTILS::Test::IsEnoughPrimitives(this, geometry, 1, UT_String("After removing zero area and open polygons there are no other primitives left."));
 	if ((success && error() >= UT_ErrorSeverity::UT_ERROR_WARNING) || (!success && error() >= UT_ErrorSeverity::UT_ERROR_NONE)) return false;
 
-	return	GDP_TEST::IsEnoughPoints(this, gdp, 4, UT_String("Not enough points to create hull."));	
+	return	GDP_UTILS::Test::IsEnoughPoints(this, gdp, 4, UT_String("Not enough points to create hull."));	
 }
 
 void 
@@ -449,7 +400,7 @@ SOP_Operator::DrawConvexHull(GU_Detail* geometry, int hullid, VHACD::IVHACD::Con
 	auto start = geometry->appendPointBlock(hull.m_nPoints);
 
 	// make sure that we have at least 4 points, if we have less, than it's a flat geometry, so ignore it
-	if (GDP_TEST::IsEnoughPoints(this, geometry) && error() >= UT_ErrorSeverity::UT_ERROR_WARNING) return false;
+	if (GDP_UTILS::Test::IsEnoughPoints(this, geometry) && error() >= UT_ErrorSeverity::UT_ERROR_WARNING) return false;
 	
 	// set point positions				
 	int hullP = 0;
@@ -512,7 +463,7 @@ SOP_Operator::cookMySop(OP_Context& context)
 		if (duplicateSource(0, context) < UT_ErrorSeverity::UT_ERROR_WARNING && error() < UT_ErrorSeverity::UT_ERROR_WARNING)
 		{			
 			// make sure we got something to work on
-			bool success = GDP_TEST::IsEnoughPrimitives(this, gdp, 1, UT_String("Not enough primitives to create hull."));
+			bool success = GDP_UTILS::Test::IsEnoughPrimitives(this, gdp, 1, UT_String("Not enough primitives to create hull."));
 			if ((success && error() >= UT_ErrorSeverity::UT_ERROR_WARNING) || (!success && error() >= UT_ErrorSeverity::UT_ERROR_NONE)) return error();
 			
 			// do we want only polygons or do we try to convert anything to polygons?			
@@ -544,10 +495,10 @@ SOP_Operator::cookMySop(OP_Context& context)
 			}
 
 			// we need at least 4 points to get up from bed
-			success = GDP_TEST::IsEnoughPoints(this, gdp, 4, UT_String("Not enough points to create hull."));
+			success = GDP_UTILS::Test::IsEnoughPoints(this, gdp, 4, UT_String("Not enough points to create hull."));
 			if ((success && error() >= UT_ErrorSeverity::UT_ERROR_WARNING) || (!success && error() >= UT_ErrorSeverity::UT_ERROR_NONE)) return error();
 			
-			// we should have only polygons now, but we need to make sure that they are all correct
+			// we should have only polygons now, but we need to make sure that they are all correct			
 			success = PrepareGeometry(gdp, progress);
 			if ((success && error() >= UT_ErrorSeverity::UT_ERROR_WARNING) || (!success && error() >= UT_ErrorSeverity::UT_ERROR_NONE)) return error();
 
@@ -573,9 +524,7 @@ SOP_Operator::cookMySop(OP_Context& context)
 UNDEFINES                                                          |
 ----------------------------------------------------------------- */
 
-#undef THIS_SMALLPOLYGONS_TOLERANCE
-
-#undef GDP_TEST
+#undef GDP_UTILS
 #undef ATTRIB_ACCESS
 #undef PRM_ACCESS
 #undef UI
