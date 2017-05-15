@@ -27,4 +27,4 @@ Overview [video](https://www.youtube.com/watch?v=6Elao25HN9Y&list=PLWInthQ-GtLhz
 * *(optional)* `3rdParty` folder contains additional `.h`, `.cpp`, `.dll` and `.lib` files, provided by 3rd parties.
 * *(optional)* `home/otls` folder contains HDAs that accompany compiled DSO.
 * *(optional)* `home/icons` folder contains icons that are used by compiled DSO and/or HDAs.
-* *(optional)* `home/scripts` folder contains contains python and VEX scripts.
+* *(optional)* `home/scripts` folder contains python and VEX scripts.

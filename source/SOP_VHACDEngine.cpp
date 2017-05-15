@@ -349,6 +349,64 @@ SOP_Operator::PrepareDataForVHACD(GU_Detail* geometry, UT_AutoInterrupt progress
 	return true;
 }
 
+bool
+SOP_Operator::DrawConvexHull(GU_Detail* geometry, int hullid, VHACD::IVHACD::ConvexHull hull, UT_AutoInterrupt progress)
+{
+	// add amount of points that hull consists
+	auto start = geometry->appendPointBlock(hull.m_nPoints);
+
+	// make sure that we have at least 4 points, if we have less, than it's a flat geometry, so ignore it
+	if (GDP_UTILS::Test::IsEnoughPoints(this, geometry) && error() >= UT_ErrorSeverity::UT_ERROR_WARNING) return false;
+
+	// set point positions				
+	int hullP = 0;
+	std::vector<GA_Offset> pOffsets;
+	pOffsets.clear();
+
+	auto pointIt = GA_Iterator(geometry->getPointRangeSlice(gdp->pointIndex(start)));
+	while (!pointIt.atEnd())
+	{
+		// make sure we can escape the loop
+		if (progress.wasInterrupted())
+		{
+			this->_interfaceVHACD->Cancel();
+			addWarning(SOP_ErrorCodes::SOP_MESSAGE, "Operation interrupted");
+			return false;
+		}
+
+		auto currentPosition = UT_Vector3R(hull.m_points[hullP], hull.m_points[hullP + 1], hull.m_points[hullP + 2]);
+		this->_positionHandle.set(*pointIt, currentPosition);
+
+		hullP += 3;
+		pOffsets.push_back(*pointIt);
+		pointIt.advance();
+	}
+
+	// draw hull
+	for (unsigned int t = 0; t < hull.m_nTriangles * 3; t += 3)
+	{
+		// make sure we can escape the loop
+		if (progress.wasInterrupted())
+		{
+			this->_interfaceVHACD->Cancel();
+			addWarning(SOP_ErrorCodes::SOP_MESSAGE, "Operation interrupted");
+			return false;
+		}
+
+		// create triangle
+		auto polygon = static_cast<GEO_PrimPoly*>(geometry->appendPrimitive(GEO_PRIMPOLY));
+		polygon->setSize(0);
+
+		polygon->appendVertex(pOffsets[hull.m_triangles[t + 0]]);
+		polygon->appendVertex(pOffsets[hull.m_triangles[t + 1]]);
+		polygon->appendVertex(pOffsets[hull.m_triangles[t + 2]]);
+
+		polygon->close();
+	}
+
+	return true;
+}
+
 OP_ERROR 
 SOP_Operator::GenerateConvexHulls(GU_Detail* geometry, UT_AutoInterrupt progress)
 {
@@ -393,64 +451,6 @@ SOP_Operator::GenerateConvexHulls(GU_Detail* geometry, UT_AutoInterrupt progress
 	return error();
 }
 
-bool 
-SOP_Operator::DrawConvexHull(GU_Detail* geometry, int hullid, VHACD::IVHACD::ConvexHull hull, UT_AutoInterrupt progress)
-{
-	// add amount of points that hull consists
-	auto start = geometry->appendPointBlock(hull.m_nPoints);
-
-	// make sure that we have at least 4 points, if we have less, than it's a flat geometry, so ignore it
-	if (GDP_UTILS::Test::IsEnoughPoints(this, geometry) && error() >= UT_ErrorSeverity::UT_ERROR_WARNING) return false;
-	
-	// set point positions				
-	int hullP = 0;
-	std::vector<GA_Offset> pOffsets;
-	pOffsets.clear();
-
-	auto pointIt = GA_Iterator(geometry->getPointRangeSlice(gdp->pointIndex(start)));
-	while (!pointIt.atEnd())
-	{
-		// make sure we can escape the loop
-		if (progress.wasInterrupted())
-		{
-			this->_interfaceVHACD->Cancel();
-			addWarning(SOP_ErrorCodes::SOP_MESSAGE, "Operation interrupted");
-			return false;
-		}
-
-		auto currentPosition = UT_Vector3R(hull.m_points[hullP], hull.m_points[hullP + 1], hull.m_points[hullP + 2]);
-		this->_positionHandle.set(*pointIt, currentPosition);
-
-		hullP += 3;
-		pOffsets.push_back(*pointIt);
-		pointIt.advance();
-	}
-
-	// draw hull
-	for (unsigned int t = 0; t < hull.m_nTriangles * 3; t += 3)
-	{
-		// make sure we can escape the loop
-		if (progress.wasInterrupted())
-		{
-			this->_interfaceVHACD->Cancel();
-			addWarning(SOP_ErrorCodes::SOP_MESSAGE, "Operation interrupted");
-			return false;
-		}
-
-		// create triangle
-		auto polygon = static_cast<GEO_PrimPoly*>(geometry->appendPrimitive(GEO_PRIMPOLY));
-		polygon->setSize(0);
-		
-		polygon->appendVertex(pOffsets[hull.m_triangles[t + 0]]);
-		polygon->appendVertex(pOffsets[hull.m_triangles[t + 1]]);
-		polygon->appendVertex(pOffsets[hull.m_triangles[t + 2]]);
-
-		polygon->close();
-	}
-
-	return true;
-}
-
 /* -----------------------------------------------------------------
 MAIN                                                               |
 ----------------------------------------------------------------- */
@@ -460,16 +460,16 @@ SOP_Operator::cookMySop(OP_Context& context)
 {
 	DEFAULTS_CookMySop()
 		
-		if (duplicateSource(0, context) < UT_ErrorSeverity::UT_ERROR_WARNING && error() < UT_ErrorSeverity::UT_ERROR_WARNING)
+		if (duplicateSource(0, context) < OP_ERROR::UT_ERROR_WARNING && error() < OP_ERROR::UT_ERROR_WARNING)
 		{			
 			// make sure we got something to work on
 			bool success = GDP_UTILS::Test::IsEnoughPrimitives(this, gdp, 1, UT_String("Not enough primitives to create hull."));
-			if ((success && error() >= UT_ErrorSeverity::UT_ERROR_WARNING) || (!success && error() >= UT_ErrorSeverity::UT_ERROR_NONE)) return error();
+			if ((success && error() >= OP_ERROR::UT_ERROR_WARNING) || (!success && error() >= OP_ERROR::UT_ERROR_NONE)) return error();
 			
 			// do we want only polygons or do we try to convert anything to polygons?			
-			bool polygonizeValueState;
-			PRM_ACCESS::Get::IntPRM(this, polygonizeValueState, UI::convertToPolygonsToggle_Parameter, currentTime);
-			if (polygonizeValueState)
+			bool convertToPolygonsState;
+			PRM_ACCESS::Get::IntPRM(this, convertToPolygonsState, UI::convertToPolygonsToggle_Parameter, currentTime);
+			if (convertToPolygonsState)
 			{
 				GEO_ConvertParms parms;
 				gdp->convert(parms);
@@ -496,25 +496,25 @@ SOP_Operator::cookMySop(OP_Context& context)
 
 			// we need at least 4 points to get up from bed
 			success = GDP_UTILS::Test::IsEnoughPoints(this, gdp, 4, UT_String("Not enough points to create hull."));
-			if ((success && error() >= UT_ErrorSeverity::UT_ERROR_WARNING) || (!success && error() >= UT_ErrorSeverity::UT_ERROR_NONE)) return error();
+			if ((success && error() >= OP_ERROR::UT_ERROR_WARNING) || (!success && error() >= OP_ERROR::UT_ERROR_NONE)) return error();
 			
 			// we should have only polygons now, but we need to make sure that they are all correct			
 			success = PrepareGeometry(gdp, progress);
-			if ((success && error() >= UT_ErrorSeverity::UT_ERROR_WARNING) || (!success && error() >= UT_ErrorSeverity::UT_ERROR_NONE)) return error();
+			if ((success && error() >= OP_ERROR::UT_ERROR_WARNING) || (!success && error() >= OP_ERROR::UT_ERROR_NONE)) return error();
 
 			// get parameters and logger/callback
 			SetupVHACD(gdp, currentTime);
-			this->_parametersVHACD.m_logger = &_loggerVHACD;
-			this->_parametersVHACD.m_callback = &_callbackVHACD;
+			this->_parametersVHACD.m_logger = &this->_loggerVHACD;
+			this->_parametersVHACD.m_callback = &this->_callbackVHACD;
 
 			// prepare data for V-HACD
 			success = PrepareDataForVHACD(gdp, progress, currentTime);
-			if ((success && error() >= UT_ErrorSeverity::UT_ERROR_WARNING) || (!success && error() >= UT_ErrorSeverity::UT_ERROR_NONE)) return error();
+			if ((success && error() >= OP_ERROR::UT_ERROR_WARNING) || (!success && error() >= OP_ERROR::UT_ERROR_NONE)) return error();
 
 			// lets make some hulls!
 			gdp->clear();
 			
-			if (GenerateConvexHulls(gdp, progress) >= UT_ErrorSeverity::UT_ERROR_WARNING && error() >= UT_ErrorSeverity::UT_ERROR_WARNING) return error();
+			if (GenerateConvexHulls(gdp, progress) >= OP_ERROR::UT_ERROR_WARNING && error() >= OP_ERROR::UT_ERROR_WARNING) return error();
 		}
 
 	return error();
