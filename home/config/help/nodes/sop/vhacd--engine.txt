@@ -47,3 +47,4 @@ Mode:
 - [Node:sop/vhacd--debug]
 - [Node:sop/vhacd--transform]
 - [Node:sop/vhacd--delete]
+- [Node:sop/vhacd--export]

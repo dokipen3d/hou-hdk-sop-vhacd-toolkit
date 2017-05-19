@@ -62,3 +62,4 @@ Delete Unused GRP:
 - [Node:sop/vhacd--merge]
 - [Node:sop/vhacd--debug]
 - [Node:sop/vhacd--transform]
+- [Node:sop/vhacd--export]

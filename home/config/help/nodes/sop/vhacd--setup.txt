@@ -34,3 +34,4 @@ Solo Group:
 - [Node:sop/vhacd--debug]
 - [Node:sop/vhacd--delete]
 - [Node:sop/vhacd--transform]
+- [Node:sop/vhacd--export]

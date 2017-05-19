@@ -397,9 +397,9 @@ SOP_Operator::DrawConvexHull(GU_Detail* geometry, int hullid, VHACD::IVHACD::Con
 		auto polygon = static_cast<GEO_PrimPoly*>(geometry->appendPrimitive(GEO_PRIMPOLY));
 		polygon->setSize(0);
 
-		polygon->appendVertex(pOffsets[hull.m_triangles[t + 0]]);
-		polygon->appendVertex(pOffsets[hull.m_triangles[t + 1]]);
 		polygon->appendVertex(pOffsets[hull.m_triangles[t + 2]]);
+		polygon->appendVertex(pOffsets[hull.m_triangles[t + 1]]);
+		polygon->appendVertex(pOffsets[hull.m_triangles[t + 0]]);				
 
 		polygon->close();
 	}

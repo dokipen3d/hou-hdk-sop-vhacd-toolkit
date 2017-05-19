@@ -73,3 +73,4 @@ Uniform Scale:
 - [Node:sop/vhacd--merge]
 - [Node:sop/vhacd--debug]
 - [Node:sop/vhacd--delete]
+- [Node:sop/vhacd--export]

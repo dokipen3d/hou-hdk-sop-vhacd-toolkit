@@ -1,0 +1,156 @@
+# Dialog script for vhacd::export::1.0 automatically generated
+
+{
+    name	vhacd::export::1.0
+    script	vhacd::export::1.0
+    label	"Export (v-hacd)"
+
+    help {
+	""
+    }
+
+    inputlabel	1	"Convex Hulls"
+    inputlabel	2	"Sub-Network Input #2"
+    inputlabel	3	"Sub-Network Input #3"
+    inputlabel	4	"Sub-Network Input #4"
+
+    group {
+	name	"hidden"
+	label	"Hidden"
+	invisibletab
+	tabbreak
+
+	parm {
+	    name	"counternode"
+	    label	"Counter Node"
+	    type	string
+	    default	{ "`chs(\"foreach_begin1_metadata1/parm\")`" }
+	}
+	parm {
+	    name	"canprocess"
+	    label	"Can Process"
+	    type	integer
+	    default	{ "0" }
+	    range	{ 0! 1 }
+	}
+    }
+
+    groupsimple {
+	name	"filtersection"
+	label	"Filter"
+
+	parm {
+	    name	"filtermode"
+	    label	"Mode"
+	    type	ordinal
+	    default	{ "0" }
+	    menu	{
+		"0"	"Bundle ID"
+		"1"	"Hull ID"
+	    }
+	}
+    }
+
+    groupsimple {
+	name	"mainsection"
+	label	"Main"
+
+	parm {
+	    name	"outputpath"
+	    label	"Output Path"
+	    type	geometry
+	    default	{ "" }
+	    parmtag	{ "filechooser_mode" "write" }
+	}
+	parm {
+	    name	"savetodisk"
+	    label	"Save To Disk"
+	    type	button
+	    default	{ "0" }
+	    parmtag	{ "script_callback" "hou.phm().SetCounter(kwargs)" }
+	    parmtag	{ "script_callback_language" "python" }
+	}
+	parm {
+	    name	"createjsonconfigfile"
+	    label	"Create JSON Config"
+	    type	toggle
+	    joinnext
+	    default	{ "1" }
+	}
+	parm {
+	    name	"sepparm"
+	    label	"Separator"
+	    type	separator
+	    default	{ "" }
+	}
+	parm {
+	    name	"appendattributenametopath"
+	    label	"Append ATT Name"
+	    type	toggle
+	    joinnext
+	    default	{ "1" }
+	}
+	parm {
+	    name	"sepparm2"
+	    label	"Separator"
+	    type	separator
+	    default	{ "" }
+	}
+	parm {
+	    name	"flipnormals"
+	    label	"Flip Normals"
+	    type	toggle
+	    joinnext
+	    default	{ "0" }
+	}
+	parm {
+	    name	"sepparm3"
+	    label	"Separator"
+	    type	separator
+	    default	{ "" }
+	}
+    }
+
+    groupsimple {
+	name	"additionalsection"
+	label	"Additional"
+
+	parm {
+	    name	"adddescription"
+	    label	"Description"
+	    type	toggle
+	    joinnext
+	    default	{ "0" }
+	    help	"Additional description displayed bellow node name in network view."
+	    parmtag	{ "script_callback" "hou.phm().description.Callback(kwargs)" }
+	    parmtag	{ "script_callback_language" "python" }
+	}
+	parm {
+	    name	"adddescriptionseparator"
+	    label	"Separator"
+	    type	separator
+	    default	{ "" }
+	}
+	parm {
+	    name	"cleandescription"
+	    label	"Clean"
+	    type	button
+	    default	{ "0" }
+	    help	"Cleans message field."
+	    hidewhen	"{ adddescription == 0 }"
+	    parmtag	{ "script_callback" "hou.phm().description.SetDefaultState(hou.pwd())" }
+	    parmtag	{ "script_callback_language" "python" }
+	}
+	parm {
+	    name	"descriptionmessage"
+	    label	"Message"
+	    type	string
+	    default	{ "" }
+	    help	"Message content that will be displayed below node name in network view."
+	    hidewhen	"{ adddescription == 0 }"
+	    parmtag	{ "editor" "1" }
+	    parmtag	{ "editorlines" "5" }
+	}
+    }
+
+}

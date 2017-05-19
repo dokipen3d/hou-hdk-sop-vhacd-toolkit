@@ -1,0 +1,11 @@
+from vhacd.common import Description as description
+reload(description)
+
+def SetCounter(kwargs):
+    this = kwargs['node']
+    
+    counterNodePath = '{0}/{1}'.format(this.path(), this.parm('counternode').eval())
+    counterNode = hou.node(counterNodePath)
+    
+    iters = counterNode.geometry().attribValue('numiterations')    
+    this.parm('canprocess').set(iters)

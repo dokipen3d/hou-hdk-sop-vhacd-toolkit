@@ -32,7 +32,7 @@ Content-Type: text/plain
 
 sopflags sopflags = 
 comment ""
-position -5.85185 -0.259145
+position -0.390531 -6.25682
 connectornextid 3
 flags =  lock off model off template off footprint off xray off bypass off display off render off highlight off unload off savedata off compress on colordefault on exposed on
 outputsNamed3
@@ -42,16 +42,16 @@ outputsNamed3
 }
 inputsNamed3
 {
-0 	setup1 1 1 "input1"
+0 	transform1 0 1 "input1"
 }
 inputs
 {
-0 	setup1 0 1
+0 	transform1 0 1
 }
 stat
 {
-  create 1494389865
-  modify 1494396152
+  create 1495043915
+  modify 1495074937
   author nodeway@lv-426
   access 0777
 }
@@ -89,7 +89,7 @@ Content-Type: text/plain
 }
 {
   create 1456090687
-  modify 1494390565
+  modify 1495043917
   author nodeway@lv-422
   access 0777
 }
@@ -1688,7 +1688,7 @@ inputs
 stat
 {
   create 1456025162
-  modify 1494396152
+  modify 1495074936
   author nodeway@lv-422
   access 0777
 }
@@ -2516,9 +2516,9 @@ douvw	[ 0	locks=0 ]	(	"off"	)
 map	[ 8	locks=0 ]	(	[ mapu	0 ] 	[ mapv	0 ] 	[ mapw	0 ] 	)
 docrease	[ 0	locks=0 ]	(	"off"	)
 crease	[ 8	locks=0 ]	(	[ crease	0 ] 	)
-donormal	[ 8	locks=0 ]	(	[ donormal	0 ] 	)
+donormal	[ 8	locks=0 ]	(	[ donormal	2 ] 	)
 normal	[ 8	locks=0 ]	(	[ normalx	0 ] 	[ normaly	0 ] 	[ normalz	0 ] 	)
-angle	[ 8	locks=0 ]	(	[ angle	35.299999999999997 ] 	)
+angle	[ 8	locks=0 ]	(	[ angle	40 ] 	)
 }
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
