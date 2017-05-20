@@ -96,6 +96,12 @@
 	    type	separator
 	    default	{ "" }
 	}
+    }
+
+    groupsimple {
+	name	"additionalsection"
+	label	"Additional"
+
 	parm {
 	    name	"flipnormals"
 	    label	"Flip Normals"
@@ -109,12 +115,6 @@
 	    type	separator
 	    default	{ "" }
 	}
-    }
-
-    groupsimple {
-	name	"additionalsection"
-	label	"Additional"
-
 	parm {
 	    name	"adddescription"
 	    label	"Description"

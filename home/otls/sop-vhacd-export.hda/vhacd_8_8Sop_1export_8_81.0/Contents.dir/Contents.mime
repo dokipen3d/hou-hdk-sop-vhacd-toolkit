@@ -20,11 +20,12 @@ Content-Type: text/plain
 
 sopflags sopflags = 
 comment ""
-position 1.10982 -10.6571
-connectornextid 1
+position -1.09431 -9.13029
+connectornextid 2
 flags =  lock off model off template off footprint off xray off bypass off display on render on highlight off unload off savedata off compress on colordefault on exposed on
 outputsNamed3
 {
+1 "output1"
 }
 inputsNamed3
 {
@@ -36,8 +37,8 @@ inputs
 }
 stat
 {
-  create 1495227584
-  modify 1495227610
+  create 1495073773
+  modify 1495238705
   author nodeway@lv-426
   access 0777
 }
@@ -142,7 +143,7 @@ startvalue	[ 0	locks=0 ]	(	1	)
 increment	[ 0	locks=0 ]	(	1	)
 class	[ 0	locks=0 ]	(	"primitive"	)
 useattrib	[ 0	locks=0 ]	(	"on"	)
-attrib	[ 0	locks=0	autoscope=1 ]	(	[ attrib	hull_id ] 	)
+attrib	[ 0	locks=0	autoscope=1 ]	(	[ attrib	bundle_id ] 	)
 usemaxiter	[ 0	locks=0 ]	(	"off"	)
 maxiter	[ 0	locks=0 ]	(	10	)
 blockpath	[ 0	locks=0 ]	(	../foreach_begin1	)
@@ -200,7 +201,7 @@ inputs
 stat
 {
   create 1495047608
-  modify 1495227447
+  modify 1495238554
   author nodeway@lv-426
   access 0777
 }
@@ -267,7 +268,7 @@ inputs
 stat
 {
   create 1495048373
-  modify 1495227441
+  modify 1495238553
   author nodeway@lv-426
   access 0777
 }
@@ -311,7 +312,7 @@ Content-Type: text/plain
 {
 version 0.8
 filemode	[ 0	locks=0 ]	(	"write"	)
-file	[ 0	locks=0	autoscope=1 ]	(	[ file	C:/Users/nodeway/Desktop/SWANN/Assets/__DIY/Geometry/Collision/door-handle-hull_id-6.obj ] 	)
+file	[ 0	locks=0	autoscope=1 ]	(	[ file	"" ] 	)
 reload	[ 8	locks=0 ]	(	[ reload	0 ] 	)
 objpattern	[ 0	locks=0 ]	(	*	)
 geodatapath	[ 0	locks=0 ]	(	""	)
@@ -502,7 +503,7 @@ inputs
 stat
 {
   create 1495059686
-  modify 1495227447
+  modify 1495238554
   author nodeway@lv-426
   access 0777
 }
@@ -913,7 +914,7 @@ elif mode == 1:
 if success == None:
     raise hou.NodeError(\"Attribute for specified filter mode doesn't exist on input geometry\")"	)
 userdata	[ 0	locks=0 ]	(	0	)
-filtermode	[ 8	locks=0 ]	(	[ filtermode	1 ] 	)
+filtermode	[ 8	locks=0 ]	(	[ filtermode	0 ] 	)
 }
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
@@ -960,7 +961,7 @@ inputs
 stat
 {
   create 1495084161
-  modify 1495226427
+  modify 1495238667
   author nodeway@lv-426
   access 0777
 }
@@ -1144,8 +1145,8 @@ if len(outPath) > 0:
         # close        
         configFile.close()                "	)
 userdata	[ 0	locks=0 ]	(	0	)
-filtermode	[ 8	locks=0 ]	(	[ filtermode	1 ] 	)
-outputpath	[ 0	locks=0	autoscope=1 ]	(	[ outputpath	C:/Users/nodeway/Desktop/SWANN/Assets/__DIY/Geometry/Collision/door-handle.obj ] 	)
+filtermode	[ 8	locks=0 ]	(	[ filtermode	0 ] 	)
+outputpath	[ 0	locks=0	autoscope=1 ]	(	[ outputpath	"" ] 	)
 appendattributenametopath	[ 8	locks=0 ]	(	[ appendattributenametopath	1 ] 	)
 sepparm	[ 0	locks=0 ]	(	)
 createjsonconfigfile	[ 8	locks=0 ]	(	[ createjsonconfigfile	1 ] 	)

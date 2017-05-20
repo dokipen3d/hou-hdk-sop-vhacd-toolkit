@@ -38,11 +38,11 @@ Append ATT Name:
     #id: appendattributenametopath
     Append attribute name, which is used to ouput geometry by, to each output file name.
 	
+== Additional ==
+
 Flip Normals:
     #id: flipnormals
     Flip normals of saved geometry.
-	
-== Additional ==
 
 [Include:parameters--description#adddescription]
 [Include:parameters--description#cleandescription]
