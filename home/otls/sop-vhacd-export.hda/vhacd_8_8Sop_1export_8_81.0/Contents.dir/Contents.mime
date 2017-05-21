@@ -20,9 +20,9 @@ Content-Type: text/plain
 
 sopflags sopflags = 
 comment ""
-position -1.09431 -9.13029
+position -0.62765 -8.86368
 connectornextid 2
-flags =  lock off model off template off footprint off xray off bypass off display on render on highlight off unload off savedata off compress on colordefault on exposed on
+flags =  lock off model off template off footprint off xray off bypass off display off render off highlight off unload off savedata off compress on colordefault on exposed on
 outputsNamed3
 {
 1 "output1"
@@ -38,7 +38,7 @@ inputs
 stat
 {
   create 1495073773
-  modify 1495238705
+  modify 1495389616
   author nodeway@lv-426
   access 0777
 }
@@ -63,7 +63,7 @@ Content-Disposition: attachment; filename="hdaroot.inp"
 Content-Type: text/plain
 
 1
-0 -4.5084699888241291 11.165900380255966 2 0 __NO_OWNER_NETWORK_BOX__ "FROMOUTPUT"
+0 -4.4999999888241291 9.883299995213747 2 0 __NO_OWNER_NETWORK_BOX__ "FROMOUTPUT"
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
 Content-Disposition: attachment; filename="hdaroot/foreach_end1.init"
@@ -78,7 +78,7 @@ Content-Type: text/plain
 
 sopflags sopflags = 
 comment ""
-position -2.31338 2.15894
+position -0.5 2.8277
 connectornextid 2
 flags =  lock off model off template off footprint off xray off bypass off display off render off highlight off unload off savedata off compress on colordefault off exposed on
 outputsNamed3
@@ -96,7 +96,7 @@ inputs
 stat
 {
   create 1495047608
-  modify 1495222344
+  modify 1495389186
   author nodeway@lv-426
   access 0777
 }
@@ -143,7 +143,7 @@ startvalue	[ 0	locks=0 ]	(	1	)
 increment	[ 0	locks=0 ]	(	1	)
 class	[ 0	locks=0 ]	(	"primitive"	)
 useattrib	[ 0	locks=0 ]	(	"on"	)
-attrib	[ 0	locks=0	autoscope=1 ]	(	[ attrib	bundle_id ] 	)
+attrib	[ 0	locks=0	autoscope=1 ]	(	[ attrib	hull_id ] 	)
 usemaxiter	[ 0	locks=0 ]	(	"off"	)
 maxiter	[ 0	locks=0 ]	(	10	)
 blockpath	[ 0	locks=0 ]	(	../foreach_begin1	)
@@ -183,7 +183,7 @@ Content-Type: text/plain
 
 sopflags sopflags = 
 comment ""
-position -2.31498 7.66606
+position -2.5 6.8723
 connectornextid 2
 flags =  lock off model off template off footprint off xray off bypass off display off render off highlight off unload off savedata off compress on colordefault off exposed on
 outputsNamed3
@@ -201,7 +201,7 @@ inputs
 stat
 {
   create 1495047608
-  modify 1495238554
+  modify 1495389206
   author nodeway@lv-426
   access 0777
 }
@@ -250,7 +250,7 @@ Content-Type: text/plain
 
 sopflags sopflags = 
 comment ""
-position -2.31498 3.22734
+position -0.5 3.85
 connectornextid 2
 flags =  lock off model off template off footprint off xray off bypass off display off render off highlight off unload off savedata off compress on colordefault on exposed on
 outputsNamed3
@@ -259,16 +259,16 @@ outputsNamed3
 }
 inputsNamed3
 {
-0 	switch_if_flip_normals 2 1 "input1"
+0 	reverse_normals_for_output 1 1 "input1"
 }
 inputs
 {
-0 	switch_if_flip_normals 0 1
+0 	reverse_normals_for_output 0 1
 }
 stat
 {
   create 1495048373
-  modify 1495238553
+  modify 1495389196
   author nodeway@lv-426
   access 0777
 }
@@ -312,7 +312,7 @@ Content-Type: text/plain
 {
 version 0.8
 filemode	[ 0	locks=0 ]	(	"write"	)
-file	[ 0	locks=0	autoscope=1 ]	(	[ file	"" ] 	)
+file	[ 0	locks=0	autoscope=1 ]	(	[ file	C:/Users/nodeway/Desktop/SWANN/Assets/__DIY/Geometry/Collision/door-handle-hull_id-0.obj ] 	)
 reload	[ 8	locks=0 ]	(	[ reload	0 ] 	)
 objpattern	[ 0	locks=0 ]	(	*	)
 geodatapath	[ 0	locks=0 ]	(	""	)
@@ -345,136 +345,6 @@ Content-Type: text/plain
 }
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="hdaroot/reverse_normals.init"
-Content-Type: text/plain
-
-type = reverse
-matchesdef = 0
-
---HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="hdaroot/reverse_normals.def"
-Content-Type: text/plain
-
-sopflags sopflags = 
-comment ""
-position -0.835189 5.26685
-connectornextid 2
-flags =  lock off model off template off footprint off xray off bypass off display off render off highlight off unload off savedata off compress on colordefault on exposed on
-outputsNamed3
-{
-1 "output1"
-}
-inputsNamed3
-{
-0 	py_compose_proper_path 1 1 "input1"
-}
-inputs
-{
-0 	py_compose_proper_path 0 1
-}
-stat
-{
-  create 1495048607
-  modify 1495227357
-  author nodeway@lv-426
-  access 0777
-}
-color UT_Color RGB 0.8 0.8 0.8 
-delscript ""
-exprlanguage hscript
-end
-
---HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="hdaroot/reverse_normals.parm"
-Content-Type: text/plain
-
-{
-version 0.8
-group	[ 0	locks=0 ]	(	""	)
-vtxsort	[ 0	locks=0 ]	(	"reverseu"	)
-vtxuoff	[ 0	locks=0 ]	(	0	)
-vtxvoff	[ 0	locks=0 ]	(	0	)
-}
-
---HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="hdaroot/reverse_normals.userdata"
-Content-Type: text/plain
-
-{
-	"___Version___":{
-		"type":"string",
-		"value":"16.0.557"
-	}
-}
-
---HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="hdaroot/reverse_normals_back_for_houdini.init"
-Content-Type: text/plain
-
-type = reverse
-matchesdef = 0
-
---HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="hdaroot/reverse_normals_back_for_houdini.def"
-Content-Type: text/plain
-
-sopflags sopflags = 
-comment ""
-position -2.31498 -0.602494
-connectornextid 2
-flags =  lock off model off template off footprint off xray off bypass off display off render off highlight off unload off savedata off compress on colordefault on exposed on
-outputsNamed3
-{
-1 "output1"
-}
-inputsNamed3
-{
-0 	reset_can_process 0 1 "input1"
-}
-inputs
-{
-0 	reset_can_process 0 1
-}
-stat
-{
-  create 1495048957
-  modify 1495227477
-  author nodeway@lv-426
-  access 0777
-}
-color UT_Color RGB 0.8 0.8 0.8 
-delscript ""
-exprlanguage hscript
-end
-
---HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="hdaroot/reverse_normals_back_for_houdini.parm"
-Content-Type: text/plain
-
-{
-version 0.8
-group	[ 0	locks=0 ]	(	""	)
-vtxsort	[ 0	locks=0 ]	(	"reverseu"	)
-vtxuoff	[ 0	locks=0 ]	(	0	)
-vtxvoff	[ 0	locks=0 ]	(	0	)
-}
-
---HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="hdaroot/reverse_normals_back_for_houdini.userdata"
-Content-Type: text/plain
-
-{
-	"___Version___":{
-		"type":"string",
-		"value":"16.0.557"
-	},
-	"nodeshape":{
-		"type":"string",
-		"value":"squared"
-	}
-}
-
---HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
 Content-Disposition: attachment; filename="hdaroot/foreach_begin1_metadata1.init"
 Content-Type: text/plain
 
@@ -487,8 +357,8 @@ Content-Type: text/plain
 
 sopflags sopflags = 
 comment ""
-position 0.848504 7.63876
-connectornextid 1
+position 1.5 6.8723
+connectornextid 2
 flags =  lock off model off template off footprint off xray off bypass off display off render off highlight off unload off savedata off compress on colordefault off exposed on
 outputsNamed3
 {
@@ -496,14 +366,16 @@ outputsNamed3
 }
 inputsNamed3
 {
+1 	make_sure_attributes_exist 0 1 "input1"
 }
 inputs
 {
+0 	make_sure_attributes_exist 0 1
 }
 stat
 {
   create 1495059686
-  modify 1495238554
+  modify 1495389658
   author nodeway@lv-426
   access 0777
 }
@@ -611,7 +483,7 @@ Content-Type: text/plain
 
 sopflags sopflags = 
 comment ""
-position -2.31498 0.777193
+position -0.5 1.66385
 connectornextid 2
 flags =  lock off model off template off footprint off xray off bypass off display off render off highlight off unload off savedata off compress on colordefault on exposed on
 outputsNamed3
@@ -629,7 +501,7 @@ inputs
 stat
 {
   create 1495070642
-  modify 1495227499
+  modify 1495389603
   author nodeway@lv-426
   access 0777
 }
@@ -682,8 +554,8 @@ Content-Type: text/plain
 
 sopflags sopflags = 
 comment ""
-position -4.48555 -3.19814
-connectornextid 3
+position -4.495 -0.454544
+connectornextid 1
 flags =  lock off model off template off footprint off xray off bypass off display off render off highlight off unload off savedata off compress on colordefault on exposed on
 outputsNamed3
 {
@@ -692,17 +564,17 @@ outputsNamed3
 inputsNamed3
 {
 0 	make_sure_attributes_exist 0 1 "input1"
-1 	switch_if_flip_normals1 2 1 "input2"
+3 	reverse_normals_back_for_houdini 1 1 "input2"
 }
 inputs
 {
 0 	make_sure_attributes_exist 0 1
-1 	switch_if_flip_normals1 0 1
+1 	reverse_normals_back_for_houdini 0 1
 }
 stat
 {
   create 1495070738
-  modify 1495227489
+  modify 1495389213
   author nodeway@lv-426
   access 0777
 }
@@ -761,7 +633,7 @@ Content-Type: text/plain
 
 sopflags sopflags = 
 comment ""
-position -4.48555 -5.20692
+position -4.5 -2.1723
 connectornextid 1
 flags =  lock off model off template off footprint off xray off bypass off display on render on highlight off unload off savedata off compress on colordefault off exposed on
 outputsNamed3
@@ -778,7 +650,7 @@ inputs
 stat
 {
   create 1495071321
-  modify 1495227499
+  modify 1495389216
   author nodeway@lv-426
   access 0777
 }
@@ -824,7 +696,7 @@ Content-Type: text/plain
 
 sopflags sopflags = 
 comment ""
-position -4.50847 9.04212
+position -4.5 7.85
 connectornextid 2
 flags =  lock off model off template off footprint off xray off bypass off display off render off highlight off unload off savedata off compress on colordefault on exposed on
 outputsNamed3
@@ -842,7 +714,7 @@ inputs
 stat
 {
   create 1495072964
-  modify 1495227034
+  modify 1495389210
   author nodeway@lv-426
   access 0777
 }
@@ -941,7 +813,7 @@ Content-Type: text/plain
 
 sopflags sopflags = 
 comment ""
-position -0.835189 6.46211
+position -0.5 5.85
 connectornextid 3
 flags =  lock off model off template off footprint off xray off bypass off display off render off highlight off unload off savedata off compress on colordefault on exposed on
 outputsNamed3
@@ -961,7 +833,7 @@ inputs
 stat
 {
   create 1495084161
-  modify 1495238667
+  modify 1495389199
   author nodeway@lv-426
   access 0777
 }
@@ -1145,8 +1017,8 @@ if len(outPath) > 0:
         # close        
         configFile.close()                "	)
 userdata	[ 0	locks=0 ]	(	0	)
-filtermode	[ 8	locks=0 ]	(	[ filtermode	0 ] 	)
-outputpath	[ 0	locks=0	autoscope=1 ]	(	[ outputpath	"" ] 	)
+filtermode	[ 8	locks=0 ]	(	[ filtermode	1 ] 	)
+outputpath	[ 0	locks=0	autoscope=1 ]	(	[ outputpath	C:/Users/nodeway/Desktop/SWANN/Assets/__DIY/Geometry/Collision/door-handle.obj ] 	)
 appendattributenametopath	[ 8	locks=0 ]	(	[ appendattributenametopath	1 ] 	)
 sepparm	[ 0	locks=0 ]	(	)
 createjsonconfigfile	[ 8	locks=0 ]	(	[ createjsonconfigfile	1 ] 	)
@@ -1169,160 +1041,156 @@ Content-Type: text/plain
 }
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="hdaroot/switch_if_flip_normals.init"
+Content-Disposition: attachment; filename="hdaroot/reverse_normals_back_for_houdini.init"
 Content-Type: text/plain
 
-type = switch
+type = reverse
 matchesdef = 0
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="hdaroot/switch_if_flip_normals.def"
+Content-Disposition: attachment; filename="hdaroot/reverse_normals_back_for_houdini.def"
 Content-Type: text/plain
 
 sopflags sopflags = 
 comment ""
-position -2.31498 4.39259
-connectornextid 3
+position -0.5 0.703185
+connectornextid 2
 flags =  lock off model off template off footprint off xray off bypass off display off render off highlight off unload off savedata off compress on colordefault on exposed on
 outputsNamed3
 {
-2 "output1"
-}
-inputsNamed3
-{
-0 	py_compose_proper_path 1 1 "input1"
-1 	reverse_normals 1 1 "input2"
-}
-inputs
-{
-0 	py_compose_proper_path 0 1
-1 	reverse_normals 0 1
-}
-stat
-{
-  create 1495221898
-  modify 1495227355
-  author nodeway@lv-426
-  access 0777
-}
-color UT_Color RGB 0.8 1 0.7 
-delscript ""
-exprlanguage hscript
-end
-
---HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="hdaroot/switch_if_flip_normals.chn"
-Content-Type: text/plain
-
-{
-    channel input {
-      lefttype = extend
-      righttype = extend
-      flags = 0
-      segment { length = 0 expr = ch(\"../flipnormals\") }
-    }
-  }
-
---HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="hdaroot/switch_if_flip_normals.parm"
-Content-Type: text/plain
-
-{
-version 0.8
-input	[ 0	locks=0 ]	(	[ input	0 ] 	)
-}
-
---HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="hdaroot/switch_if_flip_normals.userdata"
-Content-Type: text/plain
-
-{
-	"___Version___":{
-		"type":"string",
-		"value":"16.0.557"
-	},
-	"nodeshape":{
-		"type":"string",
-		"value":"circle"
-	}
-}
-
---HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="hdaroot/switch_if_flip_normals1.init"
-Content-Type: text/plain
-
-type = switch
-matchesdef = 0
-
---HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="hdaroot/switch_if_flip_normals1.def"
-Content-Type: text/plain
-
-sopflags sopflags = 
-comment ""
-position -3.74742 -1.50816
-connectornextid 3
-flags =  lock off model off template off footprint off xray off bypass off display off render off highlight off unload off savedata off compress on colordefault on exposed on
-outputsNamed3
-{
-2 "output1"
+1 "output1"
 }
 inputsNamed3
 {
 0 	reset_can_process 0 1 "input1"
-1 	reverse_normals_back_for_houdini 1 1 "input2"
 }
 inputs
 {
 0 	reset_can_process 0 1
-1 	reverse_normals_back_for_houdini 0 1
 }
 stat
 {
-  create 1495221898
-  modify 1495227485
+  create 1495388801
+  modify 1495389603
   author nodeway@lv-426
   access 0777
 }
-color UT_Color RGB 0.8 1 0.7 
+color UT_Color RGB 0.8 0.8 0.8 
 delscript ""
 exprlanguage hscript
 end
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="hdaroot/switch_if_flip_normals1.chn"
+Content-Disposition: attachment; filename="hdaroot/reverse_normals_back_for_houdini.chn"
 Content-Type: text/plain
 
 {
-    channel input {
+    channel vtxsort {
       lefttype = extend
       righttype = extend
+      default = 2
       flags = 0
-      segment { length = 0 expr = ch(\"../flipnormals\") }
+      segment { length = 0 value = 2 2 expr = "if (ch(\"../flipnormals\") == 1, 2, 0)" }
     }
   }
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="hdaroot/switch_if_flip_normals1.parm"
+Content-Disposition: attachment; filename="hdaroot/reverse_normals_back_for_houdini.parm"
 Content-Type: text/plain
 
 {
 version 0.8
-input	[ 0	locks=0 ]	(	[ input	0 ] 	)
+group	[ 0	locks=0 ]	(	""	)
+vtxsort	[ 8	locks=0 ]	(	[ vtxsort	2 ] 	)
+vtxuoff	[ 0	locks=0 ]	(	0	)
+vtxvoff	[ 0	locks=0 ]	(	0	)
 }
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="hdaroot/switch_if_flip_normals1.userdata"
+Content-Disposition: attachment; filename="hdaroot/reverse_normals_back_for_houdini.userdata"
 Content-Type: text/plain
 
 {
 	"___Version___":{
 		"type":"string",
 		"value":"16.0.557"
-	},
-	"nodeshape":{
+	}
+}
+
+--HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
+Content-Disposition: attachment; filename="hdaroot/reverse_normals_for_output.init"
+Content-Type: text/plain
+
+type = reverse
+matchesdef = 0
+
+--HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
+Content-Disposition: attachment; filename="hdaroot/reverse_normals_for_output.def"
+Content-Type: text/plain
+
+sopflags sopflags = 
+comment ""
+position -0.5 4.85
+connectornextid 2
+flags =  lock off model off template off footprint off xray off bypass off display off render off highlight off unload off savedata off compress on colordefault on exposed on
+outputsNamed3
+{
+1 "output1"
+}
+inputsNamed3
+{
+0 	py_compose_proper_path 1 1 "input1"
+}
+inputs
+{
+0 	py_compose_proper_path 0 1
+}
+stat
+{
+  create 1495388801
+  modify 1495389192
+  author nodeway@lv-426
+  access 0777
+}
+color UT_Color RGB 0.8 0.8 0.8 
+delscript ""
+exprlanguage hscript
+end
+
+--HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
+Content-Disposition: attachment; filename="hdaroot/reverse_normals_for_output.chn"
+Content-Type: text/plain
+
+{
+    channel vtxsort {
+      lefttype = extend
+      righttype = extend
+      default = 2
+      flags = 0
+      segment { length = 0 value = 2 2 expr = "if (ch(\"../flipnormals\") == 1, 2, 0)" }
+    }
+  }
+
+--HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
+Content-Disposition: attachment; filename="hdaroot/reverse_normals_for_output.parm"
+Content-Type: text/plain
+
+{
+version 0.8
+group	[ 0	locks=0 ]	(	""	)
+vtxsort	[ 8	locks=0 ]	(	[ vtxsort	0 ] 	)
+vtxuoff	[ 0	locks=0 ]	(	0	)
+vtxvoff	[ 0	locks=0 ]	(	0	)
+}
+
+--HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
+Content-Disposition: attachment; filename="hdaroot/reverse_normals_for_output.userdata"
+Content-Type: text/plain
+
+{
+	"___Version___":{
 		"type":"string",
-		"value":"circle"
+		"value":"16.0.557"
 	}
 }
 
@@ -1330,20 +1198,18 @@ Content-Type: text/plain
 Content-Disposition: attachment; filename="hdaroot.order"
 Content-Type: text/plain
 
-13
+11
 foreach_end1
 foreach_begin1
 save_files
-reverse_normals
-reverse_normals_back_for_houdini
 foreach_begin1_metadata1
 reset_can_process
 switch_if_process
 OUT_ConvexHulls
 make_sure_attributes_exist
 py_compose_proper_path
-switch_if_flip_normals
-switch_if_flip_normals1
+reverse_normals_back_for_houdini
+reverse_normals_for_output
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
 Content-Disposition: attachment; filename="hdaroot.net"
