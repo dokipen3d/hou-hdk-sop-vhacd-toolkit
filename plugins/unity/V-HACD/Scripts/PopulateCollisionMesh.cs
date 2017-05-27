@@ -33,12 +33,12 @@ namespace DIY.Utils
 {
     [ExecuteInEditMode]
     public class PopulateCollisionMesh : MonoBehaviour
-    {        
+    {
+        private const string                        COLLISION_CONTAINER_NAME = "CollisionMesh";
+
         // UI
         [SerializeField] private TextAsset          _configFile;
-        [SerializeField] private PhysicMaterial     _physicMaterial;
-        
-        private const string                        COLLISION_CONTAINER_NAME = "CollisionMesh";
+        [SerializeField] private PhysicMaterial     _physicMaterial;                
 
         private void OnDestroy()
         {

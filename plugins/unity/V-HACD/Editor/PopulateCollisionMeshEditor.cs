@@ -30,27 +30,54 @@ namespace DIY.Viewport
     [CustomEditor(typeof(PopulateCollisionMesh))]
     public class PopulateCollisionMeshEditor : Editor
     {
-        private PopulateCollisionMesh       _targetScript;
-
         private static readonly string[]    DONT_INCLUDE = { "m_Script" };
+
+        private PopulateCollisionMesh       _targetScript;
+        private SerializedProperty          _configFile;        
+
+        private void OnEnable()
+        {
+            this._configFile = this.serializedObject.FindProperty("_configFile");
+        }
 
         public override void OnInspectorGUI()
         {
             this._targetScript = (PopulateCollisionMesh)target;
 
             // handle default stuff
-            serializedObject.Update();
+            serializedObject.Update();            
+            LogError(this._configFile);
             DrawPropertiesExcluding(serializedObject, DONT_INCLUDE);
             serializedObject.ApplyModifiedProperties();
 
-            // handle custom stuff
-            var populateButton = GUILayout.Button("Populate");
-            var depopulateButton = GUILayout.Button("Depopulate");
-
             // bind events
             if (this._targetScript == null) return;
-            if (populateButton) this._targetScript.Populate();
-            if (depopulateButton) this._targetScript.Depopulate();
+            
+            EditorGUILayout.BeginHorizontal();            
+            if (GUILayout.Button("Populate")) this._targetScript.Populate();
+            if (GUILayout.Button("Depopulate")) this._targetScript.Depopulate();
+            
+            EditorGUILayout.EndHorizontal();
+        }        
+
+        private static void LogSerializedProperty(string propertyname, string logmessage, MessageType messagetype = MessageType.None)
+        {
+            var message = string.Format("{0} {1}", propertyname, logmessage);
+            EditorGUILayout.HelpBox(message, messagetype);
+        }
+
+        private static void LogError(SerializedProperty property)
+        {
+            var empty = false;
+            
+            switch (property.type)
+            {
+                case "PPtr<$TextAsset>":
+                    empty = property.objectReferenceValue == null;
+                    break;
+            }
+
+            if (empty) LogSerializedProperty(property.displayName, "field cannot be empty.", MessageType.Error);
         }
     }
 }
