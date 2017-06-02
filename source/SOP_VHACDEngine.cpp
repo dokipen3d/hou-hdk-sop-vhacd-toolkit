@@ -54,8 +54,6 @@ DEFINES                                                            |
 ----------------------------------------------------------------- */
 
 #define SOP_Operator					GET_SOP_Namespace()::SOP_VHACDEngine
-#define VHACD_Logger					GET_SOP_Namespace()::VHACDEngine_Logger
-#define VHACD_Callback					GET_SOP_Namespace()::VHACDEngine_Callback
 #define SOP_Base_Operator				SOP_Node
 #define SOP_InputName_0					"Geometry"
 #define SOP_IconName					"SOP_VHACD.png"
@@ -64,36 +62,6 @@ DEFINES                                                            |
 #define PRM_ACCESS						GET_Base_Namespace()::Utility::PRM
 #define ATTRIB_ACCESS					GET_Base_Namespace()::Utility::Attribute
 #define GDP_UTILS						GET_Base_Namespace()::Utility::Geometry
-
-/* -----------------------------------------------------------------
-LOGGER                                                             |
------------------------------------------------------------------ */
-
-VHACD_Logger::VHACDEngine_Logger() { }
-VHACD_Logger::~VHACDEngine_Logger() { }
-
-void 
-VHACD_Logger::Log(const char* const msg) { if (this->showMsg) std::cout << msg << std::endl; }
-
-/* -----------------------------------------------------------------
-LOGGER CALLBACK                                                    |
------------------------------------------------------------------ */
-
-VHACD_Callback::VHACDEngine_Callback() { }
-VHACD_Callback::~VHACDEngine_Callback() { }
-
-void
-VHACD_Callback::Update(const double overallProgress, const double stageProgress, const double operationProgress, const char* const stage, const char* const operation)
-{
-	if (this->showOverallProgress)
-	{
-		auto info = std::string("Overall Progress: ") + std::to_string((int)(overallProgress + 0.5)).c_str() + "%";
-		std::cout << std::setfill('-') << "Overall Progress: " << std::setw(52) << " " << (int)(overallProgress + 0.5) << "% " << std::endl;
-	}
-
-	if (this->showStageProgress) std::cout << stage << ": " << (int)(stageProgress + 0.5) << "% " << std::endl;
-	if (this->showOperationProgress) std::cout << operation << ": " << (int)(operationProgress + 0.5) << "% " << std::endl;
-}
 
 /* -----------------------------------------------------------------
 PARAMETERS                                                         |
@@ -148,8 +116,8 @@ SOP_Operator::updateParmsFlags()
 	/* ---------------------------- Set States --------------------------------------- */
 
 	// set output report state
-	PRM_ACCESS::Get::IntPRM(this, _currentShowReportValueState, UI::showProcessReportToggle_Parameter, currentTime);
-	visibilityState = this->_currentShowReportValueState ? 1 : 0;
+	PRM_ACCESS::Get::IntPRM(this, _showReportValueState, UI::showProcessReportToggle_Parameter, currentTime);
+	visibilityState = this->_showReportValueState ? 1 : 0;
 	changed |= setVisibleState(UI::reportModeChoiceMenu_Parameter.getToken(), visibilityState);
 
 	// update description active state
@@ -249,31 +217,31 @@ SOP_Operator::PrepareGeometry(GU_Detail* geometry, UT_AutoInterrupt progress)
 void 
 SOP_Operator::SetupVHACD(GU_Detail* geometry, fpreal time)
 {		
-	PRM_ACCESS::Get::IntPRM(this, _currentAllowParametersOverrideValueState, UI::allowParametersOverrideToggle_Parameter, time);
+	PRM_ACCESS::Get::IntPRM(this, _allowParametersOverrideValueState, UI::allowParametersOverrideToggle_Parameter, time);
 
 	// main parameters
-	this->_parametersVHACD.m_mode					= PullIntPRM(geometry, UI::modeChoiceMenu_Parameter, !this->_currentAllowParametersOverrideValueState, time);
-	this->_parametersVHACD.m_resolution				= PullIntPRM(geometry, UI::resolutionInteger_Parameter, !this->_currentAllowParametersOverrideValueState, time);
-	this->_parametersVHACD.m_depth					= PullIntPRM(geometry, UI::depthInteger_Parameter, !this->_currentAllowParametersOverrideValueState, time);
-	this->_parametersVHACD.m_concavity				= PullFloatPRM(geometry, UI::concavityFloat_Parameter, !this->_currentAllowParametersOverrideValueState, time);
-	this->_parametersVHACD.m_planeDownsampling		= PullIntPRM(geometry, UI::planeDownsamplingInteger_Parameter, !this->_currentAllowParametersOverrideValueState, time);
-	this->_parametersVHACD.m_convexhullDownsampling	= PullIntPRM(geometry, UI::convexHullDownsamplingInteger_Parameter, !this->_currentAllowParametersOverrideValueState, time);
-	this->_parametersVHACD.m_alpha					= PullFloatPRM(geometry, UI::alphaFloat_Parameter, !this->_currentAllowParametersOverrideValueState, time);
-	this->_parametersVHACD.m_beta					= PullFloatPRM(geometry, UI::betaFloat_Parameter, !this->_currentAllowParametersOverrideValueState, time);
-	this->_parametersVHACD.m_gamma					= PullFloatPRM(geometry, UI::gammaFloat_Parameter, !this->_currentAllowParametersOverrideValueState, time);
-	this->_parametersVHACD.m_maxNumVerticesPerCH	= PullIntPRM(geometry, UI::maxTriangleCountInteger_Parameter, !this->_currentAllowParametersOverrideValueState, time);
-	this->_parametersVHACD.m_minVolumePerCH			= PullFloatPRM(geometry, UI::adaptiveSamplingFloat_Parameter, !this->_currentAllowParametersOverrideValueState, time);
-	this->_parametersVHACD.m_pca					= PullIntPRM(geometry, UI::normalizeMshToggle_Parameter, !this->_currentAllowParametersOverrideValueState, time);
+	this->_parametersVHACD.m_mode					= PullIntPRM(geometry, UI::modeChoiceMenu_Parameter, !this->_allowParametersOverrideValueState, time);
+	this->_parametersVHACD.m_resolution				= PullIntPRM(geometry, UI::resolutionInteger_Parameter, !this->_allowParametersOverrideValueState, time);
+	this->_parametersVHACD.m_depth					= PullIntPRM(geometry, UI::depthInteger_Parameter, !this->_allowParametersOverrideValueState, time);
+	this->_parametersVHACD.m_concavity				= PullFloatPRM(geometry, UI::concavityFloat_Parameter, !this->_allowParametersOverrideValueState, time);
+	this->_parametersVHACD.m_planeDownsampling		= PullIntPRM(geometry, UI::planeDownsamplingInteger_Parameter, !this->_allowParametersOverrideValueState, time);
+	this->_parametersVHACD.m_convexhullDownsampling	= PullIntPRM(geometry, UI::convexHullDownsamplingInteger_Parameter, !this->_allowParametersOverrideValueState, time);
+	this->_parametersVHACD.m_alpha					= PullFloatPRM(geometry, UI::alphaFloat_Parameter, !this->_allowParametersOverrideValueState, time);
+	this->_parametersVHACD.m_beta					= PullFloatPRM(geometry, UI::betaFloat_Parameter, !this->_allowParametersOverrideValueState, time);
+	this->_parametersVHACD.m_gamma					= PullFloatPRM(geometry, UI::gammaFloat_Parameter, !this->_allowParametersOverrideValueState, time);
+	this->_parametersVHACD.m_maxNumVerticesPerCH	= PullIntPRM(geometry, UI::maxTriangleCountInteger_Parameter, !this->_allowParametersOverrideValueState, time);
+	this->_parametersVHACD.m_minVolumePerCH			= PullFloatPRM(geometry, UI::adaptiveSamplingFloat_Parameter, !this->_allowParametersOverrideValueState, time);
+	this->_parametersVHACD.m_pca					= PullIntPRM(geometry, UI::normalizeMshToggle_Parameter, !this->_allowParametersOverrideValueState, time);
 	
 	PRM_ACCESS::Get::IntPRM(this, _parametersVHACD.m_oclAcceleration, UI::useOpenCLToggle_Parameter, time);
 
 	// debug parameters
 #define VHACD_ReportModeHelper(showmsg, showoverallprogress, showstageprogress, showoperationprogress) this->_loggerVHACD.showMsg = showmsg; this->_callbackVHACD.showOverallProgress = showoverallprogress; this->_callbackVHACD.showStageProgress = showstageprogress; this->_callbackVHACD.showOperationProgress = showoperationprogress;	
-	PRM_ACCESS::Get::IntPRM(this, _currentShowReportValueState, UI::showProcessReportToggle_Parameter, time);
-	if (this->_currentShowReportValueState)
+	PRM_ACCESS::Get::IntPRM(this, _showReportValueState, UI::showProcessReportToggle_Parameter, time);
+	if (this->_showReportValueState)
 	{		
-		PRM_ACCESS::Get::IntPRM(this, _currentReportModeChoiceValueState, UI::reportModeChoiceMenu_Parameter, time);
-		switch (this->_currentReportModeChoiceValueState)
+		PRM_ACCESS::Get::IntPRM(this, _reportModeChoiceValueState, UI::reportModeChoiceMenu_Parameter, time);
+		switch (this->_reportModeChoiceValueState)
 		{
 			case 1:
 				{ VHACD_ReportModeHelper(true, false, false, false) }
@@ -532,6 +500,4 @@ UNDEFINES                                                          |
 #undef SOP_IconName
 #undef SOP_InputName_0
 #undef SOP_Base_Operator
-#undef VHACD_Callback
-#undef VHACD_Logger
 #undef SOP_Operator

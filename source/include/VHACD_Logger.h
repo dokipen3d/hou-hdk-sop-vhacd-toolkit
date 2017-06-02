@@ -25,88 +25,40 @@
 
 #pragma once
 
-#ifndef ____sop_vhacdengine_h____
-#define ____sop_vhacdengine_h____
+#ifndef ____vhacd_logger_h____
+#define ____vhacd_logger_h____
 
 /* -----------------------------------------------------------------
 INCLUDES                                                           |
 ----------------------------------------------------------------- */
-
-// SESI
-#include <SOP/SOP_Node.h>
-
-// std
-#include <vector>
-#include <string>
-#include <iomanip>
 
 // 3rdParty
 #include <VHACD.h>
 
 // hou-hdk-common
 #include <Macros/Namespace.h>
-#include <Macros/CookMySop.h>
-#include <Macros/DescriptionPRM.h>
-#include <Macros/UpdateParmsFlags.h>
-
-// this
-#include "VHACD_Logger.h"
-#include "VHACD_Callback.h"
 
 /* -----------------------------------------------------------------
-FORWARDS                                                           |
------------------------------------------------------------------ */
-
-class UT_AutoInterrupt;
-
-/* -----------------------------------------------------------------
-OPERATTOR                                                          |
+LOGGER                                                             |
 ----------------------------------------------------------------- */
 
 DECLARE_SOP_Namespace_Start()
 
-	class SOP_VHACDEngine : public SOP_Node
+	class VHACD_Logger : public VHACD::IVHACD::IUserLogger
 	{
-		DECLARE_CookMySop()
-		DECLARE_DescriptionPRM_Callback()		
-		DECLARE_UpdateParmsFlags()		
-
-	protected:
-		SOP_VHACDEngine(OP_Network* network, const char* name, OP_Operator* op);
-		virtual ~SOP_VHACDEngine() override;
-
 	public:
-		static OP_Node*				CreateMe(OP_Network* network, const char* name, OP_Operator* op);
+		VHACD_Logger() {};
+		~VHACD_Logger() override 
+		{};
 
-		static PRM_Template parametersList[];
+		void Log(const char* const msg) override 
+		{ 
+			if (this->showMsg) std::cout << msg << std::endl; 
+		}
 
-	private:
-		virtual const char*			inputLabel(unsigned input) const override;
-
-		exint						PullIntPRM(GU_Detail* geometry, const PRM_Template& parameter, bool interfaceonly = false, fpreal time = 0);
-		fpreal						PullFloatPRM(GU_Detail* geometry, const PRM_Template& parameter, bool interfaceonly = false, fpreal time = 0);
-		bool						PrepareGeometry(GU_Detail* geometry, UT_AutoInterrupt progress);
-		void						SetupVHACD(GU_Detail* geometry, fpreal time);
-		bool						PrepareDataForVHACD(GU_Detail* geometry, UT_AutoInterrupt progress, fpreal time);
-		bool						DrawConvexHull(GU_Detail* geometry, int hullid, VHACD::IVHACD::ConvexHull hull, UT_AutoInterrupt progress);
-		OP_ERROR					GenerateConvexHulls(GU_Detail* geometry, UT_AutoInterrupt progress);
-			
-		VHACD::IVHACD::Parameters	_parametersVHACD;
-		VHACD::IVHACD*				_interfaceVHACD;
-		std::vector<int>			_triangles;
-		std::vector<float>			_points;
-
-		GA_RWAttributeRef			_positionReference;
-		GA_RWHandleV3				_positionHandle;
-
-		bool						_allowParametersOverrideValueState;		
-		bool						_showReportValueState;
-		int							_reportModeChoiceValueState;	
-
-		VHACD_Logger				_loggerVHACD;
-		VHACD_Callback				_callbackVHACD;
+		bool showMsg;
 	};
 
 DECLARE_SOP_Namespace_End
 
-#endif // !____sop_vhacdengine_h____
+#endif // !____vhacd_logger_h____

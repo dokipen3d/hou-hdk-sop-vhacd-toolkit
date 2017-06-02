@@ -25,88 +25,48 @@
 
 #pragma once
 
-#ifndef ____sop_vhacdengine_h____
-#define ____sop_vhacdengine_h____
+#ifndef ____vhacd_callback_h____
+#define ____vhacd_callback_h____
 
 /* -----------------------------------------------------------------
 INCLUDES                                                           |
 ----------------------------------------------------------------- */
-
-// SESI
-#include <SOP/SOP_Node.h>
-
-// std
-#include <vector>
-#include <string>
-#include <iomanip>
 
 // 3rdParty
 #include <VHACD.h>
 
 // hou-hdk-common
 #include <Macros/Namespace.h>
-#include <Macros/CookMySop.h>
-#include <Macros/DescriptionPRM.h>
-#include <Macros/UpdateParmsFlags.h>
-
-// this
-#include "VHACD_Logger.h"
-#include "VHACD_Callback.h"
 
 /* -----------------------------------------------------------------
-FORWARDS                                                           |
------------------------------------------------------------------ */
-
-class UT_AutoInterrupt;
-
-/* -----------------------------------------------------------------
-OPERATTOR                                                          |
+CALLBACK                                                           |
 ----------------------------------------------------------------- */
 
 DECLARE_SOP_Namespace_Start()
 
-	class SOP_VHACDEngine : public SOP_Node
+	class VHACD_Callback : public VHACD::IVHACD::IUserCallback
 	{
-		DECLARE_CookMySop()
-		DECLARE_DescriptionPRM_Callback()		
-		DECLARE_UpdateParmsFlags()		
-
-	protected:
-		SOP_VHACDEngine(OP_Network* network, const char* name, OP_Operator* op);
-		virtual ~SOP_VHACDEngine() override;
-
 	public:
-		static OP_Node*				CreateMe(OP_Network* network, const char* name, OP_Operator* op);
+		VHACD_Callback() {};
+		~VHACD_Callback() override {};
 
-		static PRM_Template parametersList[];
+		void Update(const double overallProgress, const double stageProgress, const double operationProgress, const char* const stage, const char* const operation) override
+		{
+			if (this->showOverallProgress)
+			{
+				auto info = std::string("Overall Progress: ") + std::to_string((int)(overallProgress + 0.5)).c_str() + "%";
+				std::cout << std::setfill('-') << "Overall Progress: " << std::setw(52) << " " << (int)(overallProgress + 0.5) << "% " << std::endl;
+			}
 
-	private:
-		virtual const char*			inputLabel(unsigned input) const override;
+			if (this->showStageProgress) std::cout << stage << ": " << (int)(stageProgress + 0.5) << "% " << std::endl;
+			if (this->showOperationProgress) std::cout << operation << ": " << (int)(operationProgress + 0.5) << "% " << std::endl;
+		}
 
-		exint						PullIntPRM(GU_Detail* geometry, const PRM_Template& parameter, bool interfaceonly = false, fpreal time = 0);
-		fpreal						PullFloatPRM(GU_Detail* geometry, const PRM_Template& parameter, bool interfaceonly = false, fpreal time = 0);
-		bool						PrepareGeometry(GU_Detail* geometry, UT_AutoInterrupt progress);
-		void						SetupVHACD(GU_Detail* geometry, fpreal time);
-		bool						PrepareDataForVHACD(GU_Detail* geometry, UT_AutoInterrupt progress, fpreal time);
-		bool						DrawConvexHull(GU_Detail* geometry, int hullid, VHACD::IVHACD::ConvexHull hull, UT_AutoInterrupt progress);
-		OP_ERROR					GenerateConvexHulls(GU_Detail* geometry, UT_AutoInterrupt progress);
-			
-		VHACD::IVHACD::Parameters	_parametersVHACD;
-		VHACD::IVHACD*				_interfaceVHACD;
-		std::vector<int>			_triangles;
-		std::vector<float>			_points;
-
-		GA_RWAttributeRef			_positionReference;
-		GA_RWHandleV3				_positionHandle;
-
-		bool						_allowParametersOverrideValueState;		
-		bool						_showReportValueState;
-		int							_reportModeChoiceValueState;	
-
-		VHACD_Logger				_loggerVHACD;
-		VHACD_Callback				_callbackVHACD;
+		bool	showOverallProgress;
+		bool	showStageProgress;
+		bool	showOperationProgress;
 	};
 
 DECLARE_SOP_Namespace_End
 
-#endif // !____sop_vhacdengine_h____
+#endif // !____vhacd_callback_h____
