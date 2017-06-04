@@ -23,7 +23,7 @@
 
 using UnityEditor;
 
-namespace DIY.PostProcessor
+namespace DIY.Framework.PostProcessor
 {
     public class CollisionMeshPostprocessor : AssetPostprocessor
     {

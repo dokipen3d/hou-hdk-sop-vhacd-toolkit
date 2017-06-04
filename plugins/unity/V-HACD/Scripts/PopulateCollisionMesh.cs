@@ -29,7 +29,7 @@ using UnityEngine;
 using Newtonsoft.Json;
 using UnityEditor;
 
-namespace DIY.Utils
+namespace DIY.Framework.Utils
 {
     [ExecuteInEditMode]
     public class PopulateCollisionMesh : MonoBehaviour
