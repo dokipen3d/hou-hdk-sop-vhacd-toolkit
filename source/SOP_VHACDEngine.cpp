@@ -47,17 +47,17 @@ INCLUDES                                                           |
 #include <Enums/AttributeClass.h>
 
 // this
-#include "VHACDEngineParameters.h"
+#include "PRMs_VHACDEngine.h"
 
 /* -----------------------------------------------------------------
 DEFINES                                                            |
 ----------------------------------------------------------------- */
 
-#define SOP_Operator					GET_SOP_Namespace()::VHACDEngineOperator
+#define SOP_Operator					GET_SOP_Namespace()::SOP_VHACDEngine
 #define SOP_Base_Operator				SOP_Node
 #define SOP_InputName_0					"Geometry"
 
-#define UI								GET_SOP_Namespace()::VHACDEngineParameters
+#define UI								GET_SOP_Namespace()::PRMs_VHACDEngine
 #define PRM_ACCESS						GET_Base_Namespace()::Utility::PRM
 #define ATTRIB_ACCESS					GET_Base_Namespace()::Utility::Attribute
 #define GDP_UTILS						GET_Base_Namespace()::Utility::Geometry
@@ -131,10 +131,10 @@ IMPLEMENT_DescriptionPRM_Callback(SOP_Operator, UI)
 OPERATOR INITIALIZATION                                            |
 ----------------------------------------------------------------- */
 
-SOP_Operator::VHACDEngineOperator(OP_Network* network, const char* name, OP_Operator* op) : SOP_Base_Operator(network, name, op)
+SOP_Operator::SOP_VHACDEngine(OP_Network* network, const char* name, OP_Operator* op) : SOP_Base_Operator(network, name, op)
 { op->setIconName(UI::names.Get(CommonNameOption::ICON_NAME)); }
 
-SOP_Operator::~VHACDEngineOperator() { }
+SOP_Operator::~SOP_VHACDEngine() { }
 
 OP_Node* 
 SOP_Operator::CreateMe(OP_Network* network, const char* name, OP_Operator* op) 

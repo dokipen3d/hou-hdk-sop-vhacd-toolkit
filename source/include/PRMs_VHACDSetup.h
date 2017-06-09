@@ -23,8 +23,8 @@
 */
 
 #pragma once
-#ifndef ____vhacdsetup_parameters_h____
-#define ____vhacdsetup_parameters_h____
+#ifndef ____prms_vhacdsetup_h____
+#define ____prms_vhacdsetup_h____
 
 /* -----------------------------------------------------------------
 INCLUDES                                                           |
@@ -39,14 +39,14 @@ INCLUDES                                                           |
 #include <Macros/TogglePRM.h>
 
 // this
-#include "VHACDSetupOperator.h"
+#include "SOP_VHACDSetup.h"
 #include "CommonNameComposer.h"
 
 /* -----------------------------------------------------------------
 DEFINES                                                            |
 ----------------------------------------------------------------- */
 
-#define SOP_Operator				GET_SOP_Namespace()::VHACDSetupOperator
+#define SOP_Operator				GET_SOP_Namespace()::SOP_VHACDSetup
 
 #define COMMON_VALUE_HELPTEXT		"Specify value of attribute."
 #define COMMON_FALLBACK_HELPTEXT	"Specify fallback value of attribute."
@@ -59,7 +59,7 @@ PARAMETERS                                                         |
 
 DECLARE_SOP_Namespace_Start()
 
-	namespace VHACDSetupParameters
+	namespace PRMs_VHACDSetup
 	{
 		auto names = CommonName();		
 		__DECLARE__Filter_Section_PRM(2)
@@ -165,4 +165,4 @@ UNDEFINES                                                          |
 
 #undef SOP_Operator
 
-#endif // !____vhacdsetup_parameters_h____
+#endif // !____prms_vhacdsetup_h____

@@ -24,8 +24,8 @@
 */
 
 #pragma once
-#ifndef ____ui_vhacdengine_h____
-#define ____ui_vhacdengine_h____
+#ifndef ____prms_vhacdengine_h____
+#define ____prms_vhacdengine_h____
 
 /* -----------------------------------------------------------------
 INCLUDES                                                           |
@@ -39,14 +39,14 @@ INCLUDES                                                           |
 #include <Macros/TogglePRM.h>
 
 // this
-#include "VHACDEngineOperator.h"
+#include "SOP_VHACDEngine.h"
 #include "CommonName.h"
 
 /* -----------------------------------------------------------------
 DEFINES                                                            |
 ----------------------------------------------------------------- */
 
-#define SOP_Operator	GET_SOP_Namespace()::VHACDEngineOperator
+#define SOP_Operator	GET_SOP_Namespace()::SOP_VHACDEngine
 
 /* -----------------------------------------------------------------
 PARAMETERS                                                         |
@@ -54,7 +54,7 @@ PARAMETERS                                                         |
 
 DECLARE_SOP_Namespace_Start()
 
-	namespace VHACDEngineParameters
+	namespace PRMs_VHACDEngine
 	{
 		auto names = CommonName();
 
@@ -117,4 +117,4 @@ UNDEFINES                                                          |
 
 #undef SOP_Operator
 
-#endif // !____ui_vhacdengine_h____
+#endif // !____prms_vhacdengine_h____

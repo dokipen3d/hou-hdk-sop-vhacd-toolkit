@@ -23,8 +23,8 @@
 */
 
 #pragma once
-#ifndef ____vhacdsetup_operator_h____
-#define ____vhacdsetup_operator_h____
+#ifndef ____sop_vhacdsetup_h____
+#define ____sop_vhacdsetup_h____
 
 /* -----------------------------------------------------------------
 INCLUDES                                                           |
@@ -52,7 +52,7 @@ DECLARATION                                                        |
 
 DECLARE_SOP_Namespace_Start()
 
-	class VHACDSetupOperator : public SOP_Node
+	class SOP_VHACDSetup : public SOP_Node
 	{
 		DECLARE_CookMySop()
 		DECLARE_UpdateParmsFlags()
@@ -60,8 +60,8 @@ DECLARE_SOP_Namespace_Start()
 		DECLARE_DescriptionPRM_Callback()
 
 	protected:
-		virtual ~VHACDSetupOperator() override;
-		VHACDSetupOperator(OP_Network* network, const char* name, OP_Operator* op);
+		virtual ~SOP_VHACDSetup() override;
+		SOP_VHACDSetup(OP_Network* network, const char* name, OP_Operator* op);
 		virtual const char*			inputLabel(unsigned input) const override;
 
 	public:
@@ -105,11 +105,11 @@ SELECTOR DECLARATION                                               |
 
 DECLARE_SOP_Namespace_Start()
 
-class VHACDSetupSelector : public MSS_ReusableSelector
+class MSS_VHACDSetup : public MSS_ReusableSelector
 {
 public:
-	virtual ~VHACDSetupSelector();
-	VHACDSetupSelector(OP3D_View& viewer, PI_SelectorTemplate& templ);
+	virtual ~MSS_VHACDSetup();
+	MSS_VHACDSetup(OP3D_View& viewer, PI_SelectorTemplate& templ);
 
 	static BM_InputSelector*		CreateMe(BM_View& Viewer, PI_SelectorTemplate& templ);
 	virtual const char*				className() const;
@@ -117,4 +117,4 @@ public:
 
 DECLARE_SOP_Namespace_End
 
-#endif // !____vhacdsetup_operator_h____
+#endif // !____sop_vhacdsetup_h____

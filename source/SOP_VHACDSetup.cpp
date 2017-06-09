@@ -41,23 +41,23 @@ INCLUDES                                                           |
 #include <Enums/NodeErrorLevel.h>
 
 // this
-#include "VHACDSetupParameters.h"
+#include "PRMs_VHACDSetup.h"
 
 /* -----------------------------------------------------------------
 DEFINES                                                            |
 ----------------------------------------------------------------- */
 
-#define SOP_Operator			GET_SOP_Namespace()::VHACDSetupOperator
+#define SOP_Operator			GET_SOP_Namespace()::SOP_VHACDSetup
 #define SOP_SmallName			"vhacd::setup::1.1"
 #define SOP_Input_Name_0		"Geometry"
 #define SOP_Base_Operator		SOP_Node
-#define MSS_Selector			GET_SOP_Namespace()::VHACDSetupSelector
+#define MSS_Selector			GET_SOP_Namespace()::MSS_VHACDSetup
 
 // very important
 #define SOP_GroupFieldIndex_0	1
 #define SOP_GroupPRM			CONST_PrimitiveGroupInput0_Name
 
-#define UI						GET_SOP_Namespace()::VHACDSetupParameters
+#define UI						GET_SOP_Namespace()::PRMs_VHACDSetup
 #define PRM_ACCESS				GET_Base_Namespace()::Utility::PRM
 #define ATTRIB_ACCESS			GET_Base_Namespace()::Utility::Attribute
 
@@ -254,10 +254,10 @@ THIS_CALLBACK_Reset_IntPRM(SOP_Operator, SOP_Operator::CallbackAddNormalizeMeshA
 OPERATOR INITIALIZATION                                            |
 ----------------------------------------------------------------- */
 
-SOP_Operator::VHACDSetupOperator(OP_Network* network, const char* name, OP_Operator* op) : SOP_Base_Operator(network, name, op)
+SOP_Operator::SOP_VHACDSetup(OP_Network* network, const char* name, OP_Operator* op) : SOP_Base_Operator(network, name, op)
 { op->setIconName(UI::names.Get(CommonNameOption::ICON_NAME)); }
 
-SOP_Operator::~VHACDSetupOperator() { }
+SOP_Operator::~SOP_VHACDSetup() { }
 
 OP_Node* 
 SOP_Operator::CreateMe(OP_Network* network, const char* name, OP_Operator* op) { return new SOP_Operator(network, name, op); }
@@ -501,9 +501,9 @@ SOP_Operator::cookMySop(OP_Context& context)
 SELECTOR IMPLEMENTATION                                            |
 ----------------------------------------------------------------- */
 
-MSS_Selector::~VHACDSetupSelector() { }
+MSS_Selector::~MSS_VHACDSetup() { }
 
-MSS_Selector::VHACDSetupSelector(OP3D_View& viewer, PI_SelectorTemplate& templ) : MSS_ReusableSelector(viewer, templ, SOP_SmallName, SOP_GroupPRM, 0, true)
+MSS_Selector::MSS_VHACDSetup(OP3D_View& viewer, PI_SelectorTemplate& templ) : MSS_ReusableSelector(viewer, templ, SOP_SmallName, SOP_GroupPRM, 0, true)
 { this->setAllowUseExistingSelection(false); }
 
 BM_InputSelector*
@@ -512,7 +512,7 @@ MSS_Selector::CreateMe(BM_View& viewer, PI_SelectorTemplate& templ)
 
 const char*
 MSS_Selector::className() const
-{ return "VHACDSetupSelector"; }
+{ return "MSS_VHACDSetup"; }
 
 /* -----------------------------------------------------------------
 UNDEFINES                                                          |

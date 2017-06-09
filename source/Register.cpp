@@ -35,8 +35,8 @@ INCLUDES                                                           |
 #include <Macros/GroupMenuPRM.h>
 
 // this
-#include "VHACDEngineOperator.h"
-#include "VHACDSetupOperator.h"
+#include "SOP_VHACDEngine.h"
+#include "SOP_VHACDSetup.h"
 
 /* -----------------------------------------------------------------
 DEFINES                                                            |
@@ -54,19 +54,19 @@ newSelector(BM_ResourceManager* manager)
 	auto table = OP_Network::getOperatorTable(SOP_TABLE_NAME);
 	auto success = false;
 
-#define SOP_Operator		GET_SOP_Namespace()::VHACDEngineOperator
+#define SOP_Operator		GET_SOP_Namespace()::SOP_VHACDEngine
 #define SOP_SmallName		"vhacd::engine::1.0"
 #define SOP_BigName			"Engine (v-hacd)"
 
 	auto sopVHACDEngine = new OP_Operator(SOP_SmallName, SOP_BigName, SOP_Operator::CreateMe, SOP_Operator::parametersList, 1, 1, 0, 0, 0, 1, SOP_TabMenuPath);
 	success = table->addOperator(sopVHACDEngine);
 
-#define SOP_Operator		GET_SOP_Namespace()::VHACDSetupOperator
+#define SOP_Operator		GET_SOP_Namespace()::SOP_VHACDSetup
 #define SOP_SmallName		"vhacd::setup::1.1"
 #define SOP_BigName			"Setup (v-hacd)"
 #define SOP_GroupPRM		CONST_PrimitiveGroupInput0_Name
 
-#define MSS_Selector		GET_SOP_Namespace()::VHACDSetupSelector
+#define MSS_Selector		GET_SOP_Namespace()::MSS_VHACDSetup
 #define MSS_SmallName		"vhacd::setupselector::1.1"
 #define MSS_BigName			"Setup (v-hacd selector)"
 

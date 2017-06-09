@@ -64,15 +64,15 @@ OPERATTOR                                                          |
 
 DECLARE_SOP_Namespace_Start()
 
-	class VHACDEngineOperator : public SOP_Node
+	class SOP_VHACDEngine : public SOP_Node
 	{
 		DECLARE_CookMySop()
 		DECLARE_DescriptionPRM_Callback()		
 		DECLARE_UpdateParmsFlags()		
 
 	protected:
-		VHACDEngineOperator(OP_Network* network, const char* name, OP_Operator* op);
-		virtual ~VHACDEngineOperator() override;
+		SOP_VHACDEngine(OP_Network* network, const char* name, OP_Operator* op);
+		virtual ~SOP_VHACDEngine() override;
 
 	public:
 		static OP_Node*				CreateMe(OP_Network* network, const char* name, OP_Operator* op);
