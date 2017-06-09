@@ -29,52 +29,92 @@ INCLUDES                                                           |
 // SESI
 #include <UT/UT_DSOVersion.h>
 #include <OP/OP_OperatorTable.h>
+#include <BM/BM_ResourceManager.h>
+
+// hou-hdk-common
+#include <Macros/GroupMenuPRM.h>
 
 // this
-#include "SOP_VHACDEngine.h"
+#include "VHACDEngineOperator.h"
+#include "VHACDSetupOperator.h"
 
 /* -----------------------------------------------------------------
 DEFINES                                                            |
 ----------------------------------------------------------------- */
 
-#define SOP_Operator		GET_SOP_Namespace()::SOP_VHACDEngine
-#define SOP_SmallName		"vhacd::engine::1.0"
-#define SOP_BigName			"Engine (v-hacd)"
 #define SOP_TabMenuPath		"Toolkit/V-HACD"
+#define MSS_Prompt			"Select geometry. Press <enter> to accept."
 
 /* -----------------------------------------------------------------
 REGISTRATION                                                       |
 ----------------------------------------------------------------- */
-
-void 
-newSopOperator(OP_OperatorTable* table)
+void
+newSelector(BM_ResourceManager* manager)
 {
+	auto table = OP_Network::getOperatorTable(SOP_TABLE_NAME);
 	auto success = false;
 
-	auto sop = new OP_Operator
-	(
-		SOP_SmallName,
-		SOP_BigName,
-		SOP_Operator::CreateMe,
-		SOP_Operator::parametersList,
-		1,								// min inputs 
-		1,								// max inputs
-		0,
-		0,								// type of node OP_FLAG_GENERATOR (BE CAREFUL WITH THIS LITTLE FUCKER)
-		0,
-		1,								// outputs count
-		SOP_TabMenuPath
-	);
+#define SOP_Operator		GET_SOP_Namespace()::VHACDEngineOperator
+#define SOP_SmallName		"vhacd::engine::1.0"
+#define SOP_BigName			"Engine (v-hacd)"
 
-	success = table->addOperator(sop);
-	//table->addOpHidden(sop->getName());	
+	auto sopVHACDEngine = new OP_Operator(SOP_SmallName, SOP_BigName, SOP_Operator::CreateMe, SOP_Operator::parametersList, 1, 1, 0, 0, 0, 1, SOP_TabMenuPath);
+	success = table->addOperator(sopVHACDEngine);
+
+#define SOP_Operator		GET_SOP_Namespace()::VHACDSetupOperator
+#define SOP_SmallName		"vhacd::setup::1.1"
+#define SOP_BigName			"Setup (v-hacd)"
+#define SOP_GroupPRM		CONST_PrimitiveGroupInput0_Name
+
+#define MSS_Selector		GET_SOP_Namespace()::VHACDSetupSelector
+#define MSS_SmallName		"vhacd::setupselector::1.1"
+#define MSS_BigName			"Setup (v-hacd selector)"
+
+	auto sopVHACDSetup = new OP_Operator (SOP_SmallName, SOP_BigName, SOP_Operator::CreateMe, SOP_Operator::parametersList, 1, 1, 0, 0, 0, 1, SOP_TabMenuPath);
+	success = table->addOperator(sopVHACDSetup);	
+	if (success)
+	{
+		auto selectorVHACDSetup = new PI_SelectorTemplate(MSS_SmallName, MSS_BigName, SOP_TABLE_NAME);
+
+		// setup selector
+		selectorVHACDSetup->constructor((void*)&MSS_Selector::CreateMe);
+		selectorVHACDSetup->data(OP3DthePrimSelTypes);
+
+		success = manager->registerSelector(selectorVHACDSetup);
+		if (!success) return;
+
+		// bind selector		
+		success = manager->bindSelector
+		(
+			sopVHACDSetup,
+			MSS_SmallName,
+			MSS_BigName,
+			MSS_Prompt,
+			SOP_GroupPRM,					// Parameter to write group to.
+			0,								// Input number to wire up.
+			1,								// 1 means this input is required.
+			"0x000000ff",					// Prim/point mask selection.
+			0,
+			0,
+			0,
+			0,
+			false
+		);
+	}
 }
 
 /* -----------------------------------------------------------------
 UNDEFINES                                                          |
 ----------------------------------------------------------------- */
 
-#undef SOP_TabMenuPath
+#undef SOP_GroupPRM
+#undef MSS_BigName
+#undef MSS_SmallName
+#undef MSS_Selector
+
 #undef SOP_BigName
 #undef SOP_SmallName
 #undef SOP_Operator
+
+#undef MSS_Prompt
+#undef SOP_TabMenuPath

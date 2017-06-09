@@ -24,9 +24,8 @@
 */
 
 #pragma once
-
-#ifndef ____vhacd_callback_h____
-#define ____vhacd_callback_h____
+#ifndef ____userlogger_h____
+#define ____userlogger_h____
 
 /* -----------------------------------------------------------------
 INCLUDES                                                           |
@@ -39,34 +38,24 @@ INCLUDES                                                           |
 #include <Macros/Namespace.h>
 
 /* -----------------------------------------------------------------
-CALLBACK                                                           |
+LOGGER                                                             |
 ----------------------------------------------------------------- */
 
 DECLARE_SOP_Namespace_Start()
 
-	class VHACD_Callback : public VHACD::IVHACD::IUserCallback
+	class UserLogger : public VHACD::IVHACD::IUserLogger
 	{
 	public:
-		VHACD_Callback() {};
-		~VHACD_Callback() override {};
+		UserLogger() {};
+		~UserLogger() override 
+		{};
 
-		void Update(const double overallProgress, const double stageProgress, const double operationProgress, const char* const stage, const char* const operation) override
-		{
-			if (this->showOverallProgress)
-			{
-				auto info = std::string("Overall Progress: ") + std::to_string((int)(overallProgress + 0.5)).c_str() + "%";
-				std::cout << std::setfill('-') << "Overall Progress: " << std::setw(52) << " " << (int)(overallProgress + 0.5) << "% " << std::endl;
-			}
+		void Log(const char* const msg) override 
+		{ if (this->showMsg) std::cout << msg << std::endl; }
 
-			if (this->showStageProgress) std::cout << stage << ": " << (int)(stageProgress + 0.5) << "% " << std::endl;
-			if (this->showOperationProgress) std::cout << operation << ": " << (int)(operationProgress + 0.5) << "% " << std::endl;
-		}
-
-		bool	showOverallProgress;
-		bool	showStageProgress;
-		bool	showOperationProgress;
+		bool showMsg;
 	};
 
 DECLARE_SOP_Namespace_End
 
-#endif // !____vhacd_callback_h____
+#endif // !____userlogger_h____
