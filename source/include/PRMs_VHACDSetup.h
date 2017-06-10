@@ -62,7 +62,7 @@ DECLARE_SOP_Namespace_Start()
 	namespace PRMs_VHACDSetup
 	{
 		auto names = CommonName();		
-		__DECLARE__Filter_Section_PRM(2)
+		__DECLARE__Filter_Section_PRM(4)
 
 		DECLARE_PrimitiveGroup_Input_0_PRM(&SOP_Operator::CallbackProcessModeChoiceMenu, input0)
 		static auto		processModeChoiceMenuParm_Name = PRM_Name("processmode", "Process Mode");
@@ -76,6 +76,7 @@ DECLARE_SOP_Namespace_Start()
 		};
 		static auto		processModeChoiceMenuParm_ChoiceList = PRM_ChoiceList(PRM_CHOICELIST_SINGLE, processModeChoiceMenuParm_Choices);
 		auto			processModeChoiceMenu_Parameter = PRM_Template(PRM_ORD, 1, &processModeChoiceMenuParm_Name, &processModeChoiceMenuParm_Default, &processModeChoiceMenuParm_ChoiceList, &processModeChoiceMenuParm_Range, 0, 0, 1, "Specify to which part of geometry apply effect.");
+		DECLARE_Toggle_with_Separator_OFF_PRM("solospecifiedgroup", "Solo Group", "solospecifiedgroupseparator", 0, "Remove unselected geometry.", soloSpecifiedGroup)
 
 		__DECLARE_Main_Section_PRM(48)
 		auto composer0 = CommonNameComposer(names, CommonNameOption::DECOMPOSITION_MODE);		

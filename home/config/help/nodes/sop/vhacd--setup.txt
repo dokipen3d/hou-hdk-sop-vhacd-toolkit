@@ -17,8 +17,12 @@ Node updates or shifts attributes to keep proper order of convex hull/original g
 
 [Include:parameters--group#primitivegroupinput0]
 
+Process Mode:
+	#id: processmode
+	Specify if settings should be applied to selected or unselected part of geometry.
+
 Solo Group:
-	#id: sologroup
+	#id: solospecifiedgroup
 	Delete all geometry beside selected group.
 
 == Additional ==

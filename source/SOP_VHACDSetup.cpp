@@ -70,6 +70,8 @@ PARAMETERLIST_Start(SOP_Operator)
 	UI::filterSectionSwitcher_Parameter,
 	UI::input0PrimitiveGroup_Parameter,
 	UI::processModeChoiceMenu_Parameter,
+	UI::soloSpecifiedGroupToggle_Parameter,
+	UI::soloSpecifiedGroupSeparator_Parameter,
 	
 	UI::mainSectionSwitcher_Parameter,
 	UI::addDecompositionModeAttributeToggle_Parameter,
@@ -154,7 +156,8 @@ SOP_Operator::updateParmsFlags()
 	UT_String primitiveGroupPatern;
 	PRM_ACCESS::Get::StringPRM(this, primitiveGroupPatern, UI::input0PrimitiveGroup_Parameter, currentTime);
 	changed |= enableParm(UI::processModeChoiceMenu_Parameter.getToken(), primitiveGroupPatern != "");
-	
+	changed |= enableParm(UI::soloSpecifiedGroupToggle_Parameter.getToken(), primitiveGroupPatern != "");
+
 	PRM_ACCESS::Get::IntPRM(this, visibilityState, UI::addDecompositionModeAttributeToggle_Parameter, currentTime);
 	changed |= setVisibleState(UI::decompositionModeValueChoiceMenu_Parameter.getToken(), visibilityState);
 	changed |= setVisibleState(UI::decompositionModeFallbackInteger_Parameter.getToken(), visibilityState);
@@ -225,8 +228,11 @@ SOP_Operator::CallbackProcessModeChoiceMenu(void* data, int index, float time, c
 	PRM_ACCESS::Get::StringPRM(me, groupPattern, UI::mainSectionSwitcher_Parameter, time);	
 	if (groupPattern.length() < 1) return 0;
 
-	auto defVal = (exint)UI::processModeChoiceMenu_Parameter.getFactoryDefaults()->getOrdinal();	
-	PRM_ACCESS::Set::IntPRM(me, defVal, UI::processModeChoiceMenu_Parameter, time);
+	auto defVal0 = (exint)UI::processModeChoiceMenu_Parameter.getFactoryDefaults()->getOrdinal();
+	auto defVal1 = (exint)UI::soloSpecifiedGroupToggle_Parameter.getFactoryDefaults()->getOrdinal();
+
+	PRM_ACCESS::Set::IntPRM(me, defVal0, UI::processModeChoiceMenu_Parameter, time);
+	PRM_ACCESS::Set::IntPRM(me, defVal1, UI::soloSpecifiedGroupToggle_Parameter, time);
 	
 	return 1; 
 }
@@ -289,24 +295,47 @@ SOP_Operator::ProcessSpecifiedGeometry(UT_AutoInterrupt progress, fpreal time)
 	auto success = !this->_primitiveGroupInput0->isEmpty();
 	if (success)
 	{			
+		auto gop = GOP_Manager();
+
 		bool processModeState;
+		bool soloSpecifiedGroupState;
+
 		PRM_ACCESS::Get::IntPRM(this, processModeState, UI::processModeChoiceMenu_Parameter, time);
-		if (!processModeState)
-		{	
+		PRM_ACCESS::Get::IntPRM(this, soloSpecifiedGroupState, UI::soloSpecifiedGroupToggle_Parameter, time);
+
+		if (!processModeState && !soloSpecifiedGroupState)
+		{
 			auto primIt = GA_Iterator(this->gdp->getPrimitiveRange(this->_primitiveGroupInput0));
 			return SetupAttributes(primIt, progress, time);
 		}
-		else 
+		else if (!processModeState && soloSpecifiedGroupState)
 		{
-			auto gop = GOP_Manager();
 			auto nonSelectedPrimitives = (GA_PrimitiveGroup*)gop.createPrimitiveGroup(*this->gdp);
 			nonSelectedPrimitives->addRange(this->gdp->getPrimitiveRange());
 			nonSelectedPrimitives->removeRange(this->gdp->getPrimitiveRange(this->_primitiveGroupInput0));
+			this->gdp->deletePrimitives(*nonSelectedPrimitives, true);
+
+			auto primIt = GA_Iterator(this->gdp->getPrimitiveRange());
+			return SetupAttributes(primIt, progress, time);
+		}
+		else if (processModeState && !soloSpecifiedGroupState)
+		{
+			auto nonSelectedPrimitives = (GA_PrimitiveGroup*)gop.createPrimitiveGroup(*this->gdp);
+			nonSelectedPrimitives->addRange(this->gdp->getPrimitiveRange());
+			nonSelectedPrimitives->removeRange(this->gdp->getPrimitiveRange(this->_primitiveGroupInput0));			
 
 			auto primIt = GA_Iterator(this->gdp->getPrimitiveRange(nonSelectedPrimitives));
 			return SetupAttributes(primIt, progress, time);
 		}
+		else if (processModeState && soloSpecifiedGroupState)
+		{
+			this->gdp->deletePrimitives(*this->_primitiveGroupInput0, true);
+
+			auto primIt = GA_Iterator(this->gdp->getPrimitiveRange());
+			return SetupAttributes(primIt, progress, time);
+		}
 	}
+	else this->addWarning(SOP_MESSAGE, "Specified group is empty. Nothing will be applied.");
 
 	return error();
 }
@@ -355,66 +384,57 @@ SOP_Operator::UpdateFloatATT(GA_RWHandleR& attributeHandle, GA_Offset offset, co
 
 OP_ERROR
 SOP_Operator::SetupAttributes(GA_Iterator primit, UT_AutoInterrupt progress, fpreal time)
-{
-	// setup attributes	
+{	
 	bool addDecompositionModeState;
-	GA_RWHandleI decompositionModeHandle;
-	PRM_ACCESS::Get::IntPRM(this, addDecompositionModeState, UI::addDecompositionModeAttributeToggle_Parameter, time);	
-	if (addDecompositionModeState) AddIntATT(decompositionModeHandle, UI::decompositionModeValueChoiceMenu_Parameter, UI::decompositionModeFallbackInteger_Parameter, UI::names.Get(CommonNameOption::DECOMPOSITION_MODE), time);
-
 	bool addResolutionState;
-	GA_RWHandleI resolutionHandle;
-	PRM_ACCESS::Get::IntPRM(this, addResolutionState, UI::addResolutionAttributeToggle_Parameter, time);	
-	if (addResolutionState) AddIntATT(resolutionHandle, UI::resolutionValueInteger_Parameter, UI::resolutionFallbackInteger_Parameter, UI::names.Get(CommonNameOption::RESOLUTION), time);
-	
 	bool addDepthState;
-	GA_RWHandleI depthHandle;
-	PRM_ACCESS::Get::IntPRM(this, addDepthState, UI::addDepthAttributeToggle_Parameter, time);
-	if (addDepthState) AddIntATT(depthHandle, UI::depthValueInteger_Parameter, UI::depthFallbackInteger_Parameter, UI::names.Get(CommonNameOption::DEPTH), time);
-	
 	bool addConcavityState;
-	GA_RWHandleR concavityHandle;
-	PRM_ACCESS::Get::IntPRM(this, addConcavityState, UI::addConcavityAttributeToggle_Parameter, time);
-	if (addConcavityState) AddFloatATT(concavityHandle, UI::concavityValueFloat_Parameter, UI::concavityFallbackFloat_Parameter, UI::names.Get(CommonNameOption::CONCAVITY), time);
-
 	bool addPlaneDownsamplingState;
-	GA_RWHandleI planeDownsamplingHandle;
-	PRM_ACCESS::Get::IntPRM(this, addPlaneDownsamplingState, UI::addPlaneDownsamplingAttributeToggle_Parameter, time);
-	if (addPlaneDownsamplingState) AddIntATT(planeDownsamplingHandle, UI::planeDownsamplingValueInteger_Parameter, UI::planeDownsamplingFallbackInteger_Parameter, UI::names.Get(CommonNameOption::PLANE_DOWNSAMPLING), time);
-	
 	bool addConvexHullDownsamplingState;
-	GA_RWHandleI convexHullDownsamplingHandle;
-	PRM_ACCESS::Get::IntPRM(this, addConvexHullDownsamplingState, UI::addConvexHullDownsamplingAttributeToggle_Parameter, time);
-	if (addConvexHullDownsamplingState) AddIntATT(convexHullDownsamplingHandle, UI::convexHullDownsamplingValueInteger_Parameter, UI::convexHullDownsamplingFallbackInteger_Parameter, UI::names.Get(CommonNameOption::PLANE_DOWNSAMPLING), time);
-	
 	bool addAlphaState;
-	GA_RWHandleR alphaHandle;
-	PRM_ACCESS::Get::IntPRM(this, addAlphaState, UI::addAlphaAttributeToggle_Parameter, time);
-	if (addAlphaState) AddFloatATT(alphaHandle, UI::alphaValueFloat_Parameter, UI::alphaFallbackFloat_Parameter, UI::names.Get(CommonNameOption::ALPHA), time);
-
 	bool addBetaState;
-	GA_RWHandleR betaHandle;
-	PRM_ACCESS::Get::IntPRM(this, addBetaState, UI::addBetaAttributeToggle_Parameter, time);
-	if (addBetaState) AddFloatATT(betaHandle, UI::betaValueFloat_Parameter, UI::betaFallbackFloat_Parameter, UI::names.Get(CommonNameOption::BETA), time);
-
 	bool addGammaState;
-	GA_RWHandleR gammaHandle;
-	PRM_ACCESS::Get::IntPRM(this, addGammaState, UI::addGammaAttributeToggle_Parameter, time);
-	if (addGammaState) AddFloatATT(gammaHandle, UI::gammaValueFloat_Parameter, UI::gammaFallbackFloat_Parameter, UI::names.Get(CommonNameOption::GAMMA), time);
-
 	bool addMaxTriangleCountState;
-	GA_RWHandleI maxTriangleCountHandle;
-	PRM_ACCESS::Get::IntPRM(this, addMaxTriangleCountState, UI::addMaxTriangleCountAttributeToggle_Parameter, time);
-	if (addMaxTriangleCountState) AddIntATT(maxTriangleCountHandle, UI::maxTriangleCountValueInteger_Parameter, UI::maxTriangleCountFallbackInteger_Parameter, UI::names.Get(CommonNameOption::MAX_TRIANGLE_COUNT), time);
-
 	bool addAdaptiveSamplingState;
-	GA_RWHandleR adaptiveSamplingHandle;
-	PRM_ACCESS::Get::IntPRM(this, addAdaptiveSamplingState, UI::addAdaptiveSamplingAttributeToggle_Parameter, time);
-	if (addAdaptiveSamplingState) AddFloatATT(adaptiveSamplingHandle, UI::adaptiveSamplingValueFloat_Parameter, UI::adaptiveSamplingFallbackFloat_Parameter, UI::names.Get(CommonNameOption::ADAPTIVE_SAMPLING), time);
-
 	bool addNormalizeMeshState;
+
+	GA_RWHandleI decompositionModeHandle;
+	GA_RWHandleI resolutionHandle;
+	GA_RWHandleI depthHandle;
+	GA_RWHandleR concavityHandle;
+	GA_RWHandleI planeDownsamplingHandle;
+	GA_RWHandleI convexHullDownsamplingHandle;
+	GA_RWHandleR alphaHandle;
+	GA_RWHandleR betaHandle;
+	GA_RWHandleR gammaHandle;
+	GA_RWHandleI maxTriangleCountHandle;
+	GA_RWHandleR adaptiveSamplingHandle;
 	GA_RWHandleI normalizeMeshHandle;
+
+	PRM_ACCESS::Get::IntPRM(this, addDecompositionModeState, UI::addDecompositionModeAttributeToggle_Parameter, time);	
+	PRM_ACCESS::Get::IntPRM(this, addResolutionState, UI::addResolutionAttributeToggle_Parameter, time);
+	PRM_ACCESS::Get::IntPRM(this, addDepthState, UI::addDepthAttributeToggle_Parameter, time);
+	PRM_ACCESS::Get::IntPRM(this, addConcavityState, UI::addConcavityAttributeToggle_Parameter, time);
+	PRM_ACCESS::Get::IntPRM(this, addPlaneDownsamplingState, UI::addPlaneDownsamplingAttributeToggle_Parameter, time);
+	PRM_ACCESS::Get::IntPRM(this, addConvexHullDownsamplingState, UI::addConvexHullDownsamplingAttributeToggle_Parameter, time);
+	PRM_ACCESS::Get::IntPRM(this, addAlphaState, UI::addAlphaAttributeToggle_Parameter, time);
+	PRM_ACCESS::Get::IntPRM(this, addBetaState, UI::addBetaAttributeToggle_Parameter, time);
+	PRM_ACCESS::Get::IntPRM(this, addGammaState, UI::addGammaAttributeToggle_Parameter, time);
+	PRM_ACCESS::Get::IntPRM(this, addMaxTriangleCountState, UI::addMaxTriangleCountAttributeToggle_Parameter, time);
+	PRM_ACCESS::Get::IntPRM(this, addAdaptiveSamplingState, UI::addAdaptiveSamplingAttributeToggle_Parameter, time);
 	PRM_ACCESS::Get::IntPRM(this, addNormalizeMeshState, UI::addNormalizeMeshAttributeToggle_Parameter, time);
+
+	if (addDecompositionModeState) AddIntATT(decompositionModeHandle, UI::decompositionModeValueChoiceMenu_Parameter, UI::decompositionModeFallbackInteger_Parameter, UI::names.Get(CommonNameOption::DECOMPOSITION_MODE), time);
+	if (addResolutionState) AddIntATT(resolutionHandle, UI::resolutionValueInteger_Parameter, UI::resolutionFallbackInteger_Parameter, UI::names.Get(CommonNameOption::RESOLUTION), time);	
+	if (addDepthState) AddIntATT(depthHandle, UI::depthValueInteger_Parameter, UI::depthFallbackInteger_Parameter, UI::names.Get(CommonNameOption::DEPTH), time);	
+	if (addConcavityState) AddFloatATT(concavityHandle, UI::concavityValueFloat_Parameter, UI::concavityFallbackFloat_Parameter, UI::names.Get(CommonNameOption::CONCAVITY), time);
+	if (addPlaneDownsamplingState) AddIntATT(planeDownsamplingHandle, UI::planeDownsamplingValueInteger_Parameter, UI::planeDownsamplingFallbackInteger_Parameter, UI::names.Get(CommonNameOption::PLANE_DOWNSAMPLING), time);		
+	if (addConvexHullDownsamplingState) AddIntATT(convexHullDownsamplingHandle, UI::convexHullDownsamplingValueInteger_Parameter, UI::convexHullDownsamplingFallbackInteger_Parameter, UI::names.Get(CommonNameOption::PLANE_DOWNSAMPLING), time);	
+	if (addAlphaState) AddFloatATT(alphaHandle, UI::alphaValueFloat_Parameter, UI::alphaFallbackFloat_Parameter, UI::names.Get(CommonNameOption::ALPHA), time);
+	if (addBetaState) AddFloatATT(betaHandle, UI::betaValueFloat_Parameter, UI::betaFallbackFloat_Parameter, UI::names.Get(CommonNameOption::BETA), time);
+	if (addGammaState) AddFloatATT(gammaHandle, UI::gammaValueFloat_Parameter, UI::gammaFallbackFloat_Parameter, UI::names.Get(CommonNameOption::GAMMA), time);
+	if (addMaxTriangleCountState) AddIntATT(maxTriangleCountHandle, UI::maxTriangleCountValueInteger_Parameter, UI::maxTriangleCountFallbackInteger_Parameter, UI::names.Get(CommonNameOption::MAX_TRIANGLE_COUNT), time);
+	if (addAdaptiveSamplingState) AddFloatATT(adaptiveSamplingHandle, UI::adaptiveSamplingValueFloat_Parameter, UI::adaptiveSamplingFallbackFloat_Parameter, UI::names.Get(CommonNameOption::ADAPTIVE_SAMPLING), time);		
 	if (addNormalizeMeshState) AddIntATT(normalizeMeshHandle, UI::normalizeMeshValueToggle_Parameter, UI::normalizeMeshFallbackInteger_Parameter, UI::names.Get(CommonNameOption::NORMALIZE_MESH), time);
 	
 	// update attributes
