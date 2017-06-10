@@ -86,7 +86,6 @@ DECLARE_SOP_Namespace_Start()
 	private:		
 		OP_ERROR					ProcessWholeGeometry(UT_AutoInterrupt progress, fpreal time);
 		OP_ERROR					ProcessSpecifiedGeometry(UT_AutoInterrupt progress, fpreal time);
-		void						HandleErrorState();		
 
 		void						AddIntATT(GA_RWHandleI& attributeHandle, const PRM_Template& valueparameter, const PRM_Template& fallbackparameter, const char* attributename, fpreal time);
 		void						AddFloatATT(GA_RWHandleR& attributeHandle, const PRM_Template& valueparameter, const PRM_Template& fallbackparameter, const char* attributename, fpreal time);

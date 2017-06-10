@@ -307,40 +307,8 @@ SOP_Operator::ProcessSpecifiedGeometry(UT_AutoInterrupt progress, fpreal time)
 			return SetupAttributes(primIt, progress, time);
 		}
 	}
-	else HandleErrorState();
 
 	return error();
-}
-
-void
-SOP_Operator::HandleErrorState()
-{
-	// TODO: implement it
-	std::cout << "Selection is wrong!" << std::endl;
-	/*
-	// add warning or error?
-	switch (errormode)
-	{
-	case HOU_NODE_ERROR_LEVEL::Warning:
-	//this->addWarning(SOP_MESSAGE, "Empty group.");
-	// process whole or ignore?
-	break;
-
-	case HOU_NODE_ERROR_LEVEL::Error:
-	//this->addError(SOP_MESSAGE, "Empty group.");
-	// return error();
-	break;
-	}
-	*/
-
-	/*
-	auto success = this->_primitiveGroupInput0 && !this->_primitiveGroupInput0->isEmpty();
-
-	// to which part pf geometry apply effect
-	auto gop = GOP_Manager();
-	auto processedPrimitives = (GA_PrimitiveGroup*)gop.createPrimitiveGroup(*this->gdp);
-	processedPrimitives->addRange(this->gdp->getPrimitiveRange());
-	*/
 }
 
 void
