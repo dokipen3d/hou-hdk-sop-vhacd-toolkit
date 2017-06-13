@@ -22,8 +22,8 @@
 */
 
 #pragma once
-#ifndef ____commonnameoptions_h____
-#define ____commonnameoptions_h____
+#ifndef ____commonnameoption_h____
+#define ____commonnameoption_h____
 
 /* -----------------------------------------------------------------
 INCLUDES                                                           |
@@ -56,4 +56,4 @@ enum class CommonNameOption : exint
 	TETRAHEDRON
 };
 
-#endif // !____commonnameoptions_h____
+#endif // !____commonnameoption_h____

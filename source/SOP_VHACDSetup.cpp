@@ -228,8 +228,8 @@ SOP_Operator::CallbackProcessModeChoiceMenu(void* data, int index, float time, c
 	PRM_ACCESS::Get::StringPRM(me, groupPattern, UI::mainSectionSwitcher_Parameter, time);	
 	if (groupPattern.length() < 1) return 0;
 
-	auto defVal0 = (exint)UI::processModeChoiceMenu_Parameter.getFactoryDefaults()->getOrdinal();
-	auto defVal1 = (exint)UI::soloSpecifiedGroupToggle_Parameter.getFactoryDefaults()->getOrdinal();
+	auto defVal0 = static_cast<exint>(UI::processModeChoiceMenu_Parameter.getFactoryDefaults()->getOrdinal());
+	auto defVal1 = static_cast<exint>(UI::soloSpecifiedGroupToggle_Parameter.getFactoryDefaults()->getOrdinal());
 
 	PRM_ACCESS::Set::IntPRM(me, defVal0, UI::processModeChoiceMenu_Parameter, time);
 	PRM_ACCESS::Set::IntPRM(me, defVal1, UI::soloSpecifiedGroupToggle_Parameter, time);
@@ -260,7 +260,7 @@ THIS_CALLBACK_Reset_IntPRM(SOP_Operator, SOP_Operator::CallbackAddNormalizeMeshA
 OPERATOR INITIALIZATION                                            |
 ----------------------------------------------------------------- */
 
-SOP_Operator::SOP_VHACDSetup(OP_Network* network, const char* name, OP_Operator* op) : SOP_Base_Operator(network, name, op)
+SOP_Operator::SOP_VHACDSetup(OP_Network* network, const char* name, OP_Operator* op) : SOP_Base_Operator(network, name, op), _primitiveGroupInput0(nullptr)
 { op->setIconName(UI::names.Get(CommonNameOption::ICON_NAME)); }
 
 SOP_Operator::~SOP_VHACDSetup() { }
@@ -310,7 +310,7 @@ SOP_Operator::ProcessSpecifiedGeometry(UT_AutoInterrupt progress, fpreal time)
 		}
 		else if (!processModeState && soloSpecifiedGroupState)
 		{
-			auto nonSelectedPrimitives = (GA_PrimitiveGroup*)gop.createPrimitiveGroup(*this->gdp);
+			auto nonSelectedPrimitives = static_cast<GA_PrimitiveGroup*>(gop.createPrimitiveGroup(*this->gdp));
 			nonSelectedPrimitives->addRange(this->gdp->getPrimitiveRange());
 			nonSelectedPrimitives->removeRange(this->gdp->getPrimitiveRange(this->_primitiveGroupInput0));
 			this->gdp->deletePrimitives(*nonSelectedPrimitives, true);
@@ -320,7 +320,7 @@ SOP_Operator::ProcessSpecifiedGeometry(UT_AutoInterrupt progress, fpreal time)
 		}
 		else if (processModeState && !soloSpecifiedGroupState)
 		{
-			auto nonSelectedPrimitives = (GA_PrimitiveGroup*)gop.createPrimitiveGroup(*this->gdp);
+			auto nonSelectedPrimitives = static_cast<GA_PrimitiveGroup*>(gop.createPrimitiveGroup(*this->gdp));
 			nonSelectedPrimitives->addRange(this->gdp->getPrimitiveRange());
 			nonSelectedPrimitives->removeRange(this->gdp->getPrimitiveRange(this->_primitiveGroupInput0));			
 
@@ -496,7 +496,7 @@ MSS_Selector::MSS_VHACDSetup(OP3D_View& viewer, PI_SelectorTemplate& templ) : MS
 
 BM_InputSelector*
 MSS_Selector::CreateMe(BM_View& viewer, PI_SelectorTemplate& templ)
-{ return new MSS_Selector((OP3D_View&)viewer, templ); }
+{ return new MSS_Selector(reinterpret_cast<OP3D_View&>(viewer), templ); }
 
 const char*
 MSS_Selector::className() const

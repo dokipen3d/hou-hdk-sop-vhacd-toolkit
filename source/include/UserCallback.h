@@ -46,19 +46,19 @@ DECLARE_SOP_Namespace_Start()
 	class UserCallback : public VHACD::IVHACD::IUserCallback
 	{
 	public:
-		UserCallback() {};
-		~UserCallback() override {};
+		UserCallback(): showOverallProgress(false), showStageProgress(false), showOperationProgress(false) { } 
+		~UserCallback() override { }
 
 		void Update(const double overallProgress, const double stageProgress, const double operationProgress, const char* const stage, const char* const operation) override
 		{
 			if (this->showOverallProgress)
 			{
-				auto info = std::string("Overall Progress: ") + std::to_string((int)(overallProgress + 0.5)).c_str() + "%";
-				std::cout << std::setfill('-') << "Overall Progress: " << std::setw(52) << " " << (int)(overallProgress + 0.5) << "% " << std::endl;
+				auto info = std::string("Overall Progress: ") + std::to_string(static_cast<int>(overallProgress + 0.5)).c_str() + "%";
+				std::cout << std::setfill('-') << "Overall Progress: " << std::setw(52) << " " << static_cast<int>(overallProgress + 0.5) << "% " << std::endl;
 			}
 
-			if (this->showStageProgress) std::cout << stage << ": " << (int)(stageProgress + 0.5) << "% " << std::endl;
-			if (this->showOperationProgress) std::cout << operation << ": " << (int)(operationProgress + 0.5) << "% " << std::endl;
+			if (this->showStageProgress) std::cout << stage << ": " << static_cast<int>(stageProgress + 0.5) << "% " << std::endl;
+			if (this->showOperationProgress) std::cout << operation << ": " << static_cast<int>(operationProgress + 0.5) << "% " << std::endl;
 		}
 
 		bool	showOverallProgress;

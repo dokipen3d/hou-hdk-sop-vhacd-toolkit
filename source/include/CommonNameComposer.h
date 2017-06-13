@@ -40,7 +40,6 @@ DECLARE_SOP_Namespace_Start()
 
 	class CommonNameComposer
 	{
-	private:
 		std::string		_addName;
 		std::string		_addSeparatorName;		
 		std::string		_valueName;
@@ -56,16 +55,16 @@ DECLARE_SOP_Namespace_Start()
 		}
 
 		/// Create name for add part of parameter interface
-		const char*		AddName() { return this->_addName.c_str(); }
+		const char*		AddName() const { return this->_addName.c_str(); }
 
 		/// Create name for add part separator of parameter interface
-		const char*		AddSeparatorName() { return this->_addSeparatorName.c_str(); }
+		const char*		AddSeparatorName() const { return this->_addSeparatorName.c_str(); }
 		
 		/// Create name for value part of parameter interface
-		const char*		ValueName() { return this->_valueName.c_str(); }
+		const char*		ValueName() const { return this->_valueName.c_str(); }
 
 		/// Create name for fallback part of parameter interface
-		const char*		FallbackName() { return this->_fallbackName.c_str(); }
+		const char*		FallbackName() const { return this->_fallbackName.c_str(); }
 	};
 
 DECLARE_SOP_Namespace_End

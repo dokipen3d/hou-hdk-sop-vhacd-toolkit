@@ -41,7 +41,12 @@ DECLARATION                                                        |
 
 class CommonName
 {
+	void									Add(CommonNameOption key, const char* value) { this->_names[key] = value; }
+	UT_Map<CommonNameOption, const char*>	_names;
+
 public:
+	const char*								Get(CommonNameOption option) { return this->_names[option]; }
+
 	CommonName()
 	{
 		Add(CommonNameOption::ICON_NAME, "SOP_VHACD.png");
@@ -62,13 +67,7 @@ public:
 
 		Add(CommonNameOption::VOXEL, "Voxel");
 		Add(CommonNameOption::TETRAHEDRON, "Tetrahedron");
-	}
-
-	const char*								Get(CommonNameOption option) { return this->_names[option]; }	
-private:		
-	void									Add(CommonNameOption key, const char* value) { this->_names[key] = value; }
-
-	UT_Map<CommonNameOption, const char*>	_names;
+	}	
 };
 
 #endif // !____commonname_h____

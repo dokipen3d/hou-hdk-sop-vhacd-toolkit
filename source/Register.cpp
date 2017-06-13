@@ -77,7 +77,7 @@ newSelector(BM_ResourceManager* manager)
 		auto selectorVHACDSetup = new PI_SelectorTemplate(MSS_SmallName, MSS_BigName, SOP_TABLE_NAME);
 
 		// setup selector
-		selectorVHACDSetup->constructor((void*)&MSS_Selector::CreateMe);
+		selectorVHACDSetup->constructor(static_cast<void*>(&MSS_Selector::CreateMe));
 		selectorVHACDSetup->data(OP3DthePrimSelTypes);
 
 		success = manager->registerSelector(selectorVHACDSetup);

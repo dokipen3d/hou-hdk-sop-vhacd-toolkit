@@ -106,7 +106,7 @@ SOP_Operator::updateParmsFlags()
 	DEFAULTS_UpdateParmsFlags(SOP_Base_Operator)
 
 	// is input connected?
-	exint is0Connected = this->getInput(0) == NULL ? 0 : 1;
+	exint is0Connected = this->getInput(0) == nullptr ? 0 : 1;
 
 	/* ---------------------------- Set Global Visibility ---------------------------- */
 
@@ -131,7 +131,12 @@ IMPLEMENT_DescriptionPRM_Callback(SOP_Operator, UI)
 OPERATOR INITIALIZATION                                            |
 ----------------------------------------------------------------- */
 
-SOP_Operator::SOP_VHACDEngine(OP_Network* network, const char* name, OP_Operator* op) : SOP_Base_Operator(network, name, op)
+SOP_Operator::SOP_VHACDEngine(OP_Network* network, const char* name, OP_Operator* op) 
+: SOP_Base_Operator(network, name, op), 
+_interfaceVHACD(nullptr), 
+_allowParametersOverrideValueState(false), 
+_showReportValueState(false), 
+_reportModeChoiceValueState(0)
 { op->setIconName(UI::names.Get(CommonNameOption::ICON_NAME)); }
 
 SOP_Operator::~SOP_VHACDEngine() { }
@@ -243,15 +248,15 @@ SOP_Operator::SetupVHACD(GU_Detail* geometry, fpreal time)
 		PRM_ACCESS::Get::IntPRM(this, _reportModeChoiceValueState, UI::reportModeChoiceMenu_Parameter, time);
 		switch (this->_reportModeChoiceValueState)
 		{
-			case 1:
-				{ VHACD_ReportModeHelper(true, false, false, false) }
-				break;
-			case 2:
-				{ VHACD_ReportModeHelper(false, true, true, true) }
-				break;
-			default:
-				{ VHACD_ReportModeHelper(true, true, true, true) }
-				break;
+		case 1:
+			{ VHACD_ReportModeHelper(true, false, false, false) }
+			break;
+		case 2:
+			{ VHACD_ReportModeHelper(false, true, true, true) }
+			break;
+		default:
+			{ VHACD_ReportModeHelper(true, true, true, true) }
+			break;
 		}
 	}
 	else { VHACD_ReportModeHelper(false, false, false, false) }
@@ -381,7 +386,7 @@ SOP_Operator::GenerateConvexHulls(GU_Detail* geometry, UT_AutoInterrupt progress
 	// get interface
 	this->_interfaceVHACD = VHACD::CreateVHACD();
 
-	bool success = this->_interfaceVHACD->Compute(&this->_points[0], 3, (unsigned int)this->_points.size() / 3, &this->_triangles[0], 3, (unsigned int)this->_triangles.size() / 3, this->_parametersVHACD);
+	auto success = this->_interfaceVHACD->Compute(&this->_points[0], 3, static_cast<unsigned int>(this->_points.size()) / 3, &this->_triangles[0], 3, static_cast<unsigned int>(this->_triangles.size()) / 3, this->_parametersVHACD);
 	if (success)
 	{
 		auto hullCount = this->_interfaceVHACD->GetNConvexHulls();
@@ -428,62 +433,62 @@ SOP_Operator::cookMySop(OP_Context& context)
 {
 	DEFAULTS_CookMySop()
 		
-		if (duplicateSource(0, context) < OP_ERROR::UT_ERROR_WARNING && error() < OP_ERROR::UT_ERROR_WARNING)
-		{			
-			// make sure we got something to work on
-			bool success = GDP_UTILS::Test::IsEnoughPrimitives(this, gdp, 1, UT_String("Not enough primitives to create hull."));
-			if ((success && error() >= OP_ERROR::UT_ERROR_WARNING) || (!success && error() >= OP_ERROR::UT_ERROR_NONE)) return error();
+	if (duplicateSource(0, context) < OP_ERROR::UT_ERROR_WARNING && error() < OP_ERROR::UT_ERROR_WARNING)
+	{			
+		// make sure we got something to work on
+		bool success = GDP_UTILS::Test::IsEnoughPrimitives(this, gdp, 1, UT_String("Not enough primitives to create hull."));
+		if ((success && error() >= OP_ERROR::UT_ERROR_WARNING) || (!success && error() >= OP_ERROR::UT_ERROR_NONE)) return error();
 			
-			// do we want only polygons or do we try to convert anything to polygons?			
-			bool convertToPolygonsState;
-			PRM_ACCESS::Get::IntPRM(this, convertToPolygonsState, UI::convertToPolygonsToggle_Parameter, currentTime);
-			if (convertToPolygonsState)
+		// do we want only polygons or do we try to convert anything to polygons?			
+		bool convertToPolygonsState;
+		PRM_ACCESS::Get::IntPRM(this, convertToPolygonsState, UI::convertToPolygonsToggle_Parameter, currentTime);
+		if (convertToPolygonsState)
+		{
+			GEO_ConvertParms parms;
+			gdp->convert(parms);
+		}
+		else
+		{
+			for (auto primIt : gdp->getPrimitiveRange())
 			{
-				GEO_ConvertParms parms;
-				gdp->convert(parms);
-			}
-			else
-			{
-				for (auto primIt : gdp->getPrimitiveRange())
+				// make sure we can escape the loop
+				if (progress.wasInterrupted())
 				{
-					// make sure we can escape the loop
-					if (progress.wasInterrupted())
-					{
-						addError(SOP_ErrorCodes::SOP_MESSAGE, "Operation interrupted");
-						return error();
-					}
+					addError(SOP_ErrorCodes::SOP_MESSAGE, "Operation interrupted");
+					return error();
+				}
 
-					// only polygons allowed
-					if (gdp->getPrimitive(primIt)->getTypeId() != GA_PRIMPOLY)
-					{
-						addError(SOP_ErrorCodes::SOP_MESSAGE, "Non-polygon geometry detected on input.");
-						return error();
-					}
+				// only polygons allowed
+				if (gdp->getPrimitive(primIt)->getTypeId() != GA_PRIMPOLY)
+				{
+					addError(SOP_ErrorCodes::SOP_MESSAGE, "Non-polygon geometry detected on input.");
+					return error();
 				}
 			}
-
-			// we need at least 4 points to get up from bed
-			success = GDP_UTILS::Test::IsEnoughPoints(this, gdp, 4, UT_String("Not enough points to create hull."));
-			if ((success && error() >= OP_ERROR::UT_ERROR_WARNING) || (!success && error() >= OP_ERROR::UT_ERROR_NONE)) return error();
-			
-			// we should have only polygons now, but we need to make sure that they are all correct			
-			success = PrepareGeometry(gdp, progress);
-			if ((success && error() >= OP_ERROR::UT_ERROR_WARNING) || (!success && error() >= OP_ERROR::UT_ERROR_NONE)) return error();
-
-			// get parameters and logger/callback
-			SetupVHACD(gdp, currentTime);
-			this->_parametersVHACD.m_logger = &this->_loggerVHACD;
-			this->_parametersVHACD.m_callback = &this->_callbackVHACD;
-
-			// prepare data for V-HACD
-			success = PrepareDataForVHACD(gdp, progress, currentTime);
-			if ((success && error() >= OP_ERROR::UT_ERROR_WARNING) || (!success && error() >= OP_ERROR::UT_ERROR_NONE)) return error();
-
-			// lets make some hulls!
-			gdp->clear();
-			
-			if (GenerateConvexHulls(gdp, progress) >= OP_ERROR::UT_ERROR_WARNING && error() >= OP_ERROR::UT_ERROR_WARNING) return error();
 		}
+
+		// we need at least 4 points to get up from bed
+		success = GDP_UTILS::Test::IsEnoughPoints(this, gdp, 4, UT_String("Not enough points to create hull."));
+		if ((success && error() >= OP_ERROR::UT_ERROR_WARNING) || (!success && error() >= OP_ERROR::UT_ERROR_NONE)) return error();
+			
+		// we should have only polygons now, but we need to make sure that they are all correct			
+		success = PrepareGeometry(gdp, progress);
+		if ((success && error() >= OP_ERROR::UT_ERROR_WARNING) || (!success && error() >= OP_ERROR::UT_ERROR_NONE)) return error();
+
+		// get parameters and logger/callback
+		SetupVHACD(gdp, currentTime);
+		this->_parametersVHACD.m_logger = &this->_loggerVHACD;
+		this->_parametersVHACD.m_callback = &this->_callbackVHACD;
+
+		// prepare data for V-HACD
+		success = PrepareDataForVHACD(gdp, progress, currentTime);
+		if ((success && error() >= OP_ERROR::UT_ERROR_WARNING) || (!success && error() >= OP_ERROR::UT_ERROR_NONE)) return error();
+
+		// lets make some hulls!
+		gdp->clear();
+			
+		if (GenerateConvexHulls(gdp, progress) >= OP_ERROR::UT_ERROR_WARNING && error() >= OP_ERROR::UT_ERROR_WARNING) return error();
+	}
 
 	return error();
 }

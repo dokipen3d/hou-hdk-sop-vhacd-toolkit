@@ -66,7 +66,7 @@ DECLARE_SOP_Namespace_Start()
 
 	public:
 		static OP_Node*				CreateMe(OP_Network* network, const char* name, OP_Operator* op);
-		virtual OP_ERROR			cookInputGroups(OP_Context& context, int alone = 0);
+		OP_ERROR					cookInputGroups(OP_Context& context, int alone = 0) override;
 		static PRM_Template			parametersList[];
 
 		static int					CallbackProcessModeChoiceMenu(void* data, int index, float time, const PRM_Template* tmp);

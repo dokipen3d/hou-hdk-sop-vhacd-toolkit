@@ -72,7 +72,7 @@ DECLARE_SOP_Namespace_Start()
 
 	protected:
 		SOP_VHACDEngine(OP_Network* network, const char* name, OP_Operator* op);
-		virtual ~SOP_VHACDEngine() override;
+		~SOP_VHACDEngine() override;
 
 	public:
 		static OP_Node*				CreateMe(OP_Network* network, const char* name, OP_Operator* op);
@@ -80,7 +80,7 @@ DECLARE_SOP_Namespace_Start()
 		static PRM_Template			parametersList[];
 
 	private:
-		virtual const char*			inputLabel(unsigned input) const override;
+		const char*					inputLabel(unsigned input) const override;
 
 		exint						PullIntPRM(GU_Detail* geometry, const PRM_Template& parameter, bool interfaceonly = false, fpreal time = 0);
 		fpreal						PullFloatPRM(GU_Detail* geometry, const PRM_Template& parameter, bool interfaceonly = false, fpreal time = 0);
