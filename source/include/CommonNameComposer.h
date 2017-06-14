@@ -1,5 +1,5 @@
 /*
-	VHACDSetup utility to help compose consistent PRM names.
+	Utility to help compose consistent PRM names.
 
 	IMPORTANT! ------------------------------------------
 	* Macros starting and ending with '____' shouldn't be used anywhere outside of this file.
