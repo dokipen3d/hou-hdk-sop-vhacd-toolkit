@@ -19,6 +19,14 @@ Example of V-HACD use with [Unity](https://youtu.be/8CStATK1X5s) on YouTube.
 **TODO:**
 - [ ] update HDAs
 - [ ] update Python scripts
+- [ ] port SOP Debug to C++
+- [ ] port SOP Delete to C++
+- [ ] port SOP Export to C++
+- [ ] port SOP Generate to C++
+- [ ] port SOP Merge to C++
+- [ ] port SOP Scout to C++
+- [x] port SOP Setup to C++
+- [ ] port SOP Transform to C++
 - [ ] rework CMakeLists.txt to automatically link V-HACD library source files
 
 ## LEGEND (common for all plugins):
