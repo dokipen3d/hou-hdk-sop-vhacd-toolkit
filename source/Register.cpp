@@ -59,9 +59,10 @@ newSelector(BM_ResourceManager* manager)
 #define SOP_SmallName		"vhacd::engine::1.0"
 #define SOP_BigName			"Engine (v-hacd)"
 
-	auto sopVHACDEngine = new OP_Operator(SOP_SmallName, SOP_BigName, SOP_Operator::CreateMe, SOP_Operator::parametersList, 1, 1, 0, 0, 0, 1, SOP_TabMenuPath);
+	auto sopVHACDEngine = new OP_Operator(SOP_SmallName, SOP_BigName, SOP_Operator::CreateMe, SOP_Operator::parametersList, 1, 1, nullptr, 0, nullptr, 1, SOP_TabMenuPath);
 	success = table->addOperator(sopVHACDEngine);
 
+// TODO: Yes, I'm fully aware of redeclaration warning. CommonNameComposer is still in WIP state, so you have to live with this for now.
 #define SOP_Operator		GET_SOP_Namespace()::SOP_VHACDSetup
 #define SOP_SmallName		"vhacd::setup::1.1"
 #define SOP_BigName			"Setup (v-hacd)"
@@ -71,7 +72,7 @@ newSelector(BM_ResourceManager* manager)
 #define MSS_SmallName		"vhacd::setupselector::1.1"
 #define MSS_BigName			"Setup (v-hacd selector)"
 
-	auto sopVHACDSetup = new OP_Operator (SOP_SmallName, SOP_BigName, SOP_Operator::CreateMe, SOP_Operator::parametersList, 1, 1, 0, 0, 0, 1, SOP_TabMenuPath);
+	auto sopVHACDSetup = new OP_Operator (SOP_SmallName, SOP_BigName, SOP_Operator::CreateMe, SOP_Operator::parametersList, 1, 1, nullptr, 0, nullptr, 1, SOP_TabMenuPath);
 	success = table->addOperator(sopVHACDSetup);	
 	if (success)
 	{
@@ -96,9 +97,9 @@ newSelector(BM_ResourceManager* manager)
 			1,								// 1 means this input is required.
 			"0x000000ff",					// Prim/point mask selection.
 			0,
+			nullptr,
 			0,
-			0,
-			0,
+			nullptr,
 			false
 		);
 	}

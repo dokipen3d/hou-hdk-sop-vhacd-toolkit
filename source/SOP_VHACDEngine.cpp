@@ -48,6 +48,7 @@ INCLUDES                                                           |
 
 // this
 #include "PRMs_VHACDEngine.h"
+#include "ReportModeOption.h"
 
 /* -----------------------------------------------------------------
 DEFINES                                                            |
@@ -212,17 +213,19 @@ SOP_Operator::PrepareGeometry(GU_Detail* geometry, UT_AutoInterrupt progress)
 	auto success = GDP_UTILS::Modify::Triangulate(this, geometry, SMALLPOLYGONS_TOLERANCE, progress);
 	if ((success && error() >= UT_ErrorSeverity::UT_ERROR_WARNING) || (!success && error() >= UT_ErrorSeverity::UT_ERROR_NONE)) return false;
 	
-	// is there anything left after preparation?		
-	success = GDP_UTILS::Test::IsEnoughPrimitives(this, geometry, 1, UT_String("After removing zero area and open polygons there are no other primitives left."));
+	// is there anything left after preparation?	
+	auto message = UT_String("After removing zero area and open polygons there are no other primitives left.");
+	success = GDP_UTILS::Test::IsEnoughPrimitives(this, geometry, 1, message);
 	if ((success && error() >= UT_ErrorSeverity::UT_ERROR_WARNING) || (!success && error() >= UT_ErrorSeverity::UT_ERROR_NONE)) return false;
 
-	return	GDP_UTILS::Test::IsEnoughPoints(this, gdp, 4, UT_String("Not enough points to create hull."));	
+	message = UT_String("Not enough points to create hull.");
+	return	GDP_UTILS::Test::IsEnoughPoints(this, gdp, 4, message);	
 }
 
 void 
 SOP_Operator::SetupVHACD(GU_Detail* geometry, fpreal time)
 {		
-	PRM_ACCESS::Get::IntPRM(this, _allowParametersOverrideValueState, UI::allowParametersOverrideToggle_Parameter, time);
+	PRM_ACCESS::Get::IntPRM(this, this->_allowParametersOverrideValueState, UI::allowParametersOverrideToggle_Parameter, time);
 
 	// main parameters
 	this->_parametersVHACD.m_mode					= PullIntPRM(geometry, UI::modeChoiceMenu_Parameter, !this->_allowParametersOverrideValueState, time);
@@ -238,25 +241,19 @@ SOP_Operator::SetupVHACD(GU_Detail* geometry, fpreal time)
 	this->_parametersVHACD.m_minVolumePerCH			= PullFloatPRM(geometry, UI::adaptiveSamplingFloat_Parameter, !this->_allowParametersOverrideValueState, time);
 	this->_parametersVHACD.m_pca					= PullIntPRM(geometry, UI::normalizeMshToggle_Parameter, !this->_allowParametersOverrideValueState, time);
 	
-	PRM_ACCESS::Get::IntPRM(this, _parametersVHACD.m_oclAcceleration, UI::useOpenCLToggle_Parameter, time);
+	PRM_ACCESS::Get::IntPRM(this, this->_parametersVHACD.m_oclAcceleration, UI::useOpenCLToggle_Parameter, time);
 
 	// debug parameters
 #define VHACD_ReportModeHelper(showmsg, showoverallprogress, showstageprogress, showoperationprogress) this->_loggerVHACD.showMsg = showmsg; this->_callbackVHACD.showOverallProgress = showoverallprogress; this->_callbackVHACD.showStageProgress = showstageprogress; this->_callbackVHACD.showOperationProgress = showoperationprogress;	
-	PRM_ACCESS::Get::IntPRM(this, _showReportValueState, UI::showProcessReportToggle_Parameter, time);
+	PRM_ACCESS::Get::IntPRM(this, this->_showReportValueState, UI::showProcessReportToggle_Parameter, time);
 	if (this->_showReportValueState)
 	{		
-		PRM_ACCESS::Get::IntPRM(this, _reportModeChoiceValueState, UI::reportModeChoiceMenu_Parameter, time);
+		PRM_ACCESS::Get::IntPRM(this, this->_reportModeChoiceValueState, UI::reportModeChoiceMenu_Parameter, time);
 		switch (this->_reportModeChoiceValueState)
 		{
-		case 1:
-			{ VHACD_ReportModeHelper(true, false, false, false) }
-			break;
-		case 2:
-			{ VHACD_ReportModeHelper(false, true, true, true) }
-			break;
-		default:
-			{ VHACD_ReportModeHelper(true, true, true, true) }
-			break;
+			case static_cast<exint>(ReportModeOption::PROGESS_ONLY): { VHACD_ReportModeHelper(false, true, true, true) } break;
+			case static_cast<exint>(ReportModeOption::DETAILS_ONLY): { VHACD_ReportModeHelper(true, false, false, false) } break;
+			case static_cast<exint>(ReportModeOption::FULL): { VHACD_ReportModeHelper(true, true, true, true) } break;
 		}
 	}
 	else { VHACD_ReportModeHelper(false, false, false, false) }
@@ -277,7 +274,7 @@ SOP_Operator::PrepareDataForVHACD(GU_Detail* geometry, UT_AutoInterrupt progress
 	this->_triangles.clear();
 
 	// get position attribute
-	auto success = ATTRIB_ACCESS::Find::Vec3ATT(this, geometry, GA_AttributeOwner::GA_ATTRIB_POINT, "P", _positionHandle);
+	auto success = ATTRIB_ACCESS::Find::Vec3ATT(this, geometry, GA_AttributeOwner::GA_ATTRIB_POINT, "P", this->_positionHandle);
 	if (success && error() < UT_ErrorSeverity::UT_ERROR_WARNING)
 	{
 		// store positions, as continuous list from 0 to last, without breaking it per primitive		
@@ -293,7 +290,7 @@ SOP_Operator::PrepareDataForVHACD(GU_Detail* geometry, UT_AutoInterrupt progress
 				return false;
 			}
 
-			auto currentPosition = _positionHandle.get(*pointIt);
+			auto currentPosition = this->_positionHandle.get(*pointIt);
 
 			this->_points.push_back(currentPosition.x());
 			this->_points.push_back(currentPosition.y());
@@ -322,6 +319,7 @@ SOP_Operator::PrepareDataForVHACD(GU_Detail* geometry, UT_AutoInterrupt progress
 	return true;
 }
 
+// TODO: hullid is never used, leftover from time when I created attribute here
 bool
 SOP_Operator::DrawConvexHull(GU_Detail* geometry, int hullid, VHACD::IVHACD::ConvexHull hull, UT_AutoInterrupt progress)
 {
@@ -332,7 +330,7 @@ SOP_Operator::DrawConvexHull(GU_Detail* geometry, int hullid, VHACD::IVHACD::Con
 	if (GDP_UTILS::Test::IsEnoughPoints(this, geometry) && error() >= UT_ErrorSeverity::UT_ERROR_WARNING) return false;
 
 	// set point positions				
-	int hullP = 0;
+	exint hullP = 0;
 	std::vector<GA_Offset> pOffsets;
 	pOffsets.clear();
 
@@ -436,7 +434,8 @@ SOP_Operator::cookMySop(OP_Context& context)
 	if (duplicateSource(0, context) < OP_ERROR::UT_ERROR_WARNING && error() < OP_ERROR::UT_ERROR_WARNING)
 	{			
 		// make sure we got something to work on
-		bool success = GDP_UTILS::Test::IsEnoughPrimitives(this, gdp, 1, UT_String("Not enough primitives to create hull."));
+		auto message = UT_String("Not enough primitives to create hull.");
+		auto success = GDP_UTILS::Test::IsEnoughPrimitives(this, gdp, 1, message);
 		if ((success && error() >= OP_ERROR::UT_ERROR_WARNING) || (!success && error() >= OP_ERROR::UT_ERROR_NONE)) return error();
 			
 		// do we want only polygons or do we try to convert anything to polygons?			
@@ -468,7 +467,8 @@ SOP_Operator::cookMySop(OP_Context& context)
 		}
 
 		// we need at least 4 points to get up from bed
-		success = GDP_UTILS::Test::IsEnoughPoints(this, gdp, 4, UT_String("Not enough points to create hull."));
+		message = UT_String("Not enough points to create hull.");
+		success = GDP_UTILS::Test::IsEnoughPoints(this, gdp, 4, message);
 		if ((success && error() >= OP_ERROR::UT_ERROR_WARNING) || (!success && error() >= OP_ERROR::UT_ERROR_NONE)) return error();
 			
 		// we should have only polygons now, but we need to make sure that they are all correct			
