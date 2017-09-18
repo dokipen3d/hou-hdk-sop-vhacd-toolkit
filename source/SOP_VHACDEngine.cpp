@@ -165,11 +165,11 @@ SOP_Operator::PullIntPRM(GU_Detail* geometry, const PRM_Template& parameter, boo
 
 		// check is there attribute with the name that matches parameter name
 		// if it exist, use it as parm value, otherwise use UI value		
-		auto success = ATTRIB_ACCESS::Find::IntATT(this, geometry, GA_AttributeOwner::GA_ATTRIB_PRIMITIVE, parameter.getToken(), attributeHandle, HOU_NODE_ERROR_LEVEL::None);
+		const auto success = ATTRIB_ACCESS::Find::IntATT(this, geometry, GA_AttributeOwner::GA_ATTRIB_PRIMITIVE, parameter.getToken(), attributeHandle, HOU_NODE_ERROR_LEVEL::None);
 		if (success)
 		{
 			currentIntValue = attributeHandle.get(GA_Offset(0));
-			auto currentRangeValue = parameter.getRangePtr();
+			const auto currentRangeValue = parameter.getRangePtr();
 
 			if (currentIntValue < currentRangeValue->getParmMin() || currentIntValue > currentRangeValue->getParmMax()) PRM_ACCESS::Get::IntPRM(this, currentIntValue, parameter, time);
 		}
@@ -192,11 +192,11 @@ SOP_Operator::PullFloatPRM(GU_Detail* geometry, const PRM_Template& parameter, b
 
 		// check is there attribute with the name that matches parameter name
 		// if it exist, use it as parm value, otherwise use UI value		
-		auto success = ATTRIB_ACCESS::Find::FloatATT(this, geometry, GA_AttributeOwner::GA_ATTRIB_PRIMITIVE, parameter.getToken(), attributeHandle, HOU_NODE_ERROR_LEVEL::None);
+		const auto success = ATTRIB_ACCESS::Find::FloatATT(this, geometry, GA_AttributeOwner::GA_ATTRIB_PRIMITIVE, parameter.getToken(), attributeHandle, HOU_NODE_ERROR_LEVEL::None);
 		if (success)
 		{			
 			currentFloatValue = attributeHandle.get(GA_Offset(0));
-			auto currentRangeValue = parameter.getRangePtr();
+			const auto currentRangeValue = parameter.getRangePtr();
 
 			if (currentFloatValue < currentRangeValue->getParmMin() || currentFloatValue > currentRangeValue->getParmMax()) PRM_ACCESS::Get::FloatPRM(this, currentFloatValue, parameter, time);
 		}
@@ -310,7 +310,7 @@ SOP_Operator::PrepareDataForVHACD(GU_Detail* geometry, UT_AutoInterrupt progress
 				return false;
 			}
 
-			auto currPrim = geometry->getPrimitive(*polyIt);
+			const auto currPrim = geometry->getPrimitive(*polyIt);
 			for (auto i = 0; i < currPrim->getVertexCount(); ++i) this->_triangles.push_back(currPrim->getPointIndex(i));
 		}
 	}
@@ -324,7 +324,7 @@ bool
 SOP_Operator::DrawConvexHull(GU_Detail* geometry, int hullid, VHACD::IVHACD::ConvexHull hull, UT_AutoInterrupt progress)
 {
 	// add amount of points that hull consists
-	auto start = geometry->appendPointBlock(hull.m_nPoints);
+	const auto start = geometry->appendPointBlock(hull.m_nPoints);
 
 	// make sure that we have at least 4 points, if we have less, than it's a flat geometry, so ignore it
 	if (GDP_UTILS::Test::IsEnoughPoints(this, geometry) && error() >= UT_ErrorSeverity::UT_ERROR_WARNING) return false;
@@ -345,7 +345,7 @@ SOP_Operator::DrawConvexHull(GU_Detail* geometry, int hullid, VHACD::IVHACD::Con
 			return false;
 		}
 
-		auto currentPosition = UT_Vector3R(hull.m_points[hullP], hull.m_points[hullP + 1], hull.m_points[hullP + 2]);
+		const auto currentPosition = UT_Vector3R(hull.m_points[hullP], hull.m_points[hullP + 1], hull.m_points[hullP + 2]);
 		this->_positionHandle.set(*pointIt, currentPosition);
 
 		hullP += 3;

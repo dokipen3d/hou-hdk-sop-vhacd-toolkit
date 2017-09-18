@@ -72,10 +72,10 @@ DECLARE_SOP_Namespace_Start()
 		{
 			PRM_Name("0", names.Get(CommonNameOption::VOXEL)),
 			PRM_Name("1", names.Get(CommonNameOption::TETRAHEDRON)),
-			PRM_Name(0)
+			PRM_Name(nullptr)
 		};
 		static auto		modeChoiceMenuParm_ChoiceList = PRM_ChoiceList(PRM_CHOICELIST_SINGLE, modeChoiceMenuParm_Choices);
-		auto			modeChoiceMenu_Parameter = PRM_Template(PRM_ORD, 1, &modeChoiceMenuParm_Name, 0, &modeChoiceMenuParm_ChoiceList, &modeChoiceMenuParm_Range, 0, 0, 1, "0: Voxel-based approximate convex decomposition, 1: Tetrahedron-based approximate convex decomposition");
+		auto			modeChoiceMenu_Parameter = PRM_Template(PRM_ORD, 1, &modeChoiceMenuParm_Name, nullptr, &modeChoiceMenuParm_ChoiceList, &modeChoiceMenuParm_Range, 0, nullptr, 1, "0: Voxel-based approximate convex decomposition, 1: Tetrahedron-based approximate convex decomposition");
 
 		DECLARE_Custom_Int_MinR_to_MaxR_PRM(names.Get(CommonNameOption::RESOLUTION), "Resolution", 10000, 64000000, 100000, "Maximum number of voxels generated during the voxelization stage.", resolution)
 		DECLARE_Custom_Int_MinR_to_MaxR_PRM(names.Get(CommonNameOption::DEPTH), "Depth", 1, 32, 20, "Maximum number of clipping stages. During each split stage, all the model parts (with a concavity higher than the user defined threshold) are clipped according the 'best' clipping plane.", depth)
@@ -103,10 +103,10 @@ DECLARE_SOP_Namespace_Start()
 			PRM_Name("0", "Progress Only"),
 			PRM_Name("1", "Details Only"),
 			PRM_Name("2", "Full"),						
-			PRM_Name(0)
+			PRM_Name(nullptr)
 		};
 		static auto		reportModeChoiceMenuParm_ChoiceList = PRM_ChoiceList(PRM_CHOICELIST_SINGLE, reportModeChoiceMenuParm_Choices);
-		auto			reportModeChoiceMenu_Parameter = PRM_Template(PRM_ORD, 1, &reportModeChoiceMenuParm_Name, 0, &reportModeChoiceMenuParm_ChoiceList, &reportModeChoiceMenuParm_Range, 0, 0, 1, "How detailed report will be printed.");		
+		auto			reportModeChoiceMenu_Parameter = PRM_Template(PRM_ORD, 1, &reportModeChoiceMenuParm_Name, nullptr, &reportModeChoiceMenuParm_ChoiceList, &reportModeChoiceMenuParm_Range, 0, nullptr, 1, "How detailed report will be printed.");		
 	}
 
 DECLARE_SOP_Namespace_End

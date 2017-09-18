@@ -60,9 +60,9 @@ DECLARE_SOP_Namespace_Start()
 		DECLARE_DescriptionPRM_Callback()
 
 	protected:
-		virtual ~SOP_VHACDSetup() override;
+		~SOP_VHACDSetup() override;
 		SOP_VHACDSetup(OP_Network* network, const char* name, OP_Operator* op);
-		virtual const char*			inputLabel(unsigned input) const override;
+		const char*					inputLabel(unsigned input) const override;
 
 	public:
 		static OP_Node*				CreateMe(OP_Network* network, const char* name, OP_Operator* op);
@@ -111,7 +111,7 @@ public:
 	MSS_VHACDSetup(OP3D_View& viewer, PI_SelectorTemplate& templ);
 
 	static BM_InputSelector*		CreateMe(BM_View& Viewer, PI_SelectorTemplate& templ);
-	virtual const char*				className() const;
+	const char*						className() const override;
 };
 
 DECLARE_SOP_Namespace_End

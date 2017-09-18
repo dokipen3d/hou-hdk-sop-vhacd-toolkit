@@ -145,7 +145,7 @@ SOP_Operator::updateParmsFlags()
 	DEFAULTS_UpdateParmsFlags(SOP_Base_Operator)
 
 	// is input connected?
-	exint is0Connected = getInput(0) == NULL ? 0 : 1;
+	const exint is0Connected = getInput(0) == nullptr ? 0 : 1;
 
 	/* ---------------------------- Set Global Visibility ---------------------------- */
 
@@ -220,8 +220,8 @@ CALLBACKS                                                          |
 
 int 
 SOP_Operator::CallbackProcessModeChoiceMenu(void* data, int index, float time, const PRM_Template* tmp)
-{ 
-	auto me = reinterpret_cast<SOP_Operator*>(data);
+{
+	const auto me = reinterpret_cast<SOP_Operator*>(data);
 	if (!me) return 0; 
 
 	UT_String groupPattern;
@@ -237,8 +237,8 @@ SOP_Operator::CallbackProcessModeChoiceMenu(void* data, int index, float time, c
 	return 1; 
 }
 
-#define THIS_CALLBACK_Reset_IntPRM(operatorname, callbackcall, parameter1, parameter2) int callbackcall(void* data, int index, float time, const PRM_Template* tmp) { auto me = reinterpret_cast<operatorname*>(data); if (!me) return 0; auto defVal0 = (exint) parameter1.getFactoryDefaults()->getOrdinal(); auto defVal1 = (exint) parameter2.getFactoryDefaults()->getOrdinal(); PRM_ACCESS::Set::IntPRM(me, defVal0, parameter1, time); PRM_ACCESS::Set::IntPRM(me, defVal1, parameter2, time); return 1; }
-#define THIS_CALLBACK_Reset_FloatPRM(operatorname, callbackcall, parameter1, parameter2) int callbackcall(void* data, int index, float time, const PRM_Template* tmp) { auto me = reinterpret_cast<operatorname*>(data); if (!me) return 0; auto defVal0 = parameter1.getFactoryDefaults()->getFloat(); auto defVal1 = parameter2.getFactoryDefaults()->getFloat(); PRM_ACCESS::Set::FloatPRM(me, defVal0, parameter1, time); PRM_ACCESS::Set::FloatPRM(me, defVal1, parameter2, time); return 1; }
+#define THIS_CALLBACK_Reset_IntPRM(operatorname, callbackcall, parameter1, parameter2) int callbackcall(void* data, int index, float time, const PRM_Template* tmp) { const auto me = reinterpret_cast<operatorname*>(data); if (!me) return 0; auto defVal0 = static_cast<exint>(parameter1.getFactoryDefaults()->getOrdinal()); auto defVal1 = static_cast<exint>(parameter2.getFactoryDefaults()->getOrdinal()); PRM_ACCESS::Set::IntPRM(me, defVal0, parameter1, time); PRM_ACCESS::Set::IntPRM(me, defVal1, parameter2, time); return 1; }
+#define THIS_CALLBACK_Reset_FloatPRM(operatorname, callbackcall, parameter1, parameter2) int callbackcall(void* data, int index, float time, const PRM_Template* tmp) { const auto me = reinterpret_cast<operatorname*>(data); if (!me) return 0; auto defVal0 = parameter1.getFactoryDefaults()->getFloat(); auto defVal1 = parameter2.getFactoryDefaults()->getFloat(); PRM_ACCESS::Set::FloatPRM(me, defVal0, parameter1, time); PRM_ACCESS::Set::FloatPRM(me, defVal1, parameter2, time); return 1; }
 
 THIS_CALLBACK_Reset_IntPRM(SOP_Operator, SOP_Operator::CallbackAddDecompositionModeATT, UI::decompositionModeValueChoiceMenu_Parameter, UI::decompositionModeFallbackInteger_Parameter)
 THIS_CALLBACK_Reset_IntPRM(SOP_Operator, SOP_Operator::CallbackAddResolutionATT, UI::resolutionValueInteger_Parameter, UI::resolutionFallbackInteger_Parameter)
@@ -260,10 +260,12 @@ THIS_CALLBACK_Reset_IntPRM(SOP_Operator, SOP_Operator::CallbackAddNormalizeMeshA
 OPERATOR INITIALIZATION                                            |
 ----------------------------------------------------------------- */
 
-SOP_Operator::SOP_VHACDSetup(OP_Network* network, const char* name, OP_Operator* op) : SOP_Base_Operator(network, name, op), _primitiveGroupInput0(nullptr)
-{ op->setIconName(UI::names.Get(CommonNameOption::ICON_NAME)); }
-
 SOP_Operator::~SOP_VHACDSetup() { }
+
+SOP_Operator::SOP_VHACDSetup(OP_Network* network, const char* name, OP_Operator* op) 
+: SOP_Base_Operator(network, name, op), 
+_primitiveGroupInput0(nullptr)
+{ op->setIconName(UI::names.Get(CommonNameOption::ICON_NAME)); }
 
 OP_Node* 
 SOP_Operator::CreateMe(OP_Network* network, const char* name, OP_Operator* op) { return new SOP_Operator(network, name, op); }
@@ -274,7 +276,7 @@ SOP_Operator::inputLabel(unsigned input) const { return SOP_Input_Name_0; }
 OP_ERROR
 SOP_Operator::cookInputGroups(OP_Context &context, int alone)
 {
-	auto isOrdered = true;
+	const auto isOrdered = true;
 	return cookInputPrimitiveGroups(context, this->_primitiveGroupInput0, alone, true, SOP_GroupFieldIndex_0, -1, true, isOrdered, true, 0);
 }
 
@@ -285,14 +287,14 @@ HELPERS                                                            |
 OP_ERROR
 SOP_Operator::ProcessWholeGeometry(UT_AutoInterrupt progress, fpreal time)
 {
-	auto primIt = GA_Iterator(this->gdp->getPrimitiveRange());
+	const auto primIt = GA_Iterator(this->gdp->getPrimitiveRange());
 	return SetupAttributes(primIt, progress, time);
 }
 
 OP_ERROR
 SOP_Operator::ProcessSpecifiedGeometry(UT_AutoInterrupt progress, fpreal time)
 {
-	auto success = !this->_primitiveGroupInput0->isEmpty();
+	const auto success = !this->_primitiveGroupInput0->isEmpty();
 	if (success)
 	{			
 		auto gop = GOP_Manager();
@@ -305,7 +307,7 @@ SOP_Operator::ProcessSpecifiedGeometry(UT_AutoInterrupt progress, fpreal time)
 
 		if (!processModeState && !soloSpecifiedGroupState)
 		{
-			auto primIt = GA_Iterator(this->gdp->getPrimitiveRange(this->_primitiveGroupInput0));
+			const auto primIt = GA_Iterator(this->gdp->getPrimitiveRange(this->_primitiveGroupInput0));
 			return SetupAttributes(primIt, progress, time);
 		}
 		else if (!processModeState && soloSpecifiedGroupState)
@@ -315,23 +317,23 @@ SOP_Operator::ProcessSpecifiedGeometry(UT_AutoInterrupt progress, fpreal time)
 			nonSelectedPrimitives->removeRange(this->gdp->getPrimitiveRange(this->_primitiveGroupInput0));
 			this->gdp->deletePrimitives(*nonSelectedPrimitives, true);
 
-			auto primIt = GA_Iterator(this->gdp->getPrimitiveRange());
+			const auto primIt = GA_Iterator(this->gdp->getPrimitiveRange());
 			return SetupAttributes(primIt, progress, time);
 		}
 		else if (processModeState && !soloSpecifiedGroupState)
 		{
 			auto nonSelectedPrimitives = static_cast<GA_PrimitiveGroup*>(gop.createPrimitiveGroup(*this->gdp));
 			nonSelectedPrimitives->addRange(this->gdp->getPrimitiveRange());
-			nonSelectedPrimitives->removeRange(this->gdp->getPrimitiveRange(this->_primitiveGroupInput0));			
+			nonSelectedPrimitives->removeRange(this->gdp->getPrimitiveRange(this->_primitiveGroupInput0));
 
-			auto primIt = GA_Iterator(this->gdp->getPrimitiveRange(nonSelectedPrimitives));
+			const auto primIt = GA_Iterator(this->gdp->getPrimitiveRange(nonSelectedPrimitives));
 			return SetupAttributes(primIt, progress, time);
 		}
 		else if (processModeState && soloSpecifiedGroupState)
 		{
 			this->gdp->deletePrimitives(*this->_primitiveGroupInput0, true);
 
-			auto primIt = GA_Iterator(this->gdp->getPrimitiveRange());
+			const auto primIt = GA_Iterator(this->gdp->getPrimitiveRange());
 			return SetupAttributes(primIt, progress, time);
 		}
 	}
@@ -343,7 +345,7 @@ SOP_Operator::ProcessSpecifiedGeometry(UT_AutoInterrupt progress, fpreal time)
 void
 SOP_Operator::AddIntATT(GA_RWHandleI& attributeHandle, const PRM_Template& valueparameter, const PRM_Template& fallbackparameter, const char* attributename, fpreal time)
 {
-	auto success = ATTRIB_ACCESS::Find::IntATT(this, this->gdp, GA_AttributeOwner::GA_ATTRIB_PRIMITIVE, attributename, attributeHandle);
+	const auto success = ATTRIB_ACCESS::Find::IntATT(this, this->gdp, GA_AttributeOwner::GA_ATTRIB_PRIMITIVE, attributename, attributeHandle);
 	if (!success)
 	{
 		exint fallbackValue;
@@ -356,7 +358,7 @@ SOP_Operator::AddIntATT(GA_RWHandleI& attributeHandle, const PRM_Template& value
 void
 SOP_Operator::AddFloatATT(GA_RWHandleR& attributeHandle, const PRM_Template& valueparameter, const PRM_Template& fallbackparameter, const char* attributename, fpreal time)
 {
-	auto success = ATTRIB_ACCESS::Find::FloatATT(this, this->gdp, GA_AttributeOwner::GA_ATTRIB_PRIMITIVE, attributename, attributeHandle);
+	const auto success = ATTRIB_ACCESS::Find::FloatATT(this, this->gdp, GA_AttributeOwner::GA_ATTRIB_PRIMITIVE, attributename, attributeHandle);
 	if (!success)
 	{
 		fpreal fallbackValue;
@@ -491,7 +493,8 @@ SELECTOR IMPLEMENTATION                                            |
 
 MSS_Selector::~MSS_VHACDSetup() { }
 
-MSS_Selector::MSS_VHACDSetup(OP3D_View& viewer, PI_SelectorTemplate& templ) : MSS_ReusableSelector(viewer, templ, SOP_SmallName, SOP_GroupPRM, 0, true)
+MSS_Selector::MSS_VHACDSetup(OP3D_View& viewer, PI_SelectorTemplate& templ) 
+: MSS_ReusableSelector(viewer, templ, SOP_SmallName, SOP_GroupPRM, nullptr, true)
 { this->setAllowUseExistingSelection(false); }
 
 BM_InputSelector*

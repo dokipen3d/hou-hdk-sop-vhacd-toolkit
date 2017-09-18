@@ -71,8 +71,8 @@ DECLARE_SOP_Namespace_Start()
 		DECLARE_UpdateParmsFlags()		
 
 	protected:
-		SOP_VHACDEngine(OP_Network* network, const char* name, OP_Operator* op);
 		~SOP_VHACDEngine() override;
+		SOP_VHACDEngine(OP_Network* network, const char* name, OP_Operator* op);
 
 	public:
 		static OP_Node*				CreateMe(OP_Network* network, const char* name, OP_Operator* op);

@@ -72,10 +72,10 @@ DECLARE_SOP_Namespace_Start()
 		{
 			PRM_Name("0", "Selected"),
 			PRM_Name("1", "Non-Selected"),
-			PRM_Name(0)
+			PRM_Name(nullptr)
 		};
 		static auto		processModeChoiceMenuParm_ChoiceList = PRM_ChoiceList(PRM_CHOICELIST_SINGLE, processModeChoiceMenuParm_Choices);
-		auto			processModeChoiceMenu_Parameter = PRM_Template(PRM_ORD, 1, &processModeChoiceMenuParm_Name, &processModeChoiceMenuParm_Default, &processModeChoiceMenuParm_ChoiceList, &processModeChoiceMenuParm_Range, 0, 0, 1, "Specify to which part of geometry apply effect.");
+		auto			processModeChoiceMenu_Parameter = PRM_Template(PRM_ORD, 1, &processModeChoiceMenuParm_Name, &processModeChoiceMenuParm_Default, &processModeChoiceMenuParm_ChoiceList, &processModeChoiceMenuParm_Range, 0, nullptr, 1, "Specify to which part of geometry apply effect.");
 		DECLARE_Toggle_with_Separator_OFF_PRM("solospecifiedgroup", "Solo Group", "solospecifiedgroupseparator", 0, "Remove unselected geometry.", soloSpecifiedGroup)
 
 		__DECLARE_Main_Section_PRM(48)
@@ -88,10 +88,10 @@ DECLARE_SOP_Namespace_Start()
 		{
 			PRM_Name("0", names.Get(CommonNameOption::VOXEL)),
 			PRM_Name("1", names.Get(CommonNameOption::TETRAHEDRON)),
-			PRM_Name(0)
+			PRM_Name(nullptr)
 		};
 		static auto		decompositionModeValueChoiceMenuParm_ChoiceList = PRM_ChoiceList(PRM_CHOICELIST_SINGLE, decompositionModeValueChoiceMenuParm_Choices);
-		auto			decompositionModeValueChoiceMenu_Parameter = PRM_Template(PRM_ORD, 1, &decompositionModeValueChoiceMenuParm_Name, &decompositionModeValueChoiceMenuParm_Default, &decompositionModeValueChoiceMenuParm_ChoiceList, &decompositionModeValueChoiceMenuParm_Range, 0, 0, 1, COMMON_VALUE_HELPTEXT);
+		auto			decompositionModeValueChoiceMenu_Parameter = PRM_Template(PRM_ORD, 1, &decompositionModeValueChoiceMenuParm_Name, &decompositionModeValueChoiceMenuParm_Default, &decompositionModeValueChoiceMenuParm_ChoiceList, &decompositionModeValueChoiceMenuParm_Range, 0, nullptr, 1, COMMON_VALUE_HELPTEXT);
 		DECLARE_Custom_INT_Minus1R_to_1R_PRM(composer0.FallbackName(), COMMON_FALLBACK_BIGNAME, -1, COMMON_FALLBACK_HELPTEXT, decompositionModeFallback)
 		
 		auto composer1 = CommonNameComposer(names, CommonNameOption::RESOLUTION);
