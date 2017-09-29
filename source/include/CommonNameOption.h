@@ -29,7 +29,13 @@
 INCLUDES                                                           |
 ----------------------------------------------------------------- */
 
-#include <sys/SYS_Types.h>
+#if _WIN32		
+	#include <sys/SYS_Types.h>
+#elif __APPLE__
+	#include <SYS/SYS_Types.h>
+#elif __linux
+	#include <SYS/SYS_Types.h>
+#endif
 
 /* -----------------------------------------------------------------
 DECLARATION                                                        |

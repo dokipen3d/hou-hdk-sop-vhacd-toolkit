@@ -79,7 +79,15 @@ newSelector(BM_ResourceManager* manager)
 		auto selectorVHACDSetup = new PI_SelectorTemplate(MSS_SmallName, MSS_BigName, SOP_TABLE_NAME);
 
 		// setup selector
+		
+#if _WIN32		
 		selectorVHACDSetup->constructor(static_cast<void*>(&MSS_Selector::CreateMe));
+#elif __APPLE__
+		selectorVHACDSetup->constructor((void*)(&MSS_Selector::CreateMe));
+#elif __linux
+		selectorVHACDSetup->constructor((void*)(&MSS_Selector::CreateMe));		
+#endif				
+		
 		selectorVHACDSetup->data(OP3DthePrimSelTypes);
 
 		success = manager->registerSelector(selectorVHACDSetup);
