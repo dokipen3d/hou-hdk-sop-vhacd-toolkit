@@ -66,5 +66,5 @@ else()
 	)
 	
 	# specify destination path	
-	HOU_SET_DSO_OUTPUTS(${CMAKE_CURRENT_SOURCE_DIR} ${PROJECT_NAME})	
+	HOU_SETUP_DSO_OUTPUTS(${CMAKE_CURRENT_SOURCE_DIR} ${PROJECT_NAME})
 endif()
