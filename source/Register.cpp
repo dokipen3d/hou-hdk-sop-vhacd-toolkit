@@ -52,27 +52,26 @@ REGISTRATION                                                       |
 void
 newSelector(BM_ResourceManager* manager)
 {
-	auto table = OP_Network::getOperatorTable(SOP_TABLE_NAME);
-	auto success = false;
+	auto table = OP_Network::getOperatorTable(SOP_TABLE_NAME);	
 
 #define SOP_Operator		GET_SOP_Namespace()::SOP_VHACDEngine
-#define SOP_SmallName		"vhacd::engine::1.0"
+#define SOP_SmallName		"vhacd::engine::1.2"
 #define SOP_BigName			"Engine (v-hacd)"
 
-	auto sopVHACDEngine = new OP_Operator(SOP_SmallName, SOP_BigName, SOP_Operator::CreateMe, SOP_Operator::parametersList, 1, 1, nullptr, 0, nullptr, 1, SOP_TabMenuPath);
-	success = table->addOperator(sopVHACDEngine);
+	const auto sopVHACDEngine = new OP_Operator(SOP_SmallName, SOP_BigName, SOP_Operator::CreateMe, SOP_Operator::parametersList, 1, 1, nullptr, 0, nullptr, 1, SOP_TabMenuPath);
+	auto success = table->addOperator(sopVHACDEngine);
 
 // TODO: Yes, I'm fully aware of redeclaration warning. CommonNameComposer is still in WIP state, so you have to live with this for now.
 #define SOP_Operator		GET_SOP_Namespace()::SOP_VHACDSetup
-#define SOP_SmallName		"vhacd::setup::1.1"
+#define SOP_SmallName		"vhacd::setup::1.2"
 #define SOP_BigName			"Setup (v-hacd)"
 #define SOP_GroupPRM		CONST_PrimitiveGroupInput0_Name
 
 #define MSS_Selector		GET_SOP_Namespace()::MSS_VHACDSetup
-#define MSS_SmallName		"vhacd::setupselector::1.1"
+#define MSS_SmallName		"vhacd::setupselector::1.2"
 #define MSS_BigName			"Setup (v-hacd selector)"
 
-	auto sopVHACDSetup = new OP_Operator (SOP_SmallName, SOP_BigName, SOP_Operator::CreateMe, SOP_Operator::parametersList, 1, 1, nullptr, 0, nullptr, 1, SOP_TabMenuPath);
+	const auto sopVHACDSetup = new OP_Operator (SOP_SmallName, SOP_BigName, SOP_Operator::CreateMe, SOP_Operator::parametersList, 1, 1, nullptr, 0, nullptr, 1, SOP_TabMenuPath);
 	success = table->addOperator(sopVHACDSetup);	
 	if (success)
 	{

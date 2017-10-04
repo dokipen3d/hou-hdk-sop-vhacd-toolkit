@@ -79,8 +79,8 @@
 	    parmtag	{ "script_callback_language" "python" }
 	}
 	parm {
-	    name	"polygonize"
-	    label	"To Polygons"
+	    name	"converttopolygons"
+	    label	"Convert To Polygons"
 	    type	toggle
 	    joinnext
 	    default	{ "1" }
@@ -119,14 +119,6 @@
 	    default	{ "100000" }
 	    help	"Maximum number of voxels generated during voxelization stage."
 	    range	{ 10000! 6.4e+07! }
-	}
-	parm {
-	    name	"depth"
-	    label	"Depth"
-	    type	integer
-	    default	{ "20" }
-	    help	"Maximum number of clipping stages. During each split stage, all the model parts (with a concavity higher than the user defined threshold) are clipped according the 'best' clipping plane."
-	    range	{ 1! 32! }
 	}
 	parm {
 	    name	"concativity"
@@ -169,12 +161,12 @@
 	    range	{ 0! 1! }
 	}
 	parm {
-	    name	"gamma"
-	    label	"Gamma"
-	    type	float
-	    default	{ "0.00125" }
-	    help	"Maximum allowed concavity during the merge stage."
-	    range	{ 0! 1! }
+	    name	"maxconvexhullcount"
+	    label	"Max Hull Count"
+	    type	integer
+	    default	{ "1024" }
+	    help	"WTF?"
+	    range	{ 1! 4096! }
 	}
 	parm {
 	    name	"maxtrianglecount"
@@ -193,6 +185,32 @@
 	    range	{ 0! 0.01! }
 	}
 	parm {
+	    name	"convexhullapproximation"
+	    label	"Approximate Hulls"
+	    type	toggle
+	    joinnext
+	    default	{ "0" }
+	}
+	parm {
+	    name	"_"
+	    label	"Separator"
+	    type	separator
+	    default	{ "" }
+	}
+	parm {
+	    name	"projecthullvertices"
+	    label	"Project Vertices"
+	    type	toggle
+	    joinnext
+	    default	{ "0" }
+	}
+	parm {
+	    name	"_7"
+	    label	"Separator"
+	    type	separator
+	    default	{ "" }
+	}
+	parm {
 	    name	"normalizemesh"
 	    label	"Normalize Mesh"
 	    type	toggle
@@ -202,7 +220,7 @@
 	    range	{ 0 1 }
 	}
 	parm {
-	    name	"sepparm7"
+	    name	"_2"
 	    label	"Separator"
 	    type	separator
 	    default	{ "" }
@@ -217,7 +235,7 @@
 	    range	{ 0 1 }
 	}
 	parm {
-	    name	"sepparm12"
+	    name	"_3"
 	    label	"Separator"
 	    type	separator
 	    default	{ "" }
@@ -241,7 +259,7 @@
 	    parmtag	{ "script_callback_language" "python" }
 	}
 	parm {
-	    name	"sepparm10"
+	    name	"_4"
 	    label	"Separator"
 	    type	separator
 	    default	{ "" }
@@ -268,7 +286,7 @@
 	    parmtag	{ "script_callback_language" "python" }
 	}
 	parm {
-	    name	"sepparm6"
+	    name	"_5"
 	    label	"Separator"
 	    type	separator
 	    default	{ "" }
@@ -311,7 +329,7 @@
 	    range	{ 0 1 }
 	}
 	parm {
-	    name	"sepparm11"
+	    name	"_6"
 	    label	"Separator"
 	    type	separator
 	    default	{ "" }

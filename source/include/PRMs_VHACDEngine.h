@@ -65,7 +65,7 @@ DECLARE_SOP_Namespace_Start()
 		DECLARE_Toggle_OFF_Join_PRM("converttopolygons", "Convert To Polygons", 0, "Convert all incoming geometry to polygons.", convertToPolygons)
 		DECLARE_Custom_Separator_PRM("converttopolygonsseparator", convertToPolygons)
 
-		__DECLARE_Main_Section_PRM(14)
+		__DECLARE_Main_Section_PRM(17)
 		static auto		modeChoiceMenuParm_Name = PRM_Name(names.Get(CommonNameOption::DECOMPOSITION_MODE), "Mode");
 		static auto		modeChoiceMenuParm_Range = PRM_Range(PRM_RANGE_RESTRICTED, 0, PRM_RANGE_RESTRICTED, 1);
 		static PRM_Name modeChoiceMenuParm_Choices[] =
@@ -77,17 +77,18 @@ DECLARE_SOP_Namespace_Start()
 		static auto		modeChoiceMenuParm_ChoiceList = PRM_ChoiceList(PRM_CHOICELIST_SINGLE, modeChoiceMenuParm_Choices);
 		auto			modeChoiceMenu_Parameter = PRM_Template(PRM_ORD, 1, &modeChoiceMenuParm_Name, nullptr, &modeChoiceMenuParm_ChoiceList, &modeChoiceMenuParm_Range, 0, nullptr, 1, "0: Voxel-based approximate convex decomposition, 1: Tetrahedron-based approximate convex decomposition");
 
-		DECLARE_Custom_Int_MinR_to_MaxR_PRM(names.Get(CommonNameOption::RESOLUTION), "Resolution", 10000, 64000000, 100000, "Maximum number of voxels generated during the voxelization stage.", resolution)
-		DECLARE_Custom_Int_MinR_to_MaxR_PRM(names.Get(CommonNameOption::DEPTH), "Depth", 1, 32, 20, "Maximum number of clipping stages. During each split stage, all the model parts (with a concavity higher than the user defined threshold) are clipped according the 'best' clipping plane.", depth)
+		DECLARE_Custom_Int_MinR_to_MaxR_PRM(names.Get(CommonNameOption::RESOLUTION), "Resolution", 10000, 64000000, 100000, "Maximum number of voxels generated during the voxelization stage.", resolution)		
 		DECLARE_Custom_Float_0R_to_1R_PRM(names.Get(CommonNameOption::CONCAVITY), "Concavity", 0.0025f, 0, "Maximum concavity.", concavity)
 		DECLARE_Custom_Int_MinR_to_MaxR_PRM(names.Get(CommonNameOption::PLANE_DOWNSAMPLING), "Plane Downsampling", 1, 16, 4, "Controls the granularity of the search for the 'best' clipping plane.", planeDownsampling)
 		DECLARE_Custom_Int_MinR_to_MaxR_PRM(names.Get(CommonNameOption::CONVEXHULL_DOWNSAMPLING), "Convex Hull Downsampling", 1, 16, 4, "Controls the precision of the convex-hull generation process during the clipping plane selection stage.", convexHullDownsampling)
 		DECLARE_Custom_Float_0R_to_1R_PRM(names.Get(CommonNameOption::ALPHA), "Alpha", 0.5f, 0, "Controls the bias toward clipping along symmetry planes.", alpha)
-		DECLARE_Custom_Float_0R_to_1R_PRM(names.Get(CommonNameOption::BETA), "Beta", 0.5f, 0, "Controls the bias toward clipping along revolution axes.", beta)
-		DECLARE_Custom_Float_0R_to_1R_PRM(names.Get(CommonNameOption::GAMMA), "Gamma", 0.00125f, 0, "Maximum allowed concavity during the merge stage.", gamma)
+		DECLARE_Custom_Float_0R_to_1R_PRM(names.Get(CommonNameOption::BETA), "Beta", 0.5f, 0, "Controls the bias toward clipping along revolution axes.", beta)		
+		DECLARE_Custom_Int_MinR_to_MaxR_PRM(names.Get(CommonNameOption::MAX_CONVEX_HULLS_COUNT), "Max Hull Count", 1, 1024, 64, "Controls the maximum amount of convex hulls that will be generated.", maxConvexHullsCount)
 		DECLARE_Custom_Int_MinR_to_MaxR_PRM(names.Get(CommonNameOption::MAX_TRIANGLE_COUNT), "Max Triangle Count", 4, 1024, 64, "Controls the maximum number of triangles per convex-hull.", maxTriangleCount)
-		DECLARE_Custom_Float_0R_to_MaxR_PRM(names.Get(CommonNameOption::ADAPTIVE_SAMPLING), "Adaptive Sampling", 0.01f, 0.0001f, 0, "Controls the adaptive sampling of the generated convex-hulls.", adaptiveSampling)
-		DECLARE_Toggle_with_Separator_OFF_PRM(names.Get(CommonNameOption::NORMALIZE_MESH), "Normalize Mesh", "normalizemeshseparator", 0, "Enable/disable normalizing the mesh before applying the convex decomposition.", normalizeMsh)
+		DECLARE_Custom_Float_0R_to_MaxR_PRM(names.Get(CommonNameOption::ADAPTIVE_SAMPLING), "Adaptive Sampling", 0.01f, 0.0001f, 0, "Controls the adaptive sampling of the generated convex-hulls.", adaptiveSampling)		
+		DECLARE_Toggle_with_Separator_OFF_PRM(names.Get(CommonNameOption::CONVEX_HULL_APPROXIMATION), "Approximate Hulls", "convexhullapproximationseparator", 0, "This will project the output convex hull vertices onto the original source mesh to increase the floating point accuracy of the results.", approximateConvexHulls)
+		DECLARE_Toggle_with_Separator_OFF_PRM(names.Get(CommonNameOption::PROJECT_HULL_VERTICES), "Project Vertices", "projecthullverticesseparator", 0, "WTF?", projectHullVertices)
+		DECLARE_Toggle_with_Separator_OFF_PRM(names.Get(CommonNameOption::NORMALIZE_MESH), "Normalize Mesh", "normalizemeshseparator", 0, "Enable/disable normalizing the mesh before applying the convex decomposition.", normalizeMesh)
 		DECLARE_Toggle_with_Separator_ON_PRM(names.Get(CommonNameOption::USE_OPENCL), "Use OpenCL", "useopenclseparator", 0, "Enable/disable OpenCL acceleration.", useOpenCL)
 
 		__DECLARE_Additional_Section_PRM(4)

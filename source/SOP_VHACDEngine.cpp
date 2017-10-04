@@ -77,18 +77,22 @@ PARAMETERLIST_Start(SOP_Operator)
 
 	UI::mainSectionSwitcher_Parameter,
 	UI::modeChoiceMenu_Parameter,
-	UI::resolutionInteger_Parameter,
-	UI::depthInteger_Parameter,
+	UI::resolutionInteger_Parameter,	
 	UI::concavityFloat_Parameter,
 	UI::planeDownsamplingInteger_Parameter,
 	UI::convexHullDownsamplingInteger_Parameter,
 	UI::alphaFloat_Parameter,
-	UI::betaFloat_Parameter,
-	UI::gammaFloat_Parameter,
+	UI::betaFloat_Parameter,	
+	UI::maxConvexHullsCountInteger_Parameter,
 	UI::maxTriangleCountInteger_Parameter,
 	UI::adaptiveSamplingFloat_Parameter,
-	UI::normalizeMshToggle_Parameter,
-	UI::normalizeMshSeparator_Parameter,
+	UI::approximateConvexHullsToggle_Parameter,
+	UI::approximateConvexHullsSeparator_Parameter,
+	UI::projectHullVerticesToggle_Parameter,
+	UI::projectHullVerticesSeparator_Parameter,
+	UI::normalizeMeshToggle_Parameter,
+	UI::normalizeMeshSeparator_Parameter,
+
 	UI::useOpenCLToggle_Parameter,
 	UI::useOpenCLSeparator_Parameter,	
 	UI::additionalSectionSwitcher_Parameter,
@@ -107,7 +111,7 @@ SOP_Operator::updateParmsFlags()
 	DEFAULTS_UpdateParmsFlags(SOP_Base_Operator)
 
 	// is input connected?
-	exint is0Connected = this->getInput(0) == nullptr ? 0 : 1;
+	const exint is0Connected = this->getInput(0) == nullptr ? 0 : 1;
 
 	/* ---------------------------- Set Global Visibility ---------------------------- */
 
@@ -228,19 +232,20 @@ SOP_Operator::SetupVHACD(GU_Detail* geometry, fpreal time)
 	PRM_ACCESS::Get::IntPRM(this, this->_allowParametersOverrideValueState, UI::allowParametersOverrideToggle_Parameter, time);
 
 	// main parameters
-	this->_parametersVHACD.m_mode					= PullIntPRM(geometry, UI::modeChoiceMenu_Parameter, !this->_allowParametersOverrideValueState, time);
-	this->_parametersVHACD.m_resolution				= PullIntPRM(geometry, UI::resolutionInteger_Parameter, !this->_allowParametersOverrideValueState, time);
-	this->_parametersVHACD.m_depth					= PullIntPRM(geometry, UI::depthInteger_Parameter, !this->_allowParametersOverrideValueState, time);
-	this->_parametersVHACD.m_concavity				= PullFloatPRM(geometry, UI::concavityFloat_Parameter, !this->_allowParametersOverrideValueState, time);
-	this->_parametersVHACD.m_planeDownsampling		= PullIntPRM(geometry, UI::planeDownsamplingInteger_Parameter, !this->_allowParametersOverrideValueState, time);
-	this->_parametersVHACD.m_convexhullDownsampling	= PullIntPRM(geometry, UI::convexHullDownsamplingInteger_Parameter, !this->_allowParametersOverrideValueState, time);
-	this->_parametersVHACD.m_alpha					= PullFloatPRM(geometry, UI::alphaFloat_Parameter, !this->_allowParametersOverrideValueState, time);
-	this->_parametersVHACD.m_beta					= PullFloatPRM(geometry, UI::betaFloat_Parameter, !this->_allowParametersOverrideValueState, time);
-	this->_parametersVHACD.m_gamma					= PullFloatPRM(geometry, UI::gammaFloat_Parameter, !this->_allowParametersOverrideValueState, time);
-	this->_parametersVHACD.m_maxNumVerticesPerCH	= PullIntPRM(geometry, UI::maxTriangleCountInteger_Parameter, !this->_allowParametersOverrideValueState, time);
-	this->_parametersVHACD.m_minVolumePerCH			= PullFloatPRM(geometry, UI::adaptiveSamplingFloat_Parameter, !this->_allowParametersOverrideValueState, time);
-	this->_parametersVHACD.m_pca					= PullIntPRM(geometry, UI::normalizeMshToggle_Parameter, !this->_allowParametersOverrideValueState, time);
-	
+	this->_parametersVHACD.m_mode						= PullIntPRM(geometry, UI::modeChoiceMenu_Parameter, !this->_allowParametersOverrideValueState, time);
+	this->_parametersVHACD.m_resolution					= PullIntPRM(geometry, UI::resolutionInteger_Parameter, !this->_allowParametersOverrideValueState, time);	
+	this->_parametersVHACD.m_concavity					= PullFloatPRM(geometry, UI::concavityFloat_Parameter, !this->_allowParametersOverrideValueState, time);
+	this->_parametersVHACD.m_planeDownsampling			= PullIntPRM(geometry, UI::planeDownsamplingInteger_Parameter, !this->_allowParametersOverrideValueState, time);
+	this->_parametersVHACD.m_convexhullDownsampling		= PullIntPRM(geometry, UI::convexHullDownsamplingInteger_Parameter, !this->_allowParametersOverrideValueState, time);
+	this->_parametersVHACD.m_alpha						= PullFloatPRM(geometry, UI::alphaFloat_Parameter, !this->_allowParametersOverrideValueState, time);
+	this->_parametersVHACD.m_beta						= PullFloatPRM(geometry, UI::betaFloat_Parameter, !this->_allowParametersOverrideValueState, time);	
+	this->_parametersVHACD.m_maxConvexHulls				= PullIntPRM(geometry, UI::maxConvexHullsCountInteger_Parameter, !this->_allowParametersOverrideValueState, time);
+	this->_parametersVHACD.m_maxNumVerticesPerCH		= PullIntPRM(geometry, UI::maxTriangleCountInteger_Parameter, !this->_allowParametersOverrideValueState, time);
+	this->_parametersVHACD.m_minVolumePerCH				= PullFloatPRM(geometry, UI::adaptiveSamplingFloat_Parameter, !this->_allowParametersOverrideValueState, time);
+	this->_parametersVHACD.m_convexhullApproximation	= PullIntPRM(geometry, UI::approximateConvexHullsToggle_Parameter, !this->_allowParametersOverrideValueState, time);
+	this->_parametersVHACD.m_projectHullVertices		= PullIntPRM(geometry, UI::projectHullVerticesToggle_Parameter, !this->_allowParametersOverrideValueState, time);
+	this->_parametersVHACD.m_pca						= PullIntPRM(geometry, UI::normalizeMeshToggle_Parameter, !this->_allowParametersOverrideValueState, time);	
+
 	PRM_ACCESS::Get::IntPRM(this, this->_parametersVHACD.m_oclAcceleration, UI::useOpenCLToggle_Parameter, time);
 
 	// debug parameters
@@ -383,11 +388,11 @@ SOP_Operator::GenerateConvexHulls(GU_Detail* geometry, UT_AutoInterrupt progress
 {
 	// get interface
 	this->_interfaceVHACD = VHACD::CreateVHACD();
-
-	auto success = this->_interfaceVHACD->Compute(&this->_points[0], 3, static_cast<unsigned int>(this->_points.size()) / 3, &this->_triangles[0], 3, static_cast<unsigned int>(this->_triangles.size()) / 3, this->_parametersVHACD);
+	
+	auto success = this->_interfaceVHACD->Compute( &this->_points[0], static_cast<unsigned int>(this->_points.size()) / 3, reinterpret_cast<const uint32_t *>(&this->_triangles[0]), static_cast<unsigned int>(this->_triangles.size()) / 3, this->_parametersVHACD);
 	if (success)
 	{
-		auto hullCount = this->_interfaceVHACD->GetNConvexHulls();
+		const auto hullCount = this->_interfaceVHACD->GetNConvexHulls();
 
 		// generate hulls
 		for (auto id = 0; id < hullCount; ++id)

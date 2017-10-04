@@ -71,16 +71,17 @@ DECLARE_SOP_Namespace_Start()
 
 		static int					CallbackProcessModeChoiceMenu(void* data, int index, float time, const PRM_Template* tmp);
 		static int					CallbackAddDecompositionModeATT(void* data, int index, float time, const PRM_Template* tmp);
-		static int					CallbackAddResolutionATT(void* data, int index, float time, const PRM_Template* tmp);
-		static int					CallbackAddDepthATT(void* data, int index, float time, const PRM_Template* tmp);
+		static int					CallbackAddResolutionATT(void* data, int index, float time, const PRM_Template* tmp);		
 		static int					CallbackAddConcavityATT(void* data, int index, float time, const PRM_Template* tmp);
 		static int					CallbackAddPlaneDownsamplingATT(void* data, int index, float time, const PRM_Template* tmp);
 		static int					CallbackAddConvexHullDownsamplingATT(void* data, int index, float time, const PRM_Template* tmp);
 		static int					CallbackAddAlphaATT(void* data, int index, float time, const PRM_Template* tmp);
-		static int					CallbackAddBetaATT(void* data, int index, float time, const PRM_Template* tmp);
-		static int					CallbackAddGammaATT(void* data, int index, float time, const PRM_Template* tmp);
+		static int					CallbackAddBetaATT(void* data, int index, float time, const PRM_Template* tmp);		
+		static int					CallbackAddMaxConvexHullsCountATT(void* data, int index, float time, const PRM_Template* tmp);
 		static int					CallbackAddMaxTriangleCountATT(void* data, int index, float time, const PRM_Template* tmp);
 		static int					CallbackAddAdaptiveSamplingATT(void* data, int index, float time, const PRM_Template* tmp);
+		static int					CallbackAddConvexHullApproximationATT(void* data, int index, float time, const PRM_Template* tmp);
+		static int					CallbackAddProjectHullVerticeshATT(void* data, int index, float time, const PRM_Template* tmp);
 		static int					CallbackAddNormalizeMeshATT(void* data, int index, float time, const PRM_Template* tmp);		
 
 	private:		

@@ -83,11 +83,6 @@ PARAMETERLIST_Start(SOP_Operator)
 	UI::addResolutionAttributeSeparator_Parameter,
 	UI::resolutionValueInteger_Parameter,
 	UI::resolutionFallbackInteger_Parameter,
-	
-	UI::addDepthAttributeToggle_Parameter,
-	UI::addDepthAttributeSeparator_Parameter,
-	UI::depthValueInteger_Parameter,
-	UI::depthFallbackInteger_Parameter,
 
 	UI::addConcavityAttributeToggle_Parameter,
 	UI::addConcavityAttributeSeparator_Parameter,
@@ -114,10 +109,10 @@ PARAMETERLIST_Start(SOP_Operator)
 	UI::betaValueFloat_Parameter,
 	UI::betaFallbackFloat_Parameter,
 
-	UI::addGammaAttributeToggle_Parameter,
-	UI::addGammaAttributeSeparator_Parameter,
-	UI::gammaValueFloat_Parameter,
-	UI::gammaFallbackFloat_Parameter,
+	UI::addMaxConvexHullsAttributeToggle_Parameter,
+	UI::addMaxConvexHullsAttributeSeparator_Parameter,
+	UI::maxConvexHullsValueInteger_Parameter,
+	UI::maxConvexHullsFallbackInteger_Parameter,
 
 	UI::addMaxTriangleCountAttributeToggle_Parameter,
 	UI::addMaxTriangleCountAttributeSeparator_Parameter,
@@ -128,6 +123,16 @@ PARAMETERLIST_Start(SOP_Operator)
 	UI::addAdaptiveSamplingAttributeSeparator_Parameter,
 	UI::adaptiveSamplingValueFloat_Parameter,
 	UI::adaptiveSamplingFallbackFloat_Parameter,
+
+	UI::addConvexHullApproximationAttributeToggle_Parameter,
+	UI::addConvexHullApproximationAttributeSeparator_Parameter,
+	UI::convexHullApproximationValueToggle_Parameter,
+	UI::convexHullApproximationFallbackInteger_Parameter,
+
+	UI::addProjectVerticesAttributeToggle_Parameter,
+	UI::addProjectVerticesAttributeSeparator_Parameter,
+	UI::projectVerticesValueToggle_Parameter,
+	UI::projectVertivcesFallbackInteger_Parameter,
 
 	UI::addNormalizeMeshAttributeToggle_Parameter,
 	UI::addNormalizeMeshAttributeSeparator_Parameter,	
@@ -166,9 +171,9 @@ SOP_Operator::updateParmsFlags()
 	changed |= setVisibleState(UI::resolutionValueInteger_Parameter.getToken(), visibilityState);
 	changed |= setVisibleState(UI::resolutionFallbackInteger_Parameter.getToken(), visibilityState);
 
-	PRM_ACCESS::Get::IntPRM(this, visibilityState, UI::addDepthAttributeToggle_Parameter, currentTime);
-	changed |= setVisibleState(UI::depthValueInteger_Parameter.getToken(), visibilityState);
-	changed |= setVisibleState(UI::depthFallbackInteger_Parameter.getToken(), visibilityState);
+	PRM_ACCESS::Get::IntPRM(this, visibilityState, UI::addMaxConvexHullsAttributeToggle_Parameter, currentTime);
+	changed |= setVisibleState(UI::maxConvexHullsValueInteger_Parameter.getToken(), visibilityState);
+	changed |= setVisibleState(UI::maxConvexHullsFallbackInteger_Parameter.getToken(), visibilityState);
 
 	PRM_ACCESS::Get::IntPRM(this, visibilityState, UI::addConcavityAttributeToggle_Parameter, currentTime);
 	changed |= setVisibleState(UI::concavityValueFloat_Parameter.getToken(), visibilityState);
@@ -190,10 +195,6 @@ SOP_Operator::updateParmsFlags()
 	changed |= setVisibleState(UI::betaValueFloat_Parameter.getToken(), visibilityState);
 	changed |= setVisibleState(UI::betaFallbackFloat_Parameter.getToken(), visibilityState);
 
-	PRM_ACCESS::Get::IntPRM(this, visibilityState, UI::addGammaAttributeToggle_Parameter, currentTime);
-	changed |= setVisibleState(UI::gammaValueFloat_Parameter.getToken(), visibilityState);
-	changed |= setVisibleState(UI::gammaFallbackFloat_Parameter.getToken(), visibilityState);
-
 	PRM_ACCESS::Get::IntPRM(this, visibilityState, UI::addMaxTriangleCountAttributeToggle_Parameter, currentTime);
 	changed |= setVisibleState(UI::maxTriangleCountValueInteger_Parameter.getToken(), visibilityState);
 	changed |= setVisibleState(UI::maxTriangleCountFallbackInteger_Parameter.getToken(), visibilityState);
@@ -201,6 +202,14 @@ SOP_Operator::updateParmsFlags()
 	PRM_ACCESS::Get::IntPRM(this, visibilityState, UI::addAdaptiveSamplingAttributeToggle_Parameter, currentTime);
 	changed |= setVisibleState(UI::adaptiveSamplingValueFloat_Parameter.getToken(), visibilityState);
 	changed |= setVisibleState(UI::adaptiveSamplingFallbackFloat_Parameter.getToken(), visibilityState);
+
+	PRM_ACCESS::Get::IntPRM(this, visibilityState, UI::addConvexHullApproximationAttributeToggle_Parameter, currentTime);
+	changed |= setVisibleState(UI::convexHullApproximationValueToggle_Parameter.getToken(), visibilityState);
+	changed |= setVisibleState(UI::convexHullApproximationFallbackInteger_Parameter.getToken(), visibilityState);
+
+	PRM_ACCESS::Get::IntPRM(this, visibilityState, UI::addProjectVerticesAttributeToggle_Parameter, currentTime);
+	changed |= setVisibleState(UI::projectVerticesValueToggle_Parameter.getToken(), visibilityState);
+	changed |= setVisibleState(UI::projectVertivcesFallbackInteger_Parameter.getToken(), visibilityState);
 
 	PRM_ACCESS::Get::IntPRM(this, visibilityState, UI::addNormalizeMeshAttributeToggle_Parameter, currentTime);
 	changed |= setVisibleState(UI::normalizeMeshValueToggle_Parameter.getToken(), visibilityState);
@@ -242,15 +251,16 @@ SOP_Operator::CallbackProcessModeChoiceMenu(void* data, int index, float time, c
 
 THIS_CALLBACK_Reset_IntPRM(SOP_Operator, SOP_Operator::CallbackAddDecompositionModeATT, UI::decompositionModeValueChoiceMenu_Parameter, UI::decompositionModeFallbackInteger_Parameter)
 THIS_CALLBACK_Reset_IntPRM(SOP_Operator, SOP_Operator::CallbackAddResolutionATT, UI::resolutionValueInteger_Parameter, UI::resolutionFallbackInteger_Parameter)
-THIS_CALLBACK_Reset_IntPRM(SOP_Operator, SOP_Operator::CallbackAddDepthATT, UI::depthValueInteger_Parameter, UI::depthFallbackInteger_Parameter)
 THIS_CALLBACK_Reset_FloatPRM(SOP_Operator, SOP_Operator::CallbackAddConcavityATT, UI::concavityValueFloat_Parameter, UI::concavityFallbackFloat_Parameter)
 THIS_CALLBACK_Reset_IntPRM(SOP_Operator, SOP_Operator::CallbackAddPlaneDownsamplingATT, UI::planeDownsamplingValueInteger_Parameter, UI::planeDownsamplingFallbackInteger_Parameter)
 THIS_CALLBACK_Reset_IntPRM(SOP_Operator, SOP_Operator::CallbackAddConvexHullDownsamplingATT, UI::convexHullDownsamplingValueInteger_Parameter, UI::convexHullDownsamplingFallbackInteger_Parameter)
 THIS_CALLBACK_Reset_FloatPRM(SOP_Operator, SOP_Operator::CallbackAddAlphaATT, UI::alphaValueFloat_Parameter, UI::alphaFallbackFloat_Parameter)
 THIS_CALLBACK_Reset_FloatPRM(SOP_Operator, SOP_Operator::CallbackAddBetaATT, UI::betaValueFloat_Parameter, UI::betaFallbackFloat_Parameter)
-THIS_CALLBACK_Reset_FloatPRM(SOP_Operator, SOP_Operator::CallbackAddGammaATT, UI::gammaValueFloat_Parameter, UI::gammaFallbackFloat_Parameter)
+THIS_CALLBACK_Reset_IntPRM(SOP_Operator, SOP_Operator::CallbackAddMaxConvexHullsCountATT, UI::maxConvexHullsValueInteger_Parameter, UI::maxConvexHullsFallbackInteger_Parameter)
 THIS_CALLBACK_Reset_IntPRM(SOP_Operator, SOP_Operator::CallbackAddMaxTriangleCountATT, UI::maxTriangleCountValueInteger_Parameter, UI::maxTriangleCountFallbackInteger_Parameter)
 THIS_CALLBACK_Reset_FloatPRM(SOP_Operator, SOP_Operator::CallbackAddAdaptiveSamplingATT, UI::adaptiveSamplingValueFloat_Parameter, UI::adaptiveSamplingFallbackFloat_Parameter)
+THIS_CALLBACK_Reset_IntPRM(SOP_Operator, SOP_Operator::CallbackAddConvexHullApproximationATT, UI::convexHullApproximationValueToggle_Parameter, UI::convexHullApproximationFallbackInteger_Parameter)
+THIS_CALLBACK_Reset_IntPRM(SOP_Operator, SOP_Operator::CallbackAddProjectHullVerticeshATT, UI::projectVerticesValueToggle_Parameter, UI::projectVertivcesFallbackInteger_Parameter)
 THIS_CALLBACK_Reset_IntPRM(SOP_Operator, SOP_Operator::CallbackAddNormalizeMeshATT, UI::normalizeMeshValueToggle_Parameter, UI::normalizeMeshFallbackInteger_Parameter)
 
 #undef THIS_CALLBACK_Reset_FloatPRM
@@ -310,7 +320,8 @@ SOP_Operator::ProcessSpecifiedGeometry(UT_AutoInterrupt progress, fpreal time)
 			const auto primIt = GA_Iterator(this->gdp->getPrimitiveRange(this->_primitiveGroupInput0));
 			return SetupAttributes(primIt, progress, time);
 		}
-		else if (!processModeState && soloSpecifiedGroupState)
+		
+		if (!processModeState && soloSpecifiedGroupState)
 		{
 			auto nonSelectedPrimitives = static_cast<GA_PrimitiveGroup*>(gop.createPrimitiveGroup(*this->gdp));
 			nonSelectedPrimitives->addRange(this->gdp->getPrimitiveRange());
@@ -320,7 +331,8 @@ SOP_Operator::ProcessSpecifiedGeometry(UT_AutoInterrupt progress, fpreal time)
 			const auto primIt = GA_Iterator(this->gdp->getPrimitiveRange());
 			return SetupAttributes(primIt, progress, time);
 		}
-		else if (processModeState && !soloSpecifiedGroupState)
+		
+		if (processModeState && !soloSpecifiedGroupState)
 		{
 			auto nonSelectedPrimitives = static_cast<GA_PrimitiveGroup*>(gop.createPrimitiveGroup(*this->gdp));
 			nonSelectedPrimitives->addRange(this->gdp->getPrimitiveRange());
@@ -329,7 +341,8 @@ SOP_Operator::ProcessSpecifiedGeometry(UT_AutoInterrupt progress, fpreal time)
 			const auto primIt = GA_Iterator(this->gdp->getPrimitiveRange(nonSelectedPrimitives));
 			return SetupAttributes(primIt, progress, time);
 		}
-		else if (processModeState && soloSpecifiedGroupState)
+		
+		if (processModeState && soloSpecifiedGroupState)
 		{
 			this->gdp->deletePrimitives(*this->_primitiveGroupInput0, true);
 
@@ -388,55 +401,59 @@ OP_ERROR
 SOP_Operator::SetupAttributes(GA_Iterator primit, UT_AutoInterrupt progress, fpreal time)
 {	
 	bool addDecompositionModeState;
-	bool addResolutionState;
-	bool addDepthState;
+	bool addResolutionState;	
 	bool addConcavityState;
 	bool addPlaneDownsamplingState;
 	bool addConvexHullDownsamplingState;
 	bool addAlphaState;
-	bool addBetaState;
-	bool addGammaState;
+	bool addBetaState;	
+	bool addMaxConvexHullsCountState;
 	bool addMaxTriangleCountState;
 	bool addAdaptiveSamplingState;
+	bool addApproximateHullsState;
+	bool addProjectVerticesState;
 	bool addNormalizeMeshState;
 
 	GA_RWHandleI decompositionModeHandle;
 	GA_RWHandleI resolutionHandle;
-	GA_RWHandleI depthHandle;
+	GA_RWHandleI maxConvexHullsCountHandle;
 	GA_RWHandleR concavityHandle;
 	GA_RWHandleI planeDownsamplingHandle;
 	GA_RWHandleI convexHullDownsamplingHandle;
 	GA_RWHandleR alphaHandle;
-	GA_RWHandleR betaHandle;
-	GA_RWHandleR gammaHandle;
+	GA_RWHandleR betaHandle;	
 	GA_RWHandleI maxTriangleCountHandle;
 	GA_RWHandleR adaptiveSamplingHandle;
+	GA_RWHandleI approximateHullsHandle;
+	GA_RWHandleI projectVerticesHandle;
 	GA_RWHandleI normalizeMeshHandle;
 
 	PRM_ACCESS::Get::IntPRM(this, addDecompositionModeState, UI::addDecompositionModeAttributeToggle_Parameter, time);	
-	PRM_ACCESS::Get::IntPRM(this, addResolutionState, UI::addResolutionAttributeToggle_Parameter, time);
-	PRM_ACCESS::Get::IntPRM(this, addDepthState, UI::addDepthAttributeToggle_Parameter, time);
+	PRM_ACCESS::Get::IntPRM(this, addResolutionState, UI::addResolutionAttributeToggle_Parameter, time);	
 	PRM_ACCESS::Get::IntPRM(this, addConcavityState, UI::addConcavityAttributeToggle_Parameter, time);
 	PRM_ACCESS::Get::IntPRM(this, addPlaneDownsamplingState, UI::addPlaneDownsamplingAttributeToggle_Parameter, time);
 	PRM_ACCESS::Get::IntPRM(this, addConvexHullDownsamplingState, UI::addConvexHullDownsamplingAttributeToggle_Parameter, time);
 	PRM_ACCESS::Get::IntPRM(this, addAlphaState, UI::addAlphaAttributeToggle_Parameter, time);
-	PRM_ACCESS::Get::IntPRM(this, addBetaState, UI::addBetaAttributeToggle_Parameter, time);
-	PRM_ACCESS::Get::IntPRM(this, addGammaState, UI::addGammaAttributeToggle_Parameter, time);
+	PRM_ACCESS::Get::IntPRM(this, addBetaState, UI::addBetaAttributeToggle_Parameter, time);	
+	PRM_ACCESS::Get::IntPRM(this, addMaxConvexHullsCountState, UI::addMaxConvexHullsAttributeToggle_Parameter, time);
 	PRM_ACCESS::Get::IntPRM(this, addMaxTriangleCountState, UI::addMaxTriangleCountAttributeToggle_Parameter, time);
 	PRM_ACCESS::Get::IntPRM(this, addAdaptiveSamplingState, UI::addAdaptiveSamplingAttributeToggle_Parameter, time);
+	PRM_ACCESS::Get::IntPRM(this, addApproximateHullsState, UI::addConvexHullApproximationAttributeToggle_Parameter, time);
+	PRM_ACCESS::Get::IntPRM(this, addProjectVerticesState, UI::addProjectVerticesAttributeToggle_Parameter, time);
 	PRM_ACCESS::Get::IntPRM(this, addNormalizeMeshState, UI::addNormalizeMeshAttributeToggle_Parameter, time);
 
 	if (addDecompositionModeState) AddIntATT(decompositionModeHandle, UI::decompositionModeValueChoiceMenu_Parameter, UI::decompositionModeFallbackInteger_Parameter, UI::names.Get(CommonNameOption::DECOMPOSITION_MODE), time);
-	if (addResolutionState) AddIntATT(resolutionHandle, UI::resolutionValueInteger_Parameter, UI::resolutionFallbackInteger_Parameter, UI::names.Get(CommonNameOption::RESOLUTION), time);	
-	if (addDepthState) AddIntATT(depthHandle, UI::depthValueInteger_Parameter, UI::depthFallbackInteger_Parameter, UI::names.Get(CommonNameOption::DEPTH), time);	
+	if (addResolutionState) AddIntATT(resolutionHandle, UI::resolutionValueInteger_Parameter, UI::resolutionFallbackInteger_Parameter, UI::names.Get(CommonNameOption::RESOLUTION), time);		
 	if (addConcavityState) AddFloatATT(concavityHandle, UI::concavityValueFloat_Parameter, UI::concavityFallbackFloat_Parameter, UI::names.Get(CommonNameOption::CONCAVITY), time);
 	if (addPlaneDownsamplingState) AddIntATT(planeDownsamplingHandle, UI::planeDownsamplingValueInteger_Parameter, UI::planeDownsamplingFallbackInteger_Parameter, UI::names.Get(CommonNameOption::PLANE_DOWNSAMPLING), time);		
 	if (addConvexHullDownsamplingState) AddIntATT(convexHullDownsamplingHandle, UI::convexHullDownsamplingValueInteger_Parameter, UI::convexHullDownsamplingFallbackInteger_Parameter, UI::names.Get(CommonNameOption::PLANE_DOWNSAMPLING), time);	
 	if (addAlphaState) AddFloatATT(alphaHandle, UI::alphaValueFloat_Parameter, UI::alphaFallbackFloat_Parameter, UI::names.Get(CommonNameOption::ALPHA), time);
-	if (addBetaState) AddFloatATT(betaHandle, UI::betaValueFloat_Parameter, UI::betaFallbackFloat_Parameter, UI::names.Get(CommonNameOption::BETA), time);
-	if (addGammaState) AddFloatATT(gammaHandle, UI::gammaValueFloat_Parameter, UI::gammaFallbackFloat_Parameter, UI::names.Get(CommonNameOption::GAMMA), time);
+	if (addBetaState) AddFloatATT(betaHandle, UI::betaValueFloat_Parameter, UI::betaFallbackFloat_Parameter, UI::names.Get(CommonNameOption::BETA), time);	
+	if (addMaxConvexHullsCountState) AddIntATT(maxConvexHullsCountHandle, UI::maxConvexHullsValueInteger_Parameter, UI::maxConvexHullsFallbackInteger_Parameter, UI::names.Get(CommonNameOption::MAX_CONVEX_HULLS_COUNT), time);
 	if (addMaxTriangleCountState) AddIntATT(maxTriangleCountHandle, UI::maxTriangleCountValueInteger_Parameter, UI::maxTriangleCountFallbackInteger_Parameter, UI::names.Get(CommonNameOption::MAX_TRIANGLE_COUNT), time);
 	if (addAdaptiveSamplingState) AddFloatATT(adaptiveSamplingHandle, UI::adaptiveSamplingValueFloat_Parameter, UI::adaptiveSamplingFallbackFloat_Parameter, UI::names.Get(CommonNameOption::ADAPTIVE_SAMPLING), time);		
+	if (addApproximateHullsState) AddIntATT(approximateHullsHandle, UI::convexHullApproximationValueToggle_Parameter, UI::convexHullApproximationFallbackInteger_Parameter, UI::names.Get(CommonNameOption::CONVEX_HULL_APPROXIMATION), time);
+	if (addProjectVerticesState) AddIntATT(projectVerticesHandle, UI::projectVerticesValueToggle_Parameter, UI::projectVertivcesFallbackInteger_Parameter, UI::names.Get(CommonNameOption::PROJECT_HULL_VERTICES), time);
 	if (addNormalizeMeshState) AddIntATT(normalizeMeshHandle, UI::normalizeMeshValueToggle_Parameter, UI::normalizeMeshFallbackInteger_Parameter, UI::names.Get(CommonNameOption::NORMALIZE_MESH), time);
 	
 	// update attributes
@@ -454,15 +471,16 @@ SOP_Operator::SetupAttributes(GA_Iterator primit, UT_AutoInterrupt progress, fpr
 
 		if (addDecompositionModeState && decompositionModeHandle.isValid()) UpdateIntATT(decompositionModeHandle, *primit, UI::decompositionModeValueChoiceMenu_Parameter, time);
 		if (addResolutionState && resolutionHandle.isValid()) UpdateIntATT(resolutionHandle, *primit, UI::resolutionValueInteger_Parameter, time);
-		if (addDepthState && depthHandle.isValid()) UpdateIntATT(depthHandle, *primit, UI::depthValueInteger_Parameter, time);
+		if (addMaxConvexHullsCountState && maxConvexHullsCountHandle.isValid()) UpdateIntATT(maxConvexHullsCountHandle, *primit, UI::maxConvexHullsValueInteger_Parameter, time);
 		if (addConcavityState && concavityHandle.isValid()) UpdateFloatATT(concavityHandle, *primit, UI::concavityValueFloat_Parameter, time);
 		if (addPlaneDownsamplingState && planeDownsamplingHandle.isValid()) UpdateIntATT(planeDownsamplingHandle, *primit, UI::planeDownsamplingValueInteger_Parameter, time);
 		if (addConvexHullDownsamplingState && convexHullDownsamplingHandle.isValid()) UpdateIntATT(convexHullDownsamplingHandle, *primit, UI::convexHullDownsamplingValueInteger_Parameter, time);
 		if (addAlphaState && alphaHandle.isValid()) UpdateFloatATT(alphaHandle, *primit, UI::alphaValueFloat_Parameter, time);
-		if (addBetaState && betaHandle.isValid()) UpdateFloatATT(betaHandle, *primit, UI::betaValueFloat_Parameter, time);
-		if (addGammaState && gammaHandle.isValid()) UpdateFloatATT(gammaHandle, *primit, UI::gammaValueFloat_Parameter, time);
+		if (addBetaState && betaHandle.isValid()) UpdateFloatATT(betaHandle, *primit, UI::betaValueFloat_Parameter, time);		
 		if (addMaxTriangleCountState && maxTriangleCountHandle.isValid()) UpdateIntATT(maxTriangleCountHandle, *primit, UI::maxTriangleCountValueInteger_Parameter, time);
 		if (addAdaptiveSamplingState && adaptiveSamplingHandle.isValid()) UpdateFloatATT(adaptiveSamplingHandle, *primit, UI::adaptiveSamplingValueFloat_Parameter, time);
+		if (addApproximateHullsState && approximateHullsHandle.isValid()) UpdateIntATT(approximateHullsHandle, *primit, UI::convexHullApproximationValueToggle_Parameter, time);
+		if (addProjectVerticesState && projectVerticesHandle.isValid()) UpdateIntATT(projectVerticesHandle, *primit, UI::projectVerticesValueToggle_Parameter, time);
 		if (addNormalizeMeshState && normalizeMeshHandle.isValid()) UpdateIntATT(normalizeMeshHandle, *primit, UI::normalizeMeshValueToggle_Parameter, time);
 	}
 	

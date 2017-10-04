@@ -32,26 +32,24 @@ Content-Type: text/plain
 
 sopflags sopflags = 
 comment ""
-position -0.390531 -6.25682
-connectornextid 3
+position -0.152941 -1.27265
+connectornextid 1
 flags =  lock off model off template off footprint off xray off bypass off display off render off highlight off unload off savedata off compress on colordefault on exposed on
 outputsNamed3
 {
-1 "output1"
-2 "output2"
 }
 inputsNamed3
 {
-0 	transform1 0 1 "input1"
+0 	torus1 0 1 "input1"
 }
 inputs
 {
-0 	transform1 0 1
+0 	torus1 0 1
 }
 stat
 {
-  create 1495043915
-  modify 1495074937
+  create 1507089517
+  modify 1507095219
   author nodeway@lv-426
   access 0777
 }
@@ -89,7 +87,7 @@ Content-Type: text/plain
 }
 {
   create 1456090687
-  modify 1495043917
+  modify 1507094563
   author nodeway@lv-422
   access 0777
 }
@@ -424,18 +422,18 @@ outputsNamed3
 }
 inputsNamed3
 {
-0 	engine1 1 1 "input1"
+0 	engine2 1 1 "input1"
 1 	foreach_begin1 0 1 "input2"
 }
 inputs
 {
-0 	engine1 0 1
+0 	engine2 0 1
 1 	foreach_begin1 0 1
 }
 stat
 {
   create 1456089396
-  modify 1494379707
+  modify 1507094967
   author nodeway@lv-422
   access 0777
 }
@@ -1074,7 +1072,7 @@ Content-Type: text/plain
 {
 	"___Version___":{
 		"type":"string",
-		"value":"16.0.557"
+		"value":"16.0.705"
 	}
 }
 
@@ -1457,7 +1455,7 @@ Content-Type: text/plain
 {
 	"___Version___":{
 		"type":"string",
-		"value":"16.0.557"
+		"value":"16.0.705"
 	}
 }
 
@@ -1517,7 +1515,7 @@ Content-Type: text/plain
 {
 	"___Version___":{
 		"type":"string",
-		"value":"16.0.557"
+		"value":"16.0.705"
 	}
 }
 
@@ -1577,7 +1575,7 @@ Content-Type: text/plain
 {
 	"___Version___":{
 		"type":"string",
-		"value":"16.0.557"
+		"value":"16.0.705"
 	}
 }
 
@@ -1653,7 +1651,7 @@ Content-Type: text/plain
 {
 	"___Version___":{
 		"type":"string",
-		"value":"16.0.557"
+		"value":"16.0.705"
 	}
 }
 
@@ -1716,7 +1714,7 @@ Content-Type: text/plain
 {
 	"___Version___":{
 		"type":"string",
-		"value":"16.0.557"
+		"value":"16.0.705"
 	}
 }
 
@@ -1787,7 +1785,7 @@ Content-Type: text/plain
 {
 	"___Version___":{
 		"type":"string",
-		"value":"16.0.557"
+		"value":"16.0.705"
 	}
 }
 
@@ -1920,7 +1918,7 @@ Content-Type: text/plain
 {
 	"___Version___":{
 		"type":"string",
-		"value":"16.0.557"
+		"value":"16.0.705"
 	}
 }
 
@@ -1987,7 +1985,7 @@ Content-Type: text/plain
 
 {
 version 0.8
-input	[ 8	locks=0 ]	(	[ input	1 ] 	)
+input	[ 0	locks=0 ]	(	[ input	0 ] 	)
 }
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
@@ -1997,7 +1995,7 @@ Content-Type: text/plain
 {
 	"___Version___":{
 		"type":"string",
-		"value":"16.0.557"
+		"value":"16.0.705"
 	}
 }
 
@@ -2072,7 +2070,7 @@ Content-Type: text/plain
 {
 	"___Version___":{
 		"type":"string",
-		"value":"16.0.557"
+		"value":"16.0.705"
 	}
 }
 
@@ -2193,7 +2191,7 @@ Content-Type: text/plain
 {
 	"___Version___":{
 		"type":"string",
-		"value":"16.0.557"
+		"value":"16.0.705"
 	}
 }
 
@@ -2364,7 +2362,7 @@ Content-Type: text/plain
 {
 	"___Version___":{
 		"type":"string",
-		"value":"16.0.557"
+		"value":"16.0.705"
 	}
 }
 
@@ -2528,7 +2526,7 @@ Content-Type: text/plain
 {
 	"___Version___":{
 		"type":"string",
-		"value":"16.0.557"
+		"value":"16.0.705"
 	}
 }
 
@@ -2685,7 +2683,7 @@ Content-Type: text/plain
 {
 	"___Version___":{
 		"type":"string",
-		"value":"16.0.557"
+		"value":"16.0.705"
 	}
 }
 
@@ -2792,7 +2790,7 @@ Content-Type: text/plain
 {
 	"___Version___":{
 		"type":"string",
-		"value":"16.0.557"
+		"value":"16.0.705"
 	}
 }
 
@@ -2930,7 +2928,7 @@ Content-Type: text/plain
 {
 	"___Version___":{
 		"type":"string",
-		"value":"16.0.557"
+		"value":"16.0.705"
 	}
 }
 
@@ -3087,7 +3085,7 @@ Content-Type: text/plain
 {
 	"___Version___":{
 		"type":"string",
-		"value":"16.0.557"
+		"value":"16.0.705"
 	}
 }
 
@@ -3234,24 +3232,24 @@ Content-Type: text/plain
 {
 	"___Version___":{
 		"type":"string",
-		"value":"16.0.557"
+		"value":"16.0.705"
 	}
 }
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="hdaroot/engine1.init"
+Content-Disposition: attachment; filename="hdaroot/engine2.init"
 Content-Type: text/plain
 
-type = vhacd::engine::1.0
+type = vhacd::engine::1.2
 matchesdef = 0
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="hdaroot/engine1.def"
+Content-Disposition: attachment; filename="hdaroot/engine2.def"
 Content-Type: text/plain
 
 sopflags sopflags = 
 comment ""
-position 0.572497 -1.46194
+position 1.09585 -1.45988
 connectornextid 2
 flags =  lock off model off template off footprint off xray off bypass off display off render off highlight off unload off savedata off compress on colordefault on exposed on
 outputsNamed3
@@ -3268,8 +3266,8 @@ inputs
 }
 stat
 {
-  create 1494379489
-  modify 1494379717
+  create 1507094960
+  modify 1507095171
   author nodeway@lv-426
   access 0777
 }
@@ -3279,16 +3277,10 @@ exprlanguage hscript
 end
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="hdaroot/engine1.chn"
+Content-Disposition: attachment; filename="hdaroot/engine2.chn"
 Content-Type: text/plain
 
 {
-    channel converttopolygons {
-      lefttype = extend
-      righttype = extend
-      flags = 0
-      segment { length = 0 expr = ch(\"../polygonize\") }
-    }
     channel decompositionmode {
       lefttype = extend
       righttype = extend
@@ -3301,13 +3293,6 @@ Content-Type: text/plain
       default = 100000
       flags = 0
       segment { length = 0 value = 100000 100000 expr = ch(\"../resolution\") }
-    }
-    channel depth {
-      lefttype = extend
-      righttype = extend
-      default = 20
-      flags = 0
-      segment { length = 0 value = 20 20 expr = ch(\"../depth\") }
     }
     channel concavity {
       lefttype = extend
@@ -3344,12 +3329,12 @@ Content-Type: text/plain
       flags = 0
       segment { length = 0 value = 0.5 0.5 expr = ch(\"../beta\") }
     }
-    channel gamma {
+    channel maxconvexhullscount {
       lefttype = extend
       righttype = extend
-      default = 0.0012499999720603228
+      default = 1024
       flags = 0
-      segment { length = 0 value = 0.0012499999720603228 0.0012499999720603228 expr = ch(\"../gamma\") }
+      segment { length = 0 value = 1024 1024 expr = ch(\"../maxconvexhullcount\") }
     }
     channel maxtrianglecount {
       lefttype = extend
@@ -3364,6 +3349,18 @@ Content-Type: text/plain
       default = 9.9999997473787516e-05
       flags = 0
       segment { length = 0 value = 9.9999997473787516e-05 9.9999997473787516e-05 expr = ch(\"../adaptivesampling\") }
+    }
+    channel convexhullapproximation {
+      lefttype = extend
+      righttype = extend
+      flags = 0
+      segment { length = 0 expr = ch(\"../convexhullapproximation\") }
+    }
+    channel projecthullvertices {
+      lefttype = extend
+      righttype = extend
+      flags = 0
+      segment { length = 0 expr = ch(\"../projecthullvertices\") }
     }
     channel normalizemesh {
       lefttype = extend
@@ -3390,10 +3387,16 @@ Content-Type: text/plain
       flags = 0
       segment { length = 0 expr = ch(\"../reportmode\") }
     }
+    channel converttopolygons {
+      lefttype = extend
+      righttype = extend
+      flags = 0
+      segment { length = 0 expr = ch(\"../converttopolygons\") }
+    }
   }
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="hdaroot/engine1.parm"
+Content-Disposition: attachment; filename="hdaroot/engine2.parm"
 Content-Type: text/plain
 
 {
@@ -3405,39 +3408,42 @@ converttopolygons	[ 8	locks=0 ]	(	[ converttopolygons	1 ] 	)
 converttopolygonsseparator	[ 0	locks=0 ]	(	)
 mainsection	[ 0	locks=0 ]	(	0	)
 decompositionmode	[ 8	locks=0 ]	(	[ decompositionmode	0 ] 	)
-resolution	[ 8	locks=0 ]	(	[ resolution	100000 ] 	)
-depth	[ 8	locks=0 ]	(	[ depth	20 ] 	)
-concavity	[ 8	locks=0 ]	(	[ concavity	0.0025000000000000001 ] 	)
-planedownsampling	[ 8	locks=0 ]	(	[ planedownsampling	4 ] 	)
-convexhulldownsampling	[ 8	locks=0 ]	(	[ convexhulldownsampling	4 ] 	)
-alpha	[ 8	locks=0 ]	(	[ alpha	0.5 ] 	)
-beta	[ 8	locks=0 ]	(	[ beta	0.5 ] 	)
-gamma	[ 8	locks=0 ]	(	[ gamma	0.00125 ] 	)
-maxtrianglecount	[ 8	locks=0 ]	(	[ maxtrianglecount	64 ] 	)
-adaptivesampling	[ 8	locks=0 ]	(	[ adaptivesampling	0.0001 ] 	)
+resolution	[ 0	locks=0 ]	(	[ resolution	100000 ] 	)
+concavity	[ 0	locks=0 ]	(	[ concavity	0.0025000000000000001 ] 	)
+planedownsampling	[ 0	locks=0 ]	(	[ planedownsampling	4 ] 	)
+convexhulldownsampling	[ 0	locks=0 ]	(	[ convexhulldownsampling	4 ] 	)
+alpha	[ 0	locks=0 ]	(	[ alpha	0.5 ] 	)
+beta	[ 0	locks=0 ]	(	[ beta	0.5 ] 	)
+maxconvexhullscount	[ 0	locks=0 ]	(	[ maxconvexhullscount	1024 ] 	)
+maxtrianglecount	[ 0	locks=0 ]	(	[ maxtrianglecount	64 ] 	)
+adaptivesampling	[ 0	locks=0 ]	(	[ adaptivesampling	0.0001 ] 	)
+convexhullapproximation	[ 8	locks=0 ]	(	[ convexhullapproximation	0 ] 	)
+convexhullapproximationseparator	[ 0	locks=0 ]	(	)
+projecthullvertices	[ 8	locks=0 ]	(	[ projecthullvertices	0 ] 	)
+projecthullverticesseparator	[ 0	locks=0 ]	(	)
 normalizemesh	[ 8	locks=0 ]	(	[ normalizemesh	0 ] 	)
 normalizemeshseparator	[ 0	locks=0 ]	(	)
 useopencl	[ 8	locks=0 ]	(	[ useopencl	1 ] 	)
 useopenclseparator	[ 0	locks=0 ]	(	)
 additionalsection	[ 0	locks=0 ]	(	0	)
-adddescription	[ 0	locks=0 ]	(	"off"	)
+adddescription	[ 8	locks=0 ]	(	"on"	)
 adddescriptionseparator	[ 0	locks=0 ]	(	)
 cleandescription	[ 0	locks=0 ]	(	0	)
-descriptionmessage	[ 0	locks=0 ]	(	""	)
+descriptionmessage	[ 0	locks=0 ]	(	"Uses https://github.com/kmammou/v-hacd"	)
 debugsection	[ 0	locks=0 ]	(	0	)
-showprocessreport	[ 8	locks=0 ]	(	[ showprocessreport	0 ] 	)
+showprocessreport	[ 8	locks=0 ]	(	[ showprocessreport	1 ] 	)
 showprocessreportseparator	[ 0	locks=0 ]	(	)
 processreportmode	[ 8	locks=0 ]	(	[ processreportmode	0 ] 	)
 }
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="hdaroot/engine1.userdata"
+Content-Disposition: attachment; filename="hdaroot/engine2.userdata"
 Content-Type: text/plain
 
 {
 	"___Version___":{
 		"type":"string",
-		"value":"16.0.557"
+		"value":"16.0.705"
 	}
 }
 
@@ -3466,7 +3472,7 @@ delete_free_points
 generate_unique_names
 delete_unneded_group
 TEMP_FILTER
-engine1
+engine2
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
 Content-Disposition: attachment; filename="hdaroot.net"

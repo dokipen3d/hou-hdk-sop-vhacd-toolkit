@@ -78,7 +78,7 @@ DECLARE_SOP_Namespace_Start()
 		auto			processModeChoiceMenu_Parameter = PRM_Template(PRM_ORD, 1, &processModeChoiceMenuParm_Name, &processModeChoiceMenuParm_Default, &processModeChoiceMenuParm_ChoiceList, &processModeChoiceMenuParm_Range, 0, nullptr, 1, "Specify to which part of geometry apply effect.");
 		DECLARE_Toggle_with_Separator_OFF_PRM("solospecifiedgroup", "Solo Group", "solospecifiedgroupseparator", 0, "Remove unselected geometry.", soloSpecifiedGroup)
 
-		__DECLARE_Main_Section_PRM(48)
+		__DECLARE_Main_Section_PRM(52)
 		auto composer0 = CommonNameComposer(names, CommonNameOption::DECOMPOSITION_MODE);		
 		DECLARE_Toggle_with_Separator_OFF_PRM(composer0.AddName(), "Add Decomposition Mode ATT", composer0.AddSeparatorName(), &SOP_Operator::CallbackAddDecompositionModeATT, "0: Voxel-based approximate convex decomposition.\n1: Tetrahedron-based approximate convex decomposition.", addDecompositionModeAttribute)
 		static auto		decompositionModeValueChoiceMenuParm_Name = PRM_Name(composer0.ValueName(), COMMON_VALUE_BIGNAME);
@@ -98,11 +98,6 @@ DECLARE_SOP_Namespace_Start()
 		DECLARE_Toggle_with_Separator_OFF_PRM(composer1.AddName(), "Add Resolution ATT", composer1.AddSeparatorName(), &SOP_Operator::CallbackAddResolutionATT, "Maximum number of voxels generated during the voxelization stage.", addResolutionAttribute)
 		DECLARE_Custom_Int_MinR_to_MaxR_PRM(composer1.ValueName(), COMMON_VALUE_BIGNAME, 10000, 64000000, 100000, COMMON_VALUE_HELPTEXT, resolutionValue)
 		DECLARE_Custom_Int_MinR_to_MaxR_PRM(composer1.FallbackName(), COMMON_FALLBACK_BIGNAME, -1, resolutionValueInteger_Parameter.getRangePtr()->getParmMax(), -1, COMMON_FALLBACK_HELPTEXT, resolutionFallback)
-
-		auto composer2 = CommonNameComposer(names, CommonNameOption::DEPTH);
-		DECLARE_Toggle_with_Separator_OFF_PRM(composer2.AddName(), "Add Depth ATT", composer2.AddSeparatorName(), &SOP_Operator::CallbackAddDepthATT, "Maximum number of clipping stages. During each split stage, all the model parts (with a concavity higher than the user defined threshold) are clipped according the 'best' clipping plane.", addDepthAttribute)
-		DECLARE_Custom_Int_MinR_to_MaxR_PRM(composer2.ValueName(), COMMON_VALUE_BIGNAME, 1, 32, 20, COMMON_VALUE_HELPTEXT, depthValue)
-		DECLARE_Custom_Int_MinR_to_MaxR_PRM(composer2.FallbackName(), COMMON_FALLBACK_BIGNAME, -1, depthValueInteger_Parameter.getRangePtr()->getParmMax(), -1, COMMON_FALLBACK_HELPTEXT, depthFallback)
 
 		auto composer3 = CommonNameComposer(names, CommonNameOption::CONCAVITY);
 		DECLARE_Toggle_with_Separator_OFF_PRM(composer3.AddName(), "Add Concavity ATT", composer3.AddSeparatorName(), &SOP_Operator::CallbackAddConcavityATT, "Maximum concavity.", addConcavityAttribute)
@@ -129,10 +124,10 @@ DECLARE_SOP_Namespace_Start()
 		DECLARE_Custom_Float_0R_to_1R_PRM(composer7.ValueName(), COMMON_VALUE_BIGNAME, 0.5f, 0, COMMON_VALUE_HELPTEXT, betaValue)
 		DECLARE_Custom_Float_MinR_to_MaxR_PRM(composer7.FallbackName(), COMMON_FALLBACK_BIGNAME, -1.0f, betaValueFloat_Parameter.getRangePtr()->getParmMax(), -1.0f, 0, COMMON_FALLBACK_HELPTEXT, betaFallback)
 
-		auto composer8 = CommonNameComposer(names, CommonNameOption::GAMMA);
-		DECLARE_Toggle_with_Separator_OFF_PRM(composer8.AddName(), "Add Gamma ATT", composer8.AddSeparatorName(), &SOP_Operator::CallbackAddGammaATT, "Maximum allowed concavity during the merge stage.", addGammaAttribute)
-		DECLARE_Custom_Float_0R_to_1R_PRM(composer8.ValueName(), COMMON_VALUE_BIGNAME, 0.00125f, 0, COMMON_VALUE_HELPTEXT, gammaValue)
-		DECLARE_Custom_Float_MinR_to_MaxR_PRM(composer8.FallbackName(), COMMON_FALLBACK_BIGNAME, -1.0f, gammaValueFloat_Parameter.getRangePtr()->getParmMax(), -1.0f, 0, COMMON_FALLBACK_HELPTEXT, gammaFallback)
+		auto composer2 = CommonNameComposer(names, CommonNameOption::MAX_CONVEX_HULLS_COUNT);
+		DECLARE_Toggle_with_Separator_OFF_PRM(composer2.AddName(), "Add Max Convex Hulls ATT", composer2.AddSeparatorName(), &SOP_Operator::CallbackAddMaxConvexHullsCountATT, "Controls the maximum amount of convex hulls that will be generated.", addMaxConvexHullsAttribute)
+		DECLARE_Custom_Int_MinR_to_MaxR_PRM(composer2.ValueName(), COMMON_VALUE_BIGNAME, 1, 1024, 64, COMMON_VALUE_HELPTEXT, maxConvexHullsValue)
+		DECLARE_Custom_Int_MinR_to_MaxR_PRM(composer2.FallbackName(), COMMON_FALLBACK_BIGNAME, -1, maxConvexHullsValueInteger_Parameter.getRangePtr()->getParmMax(), -1, COMMON_FALLBACK_HELPTEXT, maxConvexHullsFallback)
 
 		auto composer9 = CommonNameComposer(names, CommonNameOption::MAX_TRIANGLE_COUNT);
 		DECLARE_Toggle_with_Separator_OFF_PRM(composer9.AddName(), "Add Max Triangle Count ATT", composer9.AddSeparatorName(), &SOP_Operator::CallbackAddMaxTriangleCountATT, "Controls the maximum number of triangles per convex-hull.", addMaxTriangleCountAttribute)
@@ -144,10 +139,20 @@ DECLARE_SOP_Namespace_Start()
 		DECLARE_Custom_Float_0R_to_MaxR_PRM(composer10.ValueName(), COMMON_VALUE_BIGNAME, 0.01f, 0.0001f, 0, COMMON_VALUE_HELPTEXT, adaptiveSamplingValue)
 		DECLARE_Custom_Float_MinR_to_MaxR_PRM(composer10.FallbackName(), COMMON_FALLBACK_BIGNAME, -1.0f, adaptiveSamplingValueFloat_Parameter.getRangePtr()->getParmMax(), -1.0f, 0, COMMON_FALLBACK_HELPTEXT, adaptiveSamplingFallback)
 
-		auto composer11 = CommonNameComposer(names, CommonNameOption::NORMALIZE_MESH);
-		DECLARE_Toggle_with_Separator_OFF_PRM(composer11.AddName(), "Add Normalize Mesh ATT", composer11.AddSeparatorName(), &SOP_Operator::CallbackAddNormalizeMeshATT, "Enable/disable normalizing the mesh before applying the convex decomposition.", addNormalizeMeshAttribute)
-		DECLARE_Toggle_OFF_PRM(composer11.ValueName(), COMMON_VALUE_BIGNAME, 0, COMMON_VALUE_HELPTEXT, normalizeMeshValue)
-		DECLARE_Custom_INT_Minus1R_to_1R_PRM(composer11.FallbackName(), COMMON_FALLBACK_BIGNAME, -1, COMMON_FALLBACK_HELPTEXT, normalizeMeshFallback)
+		auto composer11 = CommonNameComposer(names, CommonNameOption::CONVEX_HULL_APPROXIMATION);
+		DECLARE_Toggle_with_Separator_OFF_PRM(composer11.AddName(), "Add Approximate Hulls ATT", composer11.AddSeparatorName(), &SOP_Operator::CallbackAddConvexHullApproximationATT, "Enable/disable approximation of convex hulls.", addConvexHullApproximationAttribute)
+		DECLARE_Toggle_OFF_PRM(composer11.ValueName(), COMMON_VALUE_BIGNAME, 0, COMMON_VALUE_HELPTEXT, convexHullApproximationValue)
+		DECLARE_Custom_INT_Minus1R_to_1R_PRM(composer11.FallbackName(), COMMON_FALLBACK_BIGNAME, -1, COMMON_FALLBACK_HELPTEXT, convexHullApproximationFallback)
+
+		auto composer12 = CommonNameComposer(names, CommonNameOption::PROJECT_HULL_VERTICES);
+		DECLARE_Toggle_with_Separator_OFF_PRM(composer12.AddName(), "Add Project Vertices ATT", composer12.AddSeparatorName(), &SOP_Operator::CallbackAddProjectHullVerticeshATT, "This will project the output convex hull vertices onto the original source mesh to increase the floating point accuracy of the results.", addProjectVerticesAttribute)
+		DECLARE_Toggle_OFF_PRM(composer12.ValueName(), COMMON_VALUE_BIGNAME, 0, COMMON_VALUE_HELPTEXT, projectVerticesValue)
+		DECLARE_Custom_INT_Minus1R_to_1R_PRM(composer12.FallbackName(), COMMON_FALLBACK_BIGNAME, -1, COMMON_FALLBACK_HELPTEXT, projectVertivcesFallback)
+
+		auto composer13 = CommonNameComposer(names, CommonNameOption::NORMALIZE_MESH);
+		DECLARE_Toggle_with_Separator_OFF_PRM(composer13.AddName(), "Add Normalize Mesh ATT", composer13.AddSeparatorName(), &SOP_Operator::CallbackAddNormalizeMeshATT, "Enable/disable normalizing the mesh before applying the convex decomposition.", addNormalizeMeshAttribute)
+		DECLARE_Toggle_OFF_PRM(composer13.ValueName(), COMMON_VALUE_BIGNAME, 0, COMMON_VALUE_HELPTEXT, normalizeMeshValue)
+		DECLARE_Custom_INT_Minus1R_to_1R_PRM(composer13.FallbackName(), COMMON_FALLBACK_BIGNAME, -1, COMMON_FALLBACK_HELPTEXT, normalizeMeshFallback)
 
 		__DECLARE_Additional_Section_PRM(4)
 		DECLARE_DescriptionPRM(SOP_Operator)

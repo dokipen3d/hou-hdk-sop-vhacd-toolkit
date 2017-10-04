@@ -52,17 +52,18 @@ public:
 		Add(CommonNameOption::ICON_NAME, "SOP_VHACD.png");
 
 		Add(CommonNameOption::DECOMPOSITION_MODE, "decompositionmode");
-		Add(CommonNameOption::RESOLUTION, "resolution");
-		Add(CommonNameOption::DEPTH, "depth");
+		Add(CommonNameOption::RESOLUTION, "resolution");		
 		Add(CommonNameOption::CONCAVITY, "concavity");
 		Add(CommonNameOption::PLANE_DOWNSAMPLING, "planedownsampling");
 		Add(CommonNameOption::CONVEXHULL_DOWNSAMPLING, "convexhulldownsampling");
 		Add(CommonNameOption::ALPHA, "alpha");
-		Add(CommonNameOption::BETA, "beta");
-		Add(CommonNameOption::GAMMA, "gamma");
+		Add(CommonNameOption::BETA, "beta");		
+		Add(CommonNameOption::MAX_CONVEX_HULLS_COUNT, "maxconvexhullscount");
 		Add(CommonNameOption::MAX_TRIANGLE_COUNT, "maxtrianglecount");
 		Add(CommonNameOption::ADAPTIVE_SAMPLING, "adaptivesampling");
 		Add(CommonNameOption::NORMALIZE_MESH, "normalizemesh");
+		Add(CommonNameOption::CONVEX_HULL_APPROXIMATION, "convexhullapproximation");
+		Add(CommonNameOption::PROJECT_HULL_VERTICES, "projecthullvertices");		
 		Add(CommonNameOption::USE_OPENCL, "useopencl");
 
 		Add(CommonNameOption::VOXEL, "Voxel");
