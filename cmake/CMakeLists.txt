@@ -53,7 +53,7 @@ else()
 	)
 	
 	# pack V-HACD files into its own filter
-	Source_Group("V-HACD_Lib" 
+	Source_Group("3rdParty" 
 		FILES 
 		${HDK_SOPVHACD_3RDPARTY_INCLUDE_FILES} 
 		${HDK_SOPVHACD_3RDPARTY_SOURCE_FILES}
