@@ -13,8 +13,8 @@ Example of V-HACD use with [Unity](https://youtu.be/8CStATK1X5s) on YouTube.
 
 **Currently supported platforms:**
 - [x] Windows
-- [ ] Apple
-- [ ] Linux
+- [] Apple
+- [] Linux
 
 **TODO:**
 - [ ] update HDAs
@@ -27,4 +27,4 @@ Example of V-HACD use with [Unity](https://youtu.be/8CStATK1X5s) on YouTube.
 - [ ] port SOP Scout to C++
 - [x] port SOP Setup to C++
 - [ ] port SOP Transform to C++
-- [ ] rework CMakeLists.txt to automatically link V-HACD library source files
+- [X] rework CMakeLists.txt to automatically link V-HACD library source files
