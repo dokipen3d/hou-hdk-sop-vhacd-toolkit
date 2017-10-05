@@ -32,24 +32,22 @@ Content-Type: text/plain
 
 sopflags sopflags = 
 comment ""
-position -0.152941 -1.27265
-connectornextid 1
+position 7.83654 -5.54548
+connectornextid 0
 flags =  lock off model off template off footprint off xray off bypass off display off render off highlight off unload off savedata off compress on colordefault on exposed on
 outputsNamed3
 {
 }
 inputsNamed3
 {
-0 	torus1 0 1 "input1"
 }
 inputs
 {
-0 	torus1 0 1
 }
 stat
 {
-  create 1507089517
-  modify 1507095219
+  create 1507126406
+  modify 1507126540
   author nodeway@lv-426
   access 0777
 }
@@ -87,7 +85,7 @@ Content-Type: text/plain
 }
 {
   create 1456090687
-  modify 1507094563
+  modify 1507126482
   author nodeway@lv-422
   access 0777
 }
@@ -3431,7 +3429,7 @@ adddescriptionseparator	[ 0	locks=0 ]	(	)
 cleandescription	[ 0	locks=0 ]	(	0	)
 descriptionmessage	[ 0	locks=0 ]	(	"Uses https://github.com/kmammou/v-hacd"	)
 debugsection	[ 0	locks=0 ]	(	0	)
-showprocessreport	[ 8	locks=0 ]	(	[ showprocessreport	1 ] 	)
+showprocessreport	[ 8	locks=0 ]	(	[ showprocessreport	0 ] 	)
 showprocessreportseparator	[ 0	locks=0 ]	(	)
 processreportmode	[ 8	locks=0 ]	(	[ processreportmode	0 ] 	)
 }

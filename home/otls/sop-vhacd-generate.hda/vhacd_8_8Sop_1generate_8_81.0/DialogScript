@@ -165,7 +165,7 @@
 	    label	"Max Hull Count"
 	    type	integer
 	    default	{ "1024" }
-	    help	"WTF?"
+	    help	"Controls the maximum amount of convex hulls that will be generated."
 	    range	{ 1! 4096! }
 	}
 	parm {
