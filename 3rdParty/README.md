@@ -1,1 +1,1 @@
-This directory contains static library and header file of V-HACD library developed by Khaled Mammou https://github.com/kmammou/v-hacd
+This directory contains V-HACD library developed by Khaled Mammou https://github.com/kmammou/v-hacd

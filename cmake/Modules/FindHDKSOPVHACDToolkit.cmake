@@ -41,9 +41,16 @@ Set(____module_3rdparty_dir____ "${CMAKE_CURRENT_SOURCE_DIR}/../3rdParty")
 HELPERS                                                            |
 ------------------------------------------------------------------]]
 
-Macro(HDK_MODULE_GET_3RDPARTY_STATIC_LIBS _dir)
-	File(GLOB_RECURSE ____module_3rdparty_static_libs____
-		"${_dir}/*.lib"
+Macro(HDK_MODULE_GET_3RDPARTY_INCLUDE_FILES _dir)
+	File(GLOB_RECURSE ____module_3rdparty_include_files____
+		"${_dir}/*.h"
+	)
+EndMacro()
+
+Macro(HDK_MODULE_GET_3RDPARTY_SOURCE_FILES _dir)
+	File(GLOB_RECURSE ____module_3rdparty_source_files____
+		"${_dir}/*.cpp" 
+		"${_dir}/*.c"
 	)
 EndMacro()
 
@@ -60,8 +67,8 @@ if(EXISTS ${____module_source_dir____} AND EXISTS ${____module_3rdparty_dir____}
 	# find all source files
 	HDK_MODULE_GET_SOURCE_FILES(${____module_source_dir____})
 	
-	# find all static libraries
-	HDK_MODULE_GET_3RDPARTY_STATIC_LIBS(${____module_3rdparty_dir____})
+	HDK_MODULE_GET_3RDPARTY_INCLUDE_FILES(${____module_3rdparty_dir____})
+	HDK_MODULE_GET_3RDPARTY_SOURCE_FILES(${____module_3rdparty_dir____})
 	
 	# report back
 	Find_Package_Handle_Standard_Args(${____module_name_toupper____} 
@@ -72,11 +79,11 @@ if(EXISTS ${____module_source_dir____} AND EXISTS ${____module_3rdparty_dir____}
 	# output data
 	Set(HDK_SOPVHACD_INCLUDE_DIR 			"${____module_source_dir____}/include")
 	Set(HDK_SOPVHACD_INCLUDE_FILES 			${____module_include_files____})	
-	Set(HDK_SOPVHACD_SOURCE_FILES 			${____module_source_files____})
+	Set(HDK_SOPVHACD_SOURCE_FILES 			${____module_source_files____})		
 	
-	Set(HDK_SOPVHACD_3RDPARTY_INCLUDE_DIR 	"${____module_3rdparty_dir____}/include")
-	Set(HDK_SOPVHACD_3RDPARTY_STATIC_LIBS 	${____module_3rdparty_static_libs____})
-	
+	Set(HDK_SOPVHACD_3RDPARTY_INCLUDE_DIR 	"${____module_3rdparty_dir____}/VHACD_Lib/inc" "${____module_3rdparty_dir____}/VHACD_Lib/public")
+	Set(HDK_SOPVHACD_3RDPARTY_INCLUDE_FILES ${____module_3rdparty_include_files____})
+	Set(HDK_SOPVHACD_3RDPARTY_SOURCE_FILES 	${____module_3rdparty_source_files____})
 	
 else()
 	Message(STATUS "Didn't found ${____module_name_toupper____}")
