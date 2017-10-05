@@ -52,12 +52,13 @@ else()
 		${HDK_SOPVHACD_3RDPARTY_SOURCE_FILES}
 	)
 	
+	# pack operator files into its own filter
+	Source_Group("Operators\\Headers" FILES ${HDK_SOPVHACD_INCLUDE_FILES})
+	Source_Group("Operators\\Source" FILES ${HDK_SOPVHACD_SOURCE_FILES})
+	
 	# pack V-HACD files into its own filter
-	Source_Group("3rdParty" 
-		FILES 
-		${HDK_SOPVHACD_3RDPARTY_INCLUDE_FILES} 
-		${HDK_SOPVHACD_3RDPARTY_SOURCE_FILES}
-	)
+	Source_Group("3rdParty\\Headers" FILES ${HDK_SOPVHACD_3RDPARTY_INCLUDE_FILES})
+	Source_Group("3rdParty\\Source" FILES ${HDK_SOPVHACD_3RDPARTY_SOURCE_FILES})	
 	
 	Target_Include_Directories(${PROJECT_NAME} 
 		PUBLIC 
