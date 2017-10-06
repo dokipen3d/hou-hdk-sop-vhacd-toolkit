@@ -41,6 +41,12 @@ Set(____module_3rdparty_dir____ "${CMAKE_CURRENT_SOURCE_DIR}/../3rdParty")
 HELPERS                                                            |
 ------------------------------------------------------------------]]
 
+Macro(HDK_MODULE_GET_COMMON_INCLUDE_FILES _dir)
+	File(GLOB_RECURSE ____module_common_include_files____
+		"${_dir}/include/*.h"
+	)
+EndMacro()
+
 Macro(HDK_MODULE_GET_3RDPARTY_INCLUDE_FILES _dir)
 	File(GLOB_RECURSE ____module_3rdparty_include_files____
 		"${_dir}/*.h"
@@ -61,12 +67,22 @@ MAIN                                                               |
 HDK_MODULE_NAME_TOUPPER()
 if(EXISTS ${____module_source_dir____} AND EXISTS ${____module_3rdparty_dir____})
 
-	# find all header files
-	HDK_MODULE_GET_INCLUDE_FILES(${____module_source_dir____})	
+	# find all common header files
+	HDK_MODULE_GET_COMMON_INCLUDE_FILES(${____module_source_dir____})
 	
-	# find all source files
-	HDK_MODULE_GET_SOURCE_FILES(${____module_source_dir____})
+	# output data
+	Set(HDK_VHACDTOOLKIT_COMMON_INCLUDE_DIR 	"${____module_source_dir____}/include")
+	Set(HDK_VHACDTOOLKIT_COMMON_INCLUDE_FILES 	"${____module_common_include_files____}")
 	
+#[[-----------------------------------------------------------------
+V-HACD Engine                                                      |
+------------------------------------------------------------------]]
+
+	# find operator header & source files
+	HDK_MODULE_GET_INCLUDE_FILES("${____module_source_dir____}/SOP_VHACDEngine")
+	HDK_MODULE_GET_SOURCE_FILES("${____module_source_dir____}/SOP_VHACDEngine")	
+	
+	# find 3rdParty header and source files
 	HDK_MODULE_GET_3RDPARTY_INCLUDE_FILES(${____module_3rdparty_dir____})
 	HDK_MODULE_GET_3RDPARTY_SOURCE_FILES(${____module_3rdparty_dir____})
 	
@@ -76,14 +92,33 @@ if(EXISTS ${____module_source_dir____} AND EXISTS ${____module_3rdparty_dir____}
 		____module_source_dir____
 	)
 		
-	# output data
-	Set(HDK_SOPVHACD_INCLUDE_DIR 			"${____module_source_dir____}/include")
-	Set(HDK_SOPVHACD_INCLUDE_FILES 			${____module_include_files____})	
-	Set(HDK_SOPVHACD_SOURCE_FILES 			${____module_source_files____})		
+	# output data	
+	Set(HDK_SOPVHACDENGINE_INCLUDE_DIR 				"${____module_source_dir____}/SOP_VHACDEngine/include")
+	Set(HDK_SOPVHACDENGINE_INCLUDE_FILES 			"${____module_include_files____}")	
+	Set(HDK_SOPVHACDENGINE_SOURCE_FILES 			"${____module_source_files____}")
 	
-	Set(HDK_SOPVHACD_3RDPARTY_INCLUDE_DIR 	"${____module_3rdparty_dir____}/VHACD_Lib/inc" "${____module_3rdparty_dir____}/VHACD_Lib/public")
-	Set(HDK_SOPVHACD_3RDPARTY_INCLUDE_FILES ${____module_3rdparty_include_files____})
-	Set(HDK_SOPVHACD_3RDPARTY_SOURCE_FILES 	${____module_3rdparty_source_files____})
+	Set(HDK_SOPVHACDENGINE_3RDPARTY_INCLUDE_DIR 	"${____module_3rdparty_dir____}/VHACD_Lib/inc" "${____module_3rdparty_dir____}/VHACD_Lib/public")
+	Set(HDK_SOPVHACDENGINE_3RDPARTY_INCLUDE_FILES 	"${____module_3rdparty_include_files____}")
+	Set(HDK_SOPVHACDENGINE_3RDPARTY_SOURCE_FILES 	"${____module_3rdparty_source_files____}")
+	
+#[[-----------------------------------------------------------------
+V-HACD Setup                                                       |
+------------------------------------------------------------------]]
+
+	# find operator header & source files
+	HDK_MODULE_GET_INCLUDE_FILES("${____module_source_dir____}/SOP_VHACDSetup")
+	HDK_MODULE_GET_SOURCE_FILES("${____module_source_dir____}/SOP_VHACDSetup")	
+	
+	# report back
+	Find_Package_Handle_Standard_Args(${____module_name_toupper____} 
+		DEFAULT_MSG 
+		____module_source_dir____
+	)
+		
+	# output data	
+	Set(HDK_SOPVHACDSETUP_INCLUDE_DIR 				"${____module_source_dir____}/SOP_VHACDSetup/include")
+	Set(HDK_SOPVHACDSETUP_INCLUDE_FILES 			"${____module_include_files____}")	
+	Set(HDK_SOPVHACDSETUP_SOURCE_FILES 				"${____module_source_files____}")
 	
 else()
 	Message(STATUS "Didn't found ${____module_name_toupper____}")

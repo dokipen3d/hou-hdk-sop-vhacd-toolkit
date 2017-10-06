@@ -41,7 +41,7 @@ INCLUDES                                                           |
 #include <Enums/NodeErrorLevel.h>
 
 // this
-#include "PRMs_VHACDSetup.h"
+#include "Parameters.h"
 
 /* -----------------------------------------------------------------
 DEFINES                                                            |
