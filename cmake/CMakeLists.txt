@@ -77,10 +77,7 @@ V-HACD Engine                                                      |
 
 	)			
 
-	Target_Link_Libraries(${CURRENT_PROJECT_NAME} 
-		PRIVATE 
-		${HOUDINI_LIBRARIES}
-	)
+	Target_Link_Libraries(${CURRENT_PROJECT_NAME} PRIVATE ${HOUDINI_LIBRARIES})
 	
 	# specify destination path	
 	HOU_SETUP_DSO_OUTPUTS(${CMAKE_CURRENT_SOURCE_DIR} ${CURRENT_PROJECT_NAME})	
@@ -110,10 +107,7 @@ V-HACD Setup                                                       |
 
 	)	
 	
-	Target_Link_Libraries(${CURRENT_PROJECT_NAME}		
-		PRIVATE 		
-		${HOUDINI_LIBRARIES}		
-	)
+	Target_Link_Libraries(${CURRENT_PROJECT_NAME} PRIVATE ${HOUDINI_LIBRARIES})
 	
 	# specify destination path	
 	HOU_SETUP_DSO_OUTPUTS(${CMAKE_CURRENT_SOURCE_DIR} ${CURRENT_PROJECT_NAME})	

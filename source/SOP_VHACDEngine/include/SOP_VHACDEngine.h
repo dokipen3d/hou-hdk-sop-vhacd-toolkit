@@ -87,7 +87,7 @@ DECLARE_SOP_Namespace_Start()
 		bool						PrepareGeometry(GU_Detail* geometry, UT_AutoInterrupt progress);
 		void						SetupVHACD(GU_Detail* geometry, fpreal time);
 		bool						PrepareDataForVHACD(GU_Detail* geometry, UT_AutoInterrupt progress, fpreal time);
-		bool						DrawConvexHull(GU_Detail* geometry, int hullid, VHACD::IVHACD::ConvexHull hull, UT_AutoInterrupt progress);
+		bool						DrawConvexHull(GU_Detail* geometry, VHACD::IVHACD::ConvexHull hull, UT_AutoInterrupt progress);
 		OP_ERROR					GenerateConvexHulls(GU_Detail* geometry, UT_AutoInterrupt progress);
 			
 		VHACD::IVHACD::Parameters	_parametersVHACD;

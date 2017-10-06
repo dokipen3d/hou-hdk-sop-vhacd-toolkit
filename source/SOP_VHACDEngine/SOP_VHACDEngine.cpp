@@ -324,9 +324,8 @@ SOP_Operator::PrepareDataForVHACD(GU_Detail* geometry, UT_AutoInterrupt progress
 	return true;
 }
 
-// TODO: hullid is never used, leftover from time when I created attribute here
 bool
-SOP_Operator::DrawConvexHull(GU_Detail* geometry, int hullid, VHACD::IVHACD::ConvexHull hull, UT_AutoInterrupt progress)
+SOP_Operator::DrawConvexHull(GU_Detail* geometry, VHACD::IVHACD::ConvexHull hull, UT_AutoInterrupt progress)
 {
 	// add amount of points that hull consists
 	const auto start = geometry->appendPointBlock(hull.m_nPoints);
@@ -411,7 +410,7 @@ SOP_Operator::GenerateConvexHulls(GU_Detail* geometry, UT_AutoInterrupt progress
 			this->_interfaceVHACD->GetConvexHull(id, currentHull);
 			if (!currentHull.m_nPoints || !currentHull.m_nTriangles) continue;
 
-			success = DrawConvexHull(geometry, id, currentHull, progress);
+			success = DrawConvexHull(geometry, currentHull, progress);
 			if (!success && error() > UT_ErrorSeverity::UT_ERROR_NONE) return error();
 		}		
 	}
