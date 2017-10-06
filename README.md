@@ -13,8 +13,8 @@ Example of V-HACD use with [Unity](https://youtu.be/8CStATK1X5s) on YouTube.
 
 **Currently supported platforms:**
 - [x] Windows
-- [ ] Apple
-- [ ] Linux
+- [x] Apple
+- [x] Linux
 
 **TODO:**
 - [ ] update HDAs
