@@ -60,6 +60,12 @@ Macro(HDK_MODULE_GET_3RDPARTY_SOURCE_FILES _dir)
 	)
 EndMacro()
 
+Macro(HDK_MODULE_GET_3RDPARTY_OPENCL_KERNEL_FILES _dir)
+	File(GLOB_RECURSE ____module_3rdparty_opencl_kernel_files____
+		"${_dir}/*.cl"
+	)
+EndMacro()
+
 #[[-----------------------------------------------------------------
 MAIN                                                               |
 ------------------------------------------------------------------]]
@@ -71,8 +77,8 @@ if(EXISTS ${____module_source_dir____} AND EXISTS ${____module_3rdparty_dir____}
 	HDK_MODULE_GET_COMMON_INCLUDE_FILES(${____module_source_dir____})
 	
 	# output data
-	Set(HDK_VHACDTOOLKIT_COMMON_INCLUDE_DIR 	"${____module_source_dir____}/include")
-	Set(HDK_VHACDTOOLKIT_COMMON_INCLUDE_FILES 	"${____module_common_include_files____}")
+	Set(HDK_VHACDTOOLKIT_COMMON_INCLUDE_DIR 				"${____module_source_dir____}/include")
+	Set(HDK_VHACDTOOLKIT_COMMON_INCLUDE_FILES 				"${____module_common_include_files____}")
 	
 #[[-----------------------------------------------------------------
 V-HACD Engine                                                      |
@@ -86,6 +92,9 @@ V-HACD Engine                                                      |
 	HDK_MODULE_GET_3RDPARTY_INCLUDE_FILES(${____module_3rdparty_dir____})
 	HDK_MODULE_GET_3RDPARTY_SOURCE_FILES(${____module_3rdparty_dir____})
 	
+	# find OpenCL kernel
+	HDK_MODULE_GET_3RDPARTY_OPENCL_KERNEL_FILES(${____module_3rdparty_dir____})
+	
 	# report back
 	Find_Package_Handle_Standard_Args(${____module_name_toupper____} 
 		DEFAULT_MSG 
@@ -93,13 +102,14 @@ V-HACD Engine                                                      |
 	)
 		
 	# output data	
-	Set(HDK_SOPVHACDENGINE_INCLUDE_DIR 				"${____module_source_dir____}/SOP_VHACDEngine/include")
-	Set(HDK_SOPVHACDENGINE_INCLUDE_FILES 			"${____module_include_files____}")	
-	Set(HDK_SOPVHACDENGINE_SOURCE_FILES 			"${____module_source_files____}")
+	Set(HDK_SOPVHACDENGINE_INCLUDE_DIR 						"${____module_source_dir____}/SOP_VHACDEngine/include")
+	Set(HDK_SOPVHACDENGINE_INCLUDE_FILES 					"${____module_include_files____}")	
+	Set(HDK_SOPVHACDENGINE_SOURCE_FILES 					"${____module_source_files____}")
 	
-	Set(HDK_SOPVHACDENGINE_3RDPARTY_INCLUDE_DIR 	"${____module_3rdparty_dir____}/VHACD_Lib/inc" "${____module_3rdparty_dir____}/VHACD_Lib/public")
-	Set(HDK_SOPVHACDENGINE_3RDPARTY_INCLUDE_FILES 	"${____module_3rdparty_include_files____}")
-	Set(HDK_SOPVHACDENGINE_3RDPARTY_SOURCE_FILES 	"${____module_3rdparty_source_files____}")
+	Set(HDK_SOPVHACDENGINE_3RDPARTY_INCLUDE_DIR 			"${____module_3rdparty_dir____}/VHACD_Lib/inc" "${____module_3rdparty_dir____}/VHACD_Lib/public")
+	Set(HDK_SOPVHACDENGINE_3RDPARTY_INCLUDE_FILES 			"${____module_3rdparty_include_files____}")
+	Set(HDK_SOPVHACDENGINE_3RDPARTY_SOURCE_FILES 			"${____module_3rdparty_source_files____}")
+	Set(HDK_SOPVHACDENGINE_3RDPARTY_OPENCL_KERNEL_FILES 	"${____module_3rdparty_opencl_kernel_files____}")
 	
 #[[-----------------------------------------------------------------
 V-HACD Setup                                                       |
@@ -116,9 +126,9 @@ V-HACD Setup                                                       |
 	)
 		
 	# output data	
-	Set(HDK_SOPVHACDSETUP_INCLUDE_DIR 				"${____module_source_dir____}/SOP_VHACDSetup/include")
-	Set(HDK_SOPVHACDSETUP_INCLUDE_FILES 			"${____module_include_files____}")	
-	Set(HDK_SOPVHACDSETUP_SOURCE_FILES 				"${____module_source_files____}")
+	Set(HDK_SOPVHACDSETUP_INCLUDE_DIR 						"${____module_source_dir____}/SOP_VHACDSetup/include")
+	Set(HDK_SOPVHACDSETUP_INCLUDE_FILES 					"${____module_include_files____}")	
+	Set(HDK_SOPVHACDSETUP_SOURCE_FILES 						"${____module_source_files____}")
 	
 else()
 	Message(STATUS "Didn't found ${____module_name_toupper____}")

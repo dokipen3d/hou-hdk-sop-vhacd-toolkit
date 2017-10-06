@@ -54,15 +54,17 @@ V-HACD Engine                                                      |
 		${HDK_SOPVHACDENGINE_SOURCE_FILES}
 		${HDK_SOPVHACDENGINE_3RDPARTY_INCLUDE_FILES}
 		${HDK_SOPVHACDENGINE_3RDPARTY_SOURCE_FILES}
+		${HDK_SOPVHACDENGINE_3RDPARTY_OPENCL_KERNEL_FILES}
 	)
 	
 	# pack operator files into its own filter
 	Source_Group("Operator\\Headers" FILES ${HDK_SOPVHACDENGINE_INCLUDE_FILES})
-	Source_Group("Operator\\Source" FILES ${HDK_SOPVHACDENGINE_SOURCE_FILES})
+	Source_Group("Operator\\Source" FILES ${HDK_SOPVHACDENGINE_SOURCE_FILES})	
 	
 	# pack V-HACD files into its own filter
 	Source_Group("3rdParty\\Headers" FILES ${HDK_SOPVHACDENGINE_3RDPARTY_INCLUDE_FILES})
 	Source_Group("3rdParty\\Source" FILES ${HDK_SOPVHACDENGINE_3RDPARTY_SOURCE_FILES})	
+	Source_Group("3rdParty\\OpenCL" FILES ${HDK_SOPVHACDENGINE_3RDPARTY_OPENCL_KERNEL_FILES})
 	
 	Target_Include_Directories(${CURRENT_PROJECT_NAME} 
 		PUBLIC 
