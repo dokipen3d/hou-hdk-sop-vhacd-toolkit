@@ -58,23 +58,22 @@ V-HACD Engine                                                      |
 	)
 	
 	# pack operator files into its own filter
-	Source_Group("Operator\\Headers" FILES ${HDK_SOPVHACDENGINE_INCLUDE_FILES})
-	Source_Group("Operator\\Source" FILES ${HDK_SOPVHACDENGINE_SOURCE_FILES})	
+	Source_Group("Operator\\Headers" 	FILES ${HDK_SOPVHACDENGINE_INCLUDE_FILES})
+	Source_Group("Operator\\Source" 	FILES ${HDK_SOPVHACDENGINE_SOURCE_FILES})	
 	
 	# pack V-HACD files into its own filter
-	Source_Group("3rdParty\\Headers" FILES ${HDK_SOPVHACDENGINE_3RDPARTY_INCLUDE_FILES})
-	Source_Group("3rdParty\\Source" FILES ${HDK_SOPVHACDENGINE_3RDPARTY_SOURCE_FILES})	
-	Source_Group("3rdParty\\OpenCL" FILES ${HDK_SOPVHACDENGINE_3RDPARTY_OPENCL_KERNEL_FILES})
+	Source_Group("3rdParty\\Headers" 	FILES ${HDK_SOPVHACDENGINE_3RDPARTY_INCLUDE_FILES})
+	Source_Group("3rdParty\\Source" 	FILES ${HDK_SOPVHACDENGINE_3RDPARTY_SOURCE_FILES})	
+	Source_Group("3rdParty\\OpenCL" 	FILES ${HDK_SOPVHACDENGINE_3RDPARTY_OPENCL_KERNEL_FILES})
 	
 	Target_Include_Directories(${CURRENT_PROJECT_NAME} 
 		PUBLIC 
 		"${HDK_SOPVHACDENGINE_INCLUDE_DIR}"
 		PRIVATE 
-		"${HDK_VHACDTOOLKIT_COMMON_INCLUDE_DIR}"
-		"${HDK_SOPVHACDENGINE_3RDPARTY_INCLUDE_DIR}"
-		"${HDK_COMMON_INCLUDE_DIR}"
 		"${HOUDINI_INCLUDE_DIRS}"
-
+		"${HDK_COMMON_INCLUDE_DIR}"
+		"${HDK_VHACDTOOLKIT_COMMON_INCLUDE_DIR}"
+		"${HDK_SOPVHACDENGINE_3RDPARTY_INCLUDE_DIR}"				
 	)			
 
 	Target_Link_Libraries(${CURRENT_PROJECT_NAME} PRIVATE ${HOUDINI_LIBRARIES})
@@ -94,17 +93,16 @@ V-HACD Setup                                                       |
 	)		
 	
 	# pack operator files into its own filter
-	Source_Group("Operator\\Headers" FILES ${HDK_SOPVHACDSETUP_INCLUDE_FILES})
-	Source_Group("Operator\\Source" FILES ${HDK_SOPVHACDSETUP_SOURCE_FILES})
+	Source_Group("Operator\\Headers" 	FILES ${HDK_SOPVHACDSETUP_INCLUDE_FILES})
+	Source_Group("Operator\\Source" 	FILES ${HDK_SOPVHACDSETUP_SOURCE_FILES})
 	
 	Target_Include_Directories(${CURRENT_PROJECT_NAME} 
 		PUBLIC 
 		"${HDK_SOPVHACDSETUP_INCLUDE_DIR}"
 		PRIVATE 
-		"${HDK_VHACDTOOLKIT_COMMON_INCLUDE_DIR}"		
-		"${HDK_COMMON_INCLUDE_DIR}"
 		"${HOUDINI_INCLUDE_DIRS}"
-
+		"${HDK_COMMON_INCLUDE_DIR}"				
+		"${HDK_VHACDTOOLKIT_COMMON_INCLUDE_DIR}"		
 	)	
 	
 	Target_Link_Libraries(${CURRENT_PROJECT_NAME} PRIVATE ${HOUDINI_LIBRARIES})
