@@ -40,7 +40,7 @@ MAIN                                                               |
 if(NOT DEFINED ENV{GIT_PATH})
 	Message(FATAL_ERROR "GIT_PATH environment variable is not defined.")
 else()	
-	# find all "hou-hdk-sop-template" files
+	# find all "hou-hdk-sop-vhacdtoolkit" files
 	Find_Package(HDKSOPVHACDToolkit REQUIRED)
 
 #[[-----------------------------------------------------------------
