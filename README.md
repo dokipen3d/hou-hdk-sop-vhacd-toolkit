@@ -9,6 +9,7 @@ Example of V-HACD use with [Unity](https://youtu.be/8CStATK1X5s) on YouTube.
 
 **IMPORTANT:**
 * Requires [hou-hdk-common](https://github.com/sebastianswann/hou-hdk-common) repository
+* Read other requiments on mentioned above repository
 * (Optional) Requires [JSON.Net for Unity](https://github.com/SaladLab/Json.Net.Unity3D) to make Unity scripts work properly.
 
 **Currently supported platforms:**
