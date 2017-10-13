@@ -29,10 +29,6 @@ INCLUDES                                                           |
 // SESI
 #include <UT/UT_DSOVersion.h>
 #include <OP/OP_OperatorTable.h>
-#include <BM/BM_ResourceManager.h>
-
-// hou-hdk-common
-#include <Macros/GroupMenuPRM.h>
 
 // this
 #include "SOP_VHACDEngine.h"
@@ -53,10 +49,8 @@ REGISTRATION                                                       |
 ----------------------------------------------------------------- */
 
 void
-newSelector(BM_ResourceManager* manager)
+newSopOperator(OP_OperatorTable* table)
 {
-	auto table = OP_Network::getOperatorTable(SOP_TABLE_NAME);	
-
 	const auto sopVHACDEngine = new OP_Operator(SOP_SmallName, SOP_BigName, SOP_Operator::CreateMe, SOP_Operator::parametersList, 1, 1, nullptr, 0, nullptr, 1, SOP_TabMenuPath);
 	auto success = table->addOperator(sopVHACDEngine);
 }
@@ -65,14 +59,9 @@ newSelector(BM_ResourceManager* manager)
 UNDEFINES                                                          |
 ----------------------------------------------------------------- */
 
-#undef SOP_GroupPRM
-#undef MSS_BigName
-#undef MSS_SmallName
-#undef MSS_Selector
+#undef MSS_Prompt
+#undef SOP_TabMenuPath
 
 #undef SOP_BigName
 #undef SOP_SmallName
 #undef SOP_Operator
-
-#undef MSS_Prompt
-#undef SOP_TabMenuPath

@@ -44,14 +44,13 @@ DEFINES                                                            |
 #define SOP_Operator		GET_SOP_Namespace()::SOP_VHACDSetup
 #define SOP_SmallName		"vhacd::setup::1.2"
 #define SOP_BigName			"Setup (v-hacd)"
+#define SOP_TabMenuPath		"Toolkit/V-HACD"
 #define SOP_GroupPRM		CONST_PrimitiveGroupInput0_Name
 
 #define MSS_Selector		GET_SOP_Namespace()::MSS_VHACDSetup
 #define MSS_SmallName		"vhacd::setupselector::1.2"
 #define MSS_BigName			"Setup (v-hacd selector)"
 #define MSS_Prompt			"Select geometry. Press <enter> to accept."
-
-#define SOP_TabMenuPath		"Toolkit/V-HACD"
 
 /* -----------------------------------------------------------------
 REGISTRATION                                                       |
@@ -105,14 +104,13 @@ newSelector(BM_ResourceManager* manager)
 UNDEFINES                                                          |
 ----------------------------------------------------------------- */
 
-#undef SOP_GroupPRM
+#undef MSS_Prompt
 #undef MSS_BigName
 #undef MSS_SmallName
 #undef MSS_Selector
 
+#undef SOP_GroupPRM
+#undef SOP_TabMenuPath
 #undef SOP_BigName
 #undef SOP_SmallName
 #undef SOP_Operator
-
-#undef MSS_Prompt
-#undef SOP_TabMenuPath
