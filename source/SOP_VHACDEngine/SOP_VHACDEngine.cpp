@@ -388,7 +388,7 @@ SOP_Operator::GenerateConvexHulls(GU_Detail* geometry, UT_AutoInterrupt progress
 	// get interface
 	this->_interfaceVHACD = VHACD::CreateVHACD();
 	
-	auto success = this->_interfaceVHACD->Compute( &this->_points[0], static_cast<unsigned int>(this->_points.size()) / 3, reinterpret_cast<const uint32_t *>(&this->_triangles[0]), static_cast<unsigned int>(this->_triangles.size()) / 3, this->_parametersVHACD);
+	auto success = this->_interfaceVHACD->Compute( &this->_points[0], static_cast<unsigned int>(this->_points.size()) / 3, reinterpret_cast<const uint32_t*>(&this->_triangles[0]), static_cast<unsigned int>(this->_triangles.size()) / 3, this->_parametersVHACD);
 	if (success)
 	{
 		const auto hullCount = this->_interfaceVHACD->GetNConvexHulls();

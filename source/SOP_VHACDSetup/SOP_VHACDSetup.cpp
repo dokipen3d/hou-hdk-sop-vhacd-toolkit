@@ -163,57 +163,23 @@ SOP_Operator::updateParmsFlags()
 	changed |= enableParm(UI::processModeChoiceMenu_Parameter.getToken(), primitiveGroupPatern != "");
 	changed |= enableParm(UI::soloSpecifiedGroupToggle_Parameter.getToken(), primitiveGroupPatern != "");
 
-	PRM_ACCESS::Get::IntPRM(this, visibilityState, UI::addDecompositionModeAttributeToggle_Parameter, currentTime);
-	changed |= setVisibleState(UI::decompositionModeValueChoiceMenu_Parameter.getToken(), visibilityState);
-	changed |= setVisibleState(UI::decompositionModeFallbackInteger_Parameter.getToken(), visibilityState);
+#define THIS_SETUP_VISIBILITY(checkparameter, valueparameter, fallbackparameter) PRM_ACCESS::Get::IntPRM(this, visibilityState, checkparameter, currentTime); changed |= setVisibleState(valueparameter.getToken(), visibilityState); changed |= setVisibleState(fallbackparameter.getToken(), visibilityState);
 
-	PRM_ACCESS::Get::IntPRM(this, visibilityState, UI::addResolutionAttributeToggle_Parameter, currentTime);
-	changed |= setVisibleState(UI::resolutionValueInteger_Parameter.getToken(), visibilityState);
-	changed |= setVisibleState(UI::resolutionFallbackInteger_Parameter.getToken(), visibilityState);
+	THIS_SETUP_VISIBILITY(UI::addDecompositionModeAttributeToggle_Parameter, UI::decompositionModeValueChoiceMenu_Parameter, UI::decompositionModeFallbackInteger_Parameter)
+	THIS_SETUP_VISIBILITY(UI::addResolutionAttributeToggle_Parameter, UI::resolutionValueInteger_Parameter, UI::resolutionFallbackInteger_Parameter)
+	THIS_SETUP_VISIBILITY(UI::addMaxConvexHullsAttributeToggle_Parameter, UI::maxConvexHullsValueInteger_Parameter, UI::maxConvexHullsFallbackInteger_Parameter)
+	THIS_SETUP_VISIBILITY(UI::addConcavityAttributeToggle_Parameter, UI::concavityValueFloat_Parameter, UI::concavityFallbackFloat_Parameter)
+	THIS_SETUP_VISIBILITY(UI::addPlaneDownsamplingAttributeToggle_Parameter, UI::planeDownsamplingValueInteger_Parameter, UI::planeDownsamplingFallbackInteger_Parameter)
+	THIS_SETUP_VISIBILITY(UI::addConvexHullDownsamplingAttributeToggle_Parameter, UI::convexHullDownsamplingValueInteger_Parameter, UI::convexHullDownsamplingFallbackInteger_Parameter)
+	THIS_SETUP_VISIBILITY(UI::addAlphaAttributeToggle_Parameter, UI::alphaValueFloat_Parameter, UI::alphaFallbackFloat_Parameter)
+	THIS_SETUP_VISIBILITY(UI::addBetaAttributeToggle_Parameter, UI::betaValueFloat_Parameter, UI::betaFallbackFloat_Parameter)
+	THIS_SETUP_VISIBILITY(UI::addMaxTriangleCountAttributeToggle_Parameter, UI::maxTriangleCountValueInteger_Parameter, UI::maxTriangleCountFallbackInteger_Parameter)
+	THIS_SETUP_VISIBILITY(UI::addAdaptiveSamplingAttributeToggle_Parameter, UI::adaptiveSamplingValueFloat_Parameter, UI::adaptiveSamplingFallbackFloat_Parameter)
+	THIS_SETUP_VISIBILITY(UI::addConvexHullApproximationAttributeToggle_Parameter, UI::convexHullApproximationValueToggle_Parameter, UI::convexHullApproximationFallbackInteger_Parameter)
+	THIS_SETUP_VISIBILITY(UI::addProjectVerticesAttributeToggle_Parameter, UI::projectVerticesValueToggle_Parameter, UI::projectVertivcesFallbackInteger_Parameter)
+	THIS_SETUP_VISIBILITY(UI::addNormalizeMeshAttributeToggle_Parameter, UI::normalizeMeshValueToggle_Parameter, UI::normalizeMeshFallbackInteger_Parameter)
 
-	PRM_ACCESS::Get::IntPRM(this, visibilityState, UI::addMaxConvexHullsAttributeToggle_Parameter, currentTime);
-	changed |= setVisibleState(UI::maxConvexHullsValueInteger_Parameter.getToken(), visibilityState);
-	changed |= setVisibleState(UI::maxConvexHullsFallbackInteger_Parameter.getToken(), visibilityState);
-
-	PRM_ACCESS::Get::IntPRM(this, visibilityState, UI::addConcavityAttributeToggle_Parameter, currentTime);
-	changed |= setVisibleState(UI::concavityValueFloat_Parameter.getToken(), visibilityState);
-	changed |= setVisibleState(UI::concavityFallbackFloat_Parameter.getToken(), visibilityState);
-
-	PRM_ACCESS::Get::IntPRM(this, visibilityState, UI::addPlaneDownsamplingAttributeToggle_Parameter, currentTime);
-	changed |= setVisibleState(UI::planeDownsamplingValueInteger_Parameter.getToken(), visibilityState);
-	changed |= setVisibleState(UI::planeDownsamplingFallbackInteger_Parameter.getToken(), visibilityState);
-
-	PRM_ACCESS::Get::IntPRM(this, visibilityState, UI::addConvexHullDownsamplingAttributeToggle_Parameter, currentTime);
-	changed |= setVisibleState(UI::convexHullDownsamplingValueInteger_Parameter.getToken(), visibilityState);
-	changed |= setVisibleState(UI::convexHullDownsamplingFallbackInteger_Parameter.getToken(), visibilityState);
-
-	PRM_ACCESS::Get::IntPRM(this, visibilityState, UI::addAlphaAttributeToggle_Parameter, currentTime);
-	changed |= setVisibleState(UI::alphaValueFloat_Parameter.getToken(), visibilityState);
-	changed |= setVisibleState(UI::alphaFallbackFloat_Parameter.getToken(), visibilityState);
-
-	PRM_ACCESS::Get::IntPRM(this, visibilityState, UI::addBetaAttributeToggle_Parameter, currentTime);
-	changed |= setVisibleState(UI::betaValueFloat_Parameter.getToken(), visibilityState);
-	changed |= setVisibleState(UI::betaFallbackFloat_Parameter.getToken(), visibilityState);
-
-	PRM_ACCESS::Get::IntPRM(this, visibilityState, UI::addMaxTriangleCountAttributeToggle_Parameter, currentTime);
-	changed |= setVisibleState(UI::maxTriangleCountValueInteger_Parameter.getToken(), visibilityState);
-	changed |= setVisibleState(UI::maxTriangleCountFallbackInteger_Parameter.getToken(), visibilityState);
-
-	PRM_ACCESS::Get::IntPRM(this, visibilityState, UI::addAdaptiveSamplingAttributeToggle_Parameter, currentTime);
-	changed |= setVisibleState(UI::adaptiveSamplingValueFloat_Parameter.getToken(), visibilityState);
-	changed |= setVisibleState(UI::adaptiveSamplingFallbackFloat_Parameter.getToken(), visibilityState);
-
-	PRM_ACCESS::Get::IntPRM(this, visibilityState, UI::addConvexHullApproximationAttributeToggle_Parameter, currentTime);
-	changed |= setVisibleState(UI::convexHullApproximationValueToggle_Parameter.getToken(), visibilityState);
-	changed |= setVisibleState(UI::convexHullApproximationFallbackInteger_Parameter.getToken(), visibilityState);
-
-	PRM_ACCESS::Get::IntPRM(this, visibilityState, UI::addProjectVerticesAttributeToggle_Parameter, currentTime);
-	changed |= setVisibleState(UI::projectVerticesValueToggle_Parameter.getToken(), visibilityState);
-	changed |= setVisibleState(UI::projectVertivcesFallbackInteger_Parameter.getToken(), visibilityState);
-
-	PRM_ACCESS::Get::IntPRM(this, visibilityState, UI::addNormalizeMeshAttributeToggle_Parameter, currentTime);
-	changed |= setVisibleState(UI::normalizeMeshValueToggle_Parameter.getToken(), visibilityState);
-	changed |= setVisibleState(UI::normalizeMeshFallbackInteger_Parameter.getToken(), visibilityState);
+#undef THIS_SETUP_VISIBILITY
 
 	// update description active state
 	UPDATE_DescriptionPRM_ActiveState(this, UI)
