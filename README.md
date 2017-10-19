@@ -1,5 +1,3 @@
-# V-HACD toolkit for Houdini. #
-
 ![Example](/images/vhacd-toolkit-0.gif)
 ![Example](/images/vhacd-toolkit-1.gif)
 
