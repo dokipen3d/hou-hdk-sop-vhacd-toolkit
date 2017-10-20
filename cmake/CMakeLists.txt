@@ -23,12 +23,11 @@
 DEFAULTS                                                           |
 ------------------------------------------------------------------]]
 
-Project(SOP_VHACDToolkit)
+Project(VHACDToolkit)
 
 # set available compile configuration types
 #set(CMAKE_CONFIGURATION_TYPES "Debug;Release;RelWithDebInfo")
 set(CMAKE_CONFIGURATION_TYPES "Release")
-
 
 # get custom modules
 Set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/Modules")
@@ -41,7 +40,7 @@ if(NOT DEFINED ENV{GIT_PATH})
 	Message(FATAL_ERROR "GIT_PATH environment variable is not defined.")
 else()	
 	# find all "hou-hdk-sop-vhacdtoolkit" files
-	Find_Package(HDKSOPVHACDToolkit REQUIRED)
+	Find_Package(HDKVHACDToolkit REQUIRED)
 
 #[[-----------------------------------------------------------------
 V-HACD Engine                                                      |

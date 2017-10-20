@@ -1,5 +1,6 @@
 #[[
 	IMPORTANT! ------------------------------------------
+	* Variables starting and ending with `____` shouldn't be used anywhere outside of this file.
 	-----------------------------------------------------
 
 	Author: 	SWANN
@@ -31,21 +32,15 @@ DEFAULTS                                                           |
 ------------------------------------------------------------------]]
 
 # specify module name
-Set(____module_name____ "hou-hdk-sop-vhacd-toolkit")
+Set(____module_name____ 									"hou-hdk-sop-vhacd-toolkit")
 
 # specify source directory
-Set(____module_source_dir____ "${CMAKE_CURRENT_SOURCE_DIR}/../source")
-Set(____module_3rdparty_dir____ "${CMAKE_CURRENT_SOURCE_DIR}/../3rdParty")
+Set(____module_source_dir____ 								"${CMAKE_CURRENT_SOURCE_DIR}/../source")
+Set(____module_3rdparty_dir____ 							"${CMAKE_CURRENT_SOURCE_DIR}/../3rdParty")
 
 #[[-----------------------------------------------------------------
 HELPERS                                                            |
 ------------------------------------------------------------------]]
-
-Macro(HDK_MODULE_GET_COMMON_INCLUDE_FILES _dir)
-	File(GLOB_RECURSE ____module_common_include_files____
-		"${_dir}/include/*.h"
-	)
-EndMacro()
 
 Macro(HDK_MODULE_GET_3RDPARTY_INCLUDE_FILES _dir)
 	File(GLOB_RECURSE ____module_3rdparty_include_files____
