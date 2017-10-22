@@ -16,7 +16,6 @@ Example of V-HACD use with [Unity](https://youtu.be/8CStATK1X5s) on YouTube.
 - [x] Linux
 
 **TODO:**
-- [x] rework [CMakeLists.txt](https://github.com/sebastianswann/hou-hdk-sop-vhacd-toolkit/blob/master/cmake/CMakeLists.txt) to automatically link [V-HACD](https://github.com/sebastianswann/hou-hdk-sop-vhacd-toolkit/tree/master/3rdParty/VHACD_Lib) library source files
 - [ ] update HDAs
 - [ ] update Python scripts
 - [ ] port SOP Debug to C++
@@ -25,5 +24,6 @@ Example of V-HACD use with [Unity](https://youtu.be/8CStATK1X5s) on YouTube.
 - [ ] port SOP Generate to C++
 - [ ] port SOP Merge to C++
 - [ ] port SOP Scout to C++
-- [x] port [SOP Setup](/source/SOP_VHACDSetup) to C++
+- [x] port [SOP Setup](https://github.com/sebastianswann/hou-hdk-sop-vhacd-toolkit/tree/master/source/SOP_VHACDSetup) to C++
 - [ ] port SOP Transform to C++
+- [x] rework [CMakeLists.txt](https://github.com/sebastianswann/hou-hdk-sop-vhacd-toolkit/blob/master/cmake/CMakeLists.txt) to automatically link [V-HACD](https://github.com/sebastianswann/hou-hdk-sop-vhacd-toolkit/tree/master/3rdParty/VHACD_Lib) library source files
