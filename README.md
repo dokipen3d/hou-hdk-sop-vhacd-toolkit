@@ -26,4 +26,4 @@ Example of V-HACD use with [Unity](https://youtu.be/8CStATK1X5s) on YouTube.
 - [ ] port SOP Scout to C++
 - [x] port [SOP Setup](/source/SOP_VHACDSetup) to C++
 - [ ] port SOP Transform to C++
-- [x] rework [CMakeLists.txt](/cmake/CMakeLists.txt) to automatically link [V-HACD](/3rdParty/VHACD_Lib) library source files
+- [x] rework [CMakeLists.txt](https://github.com/sebastianswann/hou-hdk-sop-vhacd-toolkit/cmake/CMakeLists.txt) to automatically link [V-HACD](https://github.com/sebastianswann/hou-hdk-sop-vhacd-toolkit/3rdParty/VHACD_Lib) library source files
