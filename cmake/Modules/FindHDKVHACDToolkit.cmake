@@ -82,10 +82,10 @@ if(EXISTS ${____module_source_dir____} AND EXISTS ${____module_3rdparty_dir____}
 	Set(HDK_VHACDTOOLKIT_COMMON_INCLUDE_DIR 				"${____module_source_dir____}/include")
 	Set(HDK_VHACDTOOLKIT_COMMON_INCLUDE_FILES 				"${____module_common_include_files____}")
 	
-	Set(HDK_SOP_VHACDENGINE_3RDPARTY_INCLUDE_DIR 			"${____module_3rdparty_dir____}/VHACD_Lib/inc" "${____module_3rdparty_dir____}/VHACD_Lib/public")
-	Set(HDK_SOP_VHACDENGINE_3RDPARTY_INCLUDE_FILES 			"${____module_3rdparty_include_files____}")
-	Set(HDK_SOP_VHACDENGINE_3RDPARTY_SOURCE_FILES 			"${____module_3rdparty_source_files____}")
-	Set(HDK_SOP_VHACDENGINE_3RDPARTY_OPENCL_KERNEL_FILES 	"${____module_3rdparty_opencl_kernel_files____}")
+	Set(HDK_VHACDTOOLKIT_3RDPARTY_INCLUDE_DIR 				"${____module_3rdparty_dir____}/VHACD_Lib/inc" "${____module_3rdparty_dir____}/VHACD_Lib/public")
+	Set(HDK_VHACDTOOLKIT_3RDPARTY_INCLUDE_FILES 			"${____module_3rdparty_include_files____}")
+	Set(HDK_VHACDTOOLKIT_3RDPARTY_SOURCE_FILES 				"${____module_3rdparty_source_files____}")
+	Set(HDK_VHACDTOOLKIT_3RDPARTY_OPENCL_KERNEL_FILES 		"${____module_3rdparty_opencl_kernel_files____}")
 
 #[[-----------------------------------------------------------------
 COLLECT NODE PROJECT DATA                                          |
