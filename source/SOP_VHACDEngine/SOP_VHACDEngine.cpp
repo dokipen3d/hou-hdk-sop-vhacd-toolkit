@@ -279,14 +279,14 @@ SOP_Operator::PrepareDataForVHACD(GU_Detail* geometry, UT_AutoInterrupt progress
 	this->_triangles.clear();
 
 	// get position attribute
-	auto success = ATTRIB_ACCESS::Find::Vec3ATT(this, geometry, GA_AttributeOwner::GA_ATTRIB_POINT, "P", this->_positionHandle);
+	const auto success = ATTRIB_ACCESS::Find::Vec3ATT(this, geometry, GA_AttributeOwner::GA_ATTRIB_POINT, "P", this->_positionHandle);
 	if (success && error() < UT_ErrorSeverity::UT_ERROR_WARNING)
 	{
 		// store positions, as continuous list from 0 to last, without breaking it per primitive		
 		this->_points.reserve(geometry->getNumPoints() * 3);
 
 		auto pointIt = GA_Iterator(geometry->getPointRange());
-		for (pointIt; !pointIt.atEnd(); pointIt.advance())
+		for (; !pointIt.atEnd(); pointIt.advance())
 		{
 			// make sure we can escape the loop
 			if (progress.wasInterrupted())
@@ -306,7 +306,7 @@ SOP_Operator::PrepareDataForVHACD(GU_Detail* geometry, UT_AutoInterrupt progress
 		this->_triangles.reserve(geometry->getNumPrimitives() * 3);
 
 		auto polyIt = GA_Iterator(geometry->getPrimitiveRange());
-		for (polyIt; !polyIt.atEnd(); polyIt.advance())
+		for (; !polyIt.atEnd(); polyIt.advance())
 		{
 			// make sure we can escape the loop
 			if (progress.wasInterrupted())
