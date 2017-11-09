@@ -62,6 +62,7 @@ DEFINES                                                            |
 #define PRM_ACCESS						GET_Base_Namespace()::Utility::PRM
 #define ATTRIB_ACCESS					GET_Base_Namespace()::Utility::Attribute
 #define GDP_UTILS						GET_Base_Namespace()::Utility::Geometry
+#define ENUMS							GET_Base_Namespace()::Enums
 
 /* -----------------------------------------------------------------
 PARAMETERS                                                         |
@@ -169,7 +170,7 @@ SOP_Operator::PullIntPRM(GU_Detail* geometry, const PRM_Template& parameter, boo
 
 		// check is there attribute with the name that matches parameter name
 		// if it exist, use it as parm value, otherwise use UI value		
-		const auto success = ATTRIB_ACCESS::Find::IntATT(this, geometry, GA_AttributeOwner::GA_ATTRIB_PRIMITIVE, parameter.getToken(), attributeHandle, HOU_NODE_ERROR_LEVEL::None);
+		const auto success = ATTRIB_ACCESS::Find::IntATT(this, geometry, GA_AttributeOwner::GA_ATTRIB_PRIMITIVE, parameter.getToken(), attributeHandle, ENUMS::HOU_NODE_ERROR_LEVEL::None);
 		if (success)
 		{
 			currentIntValue = attributeHandle.get(GA_Offset(0));
@@ -196,7 +197,7 @@ SOP_Operator::PullFloatPRM(GU_Detail* geometry, const PRM_Template& parameter, b
 
 		// check is there attribute with the name that matches parameter name
 		// if it exist, use it as parm value, otherwise use UI value		
-		const auto success = ATTRIB_ACCESS::Find::FloatATT(this, geometry, GA_AttributeOwner::GA_ATTRIB_PRIMITIVE, parameter.getToken(), attributeHandle, HOU_NODE_ERROR_LEVEL::None);
+		const auto success = ATTRIB_ACCESS::Find::FloatATT(this, geometry, GA_AttributeOwner::GA_ATTRIB_PRIMITIVE, parameter.getToken(), attributeHandle, ENUMS::HOU_NODE_ERROR_LEVEL::None);
 		if (success)
 		{			
 			currentFloatValue = attributeHandle.get(GA_Offset(0));
@@ -256,9 +257,9 @@ SOP_Operator::SetupVHACD(GU_Detail* geometry, fpreal time)
 		PRM_ACCESS::Get::IntPRM(this, this->_reportModeChoiceValueState, UI::reportModeChoiceMenu_Parameter, time);
 		switch (this->_reportModeChoiceValueState)
 		{
-			case static_cast<exint>(ReportModeOption::PROGESS_ONLY): { VHACD_ReportModeHelper(false, true, true, true) } break;
-			case static_cast<exint>(ReportModeOption::DETAILS_ONLY): { VHACD_ReportModeHelper(true, false, false, false) } break;
-			case static_cast<exint>(ReportModeOption::FULL): { VHACD_ReportModeHelper(true, true, true, true) } break;
+			case static_cast<exint>(ENUMS::ReportModeOption::PROGESS_ONLY): { VHACD_ReportModeHelper(false, true, true, true) } break;
+			case static_cast<exint>(ENUMS::ReportModeOption::DETAILS_ONLY): { VHACD_ReportModeHelper(true, false, false, false) } break;
+			case static_cast<exint>(ENUMS::ReportModeOption::FULL): { VHACD_ReportModeHelper(true, true, true, true) } break;
 		}
 	}
 	else { VHACD_ReportModeHelper(false, false, false, false) }
@@ -501,6 +502,7 @@ SOP_Operator::cookMySop(OP_Context& context)
 UNDEFINES                                                          |
 ----------------------------------------------------------------- */
 
+#undef ENUMS
 #undef GDP_UTILS
 #undef ATTRIB_ACCESS
 #undef PRM_ACCESS

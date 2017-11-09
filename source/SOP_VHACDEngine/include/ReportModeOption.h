@@ -23,16 +23,31 @@
 */
 
 #pragma once
-
 #ifndef ____enums_report_mode_option_h____
 #define ____enums_report_mode_option_h____
 
-enum class ReportModeOption
+/* -----------------------------------------------------------------
+INCLUDES                                                           |
+----------------------------------------------------------------- */
+
+// hou-hdk-common
+#include "Macros/Namespace.h"
+
+/* -----------------------------------------------------------------
+ENUM                                                               |
+----------------------------------------------------------------- */
+
+DECLARE_Base_Namespace_Start()
+namespace Enums
 {
-	PROGESS_ONLY = 0,
-	DETAILS_ONLY = 1,
-	FULL = 2,
-	END_OF_OPTIONS = 3
-};
+	enum class ReportModeOption
+	{
+		PROGESS_ONLY = 0,
+		DETAILS_ONLY = 1,
+		FULL = 2,
+		END_OF_OPTIONS = 3
+	};
+}
+DECLARE_Base_Namespace_End
 
 #endif // !____enums_report_mode_option_h____
