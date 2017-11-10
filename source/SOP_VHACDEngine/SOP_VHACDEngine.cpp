@@ -170,7 +170,7 @@ SOP_Operator::PullIntPRM(GU_Detail* geometry, const PRM_Template& parameter, boo
 
 		// check is there attribute with the name that matches parameter name
 		// if it exist, use it as parm value, otherwise use UI value		
-		const auto success = ATTRIB_ACCESS::Find::IntATT(this, geometry, GA_AttributeOwner::GA_ATTRIB_PRIMITIVE, parameter.getToken(), attributeHandle, ENUMS::HOU_NODE_ERROR_LEVEL::None);
+		const auto success = ATTRIB_ACCESS::Find::IntATT(this, geometry, GA_AttributeOwner::GA_ATTRIB_PRIMITIVE, parameter.getToken(), attributeHandle, ENUMS::NodeErrorLevel::NONE);
 		if (success)
 		{
 			currentIntValue = attributeHandle.get(GA_Offset(0));
@@ -197,7 +197,7 @@ SOP_Operator::PullFloatPRM(GU_Detail* geometry, const PRM_Template& parameter, b
 
 		// check is there attribute with the name that matches parameter name
 		// if it exist, use it as parm value, otherwise use UI value		
-		const auto success = ATTRIB_ACCESS::Find::FloatATT(this, geometry, GA_AttributeOwner::GA_ATTRIB_PRIMITIVE, parameter.getToken(), attributeHandle, ENUMS::HOU_NODE_ERROR_LEVEL::None);
+		const auto success = ATTRIB_ACCESS::Find::FloatATT(this, geometry, GA_AttributeOwner::GA_ATTRIB_PRIMITIVE, parameter.getToken(), attributeHandle, ENUMS::NodeErrorLevel::NONE);
 		if (success)
 		{			
 			currentFloatValue = attributeHandle.get(GA_Offset(0));
