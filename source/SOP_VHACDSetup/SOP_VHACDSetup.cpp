@@ -36,6 +36,7 @@ INCLUDES                                                           |
 
 // hou-hdk-common
 #include <Macros/ParameterList.h>
+#include <Macros/ProgressEscape.h>
 #include <Utility/AttributeAccessing.h>
 #include <Utility/ParameterAccessing.h>
 #include <Enums/NodeErrorLevel.h>
@@ -423,13 +424,9 @@ SOP_Operator::SetupAttributes(GA_Iterator primit, UT_AutoInterrupt progress, fpr
 	if (addNormalizeMeshState) AddIntATT(normalizeMeshHandle, UI::normalizeMeshValueToggle_Parameter, UI::normalizeMeshFallbackInteger_Parameter, UI::names.Get(CommonNameOption::NORMALIZE_MESH), time);
 	
 	// update attributes
-	for (primit; !primit.atEnd(); primit.advance())
+	for (; !primit.atEnd(); primit.advance())
 	{
-		if (progress.wasInterrupted())
-		{
-			this->addError(SOP_MESSAGE, "Operation interrupted.");
-			return error();
-		}
+		PROGRESS_WAS_INTERRUPTED_WITH_ERROR(this, progress)
 		
 #ifdef DEBUG_THIS
 		std::cout << "Primitive No.: " << *primit << std::endl;

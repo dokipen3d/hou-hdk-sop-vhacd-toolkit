@@ -39,6 +39,7 @@ INCLUDES                                                           |
 
 // hou-hdk-common
 #include <Macros/ParameterList.h>
+#include <Macros/ProgressEscape.h>
 #include <Utility/GeometryProcessing.h>
 #include <Utility/AttributeAccessing.h>
 #include <Utility/ParameterAccessing.h>
@@ -285,16 +286,10 @@ SOP_Operator::PrepareDataForVHACD(GU_Detail* geometry, UT_AutoInterrupt progress
 	{
 		// store positions, as continuous list from 0 to last, without breaking it per primitive		
 		this->_points.reserve(geometry->getNumPoints() * 3);
-
-		auto pointIt = GA_Iterator(geometry->getPointRange());
-		for (; !pointIt.atEnd(); pointIt.advance())
+		
+		for (auto pointIt = GA_Iterator(geometry->getPointRange()); !pointIt.atEnd(); pointIt.advance())
 		{
-			// make sure we can escape the loop
-			if (progress.wasInterrupted())
-			{
-				addWarning(SOP_ErrorCodes::SOP_MESSAGE, "Operation interrupted");
-				return false;
-			}
+			PROGRESS_WAS_INTERRUPTED_WITH_WARNING_AND_BOOL(this, progress, false)
 
 			auto currentPosition = this->_positionHandle.get(*pointIt);
 
@@ -305,16 +300,10 @@ SOP_Operator::PrepareDataForVHACD(GU_Detail* geometry, UT_AutoInterrupt progress
 
 		// store indexes, as (0, 1, 2) for each triangle
 		this->_triangles.reserve(geometry->getNumPrimitives() * 3);
-
-		auto polyIt = GA_Iterator(geometry->getPrimitiveRange());
-		for (; !polyIt.atEnd(); polyIt.advance())
-		{
-			// make sure we can escape the loop
-			if (progress.wasInterrupted())
-			{
-				addWarning(SOP_ErrorCodes::SOP_MESSAGE, "Operation interrupted");
-				return false;
-			}
+		
+		for (auto polyIt = GA_Iterator(geometry->getPrimitiveRange()); !polyIt.atEnd(); polyIt.advance())
+		{			
+			PROGRESS_WAS_INTERRUPTED_WITH_WARNING_AND_BOOL(this, progress, false)
 
 			const auto currPrim = geometry->getPrimitive(*polyIt);
 			for (auto i = 0; i < currPrim->getVertexCount(); ++i) this->_triangles.push_back(currPrim->getPointIndex(i));
@@ -455,12 +444,7 @@ SOP_Operator::cookMySop(OP_Context& context)
 		{
 			for (auto primIt : gdp->getPrimitiveRange())
 			{
-				// make sure we can escape the loop
-				if (progress.wasInterrupted())
-				{
-					addError(SOP_ErrorCodes::SOP_MESSAGE, "Operation interrupted");
-					return error();
-				}
+				PROGRESS_WAS_INTERRUPTED_WITH_ERROR(this, progress)
 
 				// only polygons allowed
 				if (gdp->getPrimitive(primIt)->getTypeId() != GA_PRIMPOLY)
