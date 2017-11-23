@@ -1,9 +1,9 @@
 ![Example](/images/vhacd-toolkit-0.gif)
 ![Example](/images/vhacd-toolkit-1.gif)
 
-V-HACD [toolkit](https://www.youtube.com/watch?v=6Elao25HN9Y&list=PLWInthQ-GtLhzoyqhaJAvzico8mkXMyDI&index=1) on YouTube.
-V-HACD [Export](https://youtu.be/6Fh4-olKrs4) on YouTube.
-Example of V-HACD use with [Unity](https://youtu.be/8CStATK1X5s) on YouTube.
+V-HACD [toolkit](https://www.youtube.com/watch?v=6Elao25HN9Y&list=PLWInthQ-GtLhzoyqhaJAvzico8mkXMyDI&index=1) on YouTube.  
+V-HACD [Export](https://youtu.be/6Fh4-olKrs4) on YouTube.  
+V-HACD use with [Unity](https://youtu.be/8CStATK1X5s) on YouTube.
 
 **IMPORTANT:**
 * Requires [hou-hdk-common](https://github.com/sebastianswann/hou-hdk-common) repository
