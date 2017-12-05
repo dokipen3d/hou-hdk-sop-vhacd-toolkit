@@ -16,6 +16,7 @@ V-HACD use with [Unity](https://youtu.be/8CStATK1X5s) on YouTube.
 - [x] Linux
 
 **TODO:**
+- [ ] add export to FBX for UE4
 - [ ] update HDAs
 - [ ] update Python scripts
 - [ ] port SOP Debug to C++
