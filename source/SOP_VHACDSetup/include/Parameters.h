@@ -61,7 +61,9 @@ DECLARE_SOP_Namespace_Start()
 
 	namespace PRMs_VHACDSetup
 	{
+		// TODO: expand CommonName with better implementation
 		auto names = CommonName();		
+
 		__DECLARE__Filter_Section_PRM(4)
 
 		DECLARE_PrimitiveGroup_Input_0_PRM(&SOP_Operator::CallbackProcessModeChoiceMenu, input0)

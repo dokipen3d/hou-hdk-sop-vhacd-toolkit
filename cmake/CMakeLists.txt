@@ -84,6 +84,7 @@ V-HACD Engine                                                      |
 V-HACD Setup                                                       |
 ------------------------------------------------------------------]]	
 	
-	HDK_MODULE_SETUP_SIMPLE_NODE_PROJECT("VHACDToolkit" "SOP_VHACDSetup")
+	HDK_MODULE_SETUP_SIMPLE_NODE_PROJECT("VHACDToolkit" "SOP_VHACDMerge")
+	HDK_MODULE_SETUP_SIMPLE_NODE_PROJECT("VHACDToolkit" "SOP_VHACDSetup")	
 	
 endif()
