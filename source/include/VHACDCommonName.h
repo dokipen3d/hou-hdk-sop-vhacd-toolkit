@@ -58,27 +58,27 @@ namespace Containers
 		VHACDCommonName() : CommonNameT<ENUMS::VHACDCommonNameOption>()
 		{
 			// toolkit global
-			this->Add(ENUMS::VHACDCommonNameOption::TOOLKIT_TABMENU_PATH, "Toolkit/V-HACD");
-			this->Add(ENUMS::VHACDCommonNameOption::TOOLKIT_ICONNAME, "SOP_VHACD.png");			
+			this->Add(ENUMS::VHACDCommonNameOption::TOOLKIT_TABMENU_PATH,		"Toolkit/V-HACD");
+			this->Add(ENUMS::VHACDCommonNameOption::TOOLKIT_ICONNAME,			"SOP_VHACD.png");			
 			
 			// SOP_VHACDEngine only
-			this->Add(ENUMS::VHACDCommonNameOption::SOP_ENGINE_ICONNAME, this->Get(ENUMS::VHACDCommonNameOption::TOOLKIT_ICONNAME));
-			this->Add(ENUMS::VHACDCommonNameOption::SOP_ENGINE_SMALLNAME, "vhacd::engine::1.2");
-			this->Add(ENUMS::VHACDCommonNameOption::SOP_ENGINE_BIGNAME, "Engine (v-hacd)");
+			this->Add(ENUMS::VHACDCommonNameOption::SOP_ENGINE_ICONNAME,		this->Get(ENUMS::VHACDCommonNameOption::TOOLKIT_ICONNAME));
+			this->Add(ENUMS::VHACDCommonNameOption::SOP_ENGINE_SMALLNAME,		"vhacd::engine::1.2");
+			this->Add(ENUMS::VHACDCommonNameOption::SOP_ENGINE_BIGNAME,			"Engine (v-hacd)");
 
 			// SOP_VHACDSetup only
-			this->Add(ENUMS::VHACDCommonNameOption::SOP_SETUP_ICONNAME, this->Get(ENUMS::VHACDCommonNameOption::TOOLKIT_ICONNAME));
-			this->Add(ENUMS::VHACDCommonNameOption::SOP_SETUP_SMALLNAME, "vhacd::setup::1.2");
-			this->Add(ENUMS::VHACDCommonNameOption::SOP_SETUP_BIGNAME, "Setup (v-hacd)");
-			this->Add(ENUMS::VHACDCommonNameOption::SOP_SETUP_GROUP_PRMNAME, CONST_PrimitiveGroupInput0_Name);
-			this->Add(ENUMS::VHACDCommonNameOption::MSS_SETUP_SMALLNAME, "vhacd::setupselector::1.2");
-			this->Add(ENUMS::VHACDCommonNameOption::MSS_SETUP_BIGNAME, "Setup (v-hacd selector)");
-			this->Add(ENUMS::VHACDCommonNameOption::MSS_SETUP_PROMPT, "Select primitives. Press <enter> to accept.");
+			this->Add(ENUMS::VHACDCommonNameOption::SOP_SETUP_ICONNAME,			this->Get(ENUMS::VHACDCommonNameOption::TOOLKIT_ICONNAME));
+			this->Add(ENUMS::VHACDCommonNameOption::SOP_SETUP_SMALLNAME,		"vhacd::setup::1.2");
+			this->Add(ENUMS::VHACDCommonNameOption::SOP_SETUP_BIGNAME,			"Setup (v-hacd)");
+			this->Add(ENUMS::VHACDCommonNameOption::SOP_SETUP_GROUP_PRMNAME,	CONST_PrimitiveGroupInput0_Name);
+			this->Add(ENUMS::VHACDCommonNameOption::MSS_SETUP_SMALLNAME,		"vhacd::setupselector::1.2");
+			this->Add(ENUMS::VHACDCommonNameOption::MSS_SETUP_BIGNAME,			"Setup (v-hacd selector)");
+			this->Add(ENUMS::VHACDCommonNameOption::MSS_SETUP_PROMPT,			"Select primitives. Press <enter> to accept.");
 
 			// SOP_VHACDMerge 2.0 only
-			this->Add(ENUMS::VHACDCommonNameOption::SOP_MERGE_ICONNAME_V2, this->Get(ENUMS::VHACDCommonNameOption::TOOLKIT_ICONNAME));
-			this->Add(ENUMS::VHACDCommonNameOption::SOP_MERGE_SMALLNAME_V2, "wip::merge::2.0");
-			this->Add(ENUMS::VHACDCommonNameOption::SOP_MERGE_BIGNAME_V2, "Merge v2.0 (v-hacd) (don't use it yet)");
+			this->Add(ENUMS::VHACDCommonNameOption::SOP_MERGE_ICONNAME_V2,		this->Get(ENUMS::VHACDCommonNameOption::TOOLKIT_ICONNAME));
+			this->Add(ENUMS::VHACDCommonNameOption::SOP_MERGE_SMALLNAME_V2,		"wip::merge::2.0");
+			this->Add(ENUMS::VHACDCommonNameOption::SOP_MERGE_BIGNAME_V2,		"Merge v2.0 (v-hacd) (don't use it yet)");
 		}
 	};
 }

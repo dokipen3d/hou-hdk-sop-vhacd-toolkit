@@ -59,10 +59,10 @@ namespace Containers
 	public:
 		VHACDCommonAttributeName() : CommonNameT<ENUMS::VHACDCommonAttributeNameOption>()
 		{
-			this->Add(ENUMS::VHACDCommonAttributeNameOption::HULL_COUNT, "hull_count");
-			this->Add(ENUMS::VHACDCommonAttributeNameOption::HULL_ID, "hull_id");
-			this->Add(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_COUNT, "bundle_count");
-			this->Add(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_ID, "bundle_id");
+			this->Add(ENUMS::VHACDCommonAttributeNameOption::HULL_COUNT,	"hull_count");
+			this->Add(ENUMS::VHACDCommonAttributeNameOption::HULL_ID,		"hull_id");
+			this->Add(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_COUNT,	"bundle_count");
+			this->Add(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_ID,		"bundle_id");
 
 		}
 	};
