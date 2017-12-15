@@ -22,8 +22,8 @@
 */
 
 #pragma once
-#ifndef ____common_attributename_h____
-#define ____common_attributename_h____
+#ifndef ____vhacd_common_attribute_name_h____
+#define ____vhacd_common_attribute_name_h____
 
 /* -----------------------------------------------------------------
 INCLUDES                                                           |
@@ -33,16 +33,18 @@ INCLUDES                                                           |
 #include <UT/UT_Map.h>
 
 // hou-hdk-common
-#include "Macros/Namespace.h"
+#include <Macros/Namespace.h>
+#include <Containers/CommonNameT.h>
 
 // this
-#include "CommonAttributeNameOption.h"
+#include "VHACDCommonAttributeNameOption.h"
 
 /* -----------------------------------------------------------------
 DEFINES                                                            |
 ----------------------------------------------------------------- */
 
-#define ENUMS													GET_Base_Namespace()::Enums
+#define CONTAINERS	GET_Base_Namespace()::Containers
+#define ENUMS		GET_Base_Namespace()::Enums
 
 /* -----------------------------------------------------------------
 DECLARATION                                                        |
@@ -50,21 +52,16 @@ DECLARATION                                                        |
 
 DECLARE_Base_Namespace_Start()
 namespace Containers
-{
-	class CommonAttributeName final
+{	
+	class VHACDCommonAttributeName final : public CONTAINERS::CommonNameT<ENUMS::VHACDCommonAttributeNameOption>
 	{
-		void													Add(ENUMS::CommonAttributeNameOption key, const char* value) { this->_names[key] = value; }
-		UT_Map<ENUMS::CommonAttributeNameOption, const char*>	_names;
-
 	public:
-		const char*												Get(ENUMS::CommonAttributeNameOption option) { return this->_names[option]; }
-
-		CommonAttributeName()
+		VHACDCommonAttributeName() : CommonNameT<ENUMS::VHACDCommonAttributeNameOption>()
 		{
-			Add(ENUMS::CommonAttributeNameOption::HULL_COUNT, "hull_count");
-			Add(ENUMS::CommonAttributeNameOption::HULL_ID, "hull_id");
-			Add(ENUMS::CommonAttributeNameOption::BUNDLE_COUNT, "bundle_count");
-			Add(ENUMS::CommonAttributeNameOption::BUNDLE_ID, "bundle_id");
+			this->Add(ENUMS::VHACDCommonAttributeNameOption::HULL_COUNT, "hull_count");
+			this->Add(ENUMS::VHACDCommonAttributeNameOption::HULL_ID, "hull_id");
+			this->Add(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_COUNT, "bundle_count");
+			this->Add(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_ID, "bundle_id");
 
 		}
 	};
@@ -76,5 +73,6 @@ UNDEFINE                                                           |
 ----------------------------------------------------------------- */
 
 #undef ENUMS
+#undef CONTAINERS
 
-#endif // !____common_attributename_h____
+#endif // !____vhacd_common_attribute_name_h____

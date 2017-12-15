@@ -43,7 +43,7 @@ INCLUDES                                                           |
 
 // this
 #include "ProcessedInputType.h"
-#include "CommonAttributeName.h"
+#include "VHACDCommonAttributeName.h"
 
 /* -----------------------------------------------------------------
 FORWARDS                                                           |
@@ -74,29 +74,29 @@ DECLARE_SOP_Namespace_Start()
 	protected:
 		~SOP_VHACDMerge() override;
 		SOP_VHACDMerge(OP_Network* network, const char* name, OP_Operator* op);
-		const char*							inputLabel(unsigned input) const override;
+		const char*								inputLabel(unsigned input) const override;
 
 	public:
-		static OP_Node*						CreateMe(OP_Network* network, const char* name, OP_Operator* op);
-		static PRM_Template					parametersList[];
+		static OP_Node*							CreateMe(OP_Network* network, const char* name, OP_Operator* op);
+		static PRM_Template						parametersList[];
 
 	private:
-		bool								GetAllDetailsOfType(UT_AutoInterrupt progress, UT_Array<const GU_Detail*>& details, ENUMS::ProcessedInputType processedinput, fpreal time);
-		bool								AddFoundVHACDAttributes(UT_AutoInterrupt progress, UT_Array<const GU_Detail*>& details, fpreal time);
-		void								RecalculateHullCount(const GU_Detail* detail, exint& hullcount);
-		void								MergeEachInput(UT_AutoInterrupt progress, UT_Array<const GU_Detail*>& details, fpreal time);
+		bool									GetAllDetailsOfType(UT_AutoInterrupt progress, UT_Array<const GU_Detail*>& details, ENUMS::ProcessedInputType processedinput, fpreal time);
+		bool									AddFoundVHACDAttributes(UT_AutoInterrupt progress, UT_Array<const GU_Detail*>& details, fpreal time);
+		void									RecalculateHullCount(const GU_Detail* detail, exint& hullcount);
+		void									MergeEachInput(UT_AutoInterrupt progress, UT_Array<const GU_Detail*>& details, fpreal time);
 
-		CONTAINERS::CommonAttributeName		_commonAttributeNames;
+		CONTAINERS::VHACDCommonAttributeName	_commonAttributeNames;
 
-		bool								_createHullCount;
-		bool								_createHullID;
-		bool								_createBundleCount;
-		bool								_createBundleID;
+		bool									_createHullCount;
+		bool									_createHullID;
+		bool									_createBundleCount;
+		bool									_createBundleID;
 
-		GA_RWHandleI						_hullCountHandle;
-		GA_RWHandleI						_hullIDHandle;
-		GA_RWHandleI						_bundleCountHandle;
-		GA_RWHandleI						_bundleIDHandle;
+		GA_RWHandleI							_hullCountHandle;
+		GA_RWHandleI							_hullIDHandle;
+		GA_RWHandleI							_bundleCountHandle;
+		GA_RWHandleI							_bundleIDHandle;
 	};
 
 DECLARE_SOP_Namespace_End

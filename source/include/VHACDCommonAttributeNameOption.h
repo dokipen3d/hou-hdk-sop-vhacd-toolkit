@@ -22,8 +22,8 @@
 */
 
 #pragma once
-#ifndef ____common_attributenameoption_h____
-#define ____common_attributenameoption_h____
+#ifndef ____vhacd_common_attribute_name_option_h____
+#define ____vhacd_common_attribute_name_option_h____
 
 /* -----------------------------------------------------------------
 INCLUDES                                                           |
@@ -46,7 +46,7 @@ ENUM                                                               |
 DECLARE_Base_Namespace_Start()
 namespace Enums
 {
-	enum class CommonAttributeNameOption : exint
+	enum class VHACDCommonAttributeNameOption : exint
 	{
 		HULL_COUNT,
 		HULL_ID,
@@ -58,4 +58,4 @@ namespace Enums
 }
 DECLARE_Base_Namespace_End
 
-#endif // !____common_attributenameoption_h____
+#endif // !____vhacd_common_attribute_name_option_h____

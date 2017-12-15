@@ -51,7 +51,7 @@ DEFINES                                                            |
 ----------------------------------------------------------------- */
 
 #define SOP_Operator			GET_SOP_Namespace()::SOP_VHACDMerge
-#define SOP_SmallName			"wip::merge::2.0"
+#define SOP_SmallName			"vhacd::merge::2.0"
 #define SOP_Base_Operator		SOP_Node
 
 #define UI						GET_SOP_Namespace()::UI
@@ -175,7 +175,7 @@ bool
 SOP_Operator::AddFoundVHACDAttributes(UT_AutoInterrupt progress, UT_Array<const GU_Detail*>& details, fpreal time)
 {
 	// initialize defaut variables	
-	this->_commonAttributeNames = CONTAINERS::CommonAttributeName();
+	this->_commonAttributeNames = CONTAINERS::VHACDCommonAttributeName();
 	
 	// reset on each cook
 	this->_createHullCount = false;
@@ -194,10 +194,10 @@ SOP_Operator::AddFoundVHACDAttributes(UT_AutoInterrupt progress, UT_Array<const 
 		PROGRESS_WAS_INTERRUPTED_WITH_ERROR_AND_BOOL(this, progress, false)
 
 		// check each attribute
-		const auto hullCountAttribute = currDetail->findIntTuple(GA_AttributeOwner::GA_ATTRIB_DETAIL, GA_AttributeScope::GA_SCOPE_PUBLIC, this->_commonAttributeNames.Get(ENUMS::CommonAttributeNameOption::HULL_COUNT));
-		const auto hullIDAttribute = currDetail->findIntTuple(GA_AttributeOwner::GA_ATTRIB_PRIMITIVE, GA_AttributeScope::GA_SCOPE_PUBLIC, this->_commonAttributeNames.Get(ENUMS::CommonAttributeNameOption::HULL_ID));
-		const auto bundleCountAttribute = currDetail->findIntTuple(GA_AttributeOwner::GA_ATTRIB_DETAIL, GA_AttributeScope::GA_SCOPE_PUBLIC, this->_commonAttributeNames.Get(ENUMS::CommonAttributeNameOption::BUNDLE_COUNT));
-		const auto bundleIDAttribute = currDetail->findIntTuple(GA_AttributeOwner::GA_ATTRIB_PRIMITIVE, GA_AttributeScope::GA_SCOPE_PUBLIC, this->_commonAttributeNames.Get(ENUMS::CommonAttributeNameOption::BUNDLE_ID));		
+		const auto hullCountAttribute = currDetail->findIntTuple(GA_AttributeOwner::GA_ATTRIB_DETAIL, GA_AttributeScope::GA_SCOPE_PUBLIC, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_COUNT));
+		const auto hullIDAttribute = currDetail->findIntTuple(GA_AttributeOwner::GA_ATTRIB_PRIMITIVE, GA_AttributeScope::GA_SCOPE_PUBLIC, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_ID));
+		const auto bundleCountAttribute = currDetail->findIntTuple(GA_AttributeOwner::GA_ATTRIB_DETAIL, GA_AttributeScope::GA_SCOPE_PUBLIC, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_COUNT));
+		const auto bundleIDAttribute = currDetail->findIntTuple(GA_AttributeOwner::GA_ATTRIB_PRIMITIVE, GA_AttributeScope::GA_SCOPE_PUBLIC, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_ID));
 
 		if (!this->_createHullCount) this->_createHullCount = hullCountAttribute != nullptr;
 		if (!this->_createHullID) this->_createHullID = hullIDAttribute != nullptr;
@@ -208,10 +208,10 @@ SOP_Operator::AddFoundVHACDAttributes(UT_AutoInterrupt progress, UT_Array<const 
 	// create attributes	
 	this->gdp->clearAndDestroy();
 
-	if (this->_createHullCount) this->_hullCountHandle = GA_RWHandleI(this->gdp->addIntTuple(GA_AttributeOwner::GA_ATTRIB_DETAIL, this->_commonAttributeNames.Get(ENUMS::CommonAttributeNameOption::HULL_COUNT), 1));
-	if (this->_createHullID) this->_hullIDHandle = GA_RWHandleI(this->gdp->addIntTuple(GA_AttributeOwner::GA_ATTRIB_PRIMITIVE, this->_commonAttributeNames.Get(ENUMS::CommonAttributeNameOption::HULL_ID), 1));
-	if (this->_createBundleCount) this->_bundleCountHandle = GA_RWHandleI(this->gdp->addIntTuple(GA_AttributeOwner::GA_ATTRIB_DETAIL, this->_commonAttributeNames.Get(ENUMS::CommonAttributeNameOption::BUNDLE_COUNT), 1));
-	if (this->_createBundleID) this->_bundleIDHandle = GA_RWHandleI(this->gdp->addIntTuple(GA_AttributeOwner::GA_ATTRIB_PRIMITIVE, this->_commonAttributeNames.Get(ENUMS::CommonAttributeNameOption::BUNDLE_ID), 1));
+	if (this->_createHullCount) this->_hullCountHandle = GA_RWHandleI(this->gdp->addIntTuple(GA_AttributeOwner::GA_ATTRIB_DETAIL, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_COUNT), 1));
+	if (this->_createHullID) this->_hullIDHandle = GA_RWHandleI(this->gdp->addIntTuple(GA_AttributeOwner::GA_ATTRIB_PRIMITIVE, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_ID), 1));
+	if (this->_createBundleCount) this->_bundleCountHandle = GA_RWHandleI(this->gdp->addIntTuple(GA_AttributeOwner::GA_ATTRIB_DETAIL, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_COUNT), 1));
+	if (this->_createBundleID) this->_bundleIDHandle = GA_RWHandleI(this->gdp->addIntTuple(GA_AttributeOwner::GA_ATTRIB_PRIMITIVE, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_ID), 1));
 
 	return true;
 }
@@ -278,7 +278,7 @@ SOP_Operator::MergeEachInput(UT_AutoInterrupt progress, UT_Array<const GU_Detail
 		
 			// check if current detail have attribute		
 			// TODO: replace it with ATTRIB_ACCES:Get method for const GU_Detail* when it will be available
-			auto currHandle = GA_ROHandleI(currDetail->findIntTuple(GA_AttributeOwner::GA_ATTRIB_DETAIL, GA_AttributeScope::GA_SCOPE_PUBLIC, this->_commonAttributeNames.Get(ENUMS::CommonAttributeNameOption::HULL_COUNT)));
+			auto currHandle = GA_ROHandleI(currDetail->findIntTuple(GA_AttributeOwner::GA_ATTRIB_DETAIL, GA_AttributeScope::GA_SCOPE_PUBLIC, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_COUNT)));
 			if (currHandle.isValid()) mainValue += currHandle.get(GA_Offset(0));
 			else RecalculateHullCount(currDetail, mainValue);
 		}
@@ -302,14 +302,20 @@ SOP_Operator::MergeEachInput(UT_AutoInterrupt progress, UT_Array<const GU_Detail
 			else if (currIter == details.size() - 1)
 			{
 				success = this->gdp->copy(*currDetail, GEO_CopyMethod::GEO_COPY_END);
-				this->addError(SOP_MESSAGE, "Geometry merge failure on GEO_COPY_END");
-				return;
+				if (!success)
+				{
+					this->addError(SOP_MESSAGE, "Geometry merge failure on GEO_COPY_END");
+					return;
+				}
 			}
 			else
 			{
 				success = this->gdp->copy(*currDetail, GEO_CopyMethod::GEO_COPY_ADD);
-				this->addError(SOP_MESSAGE, "Geometry merge failure on GEO_COPY_ADD");
-				return;
+				if (!success)
+				{
+					this->addError(SOP_MESSAGE, "Geometry merge failure on GEO_COPY_ADD");
+					return;
+				}
 			}
 
 			currIter++;
@@ -317,12 +323,15 @@ SOP_Operator::MergeEachInput(UT_AutoInterrupt progress, UT_Array<const GU_Detail
 		else
 		{
 			success = this->gdp->copy(*currDetail, GEO_CopyMethod::GEO_COPY_ONCE);
-			this->addError(SOP_MESSAGE, "Geometry merge failure on GEO_COPY_ONCE");
-			return;
+			if (!success)
+			{
+				this->addError(SOP_MESSAGE, "Geometry merge failure on GEO_COPY_ONCE");
+				return;
+			}
 		}
 		
 		// re-asign (otherwise it crashes) handle to main detail and update attribute value		
-		success = ATTRIB_ACCESS::Find::IntATT(this, this->gdp, GA_AttributeOwner::GA_ATTRIB_DETAIL, this->_commonAttributeNames.Get(ENUMS::CommonAttributeNameOption::HULL_COUNT), this->_hullCountHandle);
+		success = ATTRIB_ACCESS::Find::IntATT(this, this->gdp, GA_AttributeOwner::GA_ATTRIB_DETAIL, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_COUNT), this->_hullCountHandle);
 		if (success) this->_hullCountHandle.set(GA_Offset(0), mainValue);		
 	}
 }
@@ -387,7 +396,7 @@ SOP_Operator::cookMySopOutput(OP_Context& context, int outputidx, SOP_Node* inte
 			success = ATTRIB_ACCESS::Check::MismatchOfAllOwners(this, progress, allInputDetails, GA_AttributeScope::GA_SCOPE_PUBLIC, static_cast<ENUMS::NodeErrorLevel>(attributeMismatchErrorLevelValue));
 			if ((success && error() > OP_ERROR::UT_ERROR_WARNING) || (!success && error() > OP_ERROR::UT_ERROR_WARNING)) return result;
 
-			// now we can start the real job
+			// update and merge all input details
 			MergeEachInput(progress, allInputDetails, currentTime);
 		}
 		break;		
