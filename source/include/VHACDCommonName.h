@@ -75,7 +75,7 @@ namespace Containers
 			this->Add(ENUMS::VHACDCommonNameOption::SOP_SETUP_GROUP_PRMNAME, CONST_PrimitiveGroupInput0_Name);
 			this->Add(ENUMS::VHACDCommonNameOption::MSS_SETUP_SMALLNAME, "vhacd::setupselector::1.2");
 			this->Add(ENUMS::VHACDCommonNameOption::MSS_SETUP_BIGNAME, "Setup (v-hacd selector)");
-			this->Add(ENUMS::VHACDCommonNameOption::MSS_SETUP_PROMPT, "Select geometry. Press <enter> to accept.");
+			this->Add(ENUMS::VHACDCommonNameOption::MSS_SETUP_PROMPT, "Select primitives. Press <enter> to accept.");
 
 			// SOP_VHACDMerge 2.0 only
 			this->Add(ENUMS::VHACDCommonNameOption::SOP_MERGE_ICONNAME_V2, this->Get(ENUMS::VHACDCommonNameOption::TOOLKIT_ICONNAME));
