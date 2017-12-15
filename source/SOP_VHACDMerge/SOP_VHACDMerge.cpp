@@ -51,7 +51,7 @@ DEFINES                                                            |
 ----------------------------------------------------------------- */
 
 #define SOP_Operator			GET_SOP_Namespace()::SOP_VHACDMerge
-#define SOP_SmallName			"vhacd::merge::2.0"
+#define SOP_SmallName			"wip::merge::2.0"
 #define SOP_Base_Operator		SOP_Node
 
 #define UI						GET_SOP_Namespace()::UI
