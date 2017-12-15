@@ -2,6 +2,7 @@
 	Enum for common attribute names.
 
 	IMPORTANT! ------------------------------------------
+	* this should be synchronized with VHACDCommonName.h
 	-----------------------------------------------------
 
 	Author: 	SWANN
@@ -76,4 +77,4 @@ namespace Enums
 }
 DECLARE_Base_Namespace_End
 
-#endif // !____vhacd_common_attribute_name_option_h____
+#endif // !____vhacd_common_name_option_h____

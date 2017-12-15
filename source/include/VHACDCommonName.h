@@ -2,6 +2,7 @@
 	Container for common attribute names.
 
 	IMPORTANT! ------------------------------------------
+	* this should be synchronized with VHACDCommonNameOption.h
 	-----------------------------------------------------
 
 	Author: 	SWANN
@@ -90,4 +91,4 @@ UNDEFINE                                                           |
 #undef ENUMS
 #undef CONTAINERS
 
-#endif // !____vhacd_common_attribute_name_h____
+#endif // !____vhacd_common_name_h____
