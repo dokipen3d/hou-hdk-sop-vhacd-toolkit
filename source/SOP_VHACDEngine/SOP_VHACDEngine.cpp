@@ -59,6 +59,7 @@ DEFINES                                                            |
 #define SOP_Base_Operator				SOP_VHACDNode
 #define SOP_InputName_0					"Geometry"
 
+#define COMMON_NAMES					GET_SOP_Namespace()::COMMON_NAMES
 #define UI								GET_SOP_Namespace()::PRMs_VHACDEngine
 #define PRM_ACCESS						GET_Base_Namespace()::Utility::PRM
 #define ATTRIB_ACCESS					GET_Base_Namespace()::Utility::Attribute
@@ -144,7 +145,7 @@ _interfaceVHACD(nullptr),
 _allowParametersOverrideValueState(false), 
 _showReportValueState(false), 
 _reportModeChoiceValueState(0)
-{ op->setIconName(UI::names.Get(CommonNameOption::ICON_NAME)); }
+{ op->setIconName(COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::SOP_ENGINE_ICONNAME)); }
 
 SOP_Operator::~SOP_VHACDEngine() { }
 
@@ -491,6 +492,7 @@ UNDEFINES                                                          |
 #undef ATTRIB_ACCESS
 #undef PRM_ACCESS
 #undef UI
+#undef COMMON_NAMES
 
 #undef SOP_InputName_0
 #undef SOP_Base_Operator
