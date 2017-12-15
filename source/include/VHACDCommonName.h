@@ -29,9 +29,6 @@
 INCLUDES                                                           |
 ----------------------------------------------------------------- */
 
-// SESI
-#include <UT/UT_Map.h>
-
 // hou-hdk-common
 #include <Macros/Namespace.h>
 #include <Containers/CommonNameT.h>
