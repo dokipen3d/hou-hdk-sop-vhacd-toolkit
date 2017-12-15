@@ -2,6 +2,7 @@
 	Container for common attribute names.
 
 	IMPORTANT! ------------------------------------------
+	* this should be synchronized with VHACDCommonAttributeNameOption.h
 	-----------------------------------------------------
 
 	Author: 	SWANN

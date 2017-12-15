@@ -2,6 +2,7 @@
 	Enum for common attribute names.
 
 	IMPORTANT! ------------------------------------------
+	* this should be synchronized with VHACDCommonAttributeName.h
 	-----------------------------------------------------
 
 	Author: 	SWANN
