@@ -39,7 +39,6 @@ INCLUDES                                                           |
 
 // this
 #include "SOP_VHACDMerge.h"
-#include "CommonNameComposer.h"
 
 /* -----------------------------------------------------------------
 DEFINES                                                            |
@@ -54,10 +53,7 @@ PARAMETERS                                                         |
 DECLARE_SOP_Namespace_Start()
 
 namespace UI
-{	
-	// TODO: expand CommonName with better implementation
-	auto names = CommonName();
-
+{
 	__DECLARE__Filter_Section_PRM(3)
 	static auto		processModeChoiceMenuParm_Name = PRM_Name("processmode", "Process Mode");
 	static auto		processModeChoiceMenuParm_Range = PRM_Range(PRM_RANGE_RESTRICTED, 0, PRM_RANGE_RESTRICTED, 1);

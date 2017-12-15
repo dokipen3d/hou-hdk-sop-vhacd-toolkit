@@ -31,9 +31,6 @@
 INCLUDES                                                           |
 ----------------------------------------------------------------- */
 
-// SESI
-#include <SOP/SOP_Node.h>
-
 // std
 #include <vector>
 #include <string>
@@ -49,6 +46,7 @@ INCLUDES                                                           |
 #include <Macros/UpdateParmsFlags.h>
 
 // this
+#include "SOP_VHACDNode.h"
 #include "UserLogger.h"
 #include "UserCallback.h"
 
@@ -64,7 +62,7 @@ OPERATOR                                                           |
 
 DECLARE_SOP_Namespace_Start()
 
-	class SOP_VHACDEngine : public SOP_Node
+	class SOP_VHACDEngine : public SOP_VHACDNode
 	{
 		DECLARE_CookMySop()
 		DECLARE_DescriptionPRM_Callback()		

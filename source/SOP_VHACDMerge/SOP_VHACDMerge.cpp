@@ -51,9 +51,9 @@ DEFINES                                                            |
 ----------------------------------------------------------------- */
 
 #define SOP_Operator			GET_SOP_Namespace()::SOP_VHACDMerge
-#define SOP_SmallName			"wip::merge::2.0"
-#define SOP_Base_Operator		SOP_Node
+#define SOP_Base_Operator		SOP_VHACDNode
 
+#define COMMON_NAMES			GET_SOP_Namespace()::COMMON_NAMES
 #define UI						GET_SOP_Namespace()::UI
 #define PRM_ACCESS				GET_Base_Namespace()::Utility::PRM
 #define ATTRIB_ACCESS			GET_Base_Namespace()::Utility::Attribute
@@ -130,7 +130,7 @@ _createHullCount(false),
 _createHullID(false), 
 _createBundleCount(false),
 _createBundleID(false)
-{ op->setIconName(UI::names.Get(CommonNameOption::ICON_NAME)); }
+{ op->setIconName(COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::SOP_MERGE_ICONNAME_V2)); }
 
 OP_Node* 
 SOP_Operator::CreateMe(OP_Network* network, const char* name, OP_Operator* op) 
@@ -174,9 +174,6 @@ SOP_Operator::GetAllDetailsOfType(UT_AutoInterrupt progress, UT_Array<const GU_D
 bool
 SOP_Operator::AddFoundVHACDAttributes(UT_AutoInterrupt progress, UT_Array<const GU_Detail*>& details, fpreal time)
 {
-	// initialize defaut variables	
-	this->_commonAttributeNames = CONTAINERS::VHACDCommonAttributeName();
-	
 	// reset on each cook
 	this->_createHullCount = false;
 	this->_createHullID = false;
@@ -415,6 +412,6 @@ UNDEFINES                                                          |
 #undef PRM_ACCESS
 #undef UI
 
+#undef COMMON_NAMES
 #undef SOP_Base_Operator
-#undef SOP_SmallName
 #undef SOP_Operator

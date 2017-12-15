@@ -1,9 +1,7 @@
 /*
-	Volumetric-Hierarchical Approximate Convex Decomposition.
-	Based on https://github.com/kmammou/v-hacd
+	Container for common attribute names.
 
 	IMPORTANT! ------------------------------------------
-	* Macros starting and ending with '____' shouldn't be used anywhere outside of this file.
 	-----------------------------------------------------
 
 	Author: 	SWANN
@@ -24,80 +22,75 @@
 */
 
 #pragma once
-#ifndef ____sop_vhacdmerge_h____
-#define ____sop_vhacdmerge_h____
+#ifndef ____vhacd_common_name_h____
+#define ____vhacd_common_name_h____
 
 /* -----------------------------------------------------------------
 INCLUDES                                                           |
 ----------------------------------------------------------------- */
 
 // SESI
-#include <MSS/MSS_ReusableSelector.h>
+#include <UT/UT_Map.h>
 
 // hou-hdk-common
-#include <Macros/CookMySop.h>
-#include <Macros/DescriptionPRM.h>
 #include <Macros/Namespace.h>
-#include <Macros/UpdateParmsFlags.h>
+#include <Containers/CommonNameT.h>
+#include <Macros/GroupMenuPRM.h>
 
 // this
-#include "SOP_VHACDNode.h"
-#include "ProcessedInputType.h"
-
-/* -----------------------------------------------------------------
-FORWARDS                                                           |
------------------------------------------------------------------ */
-
-class UT_AutoInterrupt;
+#include "VHACDCommonNameOption.h"
 
 /* -----------------------------------------------------------------
 DEFINES                                                            |
 ----------------------------------------------------------------- */
 
-#define CONTAINERS							GET_Base_Namespace()::Containers
-#define ENUMS								GET_Base_Namespace()::Enums
+#define CONTAINERS	GET_Base_Namespace()::Containers
+#define ENUMS		GET_Base_Namespace()::Enums
 
 /* -----------------------------------------------------------------
 DECLARATION                                                        |
 ----------------------------------------------------------------- */
 
-DECLARE_SOP_Namespace_Start()
-
-	class SOP_VHACDMerge : public SOP_VHACDNode
+DECLARE_Base_Namespace_Start()
+namespace Containers
+{	
+	class VHACDCommonName final : public CONTAINERS::CommonNameT<ENUMS::VHACDCommonNameOption>
 	{
-		DECLARE_CookMySop_Multi()
-		DECLARE_UpdateParmsFlags()
-
-		DECLARE_DescriptionPRM_Callback()
-
-	protected:
-		~SOP_VHACDMerge() override;
-		SOP_VHACDMerge(OP_Network* network, const char* name, OP_Operator* op);
-		const char*								inputLabel(unsigned input) const override;
-
 	public:
-		static OP_Node*							CreateMe(OP_Network* network, const char* name, OP_Operator* op);
-		static PRM_Template						parametersList[];
+		VHACDCommonName() : CommonNameT<ENUMS::VHACDCommonNameOption>()
+		{
+			// toolkit global
+			this->Add(ENUMS::VHACDCommonNameOption::TOOLKIT_TABMENU_PATH, "Toolkit/V-HACD");
+			this->Add(ENUMS::VHACDCommonNameOption::TOOLKIT_ICONNAME, "SOP_VHACD.png");			
+			
+			// SOP_VHACDEngine only
+			this->Add(ENUMS::VHACDCommonNameOption::SOP_ENGINE_ICONNAME, this->Get(ENUMS::VHACDCommonNameOption::TOOLKIT_ICONNAME));
+			this->Add(ENUMS::VHACDCommonNameOption::SOP_ENGINE_SMALLNAME, "vhacd::engine::1.2");
+			this->Add(ENUMS::VHACDCommonNameOption::SOP_ENGINE_BIGNAME, "Engine (v-hacd)");
 
-	private:
-		bool									GetAllDetailsOfType(UT_AutoInterrupt progress, UT_Array<const GU_Detail*>& details, ENUMS::ProcessedInputType processedinput, fpreal time);
-		bool									AddFoundVHACDAttributes(UT_AutoInterrupt progress, UT_Array<const GU_Detail*>& details, fpreal time);
-		void									RecalculateHullCount(const GU_Detail* detail, exint& hullcount);
-		void									MergeEachInput(UT_AutoInterrupt progress, UT_Array<const GU_Detail*>& details, fpreal time);
-		
-		bool									_createHullCount;
-		bool									_createHullID;
-		bool									_createBundleCount;
-		bool									_createBundleID;		
+			// SOP_VHACDSetup only
+			this->Add(ENUMS::VHACDCommonNameOption::SOP_SETUP_ICONNAME, this->Get(ENUMS::VHACDCommonNameOption::TOOLKIT_ICONNAME));
+			this->Add(ENUMS::VHACDCommonNameOption::SOP_SETUP_SMALLNAME, "vhacd::setup::1.2");
+			this->Add(ENUMS::VHACDCommonNameOption::SOP_SETUP_BIGNAME, "Setup (v-hacd)");
+			this->Add(ENUMS::VHACDCommonNameOption::SOP_SETUP_GROUP_PRMNAME, CONST_PrimitiveGroupInput0_Name);
+			this->Add(ENUMS::VHACDCommonNameOption::MSS_SETUP_SMALLNAME, "vhacd::setupselector::1.2");
+			this->Add(ENUMS::VHACDCommonNameOption::MSS_SETUP_BIGNAME, "Setup (v-hacd selector)");
+			this->Add(ENUMS::VHACDCommonNameOption::MSS_SETUP_PROMPT, "Select geometry. Press <enter> to accept.");
+
+			// SOP_VHACDMerge 2.0 only
+			this->Add(ENUMS::VHACDCommonNameOption::SOP_MERGE_ICONNAME_V2, this->Get(ENUMS::VHACDCommonNameOption::TOOLKIT_ICONNAME));
+			this->Add(ENUMS::VHACDCommonNameOption::SOP_MERGE_SMALLNAME_V2, "wip::merge::2.0");
+			this->Add(ENUMS::VHACDCommonNameOption::SOP_MERGE_BIGNAME_V2, "Merge v2.0 (v-hacd) (don't use it yet)");
+		}
 	};
-
-DECLARE_SOP_Namespace_End
+}
+DECLARE_Base_Namespace_End
 
 /* -----------------------------------------------------------------
-UNDEFINES                                                          |
+UNDEFINE                                                           |
 ----------------------------------------------------------------- */
 
 #undef ENUMS
 #undef CONTAINERS
 
-#endif // !____sop_vhacdmerge_h____
+#endif // !____vhacd_common_attribute_name_h____

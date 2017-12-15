@@ -1,5 +1,5 @@
 /*
-	This is a place where you should create and register all SOP's, Selectors and their custom states.
+	Abstract base node class for VHACD toolkit.
 
 	IMPORTANT! ------------------------------------------
 	* Macros starting and ending with '____' shouldn't be used anywhere outside of this file.
@@ -22,101 +22,64 @@
 	THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#pragma once
+#ifndef ____sop_vhacdnode_h____
+#define ____sop_vhacdnode_h____
+
 /* -----------------------------------------------------------------
 INCLUDES                                                           |
 ----------------------------------------------------------------- */
 
 // SESI
-#include <UT/UT_DSOVersion.h>
-#include <OP/OP_OperatorTable.h>
-#include <BM/BM_ResourceManager.h>
+#include <SOP/SOP_Node.h>
+
+// hou-hdk-common
+#include <Macros/Namespace.h>
+#include <Macros/ProgressEscape.h>
 
 // this
-#include "SOP_VHACDSetup.h"
+#include "VHACDCommonName.h"
+#include "VHACDCommonAttributeName.h"
 
 /* -----------------------------------------------------------------
 DEFINES                                                            |
 ----------------------------------------------------------------- */
 
-#define SOP_Operator		GET_SOP_Namespace()::SOP_VHACDSetup
-#define MSS_Selector		GET_SOP_Namespace()::MSS_VHACDSetup
-
-#define COMMON_NAMES		GET_SOP_Namespace()::COMMON_NAMES
-#define ENUMS				GET_Base_Namespace()::Enums
+#define CONTAINERS				GET_Base_Namespace()::Containers
+#define ENUMS					GET_Base_Namespace()::Enums
 
 /* -----------------------------------------------------------------
-REGISTRATION                                                       |
+DECLARATION                                                        |
 ----------------------------------------------------------------- */
 
-void
-newSelector(BM_ResourceManager* manager)
+DECLARE_SOP_Namespace_Start()
+
+class SOP_VHACDNode : public SOP_Node
 {
-	auto table = OP_Network::getOperatorTable(SOP_TABLE_NAME);	
+protected:
+	SOP_VHACDNode(OP_Network* network, const char* name, OP_Operator* op) : SOP_Node(network, name, op) { }
+	
+	CONTAINERS::VHACDCommonAttributeName	_commonAttributeNames = CONTAINERS::VHACDCommonAttributeName();
 
-	const auto sopVHACDSetup = new OP_Operator 
-	(
-		COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::SOP_SETUP_SMALLNAME),
-		COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::SOP_SETUP_BIGNAME), 
-		SOP_Operator::CreateMe, 
-		SOP_Operator::parametersList,
-		1,
-		1,
-		nullptr,
-		0,
-		nullptr,
-		1, 
-		COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::TOOLKIT_TABMENU_PATH)
-	);
+	GA_RWHandleI							_hullCountHandle;
+	GA_RWHandleI							_hullIDHandle;
+	GA_RWHandleI							_bundleCountHandle;
+	GA_RWHandleI							_bundleIDHandle;
+};
 
-	auto success = table->addOperator(sopVHACDSetup);	
-	if (success)
-	{
-		
-		auto selectorVHACDSetup = new PI_SelectorTemplate
-		(
-			COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::MSS_SETUP_SMALLNAME), 
-			COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::MSS_SETUP_BIGNAME), 
-			SOP_TABLE_NAME
-		);
+/* -----------------------------------------------------------------
+DEFAULT VARIABLES                                                  |
+----------------------------------------------------------------- */
 
-		// setup selector		
-#if _WIN32		
-		selectorVHACDSetup->constructor(static_cast<void*>(&MSS_Selector::CreateMe));
-#else
-		selectorVHACDSetup->constructor((void*)(&MSS_Selector::CreateMe));	
-#endif				
-		
-		selectorVHACDSetup->data(OP3DthePrimSelTypes);
+static CONTAINERS::VHACDCommonName			COMMON_NAMES = CONTAINERS::VHACDCommonName();
 
-		success = manager->registerSelector(selectorVHACDSetup);
-		if (!success) return;
-
-		// bind selector		
-		success = manager->bindSelector
-		(
-			sopVHACDSetup,
-			COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::MSS_SETUP_SMALLNAME),
-			COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::MSS_SETUP_BIGNAME),
-			COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::MSS_SETUP_PROMPT),
-			COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::SOP_SETUP_GROUP_PRMNAME),
-			0,								// Input number to wire up.
-			1,								// 1 means this input is required.
-			"0x000000ff",					// Prim/point mask selection.
-			0,
-			nullptr,
-			0,
-			nullptr,
-			false
-		);
-	}
-}
+DECLARE_SOP_Namespace_End
 
 /* -----------------------------------------------------------------
 UNDEFINES                                                          |
 ----------------------------------------------------------------- */
 
 #undef ENUMS
-#undef COMMON_NAMES
+#undef CONTAINERS
 
-#undef MSS_Selector
-#undef SOP_Operator
+#endif // !____sop_vhacdnode_h____

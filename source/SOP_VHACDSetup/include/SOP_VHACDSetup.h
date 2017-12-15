@@ -31,7 +31,6 @@ INCLUDES                                                           |
 ----------------------------------------------------------------- */
 
 // SESI
-#include <SOP/SOP_Node.h>
 #include <MSS/MSS_ReusableSelector.h>
 
 // hou-hdk-common
@@ -39,6 +38,9 @@ INCLUDES                                                           |
 #include <Macros/DescriptionPRM.h>
 #include <Macros/Namespace.h>
 #include <Macros/UpdateParmsFlags.h>
+
+// this
+#include "SOP_VHACDNode.h"
 
 /* -----------------------------------------------------------------
 FORWARDS                                                           |
@@ -58,7 +60,7 @@ DECLARATION                                                        |
 
 DECLARE_SOP_Namespace_Start()
 
-	class SOP_VHACDSetup : public SOP_Node
+	class SOP_VHACDSetup : public SOP_VHACDNode
 	{
 		DECLARE_CookMySop()
 		DECLARE_UpdateParmsFlags()

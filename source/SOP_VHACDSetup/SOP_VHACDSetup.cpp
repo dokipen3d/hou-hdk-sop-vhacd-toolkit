@@ -49,18 +49,18 @@ DEFINES                                                            |
 ----------------------------------------------------------------- */
 
 #define SOP_Operator			GET_SOP_Namespace()::SOP_VHACDSetup
-#define SOP_SmallName			"vhacd::setup::1.1"
 #define SOP_Input_Name_0		"Geometry"
-#define SOP_Base_Operator		SOP_Node
+#define SOP_Base_Operator		SOP_VHACDNode
 #define MSS_Selector			GET_SOP_Namespace()::MSS_VHACDSetup
 
 // very important
 #define SOP_GroupFieldIndex_0	1
-#define SOP_GroupPRM			CONST_PrimitiveGroupInput0_Name
 
+#define COMMON_NAMES			GET_SOP_Namespace()::COMMON_NAMES
 #define UI						GET_SOP_Namespace()::PRMs_VHACDSetup
 #define PRM_ACCESS				GET_Base_Namespace()::Utility::PRM
 #define ATTRIB_ACCESS			GET_Base_Namespace()::Utility::Attribute
+#define ENUMS					GET_Base_Namespace()::Enums
 
 /* -----------------------------------------------------------------
 PARAMETERS                                                         |
@@ -242,7 +242,7 @@ SOP_Operator::~SOP_VHACDSetup() { }
 SOP_Operator::SOP_VHACDSetup(OP_Network* network, const char* name, OP_Operator* op) 
 : SOP_Base_Operator(network, name, op), 
 _primitiveGroupInput0(nullptr)
-{ op->setIconName(UI::names.Get(CommonNameOption::ICON_NAME)); }
+{ op->setIconName(COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::SOP_SETUP_ICONNAME)); }
 
 OP_Node* 
 SOP_Operator::CreateMe(OP_Network* network, const char* name, OP_Operator* op) { return new SOP_Operator(network, name, op); }
@@ -475,7 +475,7 @@ SELECTOR IMPLEMENTATION                                            |
 MSS_Selector::~MSS_VHACDSetup() { }
 
 MSS_Selector::MSS_VHACDSetup(OP3D_View& viewer, PI_SelectorTemplate& templ) 
-: MSS_ReusableSelector(viewer, templ, SOP_SmallName, SOP_GroupPRM, nullptr, true)
+: MSS_ReusableSelector(viewer, templ, COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::SOP_SETUP_SMALLNAME), COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::SOP_SETUP_GROUP_PRMNAME), nullptr, true)
 { this->setAllowUseExistingSelection(false); }
 
 BM_InputSelector*
@@ -490,15 +490,15 @@ MSS_Selector::className() const
 UNDEFINES                                                          |
 ----------------------------------------------------------------- */
 
+#undef ENUMS
 #undef ATTRIB_ACCESS
 #undef PRM_ACCESS
 #undef UI
+#undef COMMON_NAMES
 
-#undef SOP_GroupPRM
 #undef SOP_GroupFieldIndex_0
 
 #undef MSS_Selector
 #undef SOP_Base_Operator
 #undef SOP_Input_Name_0
-#undef SOP_SmallName
 #undef SOP_Operator

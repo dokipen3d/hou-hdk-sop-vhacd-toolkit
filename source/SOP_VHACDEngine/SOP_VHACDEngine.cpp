@@ -56,7 +56,7 @@ DEFINES                                                            |
 ----------------------------------------------------------------- */
 
 #define SOP_Operator					GET_SOP_Namespace()::SOP_VHACDEngine
-#define SOP_Base_Operator				SOP_Node
+#define SOP_Base_Operator				SOP_VHACDNode
 #define SOP_InputName_0					"Geometry"
 
 #define UI								GET_SOP_Namespace()::PRMs_VHACDEngine

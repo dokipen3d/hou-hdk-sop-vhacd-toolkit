@@ -39,9 +39,8 @@ DEFINES                                                            |
 ----------------------------------------------------------------- */
 
 #define SOP_Operator		GET_SOP_Namespace()::SOP_VHACDMerge
-#define SOP_SmallName		"wip::merge::2.0"
-#define SOP_BigName			"Merge (v-hacd)"
-#define SOP_TabMenuPath		"Toolkit/V-HACD"
+#define COMMON_NAMES		GET_SOP_Namespace()::COMMON_NAMES
+#define ENUMS				GET_Base_Namespace()::Enums
 
 /* -----------------------------------------------------------------
 OPERATOR                                                           |
@@ -49,11 +48,11 @@ OPERATOR                                                           |
 
 void 
 newSopOperator(OP_OperatorTable* table)
-{
+{	
 	const auto sop = new OP_Operator
 	(
-		SOP_SmallName,
-		SOP_BigName,
+		COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::SOP_MERGE_SMALLNAME_V2),
+		COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::SOP_MERGE_BIGNAME_V2),
 		SOP_Operator::CreateMe,
 		SOP_Operator::parametersList,
 		2,								// min inputs 
@@ -62,18 +61,16 @@ newSopOperator(OP_OperatorTable* table)
 		0,								// type of node OP_FLAG_GENERATOR (BE CAREFUL WITH THIS LITTLE FUCKER)
 		nullptr,
 		2,								// outputs count
-		SOP_TabMenuPath
+		COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::TOOLKIT_TABMENU_PATH)
 	);
 
 	auto success = table->addOperator(sop);
-	table->addOpHidden(sop->getName());	
 }
 
 /* -----------------------------------------------------------------
 UNDEFINES                                                          |
 ----------------------------------------------------------------- */
 
-#undef SOP_TabMenuPath
-#undef SOP_BigName
-#undef SOP_SmallName
+#undef ENUMS
+#undef COMMON_NAMES
 #undef SOP_Operator
