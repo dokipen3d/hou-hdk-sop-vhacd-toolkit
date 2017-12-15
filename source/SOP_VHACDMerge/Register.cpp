@@ -65,6 +65,7 @@ newSopOperator(OP_OperatorTable* table)
 	);
 
 	auto success = table->addOperator(sop);
+	table->addOpHidden(sop->getName());
 }
 
 /* -----------------------------------------------------------------
