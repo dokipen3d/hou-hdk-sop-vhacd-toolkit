@@ -65,7 +65,7 @@ DECLARE_SOP_Namespace_Start()
 	class SOP_VHACDEngine : public SOP_VHACDNode
 	{
 		DECLARE_CookMySop()
-		DECLARE_DescriptionPRM_Callback()		
+		DECLARE_DescriptionPRM_Callback()
 		DECLARE_UpdateParmsFlags()		
 
 	protected:
@@ -74,7 +74,6 @@ DECLARE_SOP_Namespace_Start()
 
 	public:
 		static OP_Node*				CreateMe(OP_Network* network, const char* name, OP_Operator* op);
-
 		static PRM_Template			parametersList[];
 
 	private:

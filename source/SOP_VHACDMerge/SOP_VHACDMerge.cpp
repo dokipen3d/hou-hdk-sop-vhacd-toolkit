@@ -274,7 +274,7 @@ SOP_Operator::MergeEachInput(UT_AutoInterrupt progress, UT_Array<const GU_Detail
 			mainValue = this->gdp->getPrimitiveRange().getEntries() > 0 ? this->_hullCountHandle.get(GA_Offset(0)) : 0;			
 		
 			// check if current detail have attribute		
-			// TODO: replace it with ATTRIB_ACCES:Get method for const GU_Detail* when it will be available
+			// TODO: replace it with ATTRIB_ACCES:Find method for const GU_Detail* when it will be available
 			auto currHandle = GA_ROHandleI(currDetail->findIntTuple(GA_AttributeOwner::GA_ATTRIB_DETAIL, GA_AttributeScope::GA_SCOPE_PUBLIC, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_COUNT)));
 			if (currHandle.isValid()) mainValue += currHandle.get(GA_Offset(0));
 			else RecalculateHullCount(currDetail, mainValue);
@@ -327,7 +327,7 @@ SOP_Operator::MergeEachInput(UT_AutoInterrupt progress, UT_Array<const GU_Detail
 			}
 		}
 		
-		// re-asign (otherwise it crashes) handle to main detail and update attribute value		
+		// re-assign (otherwise it crashes) handle to main detail and update attribute value		
 		success = ATTRIB_ACCESS::Find::IntATT(this, this->gdp, GA_AttributeOwner::GA_ATTRIB_DETAIL, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_COUNT), this->_hullCountHandle);
 		if (success) this->_hullCountHandle.set(GA_Offset(0), mainValue);		
 	}
