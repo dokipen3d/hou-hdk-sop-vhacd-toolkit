@@ -92,7 +92,6 @@ COLLECT NODE PROJECT DATA                                          |
 ------------------------------------------------------------------]]
 
 	HDK_MODULE_GET_NODE_FILES("SOP_VHACDEngine")	
-	HDK_MODULE_GET_NODE_FILES("SOP_VHACDMerge")
 	HDK_MODULE_GET_NODE_FILES("SOP_VHACDSetup")		
 	
 else()
