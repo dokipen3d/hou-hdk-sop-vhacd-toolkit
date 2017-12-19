@@ -1,8 +1,7 @@
 /*
-	Enum for common attribute names.
+	Clean template of SOP operator with selector and group input support.
 
 	IMPORTANT! ------------------------------------------
-	* this should be synchronized with VHACDCommonName.h
 	-----------------------------------------------------
 
 	Author: 	SWANN
@@ -23,67 +22,63 @@
 */
 
 #pragma once
-#ifndef ____vhacd_common_name_option_h____
-#define ____vhacd_common_name_option_h____
 
 /* -----------------------------------------------------------------
 INCLUDES                                                           |
 ----------------------------------------------------------------- */
 
-// SESI
-#if _WIN32		
-	#include <sys/SYS_Types.h>
-#else
-	#include <SYS/SYS_Types.h>
-#endif
-
 // hou-hdk-common
-#include "Macros/Namespace.h"
+#include <Macros/SwitcherPRM.h>
+#include <Macros/GroupMenuPRM.h>
+
+// this
+#include "SOP_Scout.h"
 
 /* -----------------------------------------------------------------
-ENUM                                                               |
+DEFINES                                                            |
 ----------------------------------------------------------------- */
 
-DECLARE_Base_Namespace_Start()
-namespace Enums
-{
-	enum class VHACDCommonNameOption : exint
-	{
-		// toolkit global
-		TOOLKIT_TABMENU_PATH,
-		TOOLKIT_ICONNAME,
+#define SOP_Operator GET_SOP_Namespace()::SOP_Scout
 
-		// SOP_VHACDEngine only
-		SOP_ENGINE_ICONNAME,
-		SOP_ENGINE_SMALLNAME,
-		SOP_ENGINE_BIGNAME,
+/* -----------------------------------------------------------------
+USING                                                              |
+----------------------------------------------------------------- */
 
-		// SOP_VHACDScout 2.0 only
-		SOP_SCOUT_ICONNAME_V2,
-		SOP_SCOUT_SMALLNAME_V2,
-		SOP_SCOUT_BIGNAME_V2,
-		SOP_SCOUT_GROUP_PRMNAME_V2,
-		MSS_SCOUT_SMALLNAME_V2,
-		MSS_SCOUT_BIGNAME_V2,
-		MSS_SCOUT_PROMPT_V2,
+// YOUR CODE GOES HERE...
 
-		// SOP_VHACDSetup only
-		SOP_SETUP_ICONNAME,
-		SOP_SETUP_SMALLNAME,
-		SOP_SETUP_BIGNAME,
-		SOP_SETUP_GROUP_PRMNAME,
-		MSS_SETUP_SMALLNAME,
-		MSS_SETUP_BIGNAME,
-		MSS_SETUP_PROMPT,
+/* -----------------------------------------------------------------
+PARAMETERS                                                         |
+----------------------------------------------------------------- */
 
-		// SOP_VHACDMerge 2.0 only
-		SOP_MERGE_ICONNAME_V2,
-		SOP_MERGE_SMALLNAME_V2,
-		SOP_MERGE_BIGNAME_V2,
+DECLARE_SOP_Namespace_Start()
 
-		MAX_ENUM_SIZE
-	};
-}
-DECLARE_Base_Namespace_End
+	namespace UI
+	{			
+#if ____GROUP_MODE____ == 0		
+		__DECLARE__Filter_Section_PRM(1)
+		DECLARE_Default_PointGroup_Input_0_PRM(input0)
+#elif ____GROUP_MODE____ == 1
+		__DECLARE__Filter_Section_PRM(1)
+		DECLARE_Default_EdgeGroup_Input_0_PRM(input0)
+#elif ____GROUP_MODE____ == 2
+		__DECLARE__Filter_Section_PRM(1)
+		DECLARE_Default_PrimitiveGroup_Input_0_PRM(input0)
+#else
+		__DECLARE__Filter_Section_PRM(0)
+#endif // ____GROUP_MODE____
 
-#endif // !____vhacd_common_name_option_h____
+		__DECLARE_Main_Section_PRM(0)
+
+		__DECLARE_Additional_Section_PRM(4)
+		DECLARE_DescriptionPRM(SOP_Operator)
+
+		__DECLARE_Debug_Section_PRM(0)
+	}
+		
+DECLARE_SOP_Namespace_End
+
+/* -----------------------------------------------------------------
+UNDEFINES                                                          |
+----------------------------------------------------------------- */
+
+#undef SOP_Operator
