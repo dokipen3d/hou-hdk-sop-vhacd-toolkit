@@ -1,5 +1,6 @@
 /*
-	Clean template of SOP operator with selector and group input support.
+	Volumetric-Hierarchical Approximate Convex Decomposition.
+	Based on https://github.com/kmammou/v-hacd
 
 	IMPORTANT! ------------------------------------------
 	-----------------------------------------------------
@@ -32,7 +33,7 @@ INCLUDES                                                           |
 #include <Macros/GroupMenuPRM.h>
 
 // this
-#include "SOP_Scout.h"
+#include "SOP_VHACDScout.h"
 
 /* -----------------------------------------------------------------
 DEFINES                                                            |
@@ -54,25 +55,13 @@ DECLARE_SOP_Namespace_Start()
 
 	namespace UI
 	{			
-#if ____GROUP_MODE____ == 0		
-		__DECLARE__Filter_Section_PRM(1)
-		DECLARE_Default_PointGroup_Input_0_PRM(input0)
-#elif ____GROUP_MODE____ == 1
-		__DECLARE__Filter_Section_PRM(1)
-		DECLARE_Default_EdgeGroup_Input_0_PRM(input0)
-#elif ____GROUP_MODE____ == 2
-		__DECLARE__Filter_Section_PRM(1)
-		DECLARE_Default_PrimitiveGroup_Input_0_PRM(input0)
-#else
 		__DECLARE__Filter_Section_PRM(0)
-#endif // ____GROUP_MODE____
+
 
 		__DECLARE_Main_Section_PRM(0)
 
 		__DECLARE_Additional_Section_PRM(4)
 		DECLARE_DescriptionPRM(SOP_Operator)
-
-		__DECLARE_Debug_Section_PRM(0)
 	}
 		
 DECLARE_SOP_Namespace_End

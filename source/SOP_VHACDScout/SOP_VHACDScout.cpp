@@ -1,5 +1,6 @@
 /*
-	Clean template of SOP operator with selector and group input support.
+	Volumetric-Hierarchical Approximate Convex Decomposition.
+	Based on https://github.com/kmammou/v-hacd
 
 	IMPORTANT! ------------------------------------------	
 	-----------------------------------------------------
@@ -36,6 +37,7 @@ INCLUDES                                                           |
 // hou-hdk-common
 #include <Macros/ParameterList.h>
 #include <Utility/ParameterAccessing.h>
+#include <Utility/PrimitiveGroupAccessing.h>
 
 // this
 #include "Parameters.h"
@@ -47,14 +49,12 @@ DEFINES                                                            |
 #define SOP_Operator			GET_SOP_Namespace()::SOP_Scout
 #define SOP_Input_Name_0		"Geometry"
 #define SOP_Base_Operator		SOP_VHACDNode
-#define MSS_Selector			GET_SOP_Namespace()::MSS_ScoutSelector
-
-// very important
-#define SOP_GroupFieldIndex_0	1
 
 #define COMMON_NAMES			GET_SOP_Namespace()::COMMON_NAMES
 #define UI						GET_SOP_Namespace()::UI
+#define GRP_UTILS				GET_Base_Namespace()::Utility::Groups
 #define PRM_ACCESS				GET_Base_Namespace()::Utility::PRM
+#define CONTAINERS				GET_Base_Namespace()::Containers
 #define ENUMS					GET_Base_Namespace()::Enums
 
 /* -----------------------------------------------------------------
@@ -63,24 +63,12 @@ PARAMETERS                                                         |
 
 PARAMETERLIST_Start(SOP_Operator)
 
-	UI::filterSectionSwitcher_Parameter,
-
-#if ____GROUP_MODE____ == 0
-	UI::input0PointGroup_Parameter,
-#elif ____GROUP_MODE____ == 1
-	UI::input0EdgeGroup_Parameter,
-#elif ____GROUP_MODE____ == 2
-	UI::input0PrimitiveGroup_Parameter,
-#else
-	// do nothing
-#endif // ____GROUP_MODE____		
+	UI::filterSectionSwitcher_Parameter,	
 
 	UI::mainSectionSwitcher_Parameter,
 
 	UI::additionalSectionSwitcher_Parameter,
 	PARAMETERLIST_DescriptionPRM(UI),
-
-	UI::debugSectionSwitcher_Parameter,
 
 PARAMETERLIST_End()
 
@@ -119,25 +107,9 @@ OP_Node*
 SOP_Operator::CreateMe(OP_Network* network, const char* name, OP_Operator* op) 
 { return new SOP_Operator(network, name, op); }
 
-const char* 
+const char*
 SOP_Operator::inputLabel(unsigned input) const 
 { return SOP_Input_Name_0; }
-
-OP_ERROR
-SOP_Operator::cookInputGroups(OP_Context &context, int alone)
-{
-	const auto isOrdered = true;
-
-#if ____GROUP_MODE____ == 0
-	return cookInputPointGroups(context, this->_pointGroupInput0, alone, true, SOP_GroupFieldIndex_0, -1, true, isOrdered, true, 0);
-#elif ____GROUP_MODE____ == 1
-	return cookInputEdgeGroups(context, this->_edgeGroupInput0, alone, true, SOP_GroupFieldIndex_0, -1, true, 0);
-#elif ____GROUP_MODE____ == 2
-	return	cookInputPrimitiveGroups(context, this->_primitiveGroupInput0, alone, true, SOP_GroupFieldIndex_0, -1, true, isOrdered, true, 0);
-#else
-	return error();
-#endif // ____GROUP_MODE____		
-}
 
 /* -----------------------------------------------------------------
 HELPERS                                                            |
@@ -150,124 +122,36 @@ MAIN                                                               |
 ----------------------------------------------------------------- */
 
 #include <GEO/GEO_Closure.h>
-#include <GEO/GEO_PointTree.h>
-#include <GU/GU_PrimGroup.h>
 #include <GA/GA_PrimitiveTypes.h>
 #include <chrono>
-#include <Containers/GA_PrimitiveIsland.h>
+
 OP_ERROR 
 SOP_Operator::cookMySop(OP_Context& context)
 {	
 	DEFAULTS_CookMySop()
 	
-	if (duplicateSource(0, context) < OP_ERROR::UT_ERROR_WARNING && error() < OP_ERROR::UT_ERROR_WARNING && cookInputGroups(context) < OP_ERROR::UT_ERROR_WARNING)
+	if (duplicateSource(0, context) < OP_ERROR::UT_ERROR_WARNING && error() < OP_ERROR::UT_ERROR_WARNING)
 	{
 		auto success = false;
 
-		// find open primitive islands
-		// find closed primitive islands
-		
-		GA_OffsetArray						startOffsets;
-		GA_OffsetArray						endOffsets;				
-		UT_Map<GA_Offset, GA_OffsetArray>	primitiveIslands;
-
-		startOffsets.clear();
-		endOffsets.clear();
-		primitiveIslands.clear();
-		
-		exint								currIter = 0;
-
-		for (auto primIt = GA_Iterator(this->gdp->getPrimitiveRange()); !primIt.atEnd(); primIt.advance())
-		{
-			if (currIter == 0) endOffsets.append(*primIt);
-
-			auto currPrim = this->gdp->getPrimitive(*primIt);
-			currPrim->forEachPoint([this, &startOffsets, &endOffsets](GA_Offset pointIt)
-			{
-				GA_OffsetArray pointPrims;
-				auto currSize = this->gdp->getPrimitivesReferencingPoint(pointPrims, pointIt);
-				for (GA_Offset currOffset : pointPrims)
-				{					
-					auto success = endOffsets.find(currOffset);
-					if (success > exint(-1)) continue;
-					else endOffsets.append(currOffset);
-				}
-			});
-			
-			currIter++;
-		}
-
-		/*
-		auto								closure = GEO_Closure(*this->gdp);
-		for (auto pointIt = GA_Iterator(this->gdp->getPointRange()); !pointIt.atEnd(); pointIt.advance())
-		{
-			UT_IntArray prims;
-
-			if (currIter == 0)
-			{				
-				closure.findPrimsUsingPoint(*pointIt, prims);
-
-				for (auto currOffset : prims) startOffsets.append(currOffset);
-			}
-		}
-
-		//auto started = std::chrono::high_resolution_clock::now();
-		//auto done = std::chrono::high_resolution_clock::now();
-		//std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(done - started).count() << std::endl;
-		*/
-
-#if ____GROUP_MODE____ == 0
-		// first we need to get all points selected by user
-		success = this->_pointGroupInput0 && !this->_pointGroupInput0->isEmpty();
+		success = GRP_UTILS::Primitive::Break::PerConnectivity(this, this->gdp, progress);
 		if ((success && error() >= OP_ERROR::UT_ERROR_WARNING) || (!success && error() >= OP_ERROR::UT_ERROR_NONE)) return error();
-#elif ____GROUP_MODE____ == 1
-		// first we need to get all edges selected by user
-		success = this->_edgeGroupInput0 && !this->_edgeGroupInput0->isEmpty();
-		if ((success && error() >= OP_ERROR::UT_ERROR_WARNING) || (!success && error() >= OP_ERROR::UT_ERROR_NONE)) return error();
-#elif ____GROUP_MODE____ == 2
-		// first we need to get all primitives selected by user
-		success = this->_primitiveGroupInput0 && !this->_primitiveGroupInput0->isEmpty();
-		if ((success && error() >= OP_ERROR::UT_ERROR_WARNING) || (!success && error() >= OP_ERROR::UT_ERROR_NONE)) return error();
-#else
-		// do nothing
-#endif // ____GROUP_MODE____	
-		
 	}
 
 	return error();
 }
 
 /* -----------------------------------------------------------------
-SELECTOR IMPLEMENTATION                                            |
------------------------------------------------------------------ */
-
-#if ____GROUP_MODE____ > -1
-MSS_Selector::~MSS_ScoutSelector() { }
-
-MSS_Selector::MSS_ScoutSelector(OP3D_View& viewer, PI_SelectorTemplate& templ) : MSS_ReusableSelector(viewer, templ, COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::SOP_SCOUT_SMALLNAME_V2), COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::SOP_SCOUT_GROUP_PRMNAME_V2), nullptr, true)
-{ this->setAllowUseExistingSelection(false); }
-
-BM_InputSelector*
-MSS_Selector::CreateMe(BM_View& viewer, PI_SelectorTemplate& templ)
-{ return new MSS_Selector(reinterpret_cast<OP3D_View&>(viewer), templ); }
-
-const char*
-MSS_Selector::className() const
-{ return "MSS_ScoutSelector"; }
-#endif // ____GROUP_MODE____
-
-/* -----------------------------------------------------------------
 UNDEFINES                                                          |
 ----------------------------------------------------------------- */
 
 #undef ENUMS
+#undef CONTAINERS
 #undef PRM_ACCESS
 #undef UI
+#undef GRP_UTILS
 #undef COMMON_NAMES
 
-#undef SOP_GroupFieldIndex_0
-
-#undef MSS_Selector
 #undef SOP_Base_Operator
 #undef SOP_Input_Name_0
 #undef SOP_Operator

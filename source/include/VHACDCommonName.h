@@ -69,11 +69,7 @@ namespace Containers
 			// SOP_VHACDScout 2.0 only			
 			this->Add(ENUMS::VHACDCommonNameOption::SOP_SCOUT_SMALLNAME_V2,		"wip::scout::2.0");
 			this->Add(ENUMS::VHACDCommonNameOption::SOP_SCOUT_BIGNAME_V2,		"Scout (v-hacd)");
-			this->Add(ENUMS::VHACDCommonNameOption::SOP_SCOUT_ICONNAME_V2,		this->Get(ENUMS::VHACDCommonNameOption::TOOLKIT_ICONNAME));
-			this->Add(ENUMS::VHACDCommonNameOption::SOP_SCOUT_GROUP_PRMNAME_V2, CONST_PrimitiveGroupInput0_Name);
-			this->Add(ENUMS::VHACDCommonNameOption::MSS_SCOUT_SMALLNAME_V2,		"wip::scoutselector::2.0");
-			this->Add(ENUMS::VHACDCommonNameOption::MSS_SCOUT_BIGNAME_V2,		"Scout (v-hacd selector)");
-			this->Add(ENUMS::VHACDCommonNameOption::MSS_SCOUT_PROMPT_V2,		"Select primitives. Press <enter> to accept.");
+			this->Add(ENUMS::VHACDCommonNameOption::SOP_SCOUT_ICONNAME_V2,		this->Get(ENUMS::VHACDCommonNameOption::TOOLKIT_ICONNAME));			
 
 			// SOP_VHACDSetup only			
 			this->Add(ENUMS::VHACDCommonNameOption::SOP_SETUP_SMALLNAME,		"vhacd::setup::1.2");

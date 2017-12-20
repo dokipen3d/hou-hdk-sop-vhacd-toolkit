@@ -1,5 +1,6 @@
 /*
-	Clean template of SOP operator with selector and group input support.
+	Volumetric-Hierarchical Approximate Convex Decomposition.
+	Based on https://github.com/kmammou/v-hacd
 
 	IMPORTANT! ------------------------------------------
 	-----------------------------------------------------
@@ -30,7 +31,6 @@ INCLUDES                                                           |
 ----------------------------------------------------------------- */
 
 // SESI
-#include <SOP/SOP_Node.h>
 #include <MSS/MSS_ReusableSelector.h>
 
 // hou-hdk-common
@@ -51,14 +51,6 @@ class UT_AutoInterrupt;
 /* -----------------------------------------------------------------
 DEFINES                                                            |
 ----------------------------------------------------------------- */
-
-/*
-	0 = GA_PointGroup
-	1 = GA_EdgeGroup
-	2 = GA_PrimitiveGroup
-	no number means no group support
-*/
-#define ____GROUP_MODE____ 0
 
 #define CONTAINERS					GET_Base_Namespace()::Containers
 #define ENUMS						GET_Base_Namespace()::Enums
@@ -83,37 +75,11 @@ DECLARE_SOP_Namespace_Start()
 
 	public:
 		static OP_Node*				CreateMe(OP_Network* network, const char* name, OP_Operator* op);
-		OP_ERROR					cookInputGroups(OP_Context& context, int alone = 0) override;
-
 		static PRM_Template			parametersList[];
 
 	private:	
 
-#if ____GROUP_MODE____ == 0
-		const GA_PointGroup*		_pointGroupInput0;
-#elif ____GROUP_MODE____ == 1
-		const GA_EdgeGroup*			_edgeGroupInput0;
-#elif ____GROUP_MODE____ == 2
-		const GA_PrimitiveGroup*	_primitiveGroupInput0;
-#else
-		// do nothing
-#endif // ____GROUP_MODE____
-
 	};
-
-/* -----------------------------------------------------------------
-SELECTOR DECLARATION                                               |
------------------------------------------------------------------ */
-
-class MSS_ScoutSelector : public MSS_ReusableSelector
-{
-public:
-	virtual ~MSS_ScoutSelector();
-	MSS_ScoutSelector(OP3D_View& viewer, PI_SelectorTemplate& templ);
-
-	static BM_InputSelector*			CreateMe(BM_View& Viewer, PI_SelectorTemplate& templ);
-	const char*							className() const override;
-};
 
 DECLARE_SOP_Namespace_End
 

@@ -1,5 +1,6 @@
 /*
-	Clean template of SOP operator with selector and group input support.
+	Volumetric-Hierarchical Approximate Convex Decomposition.
+	Based on https://github.com/kmammou/v-hacd
 
 	IMPORTANT! ------------------------------------------
 	-----------------------------------------------------
@@ -28,17 +29,15 @@ INCLUDES                                                           |
 // SESI
 #include <UT/UT_DSOVersion.h>
 #include <OP/OP_OperatorTable.h>
-#include <BM/BM_ResourceManager.h>
 
 // this
-#include "SOP_Scout.h"
+#include "SOP_VHACDScout.h"
 
 /* -----------------------------------------------------------------
 DEFINES                                                            |
 ----------------------------------------------------------------- */
 
 #define SOP_Operator		GET_SOP_Namespace()::SOP_Scout
-#define MSS_Selector		GET_SOP_Namespace()::MSS_ScoutSelector
 
 #define COMMON_NAMES		GET_SOP_Namespace()::COMMON_NAMES
 #define ENUMS				GET_Base_Namespace()::Enums
@@ -57,7 +56,7 @@ newSopOperator(OP_OperatorTable* table)
 		SOP_Operator::CreateMe,
 		SOP_Operator::parametersList,
 		1,								// min inputs 
-		1,								// max inputs
+		2,								// max inputs
 		nullptr,
 		0,								// type of node OP_FLAG_GENERATOR (BE CAREFUL WITH THIS LITTLE FUCKER)
 		nullptr,
@@ -69,76 +68,10 @@ newSopOperator(OP_OperatorTable* table)
 }
 
 /* -----------------------------------------------------------------
-SELECTOR                                                           |
------------------------------------------------------------------ */
-
-#if ____GROUP_MODE____ > -1
-void
-newSelector(BM_ResourceManager* manager)
-{
-	// find operator
-	const auto sopOperator = OP_Network::getOperatorTable(SOP_TABLE_NAME)->getOperator(COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::SOP_SCOUT_SMALLNAME_V2));
-	if (!sopOperator)
-	{
-		UT_ASSERT(!"Could not find required operator!");
-		return;
-	}
-
-	// create selector
-	auto sopSelector = new PI_SelectorTemplate
-	(
-		COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::MSS_SCOUT_SMALLNAME_V2),
-		COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::MSS_SCOUT_BIGNAME_V2),
-		SOP_TABLE_NAME
-	);
-
-	if (sopOperator)
-	{
-		// setup selector
-#if _WIN32		
-		sopSelector->constructor(static_cast<void*>(&MSS_Selector::CreateMe));
-#else
-		sopSelector->constructor((void*)&MSS_Selector::CreateMe);
-#endif
-
-#if ____GROUP_MODE____ == 0
-		sopSelector->data(OP3DthePointSelTypes);
-#elif ____GROUP_MODE____ == 1
-		sopSelector->data(OP3DtheEdgeSelTypes);
-#elif ____GROUP_MODE____ == 2
-		sopSelector->data(OP3DthePrimSelTypes);
-#endif // ____GROUP_MODE____
-
-		auto success = manager->registerSelector(sopSelector);
-		if (!success) return;
-
-		// bind selector		
-		success = manager->bindSelector
-		(
-			sopOperator,
-			COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::MSS_SCOUT_SMALLNAME_V2),
-			COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::MSS_SCOUT_BIGNAME_V2),
-			COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::MSS_SCOUT_PROMPT_V2),
-			COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::SOP_SCOUT_GROUP_PRMNAME_V2),
-			0,								// Input number to wire up.
-			1,								// 1 means this input is required.
-			"0x000000ff",					// Prim/point mask selection.
-			0,
-			nullptr,
-			0,
-			nullptr,
-			false
-		);
-	}
-}
-#endif // ____GROUP_MODE____
-
-/* -----------------------------------------------------------------
 UNDEFINES                                                          |
 ----------------------------------------------------------------- */
 
-#define ENUMS
-#define COMMON_NAMES
+#undef ENUMS
+#undef COMMON_NAMES
 
-#undef MSS_Selector
 #undef SOP_Operator
