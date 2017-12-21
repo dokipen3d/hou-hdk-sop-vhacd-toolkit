@@ -64,11 +64,11 @@ namespace UI
 		PRM_Name(nullptr)
 	};
 	static auto		processModeChoiceMenuParm_ChoiceList = PRM_ChoiceList(PRM_CHOICELIST_SINGLE, processModeChoiceMenuParm_Choices);
-	auto			processModeChoiceMenu_Parameter = PRM_Template(PRM_ORD, 1, &processModeChoiceMenuParm_Name, 0, &processModeChoiceMenuParm_ChoiceList, &processModeChoiceMenuParm_Range, 0, nullptr, 1, "Define if inputs should be processed as pairs or single input.");
+	auto			processModeChoiceMenu_Parameter = PRM_Template(PRM_ORD, 1, &processModeChoiceMenuParm_Name, nullptr, &processModeChoiceMenuParm_ChoiceList, &processModeChoiceMenuParm_Range, 0, nullptr, 1, "Define if inputs should be processed as pairs or single input.");
 	DECLARE_Custom_Separator_PRM("filtererrorsseparator", filterErrors)
 	DECLARE_ErroLevelMenu_PRM("attributemismatcherrormode", "Attribute Mismatch", 1, 0, "Specify error level of attribute mismatch found on inputs.", attributeMismatch)
 
-	__DECLARE_Main_Section_PRM(9)
+	__DECLARE_Main_Section_PRM(1)
 	static auto		orderModeChoiceMenuParm_Name = PRM_Name("ordermode", "Order Mode");
 	static auto		orderModeChoiceMenuParm_Range = PRM_Range(PRM_RANGE_RESTRICTED, 0, PRM_RANGE_RESTRICTED, 1);
 	static PRM_Name orderModeChoiceMenuParm_Choices[] =
@@ -78,12 +78,7 @@ namespace UI
 		PRM_Name(nullptr)
 	};
 	static auto		orderModeChoiceMenuParm_ChoiceList = PRM_ChoiceList(PRM_CHOICELIST_SINGLE, orderModeChoiceMenuParm_Choices);
-	auto			orderModeChoiceMenu_Parameter = PRM_Template(PRM_ORD, 1, &orderModeChoiceMenuParm_Name, 0, &orderModeChoiceMenuParm_ChoiceList, &orderModeChoiceMenuParm_Range, 0, nullptr, 1, "Define order in which inputs will be processed first.");
-		
-	DECLARE_Toggle_with_Separator_ON_PRM("recalculatemissinghullcountattribute", "Recalculate Missing Hull Count ATT", "recalculatemissinghullcountattributeseparator", 0, "Recalculate missing hull count detail attribute values before attempting to sum it.", recalculateMissingHullCount)
-	DECLARE_Toggle_with_Separator_ON_PRM("recalculatemissinghullidattribute", "Recalculate Missing Hull ID ATT", "recalculatemissinghullidattributeseparator", 0, "Recalculate missing hull ID primitive attribute values before attempting to sum it.", recalculateMissingHullID)
-	DECLARE_Toggle_with_Separator_ON_PRM("recalculatemissingbundlecountattribute", "Recalculate Missing Bundle Count ATT", "recalculatemissingbundlecountattributeseparator", 0, "Recalculate missing bundle count detail attribute values before attempting to sum it.", recalculateMissingBundleCount)
-	DECLARE_Toggle_with_Separator_ON_PRM("recalculatemissingbundleidattribute", "Recalculate Missing Bundle ID ATT", "recalculatemissingbundleidattributeseparator", 0, "Recalculate missing bundle ID primitive attribute values before attempting to sum it.", recalculateMissingBundleID)	
+	auto			orderModeChoiceMenu_Parameter = PRM_Template(PRM_ORD, 1, &orderModeChoiceMenuParm_Name, nullptr, &orderModeChoiceMenuParm_ChoiceList, &orderModeChoiceMenuParm_Range, 0, nullptr, 1, "Define order in which inputs will be processed first.");		
 
 	__DECLARE_Additional_Section_PRM(4)
 	DECLARE_DescriptionPRM(SOP_Operator)

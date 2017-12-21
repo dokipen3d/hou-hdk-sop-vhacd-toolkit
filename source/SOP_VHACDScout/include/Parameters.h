@@ -30,7 +30,7 @@ INCLUDES                                                           |
 
 // hou-hdk-common
 #include <Macros/SwitcherPRM.h>
-#include <Macros/GroupMenuPRM.h>
+#include <Macros/TogglePRM.h>
 
 // this
 #include "SOP_VHACDScout.h"
@@ -54,11 +54,14 @@ PARAMETERS                                                         |
 DECLARE_SOP_Namespace_Start()
 
 	namespace UI
-	{			
-		__DECLARE__Filter_Section_PRM(0)
-
-
-		__DECLARE_Main_Section_PRM(0)
+	{		
+		__DECLARE_Main_Section_PRM(12)
+		DECLARE_Toggle_with_Separator_OFF_PRM("addhullcountattribute", "Add Hull Count ATT", "addhullcountattributeseparator", 0, "Create detail hull count attribute with infomation about how many convex hulls were detected.", addHullCountAttribute)
+		DECLARE_Toggle_with_Separator_OFF_PRM("addbundlecountattribute", "Add Bundle Count ATT", "addbundlecountattributeseparator", 0, "Create detail bundle count attribute with infomation about how many convex hulls bundles were detected.", addBundleCountAttribute)
+		DECLARE_Toggle_with_Separator_OFF_PRM("addhullidattribute", "Add Hull ID ATT", "addhullidattributeseparator", 0, "Create primitive hull id attribute with membership infomation that helps identify to which convex hull polygons belongs to.", addHullIDAttribute)
+		DECLARE_Toggle_with_Separator_OFF_PRM("addbundleidattribute", "Add Bundle ID ATT", "addbundleidattributeseparator", 0, "Create primitive bundle id attribute with membership infomation that helps identify to which bundle polygons belongs to.", addBundleIDAttribute)
+		DECLARE_Toggle_with_Separator_OFF_PRM("groupperhull", "GRP Per Hull", "groupperhullseparator", 0, "Create primitive bundle id attribute with membership infomation that helps identify to which bundle polygons belongs to.", groupPerHull)
+		DECLARE_Toggle_with_Separator_OFF_PRM("groupperbundle", "GRP Per Bundle", "groupperbundleseparator", 0, "Create primitive bundle id attribute with membership infomation that helps identify to which bundle polygons belongs to.", groupPerBundle)
 
 		__DECLARE_Additional_Section_PRM(4)
 		DECLARE_DescriptionPRM(SOP_Operator)

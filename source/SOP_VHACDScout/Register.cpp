@@ -49,7 +49,7 @@ OPERATOR                                                           |
 void 
 newSopOperator(OP_OperatorTable* table)
 {
-	auto sop = new OP_Operator
+	const auto sop = new OP_Operator
 	(
 		COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::SOP_SCOUT_SMALLNAME_V2),
 		COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::SOP_SCOUT_BIGNAME_V2),
@@ -60,11 +60,12 @@ newSopOperator(OP_OperatorTable* table)
 		nullptr,
 		0,								// type of node OP_FLAG_GENERATOR (BE CAREFUL WITH THIS LITTLE FUCKER)
 		nullptr,
-		1,								// outputs count
+		2,								// outputs count
 		COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::TOOLKIT_TABMENU_PATH)
 	);
 
-	auto success = table->addOperator(sop);
+	auto success = table->addOperator(sop);	
+	table->addOpHidden(sop->getName());
 }
 
 /* -----------------------------------------------------------------

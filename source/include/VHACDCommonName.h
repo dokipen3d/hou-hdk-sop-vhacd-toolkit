@@ -60,6 +60,11 @@ namespace Containers
 			// toolkit global
 			this->Add(ENUMS::VHACDCommonNameOption::TOOLKIT_TABMENU_PATH,		"Toolkit/V-HACD");
 			this->Add(ENUMS::VHACDCommonNameOption::TOOLKIT_ICONNAME,			"SOP_VHACD.png");			
+
+			// SOP_VHACDDelete only			
+			//this->Add(ENUMS::VHACDCommonNameOption::SOP_DELETE_SMALLNAME,		"wip::delete::2.0");
+			//this->Add(ENUMS::VHACDCommonNameOption::SOP_DELETE_BIGNAME,			"Delete (v-hacd)");
+			//this->Add(ENUMS::VHACDCommonNameOption::SOP_DELETE_ICONNAME,		this->Get(ENUMS::VHACDCommonNameOption::TOOLKIT_ICONNAME));
 			
 			// SOP_VHACDEngine only			
 			this->Add(ENUMS::VHACDCommonNameOption::SOP_ENGINE_SMALLNAME,		"vhacd::engine::1.2");

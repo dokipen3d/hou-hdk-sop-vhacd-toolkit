@@ -63,9 +63,19 @@ PARAMETERS                                                         |
 
 PARAMETERLIST_Start(SOP_Operator)
 
-	UI::filterSectionSwitcher_Parameter,	
-
 	UI::mainSectionSwitcher_Parameter,
+	UI::addHullCountAttributeToggle_Parameter,
+	UI::addHullCountAttributeSeparator_Parameter,
+	UI::addBundleCountAttributeToggle_Parameter,
+	UI::addBundleCountAttributeSeparator_Parameter,
+	UI::addHullIDAttributeToggle_Parameter,
+	UI::addHullIDAttributeSeparator_Parameter,
+	UI::addBundleIDAttributeToggle_Parameter,
+	UI::addBundleIDAttributeSeparator_Parameter,
+	UI::groupPerHullToggle_Parameter,
+	UI::groupPerHullSeparator_Parameter,
+	UI::groupPerBundleToggle_Parameter,
+	UI::groupPerBundleSeparator_Parameter,
 
 	UI::additionalSectionSwitcher_Parameter,
 	PARAMETERLIST_DescriptionPRM(UI),
@@ -120,10 +130,6 @@ HELPERS                                                            |
 /* -----------------------------------------------------------------
 MAIN                                                               |
 ----------------------------------------------------------------- */
-
-#include <GEO/GEO_Closure.h>
-#include <GA/GA_PrimitiveTypes.h>
-#include <chrono>
 
 OP_ERROR 
 SOP_Operator::cookMySop(OP_Context& context)

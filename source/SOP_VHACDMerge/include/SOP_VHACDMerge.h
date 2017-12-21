@@ -31,9 +31,6 @@
 INCLUDES                                                           |
 ----------------------------------------------------------------- */
 
-// SESI
-#include <MSS/MSS_ReusableSelector.h>
-
 // hou-hdk-common
 #include <Macros/CookMySop.h>
 #include <Macros/DescriptionPRM.h>
@@ -54,8 +51,8 @@ class UT_AutoInterrupt;
 DEFINES                                                            |
 ----------------------------------------------------------------- */
 
-#define CONTAINERS							GET_Base_Namespace()::Containers
-#define ENUMS								GET_Base_Namespace()::Enums
+#define CONTAINERS				GET_Base_Namespace()::Containers
+#define ENUMS					GET_Base_Namespace()::Enums
 
 /* -----------------------------------------------------------------
 DECLARATION                                                        |
@@ -73,22 +70,22 @@ DECLARE_SOP_Namespace_Start()
 	protected:
 		~SOP_VHACDMerge() override;
 		SOP_VHACDMerge(OP_Network* network, const char* name, OP_Operator* op);
-		const char*								inputLabel(unsigned input) const override;
+		const char*				inputLabel(unsigned input) const override;
 
 	public:
-		static OP_Node*							CreateMe(OP_Network* network, const char* name, OP_Operator* op);
-		static PRM_Template						parametersList[];
+		static OP_Node*			CreateMe(OP_Network* network, const char* name, OP_Operator* op);
+		static PRM_Template		parametersList[];
 
 	private:
-		bool									GetAllDetailsOfType(UT_AutoInterrupt progress, UT_Array<const GU_Detail*>& details, ENUMS::ProcessedInputType processedinput, fpreal time);
-		bool									AddFoundVHACDAttributes(UT_AutoInterrupt progress, UT_Array<const GU_Detail*>& details, fpreal time);
-		void									RecalculateHullCount(const GU_Detail* detail, exint& hullcount);
-		void									MergeEachInput(UT_AutoInterrupt progress, UT_Array<const GU_Detail*>& details, fpreal time);
+		bool					GetAllDetailsOfType(UT_AutoInterrupt progress, UT_Array<const GU_Detail*>& details, ENUMS::ProcessedInputType processedinput, fpreal time);
+		bool					AddFoundVHACDAttributes(UT_AutoInterrupt progress, UT_Array<const GU_Detail*>& details, ENUMS::ProcessedInputType processedinput, fpreal time);
+		bool					MergeCurrentDetail(const GU_Detail* currentdetail, exint iteration, exint detailscount);
+		void					MergeEachInput(UT_AutoInterrupt progress, UT_Array<const GU_Detail*>& details, ENUMS::ProcessedInputType processedinput, fpreal time);
 		
-		bool									_createHullCount;
-		bool									_createHullID;
-		bool									_createBundleCount;
-		bool									_createBundleID;		
+		bool					_createHullCount;
+		bool					_createHullID;
+		bool					_createBundleCount;
+		bool					_createBundleID;		
 	};
 
 DECLARE_SOP_Namespace_End
