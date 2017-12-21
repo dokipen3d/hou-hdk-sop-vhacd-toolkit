@@ -79,13 +79,18 @@ DECLARE_SOP_Namespace_Start()
 	private:
 		bool					GetAllDetailsOfType(UT_AutoInterrupt progress, UT_Array<const GU_Detail*>& details, ENUMS::ProcessedInputType processedinput, fpreal time);
 		bool					AddFoundVHACDAttributes(UT_AutoInterrupt progress, UT_Array<const GU_Detail*>& details, ENUMS::ProcessedInputType processedinput, fpreal time);
+		void					ShiftCurrentDetailPrimitiveAttributes(GU_Detail* currentdetail, UT_AutoInterrupt progress, exint iteration, exint& hullshiftvalue, exint& bundleshiftvalue, ENUMS::ProcessedInputType processedinput);
 		bool					MergeCurrentDetail(const GU_Detail* currentdetail, exint iteration, exint detailscount);
-		void					MergeEachInput(UT_AutoInterrupt progress, UT_Array<const GU_Detail*>& details, ENUMS::ProcessedInputType processedinput, fpreal time);
+		void					MergeAllInputDetails(UT_AutoInterrupt progress, UT_Array<const GU_Detail*>& details, ENUMS::ProcessedInputType processedinput, fpreal time);
 		
 		bool					_createHullCount;
 		bool					_createHullID;
 		bool					_createBundleCount;
 		bool					_createBundleID;		
+		bool					_raiseMissingHullCount;
+		bool					_raiseMissingHullID;
+		bool					_raiseMissingBundleCount;
+		bool					_raiseMissingBundleID;
 	};
 
 DECLARE_SOP_Namespace_End
