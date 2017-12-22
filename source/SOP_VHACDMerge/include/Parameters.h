@@ -54,34 +54,42 @@ DECLARE_SOP_Namespace_Start()
 
 namespace UI
 {
-	__DECLARE__Filter_Section_PRM(3)
-	static auto		processModeChoiceMenuParm_Name = PRM_Name("processmode", "Process Mode");
-	static auto		processModeChoiceMenuParm_Range = PRM_Range(PRM_RANGE_RESTRICTED, 0, PRM_RANGE_RESTRICTED, 1);
-	static PRM_Name processModeChoiceMenuParm_Choices[] =
-	{
-		PRM_Name("0", "Pairs"),
-		PRM_Name("1", "Single"),
-		PRM_Name(nullptr)
-	};
-	static auto		processModeChoiceMenuParm_ChoiceList = PRM_ChoiceList(PRM_CHOICELIST_SINGLE, processModeChoiceMenuParm_Choices);
-	auto			processModeChoiceMenu_Parameter = PRM_Template(PRM_ORD, 1, &processModeChoiceMenuParm_Name, nullptr, &processModeChoiceMenuParm_ChoiceList, &processModeChoiceMenuParm_Range, 0, nullptr, 1, "Define if inputs should be processed as pairs or single input.");
-	DECLARE_Custom_Separator_PRM("filtererrorsseparator", filterErrors)
-	DECLARE_ErroLevelMenu_PRM("attributemismatcherrormode", "Attribute Mismatch", 1, 0, "Specify error level of attribute mismatch found on inputs.", attributeMismatch)
+	__DECLARE__Filter_Section_PRM(7)
+		static auto		processModeChoiceMenuParm_Name = PRM_Name("processmode", "Process Mode");
+		static auto		processModeChoiceMenuParm_Range = PRM_Range(PRM_RANGE_RESTRICTED, 0, PRM_RANGE_RESTRICTED, 1);
+		static PRM_Name processModeChoiceMenuParm_Choices[] =
+		{
+			PRM_Name("0", "Pairs"),
+			PRM_Name("1", "Single"),
+			PRM_Name(nullptr)
+		};
+		static auto		processModeChoiceMenuParm_ChoiceList = PRM_ChoiceList(PRM_CHOICELIST_SINGLE, processModeChoiceMenuParm_Choices);
+		auto			processModeChoiceMenu_Parameter = PRM_Template(PRM_ORD, 1, &processModeChoiceMenuParm_Name, nullptr, &processModeChoiceMenuParm_ChoiceList, &processModeChoiceMenuParm_Range, 0, nullptr, 1, "Define if inputs should be processed as pairs or single input.");
 
-	__DECLARE_Main_Section_PRM(1)
-	static auto		orderModeChoiceMenuParm_Name = PRM_Name("ordermode", "Order Mode");
-	static auto		orderModeChoiceMenuParm_Range = PRM_Range(PRM_RANGE_RESTRICTED, 0, PRM_RANGE_RESTRICTED, 1);
-	static PRM_Name orderModeChoiceMenuParm_Choices[] =
-	{
-		PRM_Name("0", "Left First"),
-		PRM_Name("1", "Right First"),
-		PRM_Name(nullptr)
-	};
-	static auto		orderModeChoiceMenuParm_ChoiceList = PRM_ChoiceList(PRM_CHOICELIST_SINGLE, orderModeChoiceMenuParm_Choices);
-	auto			orderModeChoiceMenu_Parameter = PRM_Template(PRM_ORD, 1, &orderModeChoiceMenuParm_Name, nullptr, &orderModeChoiceMenuParm_ChoiceList, &orderModeChoiceMenuParm_Range, 0, nullptr, 1, "Define order in which inputs will be processed first.");		
+		DECLARE_Custom_Separator_PRM("filtererrorsseparator", filterErrors)	
+
+		static auto		attributeMismatchErrorModeChoiceMenuParm_Name = PRM_Name("attributemismatcherrormode", "Global ATT Mismatch");
+		static auto		attributeMismatchErrorModeChoiceMenuParm_Range = PRM_Range(PRM_RANGE_RESTRICTED, 0, PRM_RANGE_RESTRICTED, 4);
+		static auto		attributeMismatchErrorModeChoiceMenuParm_Default = PRM_Default(2);
+		static PRM_Name attributeMismatchErrorModeChoiceMenuParm_Choices[] =
+		{
+			PRM_Name("0", "None"),
+			PRM_Name("1", "None + Override"),
+			PRM_Name("2", "Warning"),
+			PRM_Name("3", "Warning + Override"),
+			PRM_Name("4", "Error"),
+			PRM_Name(nullptr)
+		};
+		static auto		attributeMismatchErrorModeChoiceMenuParm_ChoiceList = PRM_ChoiceList(PRM_CHOICELIST_SINGLE, attributeMismatchErrorModeChoiceMenuParm_Choices);
+		auto			attributeMismatchErrorModeChoiceMenu_Parameter = PRM_Template(PRM_ORD, 1, &attributeMismatchErrorModeChoiceMenuParm_Name, &attributeMismatchErrorModeChoiceMenuParm_Default, &attributeMismatchErrorModeChoiceMenuParm_ChoiceList, &attributeMismatchErrorModeChoiceMenuParm_Range, &SOP_Operator::CallbackAttributeMismatchErrorModeChoiceMenu, nullptr, 1, "Specify error level of attribute mismatch found on inputs.");
+	
+		DECLARE_ErroLevelMenu_PRM("hullcountmismatcherrormode", "Hull Count Mismatch", 1, 0, "Specify error level of attribute mismatch found on inputs.", hullCountMismatch)
+		DECLARE_ErroLevelMenu_PRM("hullidmismatcherrormode", "Hull ID Mismatch", 1, 0, "Specify error level of attribute mismatch found on inputs.", hullIDMismatch)
+		DECLARE_ErroLevelMenu_PRM("bundlecountmismatcherrormode", "Bundle Count Mismatch", 1, 0, "Specify error level of attribute mismatch found on inputs.", bundleCountMismatch)	
+		DECLARE_ErroLevelMenu_PRM("bundleidmismatcherrormode", "Bundle ID Mismatch", 1, 0, "Specify error level of attribute mismatch found on inputs.", bundleIDMismatch)
 
 	__DECLARE_Additional_Section_PRM(4)
-	DECLARE_DescriptionPRM(SOP_Operator)
+		DECLARE_DescriptionPRM(SOP_Operator)
 }
 		
 DECLARE_SOP_Namespace_End

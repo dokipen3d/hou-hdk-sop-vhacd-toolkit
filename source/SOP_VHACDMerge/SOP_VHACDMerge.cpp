@@ -45,6 +45,7 @@ INCLUDES                                                           |
 // this
 #include "Parameters.h"
 #include "ProcessModeOption.h"
+#include "MismachErrorModeOption.h"
 
 /* -----------------------------------------------------------------
 DEFINES                                                            |
@@ -70,9 +71,10 @@ PARAMETERLIST_Start(SOP_Operator)
 	UI::processModeChoiceMenu_Parameter,
 	UI::filterErrorsSeparator_Parameter,
 	UI::attributeMismatchErrorModeChoiceMenu_Parameter,
-
-	UI::mainSectionSwitcher_Parameter,	
-	UI::orderModeChoiceMenu_Parameter,
+	UI::hullCountMismatchErrorModeChoiceMenu_Parameter,
+	UI::hullIDMismatchErrorModeChoiceMenu_Parameter,
+	UI::bundleCountMismatchErrorModeChoiceMenu_Parameter,
+	UI::bundleIDMismatchErrorModeChoiceMenu_Parameter,
 
 	UI::additionalSectionSwitcher_Parameter,
 	PARAMETERLIST_DescriptionPRM(UI),
@@ -84,6 +86,7 @@ SOP_Operator::updateParmsFlags()
 {
 	DEFAULTS_UpdateParmsFlags(SOP_Base_Operator)
 
+	/*
 	// is input connected?
 	const exint is0Connected = getInput(0) == nullptr ? 0 : 1;
 	const exint is1Connected = getInput(1) == nullptr ? 0 : 1;
@@ -93,14 +96,31 @@ SOP_Operator::updateParmsFlags()
 	const exint is5Connected = getInput(5) == nullptr ? 0 : 1;
 	const exint is6Connected = getInput(6) == nullptr ? 0 : 1;
 	const exint is7Connected = getInput(7) == nullptr ? 0 : 1;
-	const exint is8Connected = getInput(8) == nullptr ? 0 : 1;
-	const exint is9Connected = getInput(9) == nullptr ? 0 : 1;
+	*/
 
 	/* ---------------------------- Set Global Visibility ---------------------------- */
 
-	visibilityState = is0Connected ? 1 : 0; // TODO: do I still need this?
+	//visibilityState = is0Connected ? 1 : 0; // TODO: do I still need this?
 
 	/* ---------------------------- Set States --------------------------------------- */
+
+	// check for attributes mismatch	
+	exint attributeMismatchErrorLevelValue;
+	PRM_ACCESS::Get::IntPRM(this, attributeMismatchErrorLevelValue, UI::attributeMismatchErrorModeChoiceMenu_Parameter, currentTime);
+	
+	switch (attributeMismatchErrorLevelValue)
+	{
+		case static_cast<exint>(ENUMS::MismatchErrorModeOption::NONE) : { visibilityState = 0; } break;
+		case static_cast<exint>(ENUMS::MismatchErrorModeOption::NONE_AND_OVERRIDE) : { visibilityState = 1; } break;
+		case static_cast<exint>(ENUMS::MismatchErrorModeOption::WARNING) : { visibilityState = 0; } break;
+		case static_cast<exint>(ENUMS::MismatchErrorModeOption::WARNING_AND_OVERRIDE) : { visibilityState = 1; } break;
+		case static_cast<exint>(ENUMS::MismatchErrorModeOption::ERROR) : { visibilityState = 0; } break;
+	}
+	
+	changed |= setVisibleState(UI::hullCountMismatchErrorModeChoiceMenu_Parameter.getToken(), visibilityState);
+	changed |= setVisibleState(UI::hullIDMismatchErrorModeChoiceMenu_Parameter.getToken(), visibilityState);
+	changed |= setVisibleState(UI::bundleCountMismatchErrorModeChoiceMenu_Parameter.getToken(), visibilityState);
+	changed |= setVisibleState(UI::bundleIDMismatchErrorModeChoiceMenu_Parameter.getToken(), visibilityState);
 
 	// update description active state
 	UPDATE_DescriptionPRM_ActiveState(this, UI)
@@ -133,6 +153,36 @@ SOP_Operator::inputLabel(unsigned input) const
 { return std::to_string(input).c_str(); }
 
 /* -----------------------------------------------------------------
+CALLBACKS                                                          |
+----------------------------------------------------------------- */
+
+int	
+SOP_Operator::CallbackAttributeMismatchErrorModeChoiceMenu(void* data, int index, float time, const PRM_Template* tmp)
+{
+	const auto me = reinterpret_cast<SOP_Operator*>(data);
+	if (!me) return 0;
+
+	exint attributeMismatchErrorLevelValue;
+	PRM_ACCESS::Get::IntPRM(me, attributeMismatchErrorLevelValue, UI::attributeMismatchErrorModeChoiceMenu_Parameter, time);
+
+	if (attributeMismatchErrorLevelValue == static_cast<exint>(ENUMS::MismatchErrorModeOption::NONE) || attributeMismatchErrorLevelValue == static_cast<exint>(ENUMS::MismatchErrorModeOption::WARNING) || attributeMismatchErrorLevelValue == static_cast<exint>(ENUMS::MismatchErrorModeOption::ERROR))
+	{
+		// TODO: figure out why restoreFactoryDefaults() doesn't work
+		auto defVal0 = static_cast<exint>(UI::hullCountMismatchErrorModeChoiceMenu_Parameter.getFactoryDefaults()->getOrdinal());
+		auto defVal1 = static_cast<exint>(UI::hullCountMismatchErrorModeChoiceMenu_Parameter.getFactoryDefaults()->getOrdinal());
+		auto defVal2 = static_cast<exint>(UI::hullCountMismatchErrorModeChoiceMenu_Parameter.getFactoryDefaults()->getOrdinal());
+		auto defVal3 = static_cast<exint>(UI::hullCountMismatchErrorModeChoiceMenu_Parameter.getFactoryDefaults()->getOrdinal());
+
+		PRM_ACCESS::Set::IntPRM(me, defVal0, UI::hullCountMismatchErrorModeChoiceMenu_Parameter, time);
+		PRM_ACCESS::Set::IntPRM(me, defVal0, UI::hullIDMismatchErrorModeChoiceMenu_Parameter, time);
+		PRM_ACCESS::Set::IntPRM(me, defVal0, UI::bundleCountMismatchErrorModeChoiceMenu_Parameter, time);
+		PRM_ACCESS::Set::IntPRM(me, defVal0, UI::bundleIDMismatchErrorModeChoiceMenu_Parameter, time);
+	}	
+
+	return 1;
+}
+
+/* -----------------------------------------------------------------
 HELPERS                                                            |
 ----------------------------------------------------------------- */
 
@@ -161,6 +211,53 @@ SOP_Operator::GetAllDetailsOfType(UT_AutoInterrupt progress, UT_Array<const GU_D
 	}
 
 	return true;
+}
+
+#define THIS_HANDLE_MISMATCH(methodname, parameter, message) void methodname(fpreal time) { exint mismatchErrorModeValue; PRM_ACCESS::Get::IntPRM(this, mismatchErrorModeValue, parameter, time); auto errorMessage = std::string(message) + std::string(" attribute is missing in one or more inputs."); auto warningMessage = std::string(errorMessage) + std::string(" Merged value will be calculated inproperly."); switch (mismatchErrorModeValue) { case static_cast<exint>(ENUMS::NodeErrorLevel::NONE) : break; case static_cast<exint>(ENUMS::NodeErrorLevel::WARNING) : { this->addWarning(SOP_MESSAGE, warningMessage.c_str()); } break; case static_cast<exint>(ENUMS::NodeErrorLevel::ERROR) : { this->addError(SOP_MESSAGE, errorMessage.c_str()); } break; } }
+THIS_HANDLE_MISMATCH(SOP_Operator::HandleHullCountMismatch, UI::hullCountMismatchErrorModeChoiceMenu_Parameter, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_COUNT))
+THIS_HANDLE_MISMATCH(SOP_Operator::HandleHullIDMismatch, UI::hullIDMismatchErrorModeChoiceMenu_Parameter, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_ID))
+THIS_HANDLE_MISMATCH(SOP_Operator::HandleBundleCountMismatch, UI::bundleCountMismatchErrorModeChoiceMenu_Parameter, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_COUNT))
+THIS_HANDLE_MISMATCH(SOP_Operator::HandleBundleIDMismatch, UI::bundleIDMismatchErrorModeChoiceMenu_Parameter, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_ID))
+#undef THIS_HANDLE_MISMATCH
+
+void
+SOP_Operator::HandleAttributesMismatch(UT_AutoInterrupt progress, UT_Array<const GU_Detail*>& details, ENUMS::ProcessedInputType processedinput, fpreal time)
+{
+	exint	processModeValue;
+	exint	attributeMismatchErrorLevelValue;	
+
+	PRM_ACCESS::Get::IntPRM(this, processModeValue, UI::processModeChoiceMenu_Parameter, time);
+	PRM_ACCESS::Get::IntPRM(this, attributeMismatchErrorLevelValue, UI::attributeMismatchErrorModeChoiceMenu_Parameter, time);
+
+	auto globalMismatchErrorModeValue = static_cast<ENUMS::NodeErrorLevel>(UI::attributeMismatchErrorModeChoiceMenu_Parameter.getFactoryDefaults()->getOrdinal());
+	switch (attributeMismatchErrorLevelValue)
+	{
+		case static_cast<exint>(ENUMS::MismatchErrorModeOption::NONE) :
+		case static_cast<exint>(ENUMS::MismatchErrorModeOption::NONE_AND_OVERRIDE) : { globalMismatchErrorModeValue = ENUMS::NodeErrorLevel::NONE; } break;
+		case static_cast<exint>(ENUMS::MismatchErrorModeOption::WARNING) :
+		case static_cast<exint>(ENUMS::MismatchErrorModeOption::WARNING_AND_OVERRIDE) : { globalMismatchErrorModeValue = ENUMS::NodeErrorLevel::WARNING; } break;
+		case static_cast<exint>(ENUMS::MismatchErrorModeOption::ERROR) : { globalMismatchErrorModeValue = ENUMS::NodeErrorLevel::ERROR; } break;
+	}
+
+	auto mismatchInfos = ATTRIB_ACCESS::Check::MismatchOfAllOwners(this, progress, details, GA_AttributeScope::GA_SCOPE_PUBLIC, globalMismatchErrorModeValue);
+	for (auto mismatch : mismatchInfos)
+	{
+		// filter to find out if VHACD specific ones are missing
+		if (attributeMismatchErrorLevelValue == static_cast<exint>(ENUMS::MismatchErrorModeOption::NONE_AND_OVERRIDE) || attributeMismatchErrorLevelValue == static_cast<exint>(ENUMS::MismatchErrorModeOption::WARNING_AND_OVERRIDE))
+		{
+			if (mismatch.GetOwner() == GA_AttributeOwner::GA_ATTRIB_DETAIL)
+			{
+				if ((mismatch.Contains(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_COUNT)) && processedinput == ENUMS::ProcessedInputType::CONVEX_HULLS) || (mismatch.Contains(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_COUNT)) && processModeValue)) HandleHullCountMismatch(time);
+				if (mismatch.Contains(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_COUNT))) HandleBundleCountMismatch(time);
+			}
+
+			if (mismatch.GetOwner() == GA_AttributeOwner::GA_ATTRIB_PRIMITIVE)
+			{
+				if ((mismatch.Contains(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_ID)) && processedinput == ENUMS::ProcessedInputType::CONVEX_HULLS) || (mismatch.Contains(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_ID)) && processModeValue)) HandleHullIDMismatch(time);
+				if (mismatch.Contains(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_ID))) HandleBundleIDMismatch(time);
+			}
+		}
+	}
 }
 
 bool
@@ -226,78 +323,73 @@ SOP_Operator::ShiftCurrentDetailPrimitiveAttributes(GU_Detail* currentdetail, UT
 	GA_RWHandleI	currHullIDHandle;
 	GA_RWHandleI	currBundleIDHandle;
 
-	//if (iteration > 0)
+	if (this->_hullIDHandle.isValid() && processedinput == ENUMS::ProcessedInputType::CONVEX_HULLS)
 	{
-		if (this->_hullIDHandle.isValid() && processedinput == ENUMS::ProcessedInputType::CONVEX_HULLS)
+		// find attribute in current detail
+		success = ATTRIB_ACCESS::Find::IntATT(this, currentdetail, GA_AttributeOwner::GA_ATTRIB_PRIMITIVE, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_ID), currHullIDHandle);
+		if (success)
 		{
-			// find attribute in current detail
-			success = ATTRIB_ACCESS::Find::IntATT(this, currentdetail, GA_AttributeOwner::GA_ATTRIB_PRIMITIVE, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_ID), currHullIDHandle);
-			if (success)
-			{
-				// shift values to create 0 - N range
-				UT_Map<exint, exint> remapedValues;				
-				remapedValues.clear();
+			// shift values to create 0 - N range
+			UT_Map<exint, exint> remapedValues;				
+			remapedValues.clear();
 				
-				exint currIter = 0;
-				for (auto primIt = GA_Iterator(currentdetail->getPrimitiveRange()); !primIt.atEnd(); primIt.advance())
-				{
-					PROGRESS_WAS_INTERRUPTED_WITH_ERROR_AND_RETURN(this, progress)
-					
-					// get current value from detail
-					const auto currValue = currHullIDHandle.get(*primIt);
-
-					// check if we remaped it before
-					success = remapedValues.contains(currValue);
-					if (!success)
-					{
-						remapedValues[currValue] = currIter + hullshiftvalue;
-						currHullIDHandle.set(*primIt, currIter + hullshiftvalue);
-						currIter++;
-					}
-					else currHullIDHandle.set(*primIt, remapedValues[currValue]);
-				}
-
-				// update shift value for next iteration
-				if (iteration == 0) hullshiftvalue = currIter;
-				else hullshiftvalue += currIter;				
-			}
-			else this->_raiseMissingHullID = true;			
-		}
-
-		if (this->_bundleIDHandle.isValid())
-		{
-			// find attribute in current detail
-			success = ATTRIB_ACCESS::Find::IntATT(this, currentdetail, GA_AttributeOwner::GA_ATTRIB_PRIMITIVE, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_ID), currBundleIDHandle);
-			if (success)
+			exint currIter = 0;
+			for (auto primIt = GA_Iterator(currentdetail->getPrimitiveRange()); !primIt.atEnd(); primIt.advance())
 			{
-				// shift values to create 0 - N range
-				UT_Map<exint, exint> remapedValues;
-				remapedValues.clear();
+				PROGRESS_WAS_INTERRUPTED_WITH_ERROR_AND_RETURN(this, progress)
+					
+				// get current value from detail
+				const auto currValue = currHullIDHandle.get(*primIt);
 
-				exint currIter = 0;
-				for (auto primIt = GA_Iterator(currentdetail->getPrimitiveRange()); !primIt.atEnd(); primIt.advance())
+				// check if we remaped it before
+				success = remapedValues.contains(currValue);
+				if (!success)
 				{
-					PROGRESS_WAS_INTERRUPTED_WITH_ERROR_AND_RETURN(this, progress)
-
-					// get current value from detail
-					const auto currValue = currBundleIDHandle.get(*primIt);
-
-					// check if we remaped it before
-					success = remapedValues.contains(currValue);
-					if (!success)
-					{
-						remapedValues[currValue] = currIter + bundleshiftvalue;
-						currBundleIDHandle.set(*primIt, currIter + bundleshiftvalue);
-						currIter++;
-					}
-					else currBundleIDHandle.set(*primIt, remapedValues[currValue]);
+					remapedValues[currValue] = currIter + hullshiftvalue;
+					currHullIDHandle.set(*primIt, currIter + hullshiftvalue);
+					currIter++;
 				}
-
-				// update shift value for next iteration
-				if (iteration == 0) bundleshiftvalue = currIter;
-				else bundleshiftvalue += currIter;
+				else currHullIDHandle.set(*primIt, remapedValues[currValue]);
 			}
-			else this->_raiseMissingBundleID = true;			
+
+			// update shift value for next iteration
+			if (iteration == 0) hullshiftvalue = currIter;
+			else hullshiftvalue += currIter;				
+		}	
+	}
+
+	if (this->_bundleIDHandle.isValid())
+	{
+		// find attribute in current detail
+		success = ATTRIB_ACCESS::Find::IntATT(this, currentdetail, GA_AttributeOwner::GA_ATTRIB_PRIMITIVE, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_ID), currBundleIDHandle);
+		if (success)
+		{
+			// shift values to create 0 - N range
+			UT_Map<exint, exint> remapedValues;
+			remapedValues.clear();
+
+			exint currIter = 0;
+			for (auto primIt = GA_Iterator(currentdetail->getPrimitiveRange()); !primIt.atEnd(); primIt.advance())
+			{
+				PROGRESS_WAS_INTERRUPTED_WITH_ERROR_AND_RETURN(this, progress)
+
+				// get current value from detail
+				const auto currValue = currBundleIDHandle.get(*primIt);
+
+				// check if we remaped it before
+				success = remapedValues.contains(currValue);
+				if (!success)
+				{
+					remapedValues[currValue] = currIter + bundleshiftvalue;
+					currBundleIDHandle.set(*primIt, currIter + bundleshiftvalue);
+					currIter++;
+				}
+				else currBundleIDHandle.set(*primIt, remapedValues[currValue]);
+			}
+
+			// update shift value for next iteration
+			if (iteration == 0) bundleshiftvalue = currIter;
+			else bundleshiftvalue += currIter;
 		}
 	}
 }
@@ -363,12 +455,6 @@ SOP_Operator::MergeAllInputDetails(UT_AutoInterrupt progress, UT_Array<const GU_
 	GA_RWHandleI	currHullCountHandle;
 	GA_RWHandleI	currBundleCountHandle;
 
-	// reset on each cook
-	this->_raiseMissingHullCount = false;
-	this->_raiseMissingHullID = false;
-	this->_raiseMissingBundleCount = false;
-	this->_raiseMissingBundleID = false;
-
 	for (auto currDetail : details)
 	{
 		PROGRESS_WAS_INTERRUPTED_WITH_ERROR_AND_RETURN(this, progress)
@@ -381,14 +467,12 @@ SOP_Operator::MergeAllInputDetails(UT_AutoInterrupt progress, UT_Array<const GU_
 		{
 			success = ATTRIB_ACCESS::Find::IntATT(this, currDetailRW, GA_AttributeOwner::GA_ATTRIB_DETAIL, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_COUNT), currHullCountHandle);
 			if (success) hullCountMainValue += currHullCountHandle.get(GA_Offset(0));
-			else this->_raiseMissingHullCount = true;		
 		}
 
 		if (this->_bundleCountHandle.isValid())
 		{
 			success = ATTRIB_ACCESS::Find::IntATT(this, currDetailRW, GA_AttributeOwner::GA_ATTRIB_DETAIL, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_COUNT), currBundleCountHandle);
 			if (success) bundleCountMainValue += currBundleCountHandle.get(GA_Offset(0));
-			else this->_raiseMissingBundleCount = true;		
 		}			
 
 		// shift primitive values to create continuous range from (last value of main detail + 1) to N
@@ -416,13 +500,7 @@ SOP_Operator::MergeAllInputDetails(UT_AutoInterrupt progress, UT_Array<const GU_
 	{
 		success = ATTRIB_ACCESS::Find::IntATT(this, this->gdp, GA_AttributeOwner::GA_ATTRIB_DETAIL, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_COUNT), this->_bundleCountHandle);
 		if (success) this->_bundleCountHandle.set(GA_Offset(0), bundleCountMainValue);
-	}	
-
-	// set errors
-	if (this->_raiseMissingHullCount); // "Hull Count attribute was not present on one or more inputs. Merged value for this attribute will be inproper."
-	if (this->_raiseMissingHullID); //this->addWarning(SOP_MESSAGE, "Hull ID attribute was not present on one or more inputs. Merged value for this attribute will be inproper.");
-	if (this->_raiseMissingBundleCount); // "Bundle Count attribute was not present on one or more inputs. Merged value for this attribute will be inproper."
-	if (this->_raiseMissingBundleID); //this->addWarning(SOP_MESSAGE, "Bundle ID attribute was not present on one or more inputs. Merged value for this attribute will be inproper.");
+	}
 }
 
 /* -----------------------------------------------------------------
@@ -442,11 +520,8 @@ SOP_Operator::cookMySop(OP_Context& context)
 	if ((success && error() > OP_ERROR::UT_ERROR_WARNING) || (!success && error() >= OP_ERROR::UT_ERROR_NONE)) return error();
 	
 	// check for attributes mismatch	
-	exint attributeMismatchErrorLevelValue;
-	PRM_ACCESS::Get::IntPRM(this, attributeMismatchErrorLevelValue, UI::attributeMismatchErrorModeChoiceMenu_Parameter, currentTime);
-
-	success = ATTRIB_ACCESS::Check::MismatchOfAllOwners(this, progress, allInputDetails, GA_AttributeScope::GA_SCOPE_PUBLIC, static_cast<ENUMS::NodeErrorLevel>(attributeMismatchErrorLevelValue));
-	if ((success && error() > OP_ERROR::UT_ERROR_WARNING) || (!success && error() > OP_ERROR::UT_ERROR_WARNING)) return error();
+	HandleAttributesMismatch(progress, allInputDetails, ENUMS::ProcessedInputType::CONVEX_HULLS, currentTime);	
+	if (error() > OP_ERROR::UT_ERROR_WARNING) return error();
 		
 	// does any input have V-HACD specific attributes?	
 	success = AddFoundVHACDAttributes(progress, allInputDetails, ENUMS::ProcessedInputType::CONVEX_HULLS, currentTime);
@@ -482,8 +557,8 @@ SOP_Operator::cookMySopOutput(OP_Context& context, int outputidx, SOP_Node* inte
 			exint attributeMismatchErrorLevelValue;
 			PRM_ACCESS::Get::IntPRM(this, attributeMismatchErrorLevelValue, UI::attributeMismatchErrorModeChoiceMenu_Parameter, currentTime);
 
-			success = ATTRIB_ACCESS::Check::MismatchOfAllOwners(this, progress, allInputDetails, GA_AttributeScope::GA_SCOPE_PUBLIC, static_cast<ENUMS::NodeErrorLevel>(attributeMismatchErrorLevelValue));				
-			if ((success && error() > OP_ERROR::UT_ERROR_WARNING) || (!success && error() > OP_ERROR::UT_ERROR_WARNING)) return result;
+			HandleAttributesMismatch(progress, allInputDetails, ENUMS::ProcessedInputType::ORIGINAL_GEOMETRY, currentTime);
+			if (error() > OP_ERROR::UT_ERROR_WARNING) return result;
 			
 			// does any input have V-HACD specific attributes?	
 			success = AddFoundVHACDAttributes(progress, allInputDetails, ENUMS::ProcessedInputType::ORIGINAL_GEOMETRY, currentTime);
@@ -507,7 +582,7 @@ UNDEFINES                                                          |
 #undef ATTRIB_ACCESS
 #undef PRM_ACCESS
 #undef UI
-
 #undef COMMON_NAMES
+
 #undef SOP_Base_Operator
 #undef SOP_Operator
