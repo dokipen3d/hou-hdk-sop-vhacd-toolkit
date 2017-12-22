@@ -23,7 +23,7 @@ V-HACD use with [Unity](https://youtu.be/8CStATK1X5s) on YouTube.
 - [ ] port SOP Delete to C++
 - [ ] port SOP Export to C++
 - [ ] port SOP Generate to C++
-- [ ] port SOP Merge to C++
+- [x] port [SOP Merge](https://github.com/sebastianswann/hou-hdk-sop-vhacd-toolkit/tree/master/source/SOP_VHACDMerge) to C++
 - [ ] port SOP Scout to C++
 - [x] port [SOP Setup](https://github.com/sebastianswann/hou-hdk-sop-vhacd-toolkit/tree/master/source/SOP_VHACDSetup) to C++
 - [ ] port SOP Transform to C++
