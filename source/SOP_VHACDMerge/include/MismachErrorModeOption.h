@@ -1,8 +1,9 @@
 /*
-	Enum for common attribute names.
+	Volumetric-Hierarchical Approximate Convex Decomposition.
+	Based on https://github.com/kmammou/v-hacd
 
 	IMPORTANT! ------------------------------------------
-	* this should be synchronized with VHACDCommonName.h
+	* Macros starting and ending with '____' shouldn't be used anywhere outside of this file.
 	-----------------------------------------------------
 
 	Author: 	SWANN
@@ -23,19 +24,12 @@
 */
 
 #pragma once
-#ifndef ____vhacd_common_name_option_h____
-#define ____vhacd_common_name_option_h____
+#ifndef ____enums_mismatch_error_mode_h____
+#define ____enums_mismatch_error_mode_h____
 
 /* -----------------------------------------------------------------
 INCLUDES                                                           |
 ----------------------------------------------------------------- */
-
-// SESI
-#if _WIN32		
-	#include <sys/SYS_Types.h>
-#else
-	#include <SYS/SYS_Types.h>
-#endif
 
 // hou-hdk-common
 #include "Macros/Namespace.h"
@@ -47,44 +41,15 @@ ENUM                                                               |
 DECLARE_Base_Namespace_Start()
 namespace Enums
 {
-	enum class VHACDCommonNameOption : exint
+	enum class MismatchErrorModeOption
 	{
-		// toolkit global
-		TOOLKIT_TABMENU_PATH,
-		TOOLKIT_ICONNAME,
-
-		// SOP_VHACDDelete only
-		//SOP_DELETE_ICONNAME,
-		//SOP_DELETE_SMALLNAME,
-		//SOP_DELETE_BIGNAME,
-		
-		// SOP_VHACDEngine only
-		SOP_ENGINE_ICONNAME,
-		SOP_ENGINE_SMALLNAME,
-		SOP_ENGINE_BIGNAME,
-
-		// SOP_VHACDScout 2.0 only
-		SOP_SCOUT_ICONNAME_V2,
-		SOP_SCOUT_SMALLNAME_V2,
-		SOP_SCOUT_BIGNAME_V2,		
-
-		// SOP_VHACDSetup only
-		SOP_SETUP_ICONNAME,
-		SOP_SETUP_SMALLNAME,
-		SOP_SETUP_BIGNAME,
-		SOP_SETUP_GROUP_PRMNAME,
-		MSS_SETUP_SMALLNAME,
-		MSS_SETUP_BIGNAME,
-		MSS_SETUP_PROMPT,
-
-		// SOP_VHACDMerge 2.0 only
-		SOP_MERGE_ICONNAME_V2,
-		SOP_MERGE_SMALLNAME_V2,
-		SOP_MERGE_BIGNAME_V2,
-
-		MAX_ENUM_SIZE
+		NONE,
+		NONE_AND_OVERRIDE,
+		WARNING,
+		WARNING_AND_OVERRIDE,
+		ERROR
 	};
 }
 DECLARE_Base_Namespace_End
 
-#endif // !____vhacd_common_name_option_h____
+#endif // !____enums_mismatch_error_mode_h____

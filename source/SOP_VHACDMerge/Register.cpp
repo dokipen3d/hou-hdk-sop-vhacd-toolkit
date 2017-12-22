@@ -1,8 +1,9 @@
 /*
-	Enum for common attribute names.
+	Volumetric-Hierarchical Approximate Convex Decomposition.
+	Based on https://github.com/kmammou/v-hacd
 
 	IMPORTANT! ------------------------------------------
-	* this should be synchronized with VHACDCommonName.h
+	* Macros starting and ending with '____' shouldn't be used anywhere outside of this file.
 	-----------------------------------------------------
 
 	Author: 	SWANN
@@ -22,69 +23,55 @@
 	THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#pragma once
-#ifndef ____vhacd_common_name_option_h____
-#define ____vhacd_common_name_option_h____
-
 /* -----------------------------------------------------------------
 INCLUDES                                                           |
 ----------------------------------------------------------------- */
 
 // SESI
-#if _WIN32		
-	#include <sys/SYS_Types.h>
-#else
-	#include <SYS/SYS_Types.h>
-#endif
+#include <UT/UT_DSOVersion.h>
+#include <OP/OP_OperatorTable.h>
 
-// hou-hdk-common
-#include "Macros/Namespace.h"
+// this
+#include "SOP_VHACDMerge.h"
 
 /* -----------------------------------------------------------------
-ENUM                                                               |
+DEFINES                                                            |
 ----------------------------------------------------------------- */
 
-DECLARE_Base_Namespace_Start()
-namespace Enums
-{
-	enum class VHACDCommonNameOption : exint
-	{
-		// toolkit global
-		TOOLKIT_TABMENU_PATH,
-		TOOLKIT_ICONNAME,
+#define SOP_Operator		GET_SOP_Namespace()::SOP_VHACDMerge
+#define COMMON_NAMES		GET_SOP_Namespace()::COMMON_NAMES
+#define ENUMS				GET_Base_Namespace()::Enums
 
-		// SOP_VHACDDelete only
-		//SOP_DELETE_ICONNAME,
-		//SOP_DELETE_SMALLNAME,
-		//SOP_DELETE_BIGNAME,
-		
-		// SOP_VHACDEngine only
-		SOP_ENGINE_ICONNAME,
-		SOP_ENGINE_SMALLNAME,
-		SOP_ENGINE_BIGNAME,
+/* -----------------------------------------------------------------
+OPERATOR                                                           |
+----------------------------------------------------------------- */
 
-		// SOP_VHACDScout 2.0 only
-		SOP_SCOUT_ICONNAME_V2,
-		SOP_SCOUT_SMALLNAME_V2,
-		SOP_SCOUT_BIGNAME_V2,		
+void 
+newSopOperator(OP_OperatorTable* table)
+{	
+	const auto sop = new OP_Operator
+	(
+		COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::SOP_MERGE_SMALLNAME_V2),
+		COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::SOP_MERGE_BIGNAME_V2),
+		SOP_Operator::CreateMe,
+		SOP_Operator::parametersList,
+		2,								// min inputs 
+		8,								// max inputs
+		nullptr,
+		0,								// type of node OP_FLAG_GENERATOR (BE CAREFUL WITH THIS LITTLE FUCKER)
+		nullptr,
+		2,								// outputs count
+		COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::TOOLKIT_TABMENU_PATH)
+	);
 
-		// SOP_VHACDSetup only
-		SOP_SETUP_ICONNAME,
-		SOP_SETUP_SMALLNAME,
-		SOP_SETUP_BIGNAME,
-		SOP_SETUP_GROUP_PRMNAME,
-		MSS_SETUP_SMALLNAME,
-		MSS_SETUP_BIGNAME,
-		MSS_SETUP_PROMPT,
-
-		// SOP_VHACDMerge 2.0 only
-		SOP_MERGE_ICONNAME_V2,
-		SOP_MERGE_SMALLNAME_V2,
-		SOP_MERGE_BIGNAME_V2,
-
-		MAX_ENUM_SIZE
-	};
+	auto success = table->addOperator(sop);
+	//table->addOpHidden(sop->getName());
 }
-DECLARE_Base_Namespace_End
 
-#endif // !____vhacd_common_name_option_h____
+/* -----------------------------------------------------------------
+UNDEFINES                                                          |
+----------------------------------------------------------------- */
+
+#undef ENUMS
+#undef COMMON_NAMES
+#undef SOP_Operator

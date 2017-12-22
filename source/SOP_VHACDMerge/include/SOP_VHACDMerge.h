@@ -24,31 +24,22 @@
 */
 
 #pragma once
-#ifndef ____sop_vhacdengine_h____
-#define ____sop_vhacdengine_h____
+#ifndef ____sop_vhacdmerge_h____
+#define ____sop_vhacdmerge_h____
 
 /* -----------------------------------------------------------------
 INCLUDES                                                           |
 ----------------------------------------------------------------- */
 
-// std
-#include <vector>
-#include <string>
-#include <iomanip>
-
-// 3rdParty
-#include <VHACD.h>
-
 // hou-hdk-common
-#include <Macros/Namespace.h>
 #include <Macros/CookMySop.h>
 #include <Macros/DescriptionPRM.h>
+#include <Macros/Namespace.h>
 #include <Macros/UpdateParmsFlags.h>
 
 // this
 #include "SOP_VHACDNode.h"
-#include "UserLogger.h"
-#include "UserCallback.h"
+#include "ProcessedInputType.h"
 
 /* -----------------------------------------------------------------
 FORWARDS                                                           |
@@ -57,52 +48,61 @@ FORWARDS                                                           |
 class UT_AutoInterrupt;
 
 /* -----------------------------------------------------------------
-OPERATOR                                                           |
+DEFINES                                                            |
+----------------------------------------------------------------- */
+
+#define CONTAINERS				GET_Base_Namespace()::Containers
+#define ENUMS					GET_Base_Namespace()::Enums
+
+/* -----------------------------------------------------------------
+DECLARATION                                                        |
 ----------------------------------------------------------------- */
 
 DECLARE_SOP_Namespace_Start()
 
-	class SOP_VHACDEngine : public SOP_VHACDNode
+	class SOP_VHACDMerge : public SOP_VHACDNode
 	{
-		DECLARE_CookMySop()
+		DECLARE_CookMySop_Multi()
+		DECLARE_UpdateParmsFlags()
+
 		DECLARE_DescriptionPRM_Callback()
-		DECLARE_UpdateParmsFlags()		
 
 	protected:
-		~SOP_VHACDEngine() override;
-		SOP_VHACDEngine(OP_Network* network, const char* name, OP_Operator* op);
+		~SOP_VHACDMerge() override;
+		SOP_VHACDMerge(OP_Network* network, const char* name, OP_Operator* op);
+		const char*				inputLabel(unsigned input) const override;
 
 	public:
-		static OP_Node*				CreateMe(OP_Network* network, const char* name, OP_Operator* op);
-		static PRM_Template			parametersList[];
+		static OP_Node*			CreateMe(OP_Network* network, const char* name, OP_Operator* op);
+		static PRM_Template		parametersList[];
+
+		static int				CallbackAttributeMismatchErrorModeChoiceMenu(void* data, int index, float time, const PRM_Template* tmp);
 
 	private:
-		const char*					inputLabel(unsigned input) const override;
-
-		exint						PullIntPRM(GU_Detail* geometry, const PRM_Template& parameter, bool interfaceonly = false, fpreal time = 0);
-		fpreal						PullFloatPRM(GU_Detail* geometry, const PRM_Template& parameter, bool interfaceonly = false, fpreal time = 0);
-		bool						PrepareGeometry(GU_Detail* geometry, UT_AutoInterrupt progress);
-		void						SetupVHACD(GU_Detail* geometry, fpreal time);
-		bool						PrepareDataForVHACD(GU_Detail* geometry, UT_AutoInterrupt progress, fpreal time);
-		bool						DrawConvexHull(GU_Detail* geometry, VHACD::IVHACD::ConvexHull hull, UT_AutoInterrupt progress);
-		OP_ERROR					GenerateConvexHulls(GU_Detail* geometry, UT_AutoInterrupt progress);
-			
-		VHACD::IVHACD::Parameters	_parametersVHACD;
-		VHACD::IVHACD*				_interfaceVHACD;
-		std::vector<int>			_triangles;
-		std::vector<float>			_points;
-
-		GA_RWAttributeRef			_positionReference;
-		GA_RWHandleV3				_positionHandle;
-
-		bool						_allowParametersOverrideValueState;		
-		bool						_showReportValueState;
-		int							_reportModeChoiceValueState;	
-
-		UserLogger					_loggerVHACD;
-		UserCallback				_callbackVHACD;
+		bool					GetAllDetailsOfType(UT_AutoInterrupt progress, UT_Array<const GU_Detail*>& details, ENUMS::ProcessedInputType processedinput, fpreal time);
+		void					HandleHullCountMismatch(fpreal time);
+		void					HandleHullIDMismatch(fpreal time);
+		void					HandleBundleCountMismatch(fpreal time);
+		void					HandleBundleIDMismatch(fpreal time);
+		void					HandleAttributesMismatch(UT_AutoInterrupt progress, UT_Array<const GU_Detail*>& details, ENUMS::ProcessedInputType processedinput, fpreal time);
+		bool					AddFoundVHACDAttributes(UT_AutoInterrupt progress, UT_Array<const GU_Detail*>& details, ENUMS::ProcessedInputType processedinput, fpreal time);
+		void					ShiftCurrentDetailPrimitiveAttributes(GU_Detail* currentdetail, UT_AutoInterrupt progress, exint iteration, exint& hullshiftvalue, exint& bundleshiftvalue, ENUMS::ProcessedInputType processedinput);
+		bool					MergeCurrentDetail(const GU_Detail* currentdetail, exint iteration, exint detailscount);
+		void					MergeAllInputDetails(UT_AutoInterrupt progress, UT_Array<const GU_Detail*>& details, ENUMS::ProcessedInputType processedinput, fpreal time);
+		
+		bool					_createHullCount;
+		bool					_createHullID;
+		bool					_createBundleCount;
+		bool					_createBundleID;
 	};
 
 DECLARE_SOP_Namespace_End
 
-#endif // !____sop_vhacdengine_h____
+/* -----------------------------------------------------------------
+UNDEFINES                                                          |
+----------------------------------------------------------------- */
+
+#undef ENUMS
+#undef CONTAINERS
+
+#endif // !____sop_vhacdmerge_h____

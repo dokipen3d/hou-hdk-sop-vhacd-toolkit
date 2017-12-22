@@ -90,9 +90,11 @@ if(EXISTS ${____module_source_dir____} AND EXISTS ${____module_3rdparty_dir____}
 #[[-----------------------------------------------------------------
 COLLECT NODE PROJECT DATA                                          |
 ------------------------------------------------------------------]]
-
+	
 	HDK_MODULE_GET_NODE_FILES("SOP_VHACDEngine")	
-	HDK_MODULE_GET_NODE_FILES("SOP_VHACDSetup")		
+	HDK_MODULE_GET_NODE_FILES("SOP_VHACDMerge")
+	#HDK_MODULE_GET_NODE_FILES("SOP_VHACDScout")
+	HDK_MODULE_GET_NODE_FILES("SOP_VHACDSetup")
 	
 else()
 	Message(STATUS "Didn't found ${____module_name_toupper____}")
