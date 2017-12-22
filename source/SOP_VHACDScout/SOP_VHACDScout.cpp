@@ -140,8 +140,22 @@ SOP_Operator::cookMySop(OP_Context& context)
 	{
 		auto success = false;
 
-		success = GRP_UTILS::Primitive::Break::PerConnectivity(this, this->gdp, progress);
-		if ((success && error() >= OP_ERROR::UT_ERROR_WARNING) || (!success && error() >= OP_ERROR::UT_ERROR_NONE)) return error();
+		UT_Array<GA_OffsetArray> rings;
+		this->gdp->buildRingZeroPoints(rings);
+
+		for (auto i = 0; i < rings.size(); i++)
+		{
+			for (auto off : rings[i])
+			{
+				std::cout << off << " ";
+			}
+			std::cout << std::endl;
+		}
+
+		this->gdp->buildRingZeroPrimitives(rings);
+
+		//success = GRP_UTILS::Primitive::Break::PerConnectivity(this, this->gdp, progress);
+		//if ((success && error() >= OP_ERROR::UT_ERROR_WARNING) || (!success && error() >= OP_ERROR::UT_ERROR_NONE)) return error();
 	}
 
 	return error();

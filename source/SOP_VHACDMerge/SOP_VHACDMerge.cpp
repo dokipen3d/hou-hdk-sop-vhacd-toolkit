@@ -213,12 +213,22 @@ SOP_Operator::GetAllDetailsOfType(UT_AutoInterrupt progress, UT_Array<const GU_D
 	return true;
 }
 
-#define THIS_HANDLE_MISMATCH(methodname, parameter, message) void methodname(fpreal time) { exint mismatchErrorModeValue; PRM_ACCESS::Get::IntPRM(this, mismatchErrorModeValue, parameter, time); auto errorMessage = std::string(message) + std::string(" attribute is missing in one or more inputs."); auto warningMessage = std::string(errorMessage) + std::string(" Merged value will be calculated inproperly."); switch (mismatchErrorModeValue) { case static_cast<exint>(ENUMS::NodeErrorLevel::NONE) : break; case static_cast<exint>(ENUMS::NodeErrorLevel::WARNING) : { this->addWarning(SOP_MESSAGE, warningMessage.c_str()); } break; case static_cast<exint>(ENUMS::NodeErrorLevel::ERROR) : { this->addError(SOP_MESSAGE, errorMessage.c_str()); } break; } }
-THIS_HANDLE_MISMATCH(SOP_Operator::HandleHullCountMismatch, UI::hullCountMismatchErrorModeChoiceMenu_Parameter, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_COUNT))
-THIS_HANDLE_MISMATCH(SOP_Operator::HandleHullIDMismatch, UI::hullIDMismatchErrorModeChoiceMenu_Parameter, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_ID))
-THIS_HANDLE_MISMATCH(SOP_Operator::HandleBundleCountMismatch, UI::bundleCountMismatchErrorModeChoiceMenu_Parameter, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_COUNT))
-THIS_HANDLE_MISMATCH(SOP_Operator::HandleBundleIDMismatch, UI::bundleIDMismatchErrorModeChoiceMenu_Parameter, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_ID))
-#undef THIS_HANDLE_MISMATCH
+void
+SOP_Operator::HandleSpecificAttributeMismatch(const PRM_Template& parameter, UT_String attributename, fpreal time)
+{
+	exint mismatchErrorModeValue;
+	PRM_ACCESS::Get::IntPRM(this, mismatchErrorModeValue, parameter, time);
+
+	auto errorMessage = std::string(attributename) + std::string(" attribute is missing in one or more inputs.");
+	auto warningMessage = std::string(errorMessage) + std::string(" Merged value will be calculated inproperly.");
+
+	switch (mismatchErrorModeValue)
+	{
+		case static_cast<exint>(ENUMS::NodeErrorLevel::NONE) :		break; 
+		case static_cast<exint>(ENUMS::NodeErrorLevel::WARNING) :	{ this->addWarning(SOP_MESSAGE, warningMessage.c_str()); } break; 
+		case static_cast<exint>(ENUMS::NodeErrorLevel::ERROR) :		{ this->addError(SOP_MESSAGE, errorMessage.c_str()); } break;
+	}
+}
 
 void
 SOP_Operator::HandleAttributesMismatch(UT_AutoInterrupt progress, UT_Array<const GU_Detail*>& details, ENUMS::ProcessedInputType processedinput, fpreal time)
@@ -233,10 +243,10 @@ SOP_Operator::HandleAttributesMismatch(UT_AutoInterrupt progress, UT_Array<const
 	switch (attributeMismatchErrorLevelValue)
 	{
 		case static_cast<exint>(ENUMS::MismatchErrorModeOption::NONE) :
-		case static_cast<exint>(ENUMS::MismatchErrorModeOption::NONE_AND_OVERRIDE) : { globalMismatchErrorModeValue = ENUMS::NodeErrorLevel::NONE; } break;
+		case static_cast<exint>(ENUMS::MismatchErrorModeOption::NONE_AND_OVERRIDE) :		{ globalMismatchErrorModeValue = ENUMS::NodeErrorLevel::NONE; } break;
 		case static_cast<exint>(ENUMS::MismatchErrorModeOption::WARNING) :
-		case static_cast<exint>(ENUMS::MismatchErrorModeOption::WARNING_AND_OVERRIDE) : { globalMismatchErrorModeValue = ENUMS::NodeErrorLevel::WARNING; } break;
-		case static_cast<exint>(ENUMS::MismatchErrorModeOption::ERROR) : { globalMismatchErrorModeValue = ENUMS::NodeErrorLevel::ERROR; } break;
+		case static_cast<exint>(ENUMS::MismatchErrorModeOption::WARNING_AND_OVERRIDE) :		{ globalMismatchErrorModeValue = ENUMS::NodeErrorLevel::WARNING; } break;
+		case static_cast<exint>(ENUMS::MismatchErrorModeOption::ERROR) :					{ globalMismatchErrorModeValue = ENUMS::NodeErrorLevel::ERROR; } break;
 	}
 
 	auto mismatchInfos = ATTRIB_ACCESS::Check::MismatchOfAllOwners(this, progress, details, GA_AttributeScope::GA_SCOPE_PUBLIC, globalMismatchErrorModeValue);
@@ -247,14 +257,14 @@ SOP_Operator::HandleAttributesMismatch(UT_AutoInterrupt progress, UT_Array<const
 		{
 			if (mismatch.GetOwner() == GA_AttributeOwner::GA_ATTRIB_DETAIL)
 			{
-				if ((mismatch.Contains(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_COUNT)) && processedinput == ENUMS::ProcessedInputType::CONVEX_HULLS) || (mismatch.Contains(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_COUNT)) && processModeValue)) HandleHullCountMismatch(time);
-				if (mismatch.Contains(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_COUNT))) HandleBundleCountMismatch(time);
+				if ((mismatch.Contains(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_COUNT)) && processedinput == ENUMS::ProcessedInputType::CONVEX_HULLS) || (mismatch.Contains(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_COUNT)) && processModeValue)) HandleSpecificAttributeMismatch(UI::hullCountMismatchErrorModeChoiceMenu_Parameter, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_COUNT), time);
+				if (mismatch.Contains(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_COUNT))) HandleSpecificAttributeMismatch(UI::bundleCountMismatchErrorModeChoiceMenu_Parameter, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_COUNT), time);
 			}
 
 			if (mismatch.GetOwner() == GA_AttributeOwner::GA_ATTRIB_PRIMITIVE)
 			{
-				if ((mismatch.Contains(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_ID)) && processedinput == ENUMS::ProcessedInputType::CONVEX_HULLS) || (mismatch.Contains(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_ID)) && processModeValue)) HandleHullIDMismatch(time);
-				if (mismatch.Contains(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_ID))) HandleBundleIDMismatch(time);
+				if ((mismatch.Contains(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_ID)) && processedinput == ENUMS::ProcessedInputType::CONVEX_HULLS) || (mismatch.Contains(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_ID)) && processModeValue)) HandleSpecificAttributeMismatch(UI::hullIDMismatchErrorModeChoiceMenu_Parameter, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_ID), time);
+				if (mismatch.Contains(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_ID))) HandleSpecificAttributeMismatch(UI::bundleIDMismatchErrorModeChoiceMenu_Parameter, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_ID), time);
 			}
 		}
 	}
@@ -529,7 +539,7 @@ SOP_Operator::cookMySop(OP_Context& context)
 	
 	// update and merge all input details
 	MergeAllInputDetails( progress, allInputDetails, ENUMS::ProcessedInputType::CONVEX_HULLS, currentTime);
-
+	
 	return error();
 }
 
