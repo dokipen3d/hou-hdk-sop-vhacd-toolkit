@@ -40,6 +40,7 @@ INCLUDES                                                           |
 // this
 #include "SOP_VHACDNode.h"
 #include "ProcessedInputType.h"
+#include "MismachErrorModeOption.h"
 
 /* -----------------------------------------------------------------
 FORWARDS                                                           |
@@ -80,10 +81,8 @@ DECLARE_SOP_Namespace_Start()
 
 	private:
 		bool					GetAllDetailsOfType(UT_AutoInterrupt progress, UT_Array<const GU_Detail*>& details, ENUMS::ProcessedInputType processedinput, fpreal time);
-		void					HandleHullCountMismatch(fpreal time);
-		void					HandleHullIDMismatch(fpreal time);
-		void					HandleBundleCountMismatch(fpreal time);
-		void					HandleBundleIDMismatch(fpreal time);
+		void					WhenSpecificAttributeMismatch(const PRM_Template& parameter, UT_String attributename, fpreal time);
+		void					WhenOverrideAttributeMismatch(UT_AutoInterrupt progress, UT_Array<const GU_Detail*>& details, ENUMS::MismatchErrorModeOption mismatchoption, ENUMS::ProcessedInputType processedinput, fpreal time);
 		void					HandleAttributesMismatch(UT_AutoInterrupt progress, UT_Array<const GU_Detail*>& details, ENUMS::ProcessedInputType processedinput, fpreal time);
 		bool					AddFoundVHACDAttributes(UT_AutoInterrupt progress, UT_Array<const GU_Detail*>& details, ENUMS::ProcessedInputType processedinput, fpreal time);
 		void					ShiftCurrentDetailPrimitiveAttributes(GU_Detail* currentdetail, UT_AutoInterrupt progress, exint iteration, exint& hullshiftvalue, exint& bundleshiftvalue, ENUMS::ProcessedInputType processedinput);

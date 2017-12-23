@@ -41,7 +41,7 @@ ENUM                                                               |
 DECLARE_Base_Namespace_Start()
 namespace Enums
 {
-	enum class MismatchErrorModeOption
+	enum class MismatchErrorModeOption : exint
 	{
 		NONE,
 		NONE_AND_OVERRIDE,
