@@ -45,7 +45,6 @@ INCLUDES                                                           |
 // this
 #include "Parameters.h"
 #include "ProcessModeOption.h"
-#include "MismachErrorModeOption.h"
 
 /* -----------------------------------------------------------------
 DEFINES                                                            |
@@ -214,7 +213,7 @@ SOP_Operator::GetAllDetailsOfType(UT_AutoInterrupt progress, UT_Array<const GU_D
 }
 
 void
-SOP_Operator::HandleSpecificAttributeMismatch(const PRM_Template& parameter, UT_String attributename, fpreal time)
+SOP_Operator::WhenSpecificAttributeMismatch(const PRM_Template& parameter, UT_String attributename, fpreal time)
 {
 	exint mismatchErrorModeValue;
 	PRM_ACCESS::Get::IntPRM(this, mismatchErrorModeValue, parameter, time);
@@ -231,42 +230,73 @@ SOP_Operator::HandleSpecificAttributeMismatch(const PRM_Template& parameter, UT_
 }
 
 void
-SOP_Operator::HandleAttributesMismatch(UT_AutoInterrupt progress, UT_Array<const GU_Detail*>& details, ENUMS::ProcessedInputType processedinput, fpreal time)
-{
-	exint	processModeValue;
-	exint	attributeMismatchErrorLevelValue;	
+SOP_Operator::WhenOverrideAttributeMismatch(UT_AutoInterrupt progress, UT_Array<const GU_Detail*>& details, ENUMS::MismatchErrorModeOption mismatchoption, ENUMS::ProcessedInputType processedinput, fpreal time)
+{	
+	UT_Array<UT_StringSet>	filteredNames;
+	exint					processModeChoiceMenuOption;
+	
+	filteredNames.clear();
+	PRM_ACCESS::Get::IntPRM(this, processModeChoiceMenuOption, UI::processModeChoiceMenu_Parameter, time);	
 
-	PRM_ACCESS::Get::IntPRM(this, processModeValue, UI::processModeChoiceMenu_Parameter, time);
-	PRM_ACCESS::Get::IntPRM(this, attributeMismatchErrorLevelValue, UI::attributeMismatchErrorModeChoiceMenu_Parameter, time);
-
-	auto globalMismatchErrorModeValue = static_cast<ENUMS::NodeErrorLevel>(UI::attributeMismatchErrorModeChoiceMenu_Parameter.getFactoryDefaults()->getOrdinal());
-	switch (attributeMismatchErrorLevelValue)
-	{
-		case static_cast<exint>(ENUMS::MismatchErrorModeOption::NONE) :
-		case static_cast<exint>(ENUMS::MismatchErrorModeOption::NONE_AND_OVERRIDE) :		{ globalMismatchErrorModeValue = ENUMS::NodeErrorLevel::NONE; } break;
-		case static_cast<exint>(ENUMS::MismatchErrorModeOption::WARNING) :
-		case static_cast<exint>(ENUMS::MismatchErrorModeOption::WARNING_AND_OVERRIDE) :		{ globalMismatchErrorModeValue = ENUMS::NodeErrorLevel::WARNING; } break;
-		case static_cast<exint>(ENUMS::MismatchErrorModeOption::ERROR) :					{ globalMismatchErrorModeValue = ENUMS::NodeErrorLevel::ERROR; } break;
-	}
-
-	auto mismatchInfos = ATTRIB_ACCESS::Check::MismatchOfAllOwners(this, progress, details, GA_AttributeScope::GA_SCOPE_PUBLIC, globalMismatchErrorModeValue);
+	auto mismatchInfos = ATTRIB_ACCESS::Check::MismatchOfAllOwners(this, progress, details, GA_AttributeScope::GA_SCOPE_PUBLIC, ENUMS::NodeErrorLevel::NONE);
 	for (auto mismatch : mismatchInfos)
-	{
-		// filter to find out if VHACD specific ones are missing
-		if (attributeMismatchErrorLevelValue == static_cast<exint>(ENUMS::MismatchErrorModeOption::NONE_AND_OVERRIDE) || attributeMismatchErrorLevelValue == static_cast<exint>(ENUMS::MismatchErrorModeOption::WARNING_AND_OVERRIDE))
-		{
+	{	
+		// remove V-HACD specific attributes from list
+		auto currNames = mismatch.GetNames();		
+		if (mismatchoption == ENUMS::MismatchErrorModeOption::WARNING_AND_OVERRIDE)
+		{			
 			if (mismatch.GetOwner() == GA_AttributeOwner::GA_ATTRIB_DETAIL)
 			{
-				if ((mismatch.Contains(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_COUNT)) && processedinput == ENUMS::ProcessedInputType::CONVEX_HULLS) || (mismatch.Contains(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_COUNT)) && processModeValue)) HandleSpecificAttributeMismatch(UI::hullCountMismatchErrorModeChoiceMenu_Parameter, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_COUNT), time);
-				if (mismatch.Contains(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_COUNT))) HandleSpecificAttributeMismatch(UI::bundleCountMismatchErrorModeChoiceMenu_Parameter, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_COUNT), time);
+				if (mismatch.Contains(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_COUNT))) currNames.erase(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_COUNT));
+				if (mismatch.Contains(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_COUNT))) currNames.erase(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_COUNT));
 			}
 
 			if (mismatch.GetOwner() == GA_AttributeOwner::GA_ATTRIB_PRIMITIVE)
 			{
-				if ((mismatch.Contains(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_ID)) && processedinput == ENUMS::ProcessedInputType::CONVEX_HULLS) || (mismatch.Contains(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_ID)) && processModeValue)) HandleSpecificAttributeMismatch(UI::hullIDMismatchErrorModeChoiceMenu_Parameter, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_ID), time);
-				if (mismatch.Contains(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_ID))) HandleSpecificAttributeMismatch(UI::bundleIDMismatchErrorModeChoiceMenu_Parameter, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_ID), time);
+				if (mismatch.Contains(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_ID))) currNames.erase(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_ID));
+				if (mismatch.Contains(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_ID))) currNames.erase(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_ID));
+			}
+		}		
+		filteredNames.append(currNames);
+				
+		// set V-HACD specific attributes mismatch
+		if (mismatchoption == ENUMS::MismatchErrorModeOption::NONE_AND_OVERRIDE || mismatchoption == ENUMS::MismatchErrorModeOption::WARNING_AND_OVERRIDE)
+		{			
+			if (mismatch.GetOwner() == GA_AttributeOwner::GA_ATTRIB_DETAIL)
+			{
+				if ((mismatch.Contains(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_COUNT)) && processedinput == ENUMS::ProcessedInputType::CONVEX_HULLS) || (mismatch.Contains(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_COUNT)) && processModeChoiceMenuOption == static_cast<exint>(ENUMS::ProcessedModeOption::SINGLE))) WhenSpecificAttributeMismatch(UI::hullCountMismatchErrorModeChoiceMenu_Parameter, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_COUNT), time);
+				if (mismatch.Contains(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_COUNT))) WhenSpecificAttributeMismatch(UI::bundleCountMismatchErrorModeChoiceMenu_Parameter, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_COUNT), time);
+			}
+
+			if (mismatch.GetOwner() == GA_AttributeOwner::GA_ATTRIB_PRIMITIVE)
+			{
+				if ((mismatch.Contains(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_ID)) && processedinput == ENUMS::ProcessedInputType::CONVEX_HULLS) || (mismatch.Contains(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_ID)) && processModeChoiceMenuOption == static_cast<exint>(ENUMS::ProcessedModeOption::SINGLE))) WhenSpecificAttributeMismatch(UI::hullIDMismatchErrorModeChoiceMenu_Parameter, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_ID), time);
+				if (mismatch.Contains(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_ID))) WhenSpecificAttributeMismatch(UI::bundleIDMismatchErrorModeChoiceMenu_Parameter, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_ID), time);
 			}
 		}
+	}
+
+	// set global mismatch warning
+	if (mismatchoption == ENUMS::MismatchErrorModeOption::WARNING_AND_OVERRIDE)
+	{
+		const auto mismatchMessage = ATTRIB_ACCESS::Check::ComposeMismatchMessage(this, progress, filteredNames);
+		if (mismatchMessage != nullptr) this->addWarning(SOP_MESSAGE, mismatchMessage.c_str());
+	}
+}
+
+void
+SOP_Operator::HandleAttributesMismatch(UT_AutoInterrupt progress, UT_Array<const GU_Detail*>& details, ENUMS::ProcessedInputType processedinput, fpreal time)
+{
+	exint attributeMismatchErrorLevelValue;
+	PRM_ACCESS::Get::IntPRM(this, attributeMismatchErrorLevelValue, UI::attributeMismatchErrorModeChoiceMenu_Parameter, time);
+	
+	switch (attributeMismatchErrorLevelValue)
+	{		
+		case static_cast<exint>(ENUMS::MismatchErrorModeOption::NONE_AND_OVERRIDE) :		{ WhenOverrideAttributeMismatch(progress, details, ENUMS::MismatchErrorModeOption::NONE_AND_OVERRIDE, processedinput, time); } break;
+		case static_cast<exint>(ENUMS::MismatchErrorModeOption::WARNING_AND_OVERRIDE) :		{ WhenOverrideAttributeMismatch(progress, details, ENUMS::MismatchErrorModeOption::WARNING_AND_OVERRIDE, processedinput, time); } break;
+		case static_cast<exint>(ENUMS::MismatchErrorModeOption::NONE) :						break;
+		case static_cast<exint>(ENUMS::MismatchErrorModeOption::WARNING) :					{ ATTRIB_ACCESS::Check::MismatchOfAllOwners(this, progress, details, GA_AttributeScope::GA_SCOPE_PUBLIC, ENUMS::NodeErrorLevel::WARNING); } break;
+		case static_cast<exint>(ENUMS::MismatchErrorModeOption::ERROR) :					{ ATTRIB_ACCESS::Check::MismatchOfAllOwners(this, progress, details, GA_AttributeScope::GA_SCOPE_PUBLIC, ENUMS::NodeErrorLevel::ERROR); } break;
 	}
 }
 

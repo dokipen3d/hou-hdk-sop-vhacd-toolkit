@@ -23,8 +23,8 @@
 */
 
 #pragma once
-#ifndef ____enums_processed_mode_option_h____
-#define ____enums_processed_mode_option_h____
+#ifndef ____processed_mode_option_h____
+#define ____processed_mode_option_h____
 
 /* -----------------------------------------------------------------
 INCLUDES                                                           |
@@ -48,4 +48,4 @@ namespace Enums
 }
 DECLARE_Base_Namespace_End
 
-#endif // !____enums_processed_type_option_h____
+#endif // !____processed_mode_option_h____
