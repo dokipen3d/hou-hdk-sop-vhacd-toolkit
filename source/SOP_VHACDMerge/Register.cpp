@@ -51,8 +51,8 @@ newSopOperator(OP_OperatorTable* table)
 {	
 	const auto sop = new OP_Operator
 	(
-		COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::SOP_MERGE_SMALLNAME_V2),
-		COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::SOP_MERGE_BIGNAME_V2),
+		COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::SOP_MERGE_SMALLNAME),
+		COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::SOP_MERGE_BIGNAME),
 		SOP_Operator::CreateMe,
 		SOP_Operator::parametersList,
 		2,								// min inputs 
@@ -65,7 +65,6 @@ newSopOperator(OP_OperatorTable* table)
 	);
 
 	auto success = table->addOperator(sop);
-	//table->addOpHidden(sop->getName());
 }
 
 /* -----------------------------------------------------------------
