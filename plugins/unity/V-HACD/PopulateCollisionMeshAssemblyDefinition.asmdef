@@ -1,5 +1,5 @@
 {
-    "name": "PopulateCollisionAssemblyDefinition",
+    "name": "PopulateCollisionMeshAssemblyDefinition",
     "references": [],
     "includePlatforms": [],
     "excludePlatforms": []
