@@ -32,7 +32,7 @@ INCLUDES                                                           |
 
 // hou-hdk-common
 #include <Macros/Namespace.h>
-#include <Containers/CommonNameT.h>
+#include <Containers/CommonTName.h>
 #include <Macros/GroupMenuPRM.h>
 
 // this
@@ -52,10 +52,10 @@ DECLARATION                                                        |
 DECLARE_Base_Namespace_Start()
 namespace Containers
 {	
-	class VHACDCommonName final : public CONTAINERS::CommonNameT<ENUMS::VHACDCommonNameOption>
+	class VHACDCommonName final : public CONTAINERS::CommonTName<ENUMS::VHACDCommonNameOption>
 	{
 	public:
-		VHACDCommonName() : CommonNameT<ENUMS::VHACDCommonNameOption>()
+		VHACDCommonName() : CommonTName<ENUMS::VHACDCommonNameOption>()
 		{
 			// toolkit global
 			this->Add(ENUMS::VHACDCommonNameOption::TOOLKIT_TABMENU_PATH,		"Toolkit/V-HACD");
