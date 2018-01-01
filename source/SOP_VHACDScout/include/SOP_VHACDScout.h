@@ -10,7 +10,7 @@
 
 	LICENSE ------------------------------------------
 
-	Copyright (c) 2016-2017 SWANN
+	Copyright (c) 2016-2018 SWANN
 	All rights reserved.
 
 	Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -88,7 +88,11 @@ DECLARE_SOP_Namespace_Start()
 		ENUMS::MethodProcessResult  AddHullIDATT(UT_AutoInterrupt progress, const GEO_PrimClassifier& classifier);
 		ENUMS::MethodProcessResult  GRPPerHull(UT_AutoInterrupt progress, const GEO_PrimClassifier& classifier, fpreal time);
 		ENUMS::MethodProcessResult	ProcessHullSpecific(UT_AutoInterrupt progress, fpreal time);
-		ENUMS::MethodProcessResult	ProcessBundleSpecific(ENUMS::ProcessedInputType processedinputtype, fpreal time);
+
+		ENUMS::MethodProcessResult	CheckBundleCountATTMismatch(const GU_Detail* convexdetail, const GU_Detail* originalgetail);
+		ENUMS::MethodProcessResult	CheckBundleIDATTMismatch(const GU_Detail* convexdetail, const GU_Detail* originalgetail);
+		ENUMS::MethodProcessResult	CheckBundleGRPMismatch(const GU_Detail* convexdetail, const GU_Detail* originalgetail);
+		ENUMS::MethodProcessResult	ProcessBundleSpecific(OP_Context& context, ENUMS::ProcessedInputType processedinputtype, fpreal time);
 
 		bool						_addHullCountAttributeValue;
 		bool						_addBundleCountAttributeValue;

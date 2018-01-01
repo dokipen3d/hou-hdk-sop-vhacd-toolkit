@@ -10,7 +10,7 @@
 
 	LICENSE ------------------------------------------
 
-	Copyright (c) 2016-2017 SWANN
+	Copyright (c) 2016-2018 SWANN
 	All rights reserved.
 
 	Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -58,37 +58,50 @@ namespace Containers
 		VHACDCommonName() : CommonTName<ENUMS::VHACDCommonNameOption>()
 		{
 			// toolkit global
-			this->Add(ENUMS::VHACDCommonNameOption::TOOLKIT_TABMENU_PATH,		"Toolkit/V-HACD");
-			this->Add(ENUMS::VHACDCommonNameOption::TOOLKIT_ICONNAME,			"SOP_VHACD.png");			
+			this->Add(ENUMS::VHACDCommonNameOption::TOOLKIT_TABMENU_PATH,				"Toolkit/V-HACD");
+			this->Add(ENUMS::VHACDCommonNameOption::TOOLKIT_ICONNAME,					"SOP_VHACD.png");			
 
-			// SOP_VHACDDelete only			
-			//this->Add(ENUMS::VHACDCommonNameOption::SOP_DELETE_SMALLNAME,		"wip::delete::2.0");
-			//this->Add(ENUMS::VHACDCommonNameOption::SOP_DELETE_BIGNAME,			"Delete (v-hacd)");
-			//this->Add(ENUMS::VHACDCommonNameOption::SOP_DELETE_ICONNAME,		this->Get(ENUMS::VHACDCommonNameOption::TOOLKIT_ICONNAME));
+			this->Add(ENUMS::VHACDCommonNameOption::SOP_OUTPUTNAME_CONVEXHULLS,			"Convex Hulls");
+			this->Add(ENUMS::VHACDCommonNameOption::SOP_OUTPUTNAME_ORIGINALGEOMETRY,	"Original Geometry");
+
+			// SOP_VHACDDelete 2.0 only			
+			this->Add(ENUMS::VHACDCommonNameOption::SOP_DELETE_SMALLNAME,				"wip::delete::2.0");
+			this->Add(ENUMS::VHACDCommonNameOption::SOP_DELETE_BIGNAME,					"Delete (v-hacd)");
+			this->Add(ENUMS::VHACDCommonNameOption::SOP_DELETE_ICONNAME,				this->Get(ENUMS::VHACDCommonNameOption::TOOLKIT_ICONNAME));
 			
 			// SOP_VHACDEngine only			
-			this->Add(ENUMS::VHACDCommonNameOption::SOP_ENGINE_SMALLNAME,		"vhacd::engine::1.2");
-			this->Add(ENUMS::VHACDCommonNameOption::SOP_ENGINE_BIGNAME,			"Engine (v-hacd)");
-			this->Add(ENUMS::VHACDCommonNameOption::SOP_ENGINE_ICONNAME,		this->Get(ENUMS::VHACDCommonNameOption::TOOLKIT_ICONNAME));
+			this->Add(ENUMS::VHACDCommonNameOption::SOP_ENGINE_SMALLNAME,				"vhacd::engine::1.2");
+			this->Add(ENUMS::VHACDCommonNameOption::SOP_ENGINE_BIGNAME,					"Engine (v-hacd)");
+			this->Add(ENUMS::VHACDCommonNameOption::SOP_ENGINE_ICONNAME,				this->Get(ENUMS::VHACDCommonNameOption::TOOLKIT_ICONNAME));
+
+			// SOP_VHACDGenerate 2.0 only			
+			this->Add(ENUMS::VHACDCommonNameOption::SOP_GENERATE_SMALLNAME,				"wip::generate::2.0");
+			this->Add(ENUMS::VHACDCommonNameOption::SOP_GENERATE_BIGNAME,				"Generate (v-hacd)");
+			this->Add(ENUMS::VHACDCommonNameOption::SOP_GENERATE_ICONNAME,				this->Get(ENUMS::VHACDCommonNameOption::TOOLKIT_ICONNAME));
 
 			// SOP_VHACDScout 2.0 only			
-			this->Add(ENUMS::VHACDCommonNameOption::SOP_SCOUT_SMALLNAME_V2,		"wip::scout::2.0");
-			this->Add(ENUMS::VHACDCommonNameOption::SOP_SCOUT_BIGNAME_V2,		"Scout (v-hacd)");
-			this->Add(ENUMS::VHACDCommonNameOption::SOP_SCOUT_ICONNAME_V2,		this->Get(ENUMS::VHACDCommonNameOption::TOOLKIT_ICONNAME));			
+			this->Add(ENUMS::VHACDCommonNameOption::SOP_SCOUT_SMALLNAME_V2,				"wip::scout::2.0");
+			this->Add(ENUMS::VHACDCommonNameOption::SOP_SCOUT_BIGNAME_V2,				"Scout (v-hacd)");
+			this->Add(ENUMS::VHACDCommonNameOption::SOP_SCOUT_ICONNAME_V2,				this->Get(ENUMS::VHACDCommonNameOption::TOOLKIT_ICONNAME));			
 
 			// SOP_VHACDSetup only			
-			this->Add(ENUMS::VHACDCommonNameOption::SOP_SETUP_SMALLNAME,		"vhacd::setup::1.2");
-			this->Add(ENUMS::VHACDCommonNameOption::SOP_SETUP_BIGNAME,			"Setup (v-hacd)");
-			this->Add(ENUMS::VHACDCommonNameOption::SOP_SETUP_GROUP_PRMNAME,	CONST_PrimitiveGroupInput0_Name);
-			this->Add(ENUMS::VHACDCommonNameOption::MSS_SETUP_SMALLNAME,		"vhacd::setupselector::1.2");
-			this->Add(ENUMS::VHACDCommonNameOption::MSS_SETUP_BIGNAME,			"Setup (v-hacd selector)");
-			this->Add(ENUMS::VHACDCommonNameOption::MSS_SETUP_PROMPT,			"Select primitives. Press <enter> to accept.");
-			this->Add(ENUMS::VHACDCommonNameOption::SOP_SETUP_ICONNAME,			this->Get(ENUMS::VHACDCommonNameOption::TOOLKIT_ICONNAME));
+			this->Add(ENUMS::VHACDCommonNameOption::SOP_SETUP_SMALLNAME,				"vhacd::setup::1.2");
+			this->Add(ENUMS::VHACDCommonNameOption::SOP_SETUP_BIGNAME,					"Setup (v-hacd)");
+			this->Add(ENUMS::VHACDCommonNameOption::SOP_SETUP_GROUP_PRMNAME,			CONST_PrimitiveGroupInput0_Name);
+			this->Add(ENUMS::VHACDCommonNameOption::MSS_SETUP_SMALLNAME,				"vhacd::setupselector::1.2");
+			this->Add(ENUMS::VHACDCommonNameOption::MSS_SETUP_BIGNAME,					"Setup (v-hacd selector)");
+			this->Add(ENUMS::VHACDCommonNameOption::MSS_SETUP_PROMPT,					"Select primitives. Press <enter> to accept.");
+			this->Add(ENUMS::VHACDCommonNameOption::SOP_SETUP_ICONNAME,					this->Get(ENUMS::VHACDCommonNameOption::TOOLKIT_ICONNAME));
 
 			// SOP_VHACDMerge 2.0 only			
-			this->Add(ENUMS::VHACDCommonNameOption::SOP_MERGE_SMALLNAME,		"vhacd::merge::2.0");
-			this->Add(ENUMS::VHACDCommonNameOption::SOP_MERGE_BIGNAME,		"Merge (v-hacd)");
-			this->Add(ENUMS::VHACDCommonNameOption::SOP_MERGE_ICONNAME,		this->Get(ENUMS::VHACDCommonNameOption::TOOLKIT_ICONNAME));
+			this->Add(ENUMS::VHACDCommonNameOption::SOP_MERGE_SMALLNAME,				"vhacd::merge::2.0");
+			this->Add(ENUMS::VHACDCommonNameOption::SOP_MERGE_BIGNAME,					"Merge (v-hacd)");
+			this->Add(ENUMS::VHACDCommonNameOption::SOP_MERGE_ICONNAME,					this->Get(ENUMS::VHACDCommonNameOption::TOOLKIT_ICONNAME));
+
+			// SOP_VHACDTransform 2.0 only			
+			this->Add(ENUMS::VHACDCommonNameOption::SOP_TRANSFORM_SMALLNAME,			"wip::transfrom::2.0");
+			this->Add(ENUMS::VHACDCommonNameOption::SOP_TRANSFORM_BIGNAME,				"Transform (v-hacd)");
+			this->Add(ENUMS::VHACDCommonNameOption::SOP_TRANSFORM_ICONNAME,				this->Get(ENUMS::VHACDCommonNameOption::TOOLKIT_ICONNAME));
 		}
 	};
 }

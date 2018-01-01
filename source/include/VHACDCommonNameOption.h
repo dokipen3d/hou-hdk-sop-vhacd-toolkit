@@ -10,7 +10,7 @@
 
 	LICENSE ------------------------------------------
 
-	Copyright (c) 2016-2017 SWANN
+	Copyright (c) 2016-2018 SWANN
 	All rights reserved.
 
 	Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -53,15 +53,23 @@ namespace Enums
 		TOOLKIT_TABMENU_PATH,
 		TOOLKIT_ICONNAME,
 
+		SOP_OUTPUTNAME_CONVEXHULLS,
+		SOP_OUTPUTNAME_ORIGINALGEOMETRY,
+
 		// SOP_VHACDDelete only
-		//SOP_DELETE_ICONNAME,
-		//SOP_DELETE_SMALLNAME,
-		//SOP_DELETE_BIGNAME,
+		SOP_DELETE_ICONNAME,
+		SOP_DELETE_SMALLNAME,
+		SOP_DELETE_BIGNAME,
 		
 		// SOP_VHACDEngine only
 		SOP_ENGINE_ICONNAME,
 		SOP_ENGINE_SMALLNAME,
 		SOP_ENGINE_BIGNAME,
+
+		// SOP_VHACDGenerate 2.0 only
+		SOP_GENERATE_ICONNAME,
+		SOP_GENERATE_SMALLNAME,
+		SOP_GENERATE_BIGNAME,
 
 		// SOP_VHACDScout 2.0 only
 		SOP_SCOUT_ICONNAME_V2,
@@ -82,7 +90,10 @@ namespace Enums
 		SOP_MERGE_SMALLNAME,
 		SOP_MERGE_BIGNAME,
 
-		MAX_ENUM_SIZE
+		// SOP_VHACDTransform only
+		SOP_TRANSFORM_ICONNAME,
+		SOP_TRANSFORM_SMALLNAME,
+		SOP_TRANSFORM_BIGNAME
 	};
 }
 DECLARE_Base_Namespace_End
