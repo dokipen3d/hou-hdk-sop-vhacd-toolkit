@@ -272,11 +272,18 @@ SOP_Operator::ProcessHullSpecific(UT_AutoInterrupt progress, fpreal time)
 }
 
 ENUMS::MethodProcessResult
-SOP_Operator::CheckBundleCountATTMismatch(const GU_Detail* convexdetail, const GU_Detail* originalgetail)
+SOP_Operator::CheckBundleCountATTMismatch(UT_AutoInterrupt progress, const GU_Detail* convexdetail, const GU_Detail* originalgetail)
 {	
-	GA_RWHandleI bundleCountHandle;
-	//ATTRIB_ACCESS::Find::IntATT(this, convexdetail, GA_AttributeOwner::GA_ATTRIB_DETAIL, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_COUNT), bundleCountHandle);
-	
+	GA_ROHandleI convexBundleCountHandle;
+	GA_ROHandleI originalBundleCountHandle;
+
+	const auto convexSuccess = ATTRIB_ACCESS::Find::IntATT(this, convexdetail, GA_AttributeOwner::GA_ATTRIB_DETAIL, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_COUNT), convexBundleCountHandle);
+	const auto originalSuccess = ATTRIB_ACCESS::Find::IntATT(this, originalgetail, GA_AttributeOwner::GA_ATTRIB_DETAIL, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_COUNT), originalBundleCountHandle);
+	if (convexSuccess && originalSuccess)
+	{
+		
+	}
+
 	return ENUMS::MethodProcessResult::SUCCESS;
 }
 
@@ -293,7 +300,7 @@ SOP_Operator::CheckBundleGRPMismatch(const GU_Detail* convexdetail, const GU_Det
 }
 
 ENUMS::MethodProcessResult
-SOP_Operator::ProcessBundleSpecific(OP_Context& context, ENUMS::ProcessedInputType processedinputtype, fpreal time)
+SOP_Operator::ProcessBundleSpecific(UT_AutoInterrupt progress, OP_Context& context, ENUMS::ProcessedInputType processedinputtype, fpreal time)
 {
 	auto success = ENUMS::MethodProcessResult::SUCCESS;
 
@@ -309,13 +316,27 @@ SOP_Operator::ProcessBundleSpecific(OP_Context& context, ENUMS::ProcessedInputTy
 		const auto originalGeo = inputGeo(static_cast<exint>(ENUMS::ProcessedInputType::ORIGINAL_GEOMETRY), context);
 		if (convexGeo && originalGeo)
 		{
-			if (this->_addBundleCountAttributeValue) success = CheckBundleCountATTMismatch(convexGeo, originalGeo);
-			if (this->_addBundleIDAttributeValue) success = CheckBundleIDATTMismatch(convexGeo, originalGeo);
-			if (this->_groupPerBundleValue) success = CheckBundleGRPMismatch(convexGeo, originalGeo);
+			// check that both have bundle_id attribute
+			GA_ROHandleI convexBundleIDHandle;
+			GA_ROHandleI originalBundleIDHandle;
 
-			// make sure bundle_count match in both inputs
-			// make sure bundle_id's match in both inputs
-			// make sure bundle_group names and count match in both inputs			
+			const auto convexSuccess = ATTRIB_ACCESS::Find::IntATT(this, convexGeo, GA_AttributeOwner::GA_ATTRIB_DETAIL, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_ID), convexBundleIDHandle);
+			const auto originalSuccess = ATTRIB_ACCESS::Find::IntATT(this, originalGeo, GA_AttributeOwner::GA_ATTRIB_DETAIL, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_ID), originalBundleIDHandle);
+			if (convexSuccess && originalSuccess)
+			{
+				if (this->_addBundleCountAttributeValue) success = CheckBundleCountATTMismatch(progress, convexGeo, originalGeo);
+				if (this->_addBundleIDAttributeValue) success = CheckBundleIDATTMismatch(convexGeo, originalGeo);
+				if (this->_groupPerBundleValue) success = CheckBundleGRPMismatch(convexGeo, originalGeo);
+
+				// make sure bundle_count match in both inputs
+				// make sure bundle_id's match in both inputs
+				// make sure bundle_group names and count match in both inputs							
+			}
+			else
+			{
+				addError(SOP_MESSAGE, (std::string("\"") + std::string(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_ID)) + std::string("\" attribute found to be missing on inputs.")).c_str());
+				success = ENUMS::MethodProcessResult::FAILURE;
+			}					
 		}
 		else
 		{
@@ -360,7 +381,7 @@ SOP_Operator::cookMySop(OP_Context& context)
 
 		if (is0Connected && is1Connected)
 		{
-			success = ProcessBundleSpecific(context, ENUMS::ProcessedInputType::CONVEX_HULLS, currentTime);
+			success = ProcessBundleSpecific(progress, context, ENUMS::ProcessedInputType::CONVEX_HULLS, currentTime);
 			if (success != ENUMS::MethodProcessResult::SUCCESS) return error();
 		}
 	
@@ -384,7 +405,7 @@ SOP_Operator::cookMySopOutput(OP_Context& context, int outputidx, SOP_Node* inte
 	// get second input geometry	
 	if (duplicateSource(static_cast<exint>(ENUMS::ProcessedInputType::ORIGINAL_GEOMETRY), context, this->gdp) < OP_ERROR::UT_ERROR_WARNING && error() < OP_ERROR::UT_ERROR_WARNING)
 	{
-		const auto success = ProcessBundleSpecific(context, ENUMS::ProcessedInputType::ORIGINAL_GEOMETRY, currentTime);
+		const auto success = ProcessBundleSpecific(progress, context, ENUMS::ProcessedInputType::ORIGINAL_GEOMETRY, currentTime);
 		if (success != ENUMS::MethodProcessResult::SUCCESS)
 		{
 			this->gdp->clear();

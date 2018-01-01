@@ -89,10 +89,10 @@ DECLARE_SOP_Namespace_Start()
 		ENUMS::MethodProcessResult  GRPPerHull(UT_AutoInterrupt progress, const GEO_PrimClassifier& classifier, fpreal time);
 		ENUMS::MethodProcessResult	ProcessHullSpecific(UT_AutoInterrupt progress, fpreal time);
 
-		ENUMS::MethodProcessResult	CheckBundleCountATTMismatch(const GU_Detail* convexdetail, const GU_Detail* originalgetail);
+		ENUMS::MethodProcessResult	CheckBundleCountATTMismatch(UT_AutoInterrupt progress, const GU_Detail* convexdetail, const GU_Detail* originalgetail);
 		ENUMS::MethodProcessResult	CheckBundleIDATTMismatch(const GU_Detail* convexdetail, const GU_Detail* originalgetail);
 		ENUMS::MethodProcessResult	CheckBundleGRPMismatch(const GU_Detail* convexdetail, const GU_Detail* originalgetail);
-		ENUMS::MethodProcessResult	ProcessBundleSpecific(OP_Context& context, ENUMS::ProcessedInputType processedinputtype, fpreal time);
+		ENUMS::MethodProcessResult	ProcessBundleSpecific(UT_AutoInterrupt progress, OP_Context& context, ENUMS::ProcessedInputType processedinputtype, fpreal time);
 
 		bool						_addHullCountAttributeValue;
 		bool						_addBundleCountAttributeValue;
