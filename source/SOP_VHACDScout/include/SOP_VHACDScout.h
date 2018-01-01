@@ -38,15 +38,18 @@ INCLUDES                                                           |
 #include <Macros/DescriptionPRM.h>
 #include <Macros/Namespace.h>
 #include <Macros/UpdateParmsFlags.h>
+#include <Enums/MethodProcessResult.h>
 
 // this
 #include "SOP_VHACDNode.h"
+#include "ProcessedInputType.h"
 
 /* -----------------------------------------------------------------
 FORWARDS                                                           |
 ----------------------------------------------------------------- */
 
 class UT_AutoInterrupt;
+class GEO_PrimClassifier;
 
 /* -----------------------------------------------------------------
 DEFINES                                                            |
@@ -63,7 +66,7 @@ DECLARE_SOP_Namespace_Start()
 
 	class SOP_Scout : public SOP_VHACDNode
 	{
-		DECLARE_CookMySop()
+		DECLARE_CookMySop_Multi()
 		DECLARE_UpdateParmsFlags()
 
 		DECLARE_DescriptionPRM_Callback()
@@ -75,10 +78,24 @@ DECLARE_SOP_Namespace_Start()
 
 	public:
 		static OP_Node*				CreateMe(OP_Network* network, const char* name, OP_Operator* op);
-		static PRM_Template			parametersList[];
+		static PRM_Template			parametersList[];		
 
+		static int					CallbackGRPPerHull(void* data, int index, float time, const PRM_Template* tmp);
+		static int					CallbackGRPPerBundle(void* data, int index, float time, const PRM_Template* tmp);
+		
 	private:	
+		ENUMS::MethodProcessResult  AddHullCountATT(const GEO_PrimClassifier& classifier);
+		ENUMS::MethodProcessResult  AddHullIDATT(UT_AutoInterrupt progress, const GEO_PrimClassifier& classifier);
+		ENUMS::MethodProcessResult  GRPPerHull(UT_AutoInterrupt progress, const GEO_PrimClassifier& classifier, fpreal time);
+		ENUMS::MethodProcessResult	ProcessHullSpecific(UT_AutoInterrupt progress, fpreal time);
+		ENUMS::MethodProcessResult	ProcessBundleSpecific(ENUMS::ProcessedInputType processedinputtype, fpreal time);
 
+		bool						_addHullCountAttributeValue;
+		bool						_addBundleCountAttributeValue;
+		bool						_addHullIDAttributeValue;
+		bool						_addBundleIDAttributeValue;
+		bool						_groupPerHullValue;
+		bool						_groupPerBundleValue;		
 	};
 
 DECLARE_SOP_Namespace_End

@@ -64,8 +64,7 @@ newSopOperator(OP_OperatorTable* table)
 		COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::TOOLKIT_TABMENU_PATH)
 	);
 
-	auto success = table->addOperator(sop);	
-	//table->addOpHidden(sop->getName());
+	auto success = table->addOperator(sop);
 }
 
 /* -----------------------------------------------------------------
