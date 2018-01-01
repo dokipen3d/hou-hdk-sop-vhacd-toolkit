@@ -43,7 +43,7 @@ else()
 	Find_Package(HDKVHACDToolkit REQUIRED)
 
 #[[-----------------------------------------------------------------
-V-HACD Engine                                                      |
+V-HACD ENGINE                                                      |
 ------------------------------------------------------------------]]
 
 	Set(CURRENT_PROJECT_NAME SOP_VHACDEngine)
@@ -81,7 +81,7 @@ V-HACD Engine                                                      |
 	HOU_SETUP_DSO_OUTPUTS(${CMAKE_CURRENT_SOURCE_DIR} ${CURRENT_PROJECT_NAME})	
 	
 #[[-----------------------------------------------------------------
-V-HACD Setup                                                       |
+V-HACD OTHER NODES                                                 |
 ------------------------------------------------------------------]]	
 		
 	HDK_MODULE_SETUP_SIMPLE_NODE_PROJECT("VHACDToolkit" "SOP_VHACDMerge")

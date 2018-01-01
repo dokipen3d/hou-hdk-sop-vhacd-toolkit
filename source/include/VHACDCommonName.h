@@ -32,7 +32,7 @@ INCLUDES                                                           |
 
 // hou-hdk-common
 #include <Macros/Namespace.h>
-#include <Containers/CommonNameT.h>
+#include <Containers/CommonTName.h>
 #include <Macros/GroupMenuPRM.h>
 
 // this
@@ -52,10 +52,10 @@ DECLARATION                                                        |
 DECLARE_Base_Namespace_Start()
 namespace Containers
 {	
-	class VHACDCommonName final : public CONTAINERS::CommonNameT<ENUMS::VHACDCommonNameOption>
+	class VHACDCommonName final : public CONTAINERS::CommonTName<ENUMS::VHACDCommonNameOption>
 	{
 	public:
-		VHACDCommonName() : CommonNameT<ENUMS::VHACDCommonNameOption>()
+		VHACDCommonName() : CommonTName<ENUMS::VHACDCommonNameOption>()
 		{
 			// toolkit global
 			this->Add(ENUMS::VHACDCommonNameOption::TOOLKIT_TABMENU_PATH,		"Toolkit/V-HACD");
@@ -86,9 +86,9 @@ namespace Containers
 			this->Add(ENUMS::VHACDCommonNameOption::SOP_SETUP_ICONNAME,			this->Get(ENUMS::VHACDCommonNameOption::TOOLKIT_ICONNAME));
 
 			// SOP_VHACDMerge 2.0 only			
-			this->Add(ENUMS::VHACDCommonNameOption::SOP_MERGE_SMALLNAME_V2,		"wip::merge::2.0");
-			this->Add(ENUMS::VHACDCommonNameOption::SOP_MERGE_BIGNAME_V2,		"Merge v2.0 (v-hacd)");
-			this->Add(ENUMS::VHACDCommonNameOption::SOP_MERGE_ICONNAME_V2,		this->Get(ENUMS::VHACDCommonNameOption::TOOLKIT_ICONNAME));
+			this->Add(ENUMS::VHACDCommonNameOption::SOP_MERGE_SMALLNAME,		"vhacd::merge::2.0");
+			this->Add(ENUMS::VHACDCommonNameOption::SOP_MERGE_BIGNAME,		"Merge (v-hacd)");
+			this->Add(ENUMS::VHACDCommonNameOption::SOP_MERGE_ICONNAME,		this->Get(ENUMS::VHACDCommonNameOption::TOOLKIT_ICONNAME));
 		}
 	};
 }

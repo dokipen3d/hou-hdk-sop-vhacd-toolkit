@@ -25,7 +25,7 @@ using UnityEditor;
 
 namespace DIY.Framework.PostProcessor
 {
-    public class CollisionMeshPostprocessor : AssetPostprocessor
+    public class PopulateCollisionMeshPostprocessor : AssetPostprocessor
     {
         public void OnPreprocessModel()
         {

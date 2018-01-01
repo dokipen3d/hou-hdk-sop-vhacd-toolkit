@@ -35,7 +35,7 @@ INCLUDES                                                           |
 
 // hou-hdk-common
 #include <Macros/Namespace.h>
-#include <Containers/CommonNameT.h>
+#include <Containers/CommonTName.h>
 
 // this
 #include "VHACDCommonAttributeNameOption.h"
@@ -54,10 +54,10 @@ DECLARATION                                                        |
 DECLARE_Base_Namespace_Start()
 namespace Containers
 {	
-	class VHACDCommonAttributeName final : public CONTAINERS::CommonNameT<ENUMS::VHACDCommonAttributeNameOption>
+	class VHACDCommonAttributeName final : public CONTAINERS::CommonTName<ENUMS::VHACDCommonAttributeNameOption>
 	{
 	public:
-		VHACDCommonAttributeName() : CommonNameT<ENUMS::VHACDCommonAttributeNameOption>()
+		VHACDCommonAttributeName() : CommonTName<ENUMS::VHACDCommonAttributeNameOption>()
 		{
 			this->Add(ENUMS::VHACDCommonAttributeNameOption::HULL_COUNT,	"hull_count");
 			this->Add(ENUMS::VHACDCommonAttributeNameOption::HULL_ID,		"hull_id");
