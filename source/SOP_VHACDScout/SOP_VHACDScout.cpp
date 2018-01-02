@@ -71,8 +71,8 @@ PARAMETERLIST_Start(SOP_Operator)
 	UI::addBundleCountAttributeSeparator_Parameter,
 	UI::addHullIDAttributeToggle_Parameter,
 	UI::addHullIDAttributeSeparator_Parameter,
-	UI::addBundleIDAttributeToggle_Parameter,
-	UI::addBundleIDAttributeSeparator_Parameter,
+	UI::rebuildBundleIDAttributeToggle_Parameter,
+	UI::rebuildBundleIDAttributeSeparator_Parameter,
 	UI::groupPerHullToggle_Parameter,
 	UI::groupPerHullSeparator_Parameter,
 	UI::specifyHullGroupNameString_Parameter,
@@ -103,8 +103,8 @@ SOP_Operator::updateParmsFlags()
 	changed |= setVisibleState(UI::addBundleCountAttributeToggle_Parameter.getToken(), visibilityState);
 	changed |= setVisibleState(UI::addBundleCountAttributeSeparator_Parameter.getToken(), visibilityState);
 
-	changed |= setVisibleState(UI::addBundleIDAttributeToggle_Parameter.getToken(), visibilityState);
-	changed |= setVisibleState(UI::addBundleIDAttributeSeparator_Parameter.getToken(), visibilityState);
+	changed |= setVisibleState(UI::rebuildBundleIDAttributeToggle_Parameter.getToken(), visibilityState);
+	changed |= setVisibleState(UI::rebuildBundleIDAttributeSeparator_Parameter.getToken(), visibilityState);
 
 	changed |= setVisibleState(UI::groupPerBundleToggle_Parameter.getToken(), visibilityState);
 	changed |= setVisibleState(UI::groupPerBundleSeparator_Parameter.getToken(), visibilityState);
@@ -144,10 +144,10 @@ SOP_Operator::~SOP_Scout() { }
 SOP_Operator::SOP_Scout(OP_Network* network, const char* name, OP_Operator* op)
 : SOP_Base_Operator(network, name, op),
 _addHullCountAttributeValue(false),
-_addBundleCountAttributeValue(false),
 _addHullIDAttributeValue(false),
-_addBundleIDAttributeValue(false), 
-_groupPerHullValue(false), 
+_groupPerHullValue(false),
+_rebuildBundleIDAttributeValue(false), 
+_addBundleCountAttributeValue(false),
 _groupPerBundleValue(false)
 { op->setIconName(COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::SOP_SCOUT_ICONNAME_V2)); }
 
@@ -214,9 +214,10 @@ SOP_Operator::GRPPerHull(UT_AutoInterrupt progress, const GEO_PrimClassifier& cl
 	}
 
 	UT_Map<exint, GA_PrimitiveGroup*> hullGroups;
+	hullGroups.clear();
 	for (auto classID = 0; classID < classifier.getNumClass(); classID++)
 	{
-		PROGRESS_WAS_INTERRUPTED_WITH_ERROR_AND_OBJECT(this, progress, ENUMS::MethodProcessResult::INTERRUPT)					
+		PROGRESS_WAS_INTERRUPTED_WITH_ERROR_AND_OBJECT(this, progress, ENUMS::MethodProcessResult::INTERRUPT)				
 
 		hullGroups[classID] = this->gdp->newPrimitiveGroup(hullGroupNameValue.c_str() + std::to_string(classID));
 	}
@@ -271,92 +272,116 @@ SOP_Operator::ProcessHullSpecific(UT_AutoInterrupt progress, fpreal time)
 	return success;
 }
 
-ENUMS::MethodProcessResult
-SOP_Operator::CheckBundleCountATTMismatch(UT_AutoInterrupt progress, const GU_Detail* convexdetail, const GU_Detail* originalgetail)
+ENUMS::MethodProcessResult  
+SOP_Operator::AddBundleCountATT(exint bundlescount)
 {	
-	GA_ROHandleI convexBundleCountHandle;
-	GA_ROHandleI originalBundleCountHandle;
+	auto success = ENUMS::MethodProcessResult::SUCCESS;
+	auto bundleCountHandle = GA_RWHandleI(this->gdp->addIntTuple(GA_AttributeOwner::GA_ATTRIB_DETAIL, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_COUNT), 1, GA_Defaults(bundlescount)));	
 
-	const auto convexSuccess = ATTRIB_ACCESS::Find::IntATT(this, convexdetail, GA_AttributeOwner::GA_ATTRIB_DETAIL, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_COUNT), convexBundleCountHandle);
-	const auto originalSuccess = ATTRIB_ACCESS::Find::IntATT(this, originalgetail, GA_AttributeOwner::GA_ATTRIB_DETAIL, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_COUNT), originalBundleCountHandle);
-	if (convexSuccess && originalSuccess)
+	if (bundleCountHandle.isInvalid())
 	{
-		
+		auto errorMessage = std::string("Failed to create ") + std::string(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_COUNT) + std::string(" attribute."));
+		this->addError(SOP_MESSAGE, errorMessage.c_str());
+		success = ENUMS::MethodProcessResult::FAILURE;
 	}
 
+	return success;
+}
+
+ENUMS::MethodProcessResult  
+SOP_Operator::GRPPerBundle(GA_Offset primitiveoffset, UT_Map<exint, GA_PrimitiveGroup*>& mappedbundlegroups, const GA_ROHandleI& bundleidhandle, fpreal time)
+{
+	const auto bundleID = bundleidhandle.get(primitiveoffset);
+	if (!mappedbundlegroups.contains(bundleID))
+	{
+		// get partial group name
+		UT_String bundleGroupNameValue;
+		PRM_ACCESS::Get::StringPRM(this, bundleGroupNameValue, UI::specifyBundleGroupNameString_Parameter, time);
+		
+		// setup group
+		const auto fullBundleGroupName = bundleGroupNameValue.c_str() + std::to_string(bundleID);
+		mappedbundlegroups[bundleID] = this->gdp->newPrimitiveGroup(fullBundleGroupName);
+	}
+	
+	if (!mappedbundlegroups.contains(bundleID))
+	{
+		this->addError(SOP_MESSAGE, "Failed to create bundle group.");
+		return ENUMS::MethodProcessResult::FAILURE;
+	}
+
+	// store primitive offset
+	mappedbundlegroups[bundleID]->addOffset(primitiveoffset);
+
 	return ENUMS::MethodProcessResult::SUCCESS;
 }
 
 ENUMS::MethodProcessResult
-SOP_Operator::CheckBundleIDATTMismatch(const GU_Detail* convexdetail, const GU_Detail* originalgetail)
-{
+SOP_Operator::FromRebuildedBundleID(UT_AutoInterrupt progress, OP_Context& context, ENUMS::ProcessedInputType processedinputtype, fpreal time)
+{	
 	return ENUMS::MethodProcessResult::SUCCESS;
 }
 
 ENUMS::MethodProcessResult
-SOP_Operator::CheckBundleGRPMismatch(const GU_Detail* convexdetail, const GU_Detail* originalgetail)
-{
-	return ENUMS::MethodProcessResult::SUCCESS;
+SOP_Operator::FromExistingBundleID(UT_AutoInterrupt progress, OP_Context& context, ENUMS::ProcessedInputType processedinputtype, fpreal time)
+{	
+	auto success = ENUMS::MethodProcessResult::SUCCESS;
+
+	// get parameters
+	PRM_ACCESS::Get::IntPRM(this, this->_addBundleCountAttributeValue, UI::addBundleCountAttributeToggle_Parameter, time);
+	PRM_ACCESS::Get::IntPRM(this, this->_groupPerBundleValue, UI::groupPerBundleToggle_Parameter, time);
+	
+	if (this->_addBundleCountAttributeValue || this->_groupPerBundleValue)
+	{
+		const auto inputGDP = inputGeo(static_cast<exint>(processedinputtype), context);
+		if (inputGDP)
+		{
+			// get this processed input bundle_id handle
+			GA_ROHandleI inputBundleIDHandle;
+			ATTRIB_ACCESS::Find::IntATT(this, inputGDP, GA_AttributeOwner::GA_ATTRIB_PRIMITIVE, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_ID), inputBundleIDHandle);
+
+			if (inputBundleIDHandle.isInvalid())
+			{
+				auto errorMessage = std::string("Input ") + std::to_string(static_cast<exint>(processedinputtype)) + std::string(" is missing \"") + std::string(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_ID)) + std::string("\" attribute.");
+				this->addError(SOP_MESSAGE, errorMessage.c_str());
+				return ENUMS::MethodProcessResult::FAILURE;
+			}
+
+			// process requests
+			UT_Set<exint>						uniqueBundleIDs;
+			UT_Map<exint, GA_PrimitiveGroup*>	mappedBundleGroups;
+
+			uniqueBundleIDs.clear();
+			mappedBundleGroups.clear();
+
+			for (auto primIt = GA_Iterator(inputGDP->getPrimitiveRange()); !primIt.atEnd(); primIt.advance())
+			{				
+				PROGRESS_WAS_INTERRUPTED_WITH_ERROR_AND_OBJECT(this, progress, ENUMS::MethodProcessResult::INTERRUPT)
+								
+				if (this->_addBundleCountAttributeValue) uniqueBundleIDs.insert(inputBundleIDHandle.get(*primIt));				
+				if (this->_groupPerBundleValue)
+				{
+					success = GRPPerBundle(*primIt, mappedBundleGroups, inputBundleIDHandle, time);
+					if (success != ENUMS::MethodProcessResult::SUCCESS) return success;
+				}
+			}
+
+			if (this->_addBundleCountAttributeValue) success = AddBundleCountATT(uniqueBundleIDs.size());
+		}
+	}
+
+	return success;
 }
 
 ENUMS::MethodProcessResult
 SOP_Operator::ProcessBundleSpecific(UT_AutoInterrupt progress, OP_Context& context, ENUMS::ProcessedInputType processedinputtype, fpreal time)
 {
 	auto success = ENUMS::MethodProcessResult::SUCCESS;
-
-	// get parameters
-	PRM_ACCESS::Get::IntPRM(this, this->_addBundleCountAttributeValue, UI::addBundleCountAttributeToggle_Parameter, time);
-	PRM_ACCESS::Get::IntPRM(this, this->_addBundleIDAttributeValue, UI::addBundleIDAttributeToggle_Parameter, time);
-	PRM_ACCESS::Get::IntPRM(this, this->_groupPerBundleValue, UI::groupPerBundleToggle_Parameter, time);
-
-	// check all data match
-	if (processedinputtype == ENUMS::ProcessedInputType::CONVEX_HULLS && (this->_addBundleCountAttributeValue || this->_addBundleIDAttributeValue || this->_groupPerBundleValue))
+	
+	PRM_ACCESS::Get::IntPRM(this, this->_rebuildBundleIDAttributeValue, UI::rebuildBundleIDAttributeToggle_Parameter, time);
+	switch(this->_rebuildBundleIDAttributeValue)
 	{
-		const auto convexGeo = inputGeo(static_cast<exint>(ENUMS::ProcessedInputType::CONVEX_HULLS), context);
-		const auto originalGeo = inputGeo(static_cast<exint>(ENUMS::ProcessedInputType::ORIGINAL_GEOMETRY), context);
-		if (convexGeo && originalGeo)
-		{
-			// check that both have bundle_id attribute
-			GA_ROHandleI convexBundleIDHandle;
-			GA_ROHandleI originalBundleIDHandle;
-
-			const auto convexSuccess = ATTRIB_ACCESS::Find::IntATT(this, convexGeo, GA_AttributeOwner::GA_ATTRIB_DETAIL, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_ID), convexBundleIDHandle);
-			const auto originalSuccess = ATTRIB_ACCESS::Find::IntATT(this, originalGeo, GA_AttributeOwner::GA_ATTRIB_DETAIL, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_ID), originalBundleIDHandle);
-			if (convexSuccess && originalSuccess)
-			{
-				if (this->_addBundleCountAttributeValue) success = CheckBundleCountATTMismatch(progress, convexGeo, originalGeo);
-				if (this->_addBundleIDAttributeValue) success = CheckBundleIDATTMismatch(convexGeo, originalGeo);
-				if (this->_groupPerBundleValue) success = CheckBundleGRPMismatch(convexGeo, originalGeo);
-
-				// make sure bundle_count match in both inputs
-				// make sure bundle_id's match in both inputs
-				// make sure bundle_group names and count match in both inputs							
-			}
-			else
-			{
-				addError(SOP_MESSAGE, (std::string("\"") + std::string(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_ID)) + std::string("\" attribute found to be missing on inputs.")).c_str());
-				success = ENUMS::MethodProcessResult::FAILURE;
-			}					
-		}
-		else
-		{
-			addError(SOP_MESSAGE, "Null geometry found on one of the inputs.");
-			success = ENUMS::MethodProcessResult::FAILURE;
-		}
-	}
-
-	if (success == ENUMS::MethodProcessResult::SUCCESS)
-	{
-		if (this->_addBundleCountAttributeValue) std::cout << "ProcessBundleSpecific in: " << (processedinputtype == ENUMS::ProcessedInputType::CONVEX_HULLS ? "ConvexHulls" : "Original") << std::endl;
-		if (this->_addBundleIDAttributeValue) std::cout << "ProcessBundleSpecific in: " << (processedinputtype == ENUMS::ProcessedInputType::CONVEX_HULLS ? "ConvexHulls" : "Original") << std::endl;
-		if (this->_groupPerBundleValue) std::cout << "ProcessBundleSpecific in: " << (processedinputtype == ENUMS::ProcessedInputType::CONVEX_HULLS ? "ConvexHulls" : "Original") << std::endl;
-
-		if (this->_addBundleCountAttributeValue);
-		if (this->_addBundleIDAttributeValue);
-		if (this->_groupPerBundleValue);
-		// add bundle_count detail attribute		
-		// add bundle_id from bundle_groups	
-		// group per bundle		
+		case true: { success = FromRebuildedBundleID(progress, context, processedinputtype, time); } break;
+		default: { success = FromExistingBundleID(progress, context, processedinputtype, time); } break;
 	}
 
 	return success;

@@ -58,11 +58,12 @@ DECLARE_SOP_Namespace_Start()
 	{		
 		__DECLARE_Main_Section_PRM(14)
 		DECLARE_Toggle_with_Separator_OFF_PRM("addhullcountattribute", "Add Hull Count ATT", "addhullcountattributeseparator", 0, "Create detail hull count attribute with infomation about how many convex hulls were detected.", addHullCountAttribute)
-		DECLARE_Toggle_with_Separator_OFF_PRM("addbundlecountattribute", "Add Bundle Count ATT", "addbundlecountattributeseparator", 0, "Create detail bundle count attribute with infomation about how many convex hulls bundles were detected.", addBundleCountAttribute)
 		DECLARE_Toggle_with_Separator_OFF_PRM("addhullidattribute", "Add Hull ID ATT", "addhullidattributeseparator", 0, "Create primitive hull id attribute with membership infomation that helps identify to which convex hull polygons belongs to.", addHullIDAttribute)
-		DECLARE_Toggle_with_Separator_OFF_PRM("addbundleidattribute", "Add Bundle ID ATT", "addbundleidattributeseparator", 0, "Create primitive bundle id attribute with membership infomation that helps identify to which bundle polygons belongs to.", addBundleIDAttribute)
 		DECLARE_Toggle_with_Separator_OFF_PRM("groupperhull", "GRP Per Hull", "groupperhullseparator", &SOP_Operator::CallbackGRPPerHull, "Create primitive bundle id attribute with membership infomation that helps identify to which bundle polygons belongs to.", groupPerHull)
 		DECLARE_Custom_String_PRM("specifyhullgroupname", "Name", "hull_", "Pick partial name for hull groups.", specifyHullGroupName)
+
+		DECLARE_Toggle_with_Separator_OFF_PRM("rebuildbundleidattribute", "Rebuild Bundle ID ATT", "rebuildbundleidattributeseparator", 0, "Rebuild primitive bundle_id attribute from specified bundle groups.", rebuildBundleIDAttribute)
+		DECLARE_Toggle_with_Separator_OFF_PRM("addbundlecountattribute", "Add Bundle Count ATT", "addbundlecountattributeseparator", 0, "Create detail bundle count attribute with infomation about how many convex hulls bundles were detected.", addBundleCountAttribute)			
 		DECLARE_Toggle_with_Separator_OFF_PRM("groupperbundle", "GRP Per Bundle", "groupperbundleseparator", &SOP_Operator::CallbackGRPPerBundle, "Create primitive bundle id attribute with membership infomation that helps identify to which bundle polygons belongs to.", groupPerBundle)
 		DECLARE_Custom_String_PRM("specifybundlegroupname", "Name", "bundle_", "Pick partial name for bundle groups.", specifyBundleGroupName)
 
