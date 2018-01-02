@@ -58,6 +58,18 @@ DECLARE_SOP_Namespace_Start()
 
 	namespace UI
 	{		
+		__DECLARE__Filter_Section_PRM(1)
+		static auto		processModeChoiceMenuParm_Name = PRM_Name("processmode", "Process Mode");
+		static auto		processModeChoiceMenuParm_Range = PRM_Range(PRM_RANGE_RESTRICTED, 0, PRM_RANGE_RESTRICTED, 1);
+		static PRM_Name processModeChoiceMenuParm_Choices[] =
+		{
+			PRM_Name("0", "Pair"),
+			PRM_Name("1", "Singles"),
+			PRM_Name(nullptr)
+		};
+		static auto		processModeChoiceMenuParm_ChoiceList = PRM_ChoiceList(PRM_CHOICELIST_SINGLE, processModeChoiceMenuParm_Choices);
+		auto			processModeChoiceMenu_Parameter = PRM_Template(PRM_ORD, 1, &processModeChoiceMenuParm_Name, nullptr, &processModeChoiceMenuParm_ChoiceList, &processModeChoiceMenuParm_Range, 0, nullptr, 1, "Define if inputs should be processed as pair or each separate.");
+
 		__DECLARE_Main_Section_PRM(12)
 		DECLARE_Toggle_with_Separator_OFF_PRM("addhullcountattribute", "Add Hull Count ATT", "addhullcountattributeseparator", 0, "Create detail hull count attribute with infomation about how many convex hulls were detected.", addHullCountAttribute)
 		DECLARE_Toggle_with_Separator_OFF_PRM("addhullidattribute", "Add Hull ID ATT", "addhullidattributeseparator", 0, "Create primitive hull id attribute with membership infomation that helps identify to which convex hull polygons belongs to.", addHullIDAttribute)

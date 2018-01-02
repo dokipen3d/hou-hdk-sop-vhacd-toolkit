@@ -42,6 +42,7 @@ INCLUDES                                                           |
 
 // this
 #include "Parameters.h"
+#include "ProcessModeOption.h"
 
 /* -----------------------------------------------------------------
 DEFINES                                                            |
@@ -52,7 +53,6 @@ DEFINES                                                            |
 
 #define COMMON_NAMES			GET_SOP_Namespace()::COMMON_NAMES
 #define UI						GET_SOP_Namespace()::UI
-#define GRP_UTILS				GET_Base_Namespace()::Utility::Groups
 #define PRM_ACCESS				GET_Base_Namespace()::Utility::PRM
 #define ATTRIB_ACCESS			GET_Base_Namespace()::Utility::Attribute
 #define CONTAINERS				GET_Base_Namespace()::Containers
@@ -64,16 +64,19 @@ PARAMETERS                                                         |
 
 PARAMETERLIST_Start(SOP_Operator)
 
+	UI::filterSectionSwitcher_Parameter,
+	UI::processModeChoiceMenu_Parameter,
+
 	UI::mainSectionSwitcher_Parameter,
 	UI::addHullCountAttributeToggle_Parameter,
 	UI::addHullCountAttributeSeparator_Parameter,
-	UI::addBundleCountAttributeToggle_Parameter,
-	UI::addBundleCountAttributeSeparator_Parameter,
 	UI::addHullIDAttributeToggle_Parameter,
 	UI::addHullIDAttributeSeparator_Parameter,
 	UI::groupPerHullToggle_Parameter,
 	UI::groupPerHullSeparator_Parameter,
 	UI::specifyHullGroupNameString_Parameter,
+	UI::addBundleCountAttributeToggle_Parameter,
+	UI::addBundleCountAttributeSeparator_Parameter,
 	UI::groupPerBundleToggle_Parameter,
 	UI::groupPerBundleSeparator_Parameter,
 	UI::specifyBundleGroupNameString_Parameter,
@@ -138,10 +141,10 @@ SOP_Operator::~SOP_Scout() { }
 
 SOP_Operator::SOP_Scout(OP_Network* network, const char* name, OP_Operator* op)
 : SOP_Base_Operator(network, name, op),
+_processModeChoiceMenuValue(false),
 _addHullCountAttributeValue(false),
 _addHullIDAttributeValue(false),
 _groupPerHullValue(false),
-_rebuildBundleIDAttributeValue(false), 
 _addBundleCountAttributeValue(false),
 _groupPerBundleValue(false)
 { op->setIconName(COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::SOP_SCOUT_ICONNAME_V2)); }
@@ -163,6 +166,97 @@ SOP_Operator::inputLabel(unsigned input) const
 /* -----------------------------------------------------------------
 HELPERS                                                            |
 ----------------------------------------------------------------- */
+
+ENUMS::MethodProcessResult
+SOP_Operator::WhenProcessAsPair(UT_AutoInterrupt progress, OP_Context& context, fpreal time)
+{	
+	auto errorMessage = std::string("");
+
+	const auto convexGeo = inputGeo(static_cast<exint>(ENUMS::ProcessedInputType::CONVEX_HULLS), context);
+	const auto originalGeo = inputGeo(static_cast<exint>(ENUMS::ProcessedInputType::ORIGINAL_GEOMETRY), context);
+	if (convexGeo && originalGeo)
+	{
+		// make sure both inputs have bundle_id
+		GA_ROHandleI		convexBundleIDHandle;
+		GA_ROHandleI		originalBundleIDHandle;
+
+		ATTRIB_ACCESS::Find::IntATT(this, convexGeo, GA_AttributeOwner::GA_ATTRIB_PRIMITIVE, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_ID), convexBundleIDHandle);
+		ATTRIB_ACCESS::Find::IntATT(this, originalGeo, GA_AttributeOwner::GA_ATTRIB_PRIMITIVE, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_ID), originalBundleIDHandle);
+
+		if (convexBundleIDHandle.isInvalid() || originalBundleIDHandle.isInvalid())
+		{
+			// get parameters
+			PRM_ACCESS::Get::IntPRM(this, this->_addBundleCountAttributeValue, UI::addBundleCountAttributeToggle_Parameter, time);
+			PRM_ACCESS::Get::IntPRM(this, this->_groupPerBundleValue, UI::groupPerBundleToggle_Parameter, time);
+
+			errorMessage = std::string("One of the inputs is missing \"") + std::string(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_ID)) + std::string("\" attribute.");
+			if (this->_addBundleCountAttributeValue || this->_groupPerBundleValue)
+			{
+				this->addError(SOP_MESSAGE, errorMessage.c_str());
+				return ENUMS::MethodProcessResult::FAILURE;
+			}
+
+			this->addWarning(SOP_MESSAGE, errorMessage.c_str());
+		}
+
+		// collect bundle_id information
+		// TODO: that's a good candidate for multithreading
+		UT_Set<exint>		uniqueConvexBundleIDs;
+		UT_Set<exint>		uniqueOriginalBundleIDs;
+		UT_Array<exint>		unsortedConvexBundleIDs;
+		UT_Array<exint>		unsortedOriginalBundleIDs;
+
+		uniqueConvexBundleIDs.clear();
+		uniqueOriginalBundleIDs.clear();
+		unsortedConvexBundleIDs.clear();
+		unsortedOriginalBundleIDs.clear();
+
+		for (auto primIt = GA_Iterator(convexGeo->getPrimitiveRange()); !primIt.atEnd(); primIt.advance())
+		{
+			PROGRESS_WAS_INTERRUPTED_WITH_ERROR_AND_OBJECT(this, progress, ENUMS::MethodProcessResult::INTERRUPT)
+
+			const auto currBundleID = convexBundleIDHandle.get(*primIt);			
+
+			if (!uniqueConvexBundleIDs.contains(currBundleID)) unsortedConvexBundleIDs.append(currBundleID);
+
+			uniqueConvexBundleIDs.insert(currBundleID);
+		}
+
+		for (auto primIt = GA_Iterator(originalGeo->getPrimitiveRange()); !primIt.atEnd(); primIt.advance())
+		{
+			PROGRESS_WAS_INTERRUPTED_WITH_ERROR_AND_OBJECT(this, progress, ENUMS::MethodProcessResult::INTERRUPT)			
+
+			const auto currBundleID = originalBundleIDHandle.get(*primIt);
+
+			if (!uniqueOriginalBundleIDs.contains(currBundleID)) unsortedOriginalBundleIDs.append(currBundleID);
+
+			uniqueOriginalBundleIDs.insert(currBundleID);
+		}
+
+		// make sure IDs count match
+		if (uniqueConvexBundleIDs.size() != uniqueOriginalBundleIDs.size())
+		{
+			errorMessage = std::string("Count of \"") + std::string(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_ID)) + std::string("\" attribute unique values between both inputs doesn't match.");
+			this->addError(SOP_MESSAGE, errorMessage.c_str());
+			return ENUMS::MethodProcessResult::FAILURE;
+		}
+
+		// make sure ID numbers match	
+		for (auto i = 0; i < unsortedConvexBundleIDs.size(); i++)
+		{
+			PROGRESS_WAS_INTERRUPTED_WITH_ERROR_AND_OBJECT(this, progress, ENUMS::MethodProcessResult::INTERRUPT)
+
+			if (unsortedConvexBundleIDs[i] != unsortedOriginalBundleIDs[i])
+			{
+				errorMessage = std::string("One or more \"") + std::string(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_ID)) + std::string("\" value doesn't match its pair counterpart.");
+				this->addError(SOP_MESSAGE, errorMessage.c_str());
+				return ENUMS::MethodProcessResult::FAILURE;
+			}
+		}
+	}
+
+	return ENUMS::MethodProcessResult::SUCCESS;
+}
 
 ENUMS::MethodProcessResult
 SOP_Operator::AddHullCountATT(const GEO_PrimClassifier& classifier)
@@ -381,11 +475,15 @@ OP_ERROR
 SOP_Operator::cookMySop(OP_Context& context)
 {	
 	DEFAULTS_CookMySop()
-	
-	if (duplicateSource(static_cast<exint>(ENUMS::ProcessedInputType::CONVEX_HULLS), context, this->gdp) < OP_ERROR::UT_ERROR_WARNING && error() < OP_ERROR::UT_ERROR_WARNING)
-	{
-		auto success = ENUMS::MethodProcessResult::FAILURE;
+		
+	// check process mode
+	auto success = ENUMS::MethodProcessResult::SUCCESS;
 
+	PRM_ACCESS::Get::IntPRM(this, this->_processModeChoiceMenuValue, UI::processModeChoiceMenu_Parameter, currentTime);
+	if (this->_processModeChoiceMenuValue == static_cast<bool>(ENUMS::ProcessModeOption::PAIR)) success = WhenProcessAsPair(progress, context, currentTime);
+		
+	if (success == ENUMS::MethodProcessResult::SUCCESS && duplicateSource(static_cast<exint>(ENUMS::ProcessedInputType::CONVEX_HULLS), context, this->gdp) < OP_ERROR::UT_ERROR_WARNING && error() < OP_ERROR::UT_ERROR_WARNING)
+	{		
 		// check how many inputs is connected
 		const auto is0Connected = getInput(0) == nullptr ? false : true;
 		const auto is1Connected = getInput(1) == nullptr ? false : true;
@@ -398,7 +496,7 @@ SOP_Operator::cookMySop(OP_Context& context)
 	
 		success = ProcessHullSpecific(progress, currentTime);
 	}
-
+	
 	return error();
 }
 
@@ -406,7 +504,11 @@ GU_DetailHandle
 SOP_Operator::cookMySopOutput(OP_Context& context, int outputidx, SOP_Node* interests)
 {
 	DEFAULTS_CookMySopOutput()
-		
+
+	auto errorMessage = ev_GetErrorText(interests->error());
+	if (errorMessage == (std::string("One of the inputs is missing \"") + std::string(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_ID)) + std::string("\" attribute."))) std::cout << "YAY" << std::endl;
+
+	/*
 	// check how many inputs is connected
 	const auto is0Connected = getInput(0) == nullptr ? false : true;
 	const auto is1Connected = getInput(1) == nullptr ? false : true;
@@ -423,7 +525,7 @@ SOP_Operator::cookMySopOutput(OP_Context& context, int outputidx, SOP_Node* inte
 			return result;
 		}
 	}
-
+	*/
 	return result;
 }
 
@@ -436,7 +538,6 @@ UNDEFINES                                                          |
 #undef ATTRIB_ACCESS
 #undef PRM_ACCESS
 #undef UI
-#undef GRP_UTILS
 #undef COMMON_NAMES
 
 #undef SOP_Base_Operator

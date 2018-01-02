@@ -83,7 +83,9 @@ DECLARE_SOP_Namespace_Start()
 		static int					CallbackGRPPerHull(void* data, int index, float time, const PRM_Template* tmp);
 		static int					CallbackGRPPerBundle(void* data, int index, float time, const PRM_Template* tmp);
 		
-	private:	
+	private:
+		ENUMS::MethodProcessResult	WhenProcessAsPair(UT_AutoInterrupt progress, OP_Context& context, fpreal time);
+
 		ENUMS::MethodProcessResult  AddHullCountATT(const GEO_PrimClassifier& classifier);
 		ENUMS::MethodProcessResult  AddHullIDATT(UT_AutoInterrupt progress, const GEO_PrimClassifier& classifier);
 		ENUMS::MethodProcessResult  GRPPerHull(UT_AutoInterrupt progress, const GEO_PrimClassifier& classifier, fpreal time);
@@ -93,11 +95,12 @@ DECLARE_SOP_Namespace_Start()
 		ENUMS::MethodProcessResult  GRPPerBundle(GA_Offset primitiveoffset, UT_Map<exint, GA_PrimitiveGroup*>& mappedbundlegroups, const GA_ROHandleI& bundleidhandle, fpreal time);
 		ENUMS::MethodProcessResult	ProcessBundleSpecific(UT_AutoInterrupt progress, OP_Context& context, ENUMS::ProcessedInputType processedinputtype, fpreal time);
 
+		bool						_processModeChoiceMenuValue;
+
 		bool						_addHullCountAttributeValue;
 		bool						_addHullIDAttributeValue;		
 		bool						_groupPerHullValue;
-
-		bool						_rebuildBundleIDAttributeValue;
+		
 		bool						_addBundleCountAttributeValue;
 		bool						_groupPerBundleValue;
 	};
