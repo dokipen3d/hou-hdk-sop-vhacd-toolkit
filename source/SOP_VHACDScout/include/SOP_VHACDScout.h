@@ -91,8 +91,6 @@ DECLARE_SOP_Namespace_Start()
 
 		ENUMS::MethodProcessResult  AddBundleCountATT(exint bundlescount);
 		ENUMS::MethodProcessResult  GRPPerBundle(GA_Offset primitiveoffset, UT_Map<exint, GA_PrimitiveGroup*>& mappedbundlegroups, const GA_ROHandleI& bundleidhandle, fpreal time);
-		ENUMS::MethodProcessResult  FromRebuildedBundleID(UT_AutoInterrupt progress, OP_Context& context, ENUMS::ProcessedInputType processedinputtype, fpreal time);
-		ENUMS::MethodProcessResult  FromExistingBundleID(UT_AutoInterrupt progress, OP_Context& context, ENUMS::ProcessedInputType processedinputtype, fpreal time);
 		ENUMS::MethodProcessResult	ProcessBundleSpecific(UT_AutoInterrupt progress, OP_Context& context, ENUMS::ProcessedInputType processedinputtype, fpreal time);
 
 		bool						_addHullCountAttributeValue;

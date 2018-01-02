@@ -71,8 +71,6 @@ PARAMETERLIST_Start(SOP_Operator)
 	UI::addBundleCountAttributeSeparator_Parameter,
 	UI::addHullIDAttributeToggle_Parameter,
 	UI::addHullIDAttributeSeparator_Parameter,
-	UI::rebuildBundleIDAttributeToggle_Parameter,
-	UI::rebuildBundleIDAttributeSeparator_Parameter,
 	UI::groupPerHullToggle_Parameter,
 	UI::groupPerHullSeparator_Parameter,
 	UI::specifyHullGroupNameString_Parameter,
@@ -102,9 +100,6 @@ SOP_Operator::updateParmsFlags()
 	visibilityState = is0Connected && is1Connected;
 	changed |= setVisibleState(UI::addBundleCountAttributeToggle_Parameter.getToken(), visibilityState);
 	changed |= setVisibleState(UI::addBundleCountAttributeSeparator_Parameter.getToken(), visibilityState);
-
-	changed |= setVisibleState(UI::rebuildBundleIDAttributeToggle_Parameter.getToken(), visibilityState);
-	changed |= setVisibleState(UI::rebuildBundleIDAttributeSeparator_Parameter.getToken(), visibilityState);
 
 	changed |= setVisibleState(UI::groupPerBundleToggle_Parameter.getToken(), visibilityState);
 	changed |= setVisibleState(UI::groupPerBundleSeparator_Parameter.getToken(), visibilityState);
@@ -180,6 +175,12 @@ SOP_Operator::AddHullCountATT(const GEO_PrimClassifier& classifier)
 	}
 
 	auto hullCountHandle = GA_RWHandleI(this->gdp->addIntTuple(GA_AttributeOwner::GA_ATTRIB_DETAIL, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_COUNT), 1, GA_Defaults(classifier.getNumClass())));
+	if (hullCountHandle.isInvalid())
+	{
+		auto errorMessage = std::string("Failed to create ") + std::string(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_COUNT) + std::string(" attribute."));
+		this->addError(SOP_MESSAGE, errorMessage.c_str());
+		return ENUMS::MethodProcessResult::FAILURE;
+	}
 
 	return ENUMS::MethodProcessResult::SUCCESS;
 }
@@ -188,14 +189,17 @@ ENUMS::MethodProcessResult
 SOP_Operator::AddHullIDATT(UT_AutoInterrupt progress, const GEO_PrimClassifier& classifier)
 {
 	auto hullIdHandle = GA_RWHandleI(this->gdp->addIntTuple(GA_AttributeOwner::GA_ATTRIB_PRIMITIVE, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_ID), 1));
-	if (hullIdHandle.isValid())
+	if (hullIdHandle.isInvalid())
 	{
-		for (auto primIt = GA_Iterator(this->gdp->getPrimitiveRange()); !primIt.atEnd(); primIt.advance())
-		{
-			PROGRESS_WAS_INTERRUPTED_WITH_ERROR_AND_OBJECT(this, progress, ENUMS::MethodProcessResult::INTERRUPT)
+		auto errorMessage = std::string("Failed to create ") + std::string(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_ID) + std::string(" attribute."));
+		this->addError(SOP_MESSAGE, errorMessage.c_str());
+		return ENUMS::MethodProcessResult::FAILURE;
+	}
 
-			hullIdHandle.set(*primIt, classifier.getClass(*primIt));
-		}
+	for (auto primIt = GA_Iterator(this->gdp->getPrimitiveRange()); !primIt.atEnd(); primIt.advance())
+	{
+		PROGRESS_WAS_INTERRUPTED_WITH_ERROR_AND_OBJECT(this, progress, ENUMS::MethodProcessResult::INTERRUPT)
+		hullIdHandle.set(*primIt, classifier.getClass(*primIt));
 	}
 
 	return ENUMS::MethodProcessResult::SUCCESS;
@@ -274,18 +278,16 @@ SOP_Operator::ProcessHullSpecific(UT_AutoInterrupt progress, fpreal time)
 
 ENUMS::MethodProcessResult  
 SOP_Operator::AddBundleCountATT(exint bundlescount)
-{	
-	auto success = ENUMS::MethodProcessResult::SUCCESS;
+{		
 	auto bundleCountHandle = GA_RWHandleI(this->gdp->addIntTuple(GA_AttributeOwner::GA_ATTRIB_DETAIL, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_COUNT), 1, GA_Defaults(bundlescount)));	
-
 	if (bundleCountHandle.isInvalid())
 	{
 		auto errorMessage = std::string("Failed to create ") + std::string(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_COUNT) + std::string(" attribute."));
 		this->addError(SOP_MESSAGE, errorMessage.c_str());
-		success = ENUMS::MethodProcessResult::FAILURE;
+		return ENUMS::MethodProcessResult::FAILURE;
 	}
 
-	return success;
+	return ENUMS::MethodProcessResult::SUCCESS;
 }
 
 ENUMS::MethodProcessResult  
@@ -297,7 +299,12 @@ SOP_Operator::GRPPerBundle(GA_Offset primitiveoffset, UT_Map<exint, GA_Primitive
 		// get partial group name
 		UT_String bundleGroupNameValue;
 		PRM_ACCESS::Get::StringPRM(this, bundleGroupNameValue, UI::specifyBundleGroupNameString_Parameter, time);
-		
+		if (bundleGroupNameValue.length() < 1)
+		{
+			this->addError(SOP_MESSAGE, "Specified bundle group name is invalid.");
+			return ENUMS::MethodProcessResult::FAILURE;
+		}
+
 		// setup group
 		const auto fullBundleGroupName = bundleGroupNameValue.c_str() + std::to_string(bundleID);
 		mappedbundlegroups[bundleID] = this->gdp->newPrimitiveGroup(fullBundleGroupName);
@@ -316,20 +323,14 @@ SOP_Operator::GRPPerBundle(GA_Offset primitiveoffset, UT_Map<exint, GA_Primitive
 }
 
 ENUMS::MethodProcessResult
-SOP_Operator::FromRebuildedBundleID(UT_AutoInterrupt progress, OP_Context& context, ENUMS::ProcessedInputType processedinputtype, fpreal time)
-{	
-	return ENUMS::MethodProcessResult::SUCCESS;
-}
-
-ENUMS::MethodProcessResult
-SOP_Operator::FromExistingBundleID(UT_AutoInterrupt progress, OP_Context& context, ENUMS::ProcessedInputType processedinputtype, fpreal time)
-{	
+SOP_Operator::ProcessBundleSpecific(UT_AutoInterrupt progress, OP_Context& context, ENUMS::ProcessedInputType processedinputtype, fpreal time)
+{
 	auto success = ENUMS::MethodProcessResult::SUCCESS;
 
 	// get parameters
 	PRM_ACCESS::Get::IntPRM(this, this->_addBundleCountAttributeValue, UI::addBundleCountAttributeToggle_Parameter, time);
 	PRM_ACCESS::Get::IntPRM(this, this->_groupPerBundleValue, UI::groupPerBundleToggle_Parameter, time);
-	
+
 	if (this->_addBundleCountAttributeValue || this->_groupPerBundleValue)
 	{
 		const auto inputGDP = inputGeo(static_cast<exint>(processedinputtype), context);
@@ -354,10 +355,10 @@ SOP_Operator::FromExistingBundleID(UT_AutoInterrupt progress, OP_Context& contex
 			mappedBundleGroups.clear();
 
 			for (auto primIt = GA_Iterator(inputGDP->getPrimitiveRange()); !primIt.atEnd(); primIt.advance())
-			{				
+			{
 				PROGRESS_WAS_INTERRUPTED_WITH_ERROR_AND_OBJECT(this, progress, ENUMS::MethodProcessResult::INTERRUPT)
-								
-				if (this->_addBundleCountAttributeValue) uniqueBundleIDs.insert(inputBundleIDHandle.get(*primIt));				
+
+				if (this->_addBundleCountAttributeValue) uniqueBundleIDs.insert(inputBundleIDHandle.get(*primIt));
 				if (this->_groupPerBundleValue)
 				{
 					success = GRPPerBundle(*primIt, mappedBundleGroups, inputBundleIDHandle, time);
@@ -367,21 +368,6 @@ SOP_Operator::FromExistingBundleID(UT_AutoInterrupt progress, OP_Context& contex
 
 			if (this->_addBundleCountAttributeValue) success = AddBundleCountATT(uniqueBundleIDs.size());
 		}
-	}
-
-	return success;
-}
-
-ENUMS::MethodProcessResult
-SOP_Operator::ProcessBundleSpecific(UT_AutoInterrupt progress, OP_Context& context, ENUMS::ProcessedInputType processedinputtype, fpreal time)
-{
-	auto success = ENUMS::MethodProcessResult::SUCCESS;
-	
-	PRM_ACCESS::Get::IntPRM(this, this->_rebuildBundleIDAttributeValue, UI::rebuildBundleIDAttributeToggle_Parameter, time);
-	switch(this->_rebuildBundleIDAttributeValue)
-	{
-		case true: { success = FromRebuildedBundleID(progress, context, processedinputtype, time); } break;
-		default: { success = FromExistingBundleID(progress, context, processedinputtype, time); } break;
 	}
 
 	return success;
@@ -420,7 +406,7 @@ GU_DetailHandle
 SOP_Operator::cookMySopOutput(OP_Context& context, int outputidx, SOP_Node* interests)
 {
 	DEFAULTS_CookMySopOutput()
-	
+		
 	// check how many inputs is connected
 	const auto is0Connected = getInput(0) == nullptr ? false : true;
 	const auto is1Connected = getInput(1) == nullptr ? false : true;
