@@ -64,7 +64,7 @@ DECLARATION                                                        |
 
 DECLARE_SOP_Namespace_Start()
 
-	class SOP_Scout : public SOP_VHACDNode
+	class SOP_VHACDScout : public SOP_VHACDNode
 	{
 		DECLARE_CookMySop_Multi()
 		DECLARE_UpdateParmsFlags()
@@ -72,8 +72,8 @@ DECLARE_SOP_Namespace_Start()
 		DECLARE_DescriptionPRM_Callback()
 
 	protected:
-		~SOP_Scout() override;
-		SOP_Scout(OP_Network* network, const char* name, OP_Operator* op);
+		~SOP_VHACDScout() override;
+		SOP_VHACDScout(OP_Network* network, const char* name, OP_Operator* op);
 		const char*					inputLabel(unsigned input) const override;
 
 	public:

@@ -37,7 +37,7 @@ INCLUDES                                                           |
 DEFINES                                                            |
 ----------------------------------------------------------------- */
 
-#define SOP_Operator		GET_SOP_Namespace()::SOP_Scout
+#define SOP_Operator		GET_SOP_Namespace()::SOP_VHACDScout
 
 #define COMMON_NAMES		GET_SOP_Namespace()::COMMON_NAMES
 #define ENUMS				GET_Base_Namespace()::Enums
@@ -51,8 +51,8 @@ newSopOperator(OP_OperatorTable* table)
 {
 	const auto sop = new OP_Operator
 	(
-		COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::SOP_SCOUT_SMALLNAME_V2),
-		COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::SOP_SCOUT_BIGNAME_V2),
+		COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::SOP_SCOUT_SMALLNAME),
+		COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::SOP_SCOUT_BIGNAME),
 		SOP_Operator::CreateMe,
 		SOP_Operator::parametersList,
 		1,								// min inputs 

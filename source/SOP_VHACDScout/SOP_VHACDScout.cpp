@@ -48,7 +48,7 @@ INCLUDES                                                           |
 DEFINES                                                            |
 ----------------------------------------------------------------- */
 
-#define SOP_Operator			GET_SOP_Namespace()::SOP_Scout
+#define SOP_Operator			GET_SOP_Namespace()::SOP_VHACDScout
 #define SOP_Base_Operator		SOP_VHACDNode
 
 #define COMMON_NAMES			GET_SOP_Namespace()::COMMON_NAMES
@@ -91,16 +91,14 @@ SOP_Operator::updateParmsFlags()
 {
 	DEFAULTS_UpdateParmsFlags(SOP_Base_Operator)
 			
-	// hull specific
+	// update visibility
 	bool groupPerHullValue;
 	PRM_ACCESS::Get::IntPRM(this, groupPerHullValue, UI::groupPerHullToggle_Parameter, currentTime);
 	changed |= setVisibleState(UI::specifyHullGroupNameString_Parameter.getToken(), groupPerHullValue);
 
 	bool groupPerBundleValue;
-	PRM_ACCESS::Get::IntPRM(this, groupPerBundleValue, UI::groupPerBundleToggle_Parameter, currentTime);
-
-	visibilityState = visibilityState && groupPerBundleValue;
-	changed |= setVisibleState(UI::specifyBundleGroupNameString_Parameter.getToken(), visibilityState);	
+	PRM_ACCESS::Get::IntPRM(this, groupPerBundleValue, UI::groupPerBundleToggle_Parameter, currentTime);	
+	changed |= setVisibleState(UI::specifyBundleGroupNameString_Parameter.getToken(), groupPerBundleValue);
 
 	// update description active state
 	UPDATE_DescriptionPRM_ActiveState(this, UI)
@@ -126,9 +124,9 @@ THIS_CALLBACK_Reset_StringPRM(SOP_Operator, SOP_Operator::CallbackGRPPerBundle, 
 OPERATOR INITIALIZATION                                            |
 ----------------------------------------------------------------- */
 
-SOP_Operator::~SOP_Scout() { }
+SOP_Operator::~SOP_VHACDScout() { }
 
-SOP_Operator::SOP_Scout(OP_Network* network, const char* name, OP_Operator* op)
+SOP_Operator::SOP_VHACDScout(OP_Network* network, const char* name, OP_Operator* op)
 : SOP_Base_Operator(network, name, op),
 _processModeChoiceMenuValue(false),
 _addHullCountAttributeValue(false),
@@ -136,7 +134,7 @@ _addHullIDAttributeValue(false),
 _groupPerHullValue(false),
 _addBundleCountAttributeValue(false),
 _groupPerBundleValue(false)
-{ op->setIconName(COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::SOP_SCOUT_ICONNAME_V2)); }
+{ op->setIconName(COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::SOP_SCOUT_ICONNAME)); }
 
 OP_Node* 
 SOP_Operator::CreateMe(OP_Network* network, const char* name, OP_Operator* op) 

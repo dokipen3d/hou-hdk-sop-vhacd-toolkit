@@ -42,7 +42,7 @@ INCLUDES                                                           |
 DEFINES                                                            |
 ----------------------------------------------------------------- */
 
-#define SOP_Operator GET_SOP_Namespace()::SOP_Scout
+#define SOP_Operator GET_SOP_Namespace()::SOP_VHACDScout
 
 /* -----------------------------------------------------------------
 USING                                                              |
