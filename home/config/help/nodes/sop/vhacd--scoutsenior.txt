@@ -40,7 +40,9 @@ Missing Bundle ID:
 Add Bundle Count ATT:
 	#id: addbundlecountattribute
 	Add ((bundle_count)) primitive attribute that stores information about how many bundles were detected.
-
+	:note:
+	Requires ((bundle_id)) attribute.
+	
 Add Hull Count ATT:
 	#id: addhullcountattribute
 	Add ((hull_count)) detail attribute that stores information about how many convex hulls were detected.
@@ -60,7 +62,9 @@ GRP Per Hull:
 		
 GRP Per Bundle:
 	#id: groupperbundle
-	Create primitive group per each detected convex bundle.
+	Create primitive group per each detected convex bundle.	
+	:note:
+	Requires ((bundle_id)) attribute.
 	
 	Name:
 		#id: specifybundlegroupname
