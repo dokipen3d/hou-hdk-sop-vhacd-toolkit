@@ -79,8 +79,8 @@ namespace Containers
 			this->Add(ENUMS::VHACDCommonNameOption::SOP_GENERATE_BIGNAME,				"Generate (v-hacd)");
 			this->Add(ENUMS::VHACDCommonNameOption::SOP_GENERATE_ICONNAME,				this->Get(ENUMS::VHACDCommonNameOption::TOOLKIT_ICONNAME));
 
-			// SOP_VHACDScout 2.0 only			
-			this->Add(ENUMS::VHACDCommonNameOption::SOP_SCOUT_SMALLNAME,				"wip::scout::2.0");
+			// SOP_VHACDScout only			
+			this->Add(ENUMS::VHACDCommonNameOption::SOP_SCOUT_SMALLNAME,				"vhacd::scout::2.0");
 			this->Add(ENUMS::VHACDCommonNameOption::SOP_SCOUT_BIGNAME,					"Scout (v-hacd)");
 			this->Add(ENUMS::VHACDCommonNameOption::SOP_SCOUT_ICONNAME,					this->Get(ENUMS::VHACDCommonNameOption::TOOLKIT_ICONNAME));			
 

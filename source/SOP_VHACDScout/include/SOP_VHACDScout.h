@@ -103,8 +103,6 @@ DECLARE_SOP_Namespace_Start()
 		
 		bool						_addBundleCountAttributeValue;
 		bool						_groupPerBundleValue;
-
-		static ENUMS::MethodProcessResult _processResult;
 	};
 
 DECLARE_SOP_Namespace_End

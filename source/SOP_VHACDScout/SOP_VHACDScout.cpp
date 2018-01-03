@@ -150,9 +150,6 @@ SOP_Operator::inputLabel(unsigned input) const
 	}	
 }
 
-ENUMS::MethodProcessResult
-SOP_Operator::_processResult = ENUMS::MethodProcessResult::INTERRUPT;
-
 /* -----------------------------------------------------------------
 HELPERS                                                            |
 ----------------------------------------------------------------- */
@@ -177,93 +174,106 @@ SOP_Operator::WhenProcessAsPair(UT_AutoInterrupt progress, OP_Context& context, 
 		{
 			// get parameters
 			PRM_ACCESS::Get::IntPRM(this, this->_addBundleCountAttributeValue, UI::addBundleCountAttributeToggle_Parameter, time);
-			PRM_ACCESS::Get::IntPRM(this, this->_groupPerBundleValue, UI::groupPerBundleToggle_Parameter, time);
-
-			errorMessage = std::string("One of the inputs is missing \"") + std::string(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_ID)) + std::string("\" attribute.");
+			PRM_ACCESS::Get::IntPRM(this, this->_groupPerBundleValue, UI::groupPerBundleToggle_Parameter, time);			
+	
 			if (this->_addBundleCountAttributeValue || this->_groupPerBundleValue)
-			{
+			{		
+				// construct error message
+				auto errorMesssagePrefix = std::string("");
+
+				if (convexBundleIDHandle.isInvalid()) errorMesssagePrefix = std::string("Input ") + std::to_string(static_cast<exint>(ENUMS::ProcessedInputType::CONVEX_HULLS)) + std::string(" is missing \"");
+				else if (originalBundleIDHandle.isInvalid()) errorMesssagePrefix = std::string("Input ") + std::to_string(static_cast<exint>(ENUMS::ProcessedInputType::ORIGINAL_GEOMETRY)) + std::string(" is missing \"");
+				else errorMesssagePrefix = std::string("Both inputs are missing \"");
+
+				errorMessage = errorMesssagePrefix + std::string(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_ID)) + std::string("\" attribute required for this operation.");
+
+				// set error
 				this->addError(SOP_MESSAGE, errorMessage.c_str());
 				return ENUMS::MethodProcessResult::FAILURE;
 			}
 
-			this->addWarning(SOP_MESSAGE, errorMessage.c_str());
+			auto warningMessage = std::string("One of the inputs is missing \"") + std::string(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_ID)) + std::string("\" attribute.");
+			this->addWarning(SOP_MESSAGE, warningMessage.c_str());
 		}
 		
-		// collect bundle_id information
-		// TODO: that's a good candidate for multithreading
-		UT_Set<exint>		uniqueConvexBundleIDs;
-		UT_Set<exint>		uniqueOriginalBundleIDs;
-		UT_Array<exint>		unsortedConvexBundleIDs;
-		UT_Array<exint>		unsortedOriginalBundleIDs;
-
-		uniqueConvexBundleIDs.clear();
-		uniqueOriginalBundleIDs.clear();
-		unsortedConvexBundleIDs.clear();
-		unsortedOriginalBundleIDs.clear();
-		
-		for (auto primIt = GA_Iterator(convexGeo->getPrimitiveRange()); !primIt.atEnd(); primIt.advance())
+		if (convexBundleIDHandle.isValid() && originalBundleIDHandle.isValid())
 		{
-			PROGRESS_WAS_INTERRUPTED_WITH_ERROR_AND_OBJECT(this, progress, ENUMS::MethodProcessResult::INTERRUPT)
+			// collect bundle_id information
+			// TODO: that's a good candidate for multithreading
+			UT_Set<exint>		uniqueConvexBundleIDs;
+			UT_Set<exint>		uniqueOriginalBundleIDs;
+			UT_Array<exint>		unsortedConvexBundleIDs;
+			UT_Array<exint>		unsortedOriginalBundleIDs;
 
-			if (convexBundleIDHandle.isValid())
-			{
-				const auto currBundleID = convexBundleIDHandle.get(*primIt);
+			uniqueConvexBundleIDs.clear();
+			uniqueOriginalBundleIDs.clear();
+			unsortedConvexBundleIDs.clear();
+			unsortedOriginalBundleIDs.clear();
 
-				if (!uniqueConvexBundleIDs.contains(currBundleID)) unsortedConvexBundleIDs.append(currBundleID);
-
-				uniqueConvexBundleIDs.insert(currBundleID);
-			}
-		}
-
-		for (auto primIt = GA_Iterator(originalGeo->getPrimitiveRange()); !primIt.atEnd(); primIt.advance())
-		{
-			PROGRESS_WAS_INTERRUPTED_WITH_ERROR_AND_OBJECT(this, progress, ENUMS::MethodProcessResult::INTERRUPT)			
-
-			if (originalBundleIDHandle.isValid())
-			{
-				const auto currBundleID = originalBundleIDHandle.get(*primIt);
-
-				if (!uniqueOriginalBundleIDs.contains(currBundleID)) unsortedOriginalBundleIDs.append(currBundleID);
-
-				uniqueOriginalBundleIDs.insert(currBundleID);
-			}
-		}
-		
-		// make sure IDs count match
-		if (uniqueConvexBundleIDs.size() != uniqueOriginalBundleIDs.size())
-		{
-			errorMessage = std::string("Count of \"") + std::string(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_ID)) + std::string("\" attribute unique values between both inputs doesn't match.");			
-			if (this->_addBundleCountAttributeValue || this->_groupPerBundleValue)
-			{
-				this->addError(SOP_MESSAGE, errorMessage.c_str());
-				return ENUMS::MethodProcessResult::FAILURE;
-			}
-
-			this->addWarning(SOP_MESSAGE, errorMessage.c_str());
-		}
-		
-		// make sure ID numbers match	
-		if (unsortedConvexBundleIDs.size() > 0 && uniqueOriginalBundleIDs.size() > 0)
-		{
-			for (auto i = 0; i < unsortedConvexBundleIDs.size(); i++)
+			for (auto primIt = GA_Iterator(convexGeo->getPrimitiveRange()); !primIt.atEnd(); primIt.advance())
 			{
 				PROGRESS_WAS_INTERRUPTED_WITH_ERROR_AND_OBJECT(this, progress, ENUMS::MethodProcessResult::INTERRUPT)
 
-				if (unsortedConvexBundleIDs[i] != unsortedOriginalBundleIDs[i])
+				if (convexBundleIDHandle.isValid())
 				{
-					errorMessage = std::string("One or more \"") + std::string(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_ID)) + std::string("\" value doesn't match its pair counterpart.");
-					if (this->_addBundleCountAttributeValue || this->_groupPerBundleValue)
-					{
-						this->addError(SOP_MESSAGE, errorMessage.c_str());
-						return ENUMS::MethodProcessResult::FAILURE;
-					}
+					const auto currBundleID = convexBundleIDHandle.get(*primIt);
 
-					this->addWarning(SOP_MESSAGE, errorMessage.c_str());
+					if (!uniqueConvexBundleIDs.contains(currBundleID)) unsortedConvexBundleIDs.append(currBundleID);
+
+					uniqueConvexBundleIDs.insert(currBundleID);
+				}
+			}
+
+			for (auto primIt = GA_Iterator(originalGeo->getPrimitiveRange()); !primIt.atEnd(); primIt.advance())
+			{
+				PROGRESS_WAS_INTERRUPTED_WITH_ERROR_AND_OBJECT(this, progress, ENUMS::MethodProcessResult::INTERRUPT)
+
+				if (originalBundleIDHandle.isValid())
+				{
+					const auto currBundleID = originalBundleIDHandle.get(*primIt);
+
+					if (!uniqueOriginalBundleIDs.contains(currBundleID)) unsortedOriginalBundleIDs.append(currBundleID);
+
+					uniqueOriginalBundleIDs.insert(currBundleID);
+				}
+			}
+
+			// make sure IDs count match
+			if (uniqueConvexBundleIDs.size() != uniqueOriginalBundleIDs.size())
+			{
+				errorMessage = std::string("Count of \"") + std::string(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_ID)) + std::string("\" attribute unique values between both inputs doesn't match.");
+				if (this->_addBundleCountAttributeValue || this->_groupPerBundleValue)
+				{
+					this->addError(SOP_MESSAGE, errorMessage.c_str());
+					return ENUMS::MethodProcessResult::FAILURE;
+				}
+
+				this->addWarning(SOP_MESSAGE, errorMessage.c_str());
+			}
+
+			// make sure ID numbers match	
+			if (unsortedConvexBundleIDs.size() > 0 && uniqueOriginalBundleIDs.size() > 0)
+			{
+				for (auto i = 0; i < unsortedConvexBundleIDs.size(); i++)
+				{
+					PROGRESS_WAS_INTERRUPTED_WITH_ERROR_AND_OBJECT(this, progress, ENUMS::MethodProcessResult::INTERRUPT)
+
+					if (unsortedConvexBundleIDs[i] != unsortedOriginalBundleIDs[i])
+					{
+						errorMessage = std::string("One or more \"") + std::string(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_ID)) + std::string("\" value doesn't match its pair counterpart.");
+						if (this->_addBundleCountAttributeValue || this->_groupPerBundleValue)
+						{
+							this->addError(SOP_MESSAGE, errorMessage.c_str());
+							return ENUMS::MethodProcessResult::FAILURE;
+						}
+
+						this->addWarning(SOP_MESSAGE, errorMessage.c_str());
+					}
 				}
 			}
 		}
 	}
-	_processResult = ENUMS::MethodProcessResult::SUCCESS;
+	
 	return ENUMS::MethodProcessResult::SUCCESS;
 }
 
@@ -446,7 +456,7 @@ SOP_Operator::ProcessBundleSpecific(UT_AutoInterrupt progress, OP_Context& conte
 			if (inputBundleIDHandle.isInvalid())
 			{
 				auto errorMessage = std::string("Input ") + std::to_string(static_cast<exint>(processedinputtype)) + std::string(" is missing \"") + std::string(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_ID)) + std::string("\" attribute.");
-				this->addError(SOP_MESSAGE, errorMessage.c_str());
+				this->addError(SOP_MESSAGE, errorMessage.c_str());				
 				return ENUMS::MethodProcessResult::FAILURE;
 			}
 
@@ -488,7 +498,7 @@ SOP_Operator::cookMySop(OP_Context& context)
 	// check how many inputs is connected
 	const auto is0Connected = getInput(0) == nullptr ? false : true;
 	const auto is1Connected = getInput(1) == nullptr ? false : true;
-
+	
 	// check process mode
 	auto success = ENUMS::MethodProcessResult::SUCCESS;
 
@@ -556,7 +566,7 @@ SOP_Operator::cookMySopOutput(OP_Context& context, int outputidx, SOP_Node* inte
 			this->gdp->clear();
 			return result;
 		}
-
+		
 		if (this->_processModeChoiceMenuValue == static_cast<exint>(ENUMS::ProcessModeOption::SINGLES)) ProcessHullSpecific(progress, currentTime);
 	}
 	
