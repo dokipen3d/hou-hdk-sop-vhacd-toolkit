@@ -40,7 +40,7 @@ ENUM                                                               |
 DECLARE_Base_Namespace_Start()
 namespace Enums
 {
-	enum class ProcessModeOption
+	enum class ProcessModeOption : exint
 	{
 		PAIR,
 		SINGLES

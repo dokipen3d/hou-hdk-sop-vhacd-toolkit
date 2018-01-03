@@ -90,22 +90,11 @@ bool
 SOP_Operator::updateParmsFlags()
 {
 	DEFAULTS_UpdateParmsFlags(SOP_Base_Operator)
-		
+			
 	// hull specific
 	bool groupPerHullValue;
 	PRM_ACCESS::Get::IntPRM(this, groupPerHullValue, UI::groupPerHullToggle_Parameter, currentTime);
 	changed |= setVisibleState(UI::specifyHullGroupNameString_Parameter.getToken(), groupPerHullValue);
-
-	// bundle specific
-	const auto is0Connected = getInput(0) == nullptr ? false : true;
-	const auto is1Connected = getInput(1) == nullptr ? false : true;
-
-	visibilityState = is0Connected && is1Connected;
-	changed |= setVisibleState(UI::addBundleCountAttributeToggle_Parameter.getToken(), visibilityState);
-	changed |= setVisibleState(UI::addBundleCountAttributeSeparator_Parameter.getToken(), visibilityState);
-
-	changed |= setVisibleState(UI::groupPerBundleToggle_Parameter.getToken(), visibilityState);
-	changed |= setVisibleState(UI::groupPerBundleSeparator_Parameter.getToken(), visibilityState);
 
 	bool groupPerBundleValue;
 	PRM_ACCESS::Get::IntPRM(this, groupPerBundleValue, UI::groupPerBundleToggle_Parameter, currentTime);
@@ -163,6 +152,9 @@ SOP_Operator::inputLabel(unsigned input) const
 	}	
 }
 
+ENUMS::MethodProcessResult
+SOP_Operator::_processResult = ENUMS::MethodProcessResult::INTERRUPT;
+
 /* -----------------------------------------------------------------
 HELPERS                                                            |
 ----------------------------------------------------------------- */
@@ -198,7 +190,7 @@ SOP_Operator::WhenProcessAsPair(UT_AutoInterrupt progress, OP_Context& context, 
 
 			this->addWarning(SOP_MESSAGE, errorMessage.c_str());
 		}
-
+		
 		// collect bundle_id information
 		// TODO: that's a good candidate for multithreading
 		UT_Set<exint>		uniqueConvexBundleIDs;
@@ -210,51 +202,70 @@ SOP_Operator::WhenProcessAsPair(UT_AutoInterrupt progress, OP_Context& context, 
 		uniqueOriginalBundleIDs.clear();
 		unsortedConvexBundleIDs.clear();
 		unsortedOriginalBundleIDs.clear();
-
+		
 		for (auto primIt = GA_Iterator(convexGeo->getPrimitiveRange()); !primIt.atEnd(); primIt.advance())
 		{
 			PROGRESS_WAS_INTERRUPTED_WITH_ERROR_AND_OBJECT(this, progress, ENUMS::MethodProcessResult::INTERRUPT)
 
-			const auto currBundleID = convexBundleIDHandle.get(*primIt);			
+			if (convexBundleIDHandle.isValid())
+			{
+				const auto currBundleID = convexBundleIDHandle.get(*primIt);
 
-			if (!uniqueConvexBundleIDs.contains(currBundleID)) unsortedConvexBundleIDs.append(currBundleID);
+				if (!uniqueConvexBundleIDs.contains(currBundleID)) unsortedConvexBundleIDs.append(currBundleID);
 
-			uniqueConvexBundleIDs.insert(currBundleID);
+				uniqueConvexBundleIDs.insert(currBundleID);
+			}
 		}
 
 		for (auto primIt = GA_Iterator(originalGeo->getPrimitiveRange()); !primIt.atEnd(); primIt.advance())
 		{
 			PROGRESS_WAS_INTERRUPTED_WITH_ERROR_AND_OBJECT(this, progress, ENUMS::MethodProcessResult::INTERRUPT)			
 
-			const auto currBundleID = originalBundleIDHandle.get(*primIt);
+			if (originalBundleIDHandle.isValid())
+			{
+				const auto currBundleID = originalBundleIDHandle.get(*primIt);
 
-			if (!uniqueOriginalBundleIDs.contains(currBundleID)) unsortedOriginalBundleIDs.append(currBundleID);
+				if (!uniqueOriginalBundleIDs.contains(currBundleID)) unsortedOriginalBundleIDs.append(currBundleID);
 
-			uniqueOriginalBundleIDs.insert(currBundleID);
+				uniqueOriginalBundleIDs.insert(currBundleID);
+			}
 		}
-
+		
 		// make sure IDs count match
 		if (uniqueConvexBundleIDs.size() != uniqueOriginalBundleIDs.size())
 		{
-			errorMessage = std::string("Count of \"") + std::string(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_ID)) + std::string("\" attribute unique values between both inputs doesn't match.");
-			this->addError(SOP_MESSAGE, errorMessage.c_str());
-			return ENUMS::MethodProcessResult::FAILURE;
-		}
-
-		// make sure ID numbers match	
-		for (auto i = 0; i < unsortedConvexBundleIDs.size(); i++)
-		{
-			PROGRESS_WAS_INTERRUPTED_WITH_ERROR_AND_OBJECT(this, progress, ENUMS::MethodProcessResult::INTERRUPT)
-
-			if (unsortedConvexBundleIDs[i] != unsortedOriginalBundleIDs[i])
+			errorMessage = std::string("Count of \"") + std::string(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_ID)) + std::string("\" attribute unique values between both inputs doesn't match.");			
+			if (this->_addBundleCountAttributeValue || this->_groupPerBundleValue)
 			{
-				errorMessage = std::string("One or more \"") + std::string(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_ID)) + std::string("\" value doesn't match its pair counterpart.");
 				this->addError(SOP_MESSAGE, errorMessage.c_str());
 				return ENUMS::MethodProcessResult::FAILURE;
 			}
+
+			this->addWarning(SOP_MESSAGE, errorMessage.c_str());
+		}
+		
+		// make sure ID numbers match	
+		if (unsortedConvexBundleIDs.size() > 0 && uniqueOriginalBundleIDs.size() > 0)
+		{
+			for (auto i = 0; i < unsortedConvexBundleIDs.size(); i++)
+			{
+				PROGRESS_WAS_INTERRUPTED_WITH_ERROR_AND_OBJECT(this, progress, ENUMS::MethodProcessResult::INTERRUPT)
+
+				if (unsortedConvexBundleIDs[i] != unsortedOriginalBundleIDs[i])
+				{
+					errorMessage = std::string("One or more \"") + std::string(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_ID)) + std::string("\" value doesn't match its pair counterpart.");
+					if (this->_addBundleCountAttributeValue || this->_groupPerBundleValue)
+					{
+						this->addError(SOP_MESSAGE, errorMessage.c_str());
+						return ENUMS::MethodProcessResult::FAILURE;
+					}
+
+					this->addWarning(SOP_MESSAGE, errorMessage.c_str());
+				}
+			}
 		}
 	}
-
+	_processResult = ENUMS::MethodProcessResult::SUCCESS;
 	return ENUMS::MethodProcessResult::SUCCESS;
 }
 
@@ -476,25 +487,36 @@ SOP_Operator::cookMySop(OP_Context& context)
 {	
 	DEFAULTS_CookMySop()
 		
+	// check how many inputs is connected
+	const auto is0Connected = getInput(0) == nullptr ? false : true;
+	const auto is1Connected = getInput(1) == nullptr ? false : true;
+
 	// check process mode
 	auto success = ENUMS::MethodProcessResult::SUCCESS;
 
 	PRM_ACCESS::Get::IntPRM(this, this->_processModeChoiceMenuValue, UI::processModeChoiceMenu_Parameter, currentTime);
-	if (this->_processModeChoiceMenuValue == static_cast<bool>(ENUMS::ProcessModeOption::PAIR)) success = WhenProcessAsPair(progress, context, currentTime);
-		
-	if (success == ENUMS::MethodProcessResult::SUCCESS && duplicateSource(static_cast<exint>(ENUMS::ProcessedInputType::CONVEX_HULLS), context, this->gdp) < OP_ERROR::UT_ERROR_WARNING && error() < OP_ERROR::UT_ERROR_WARNING)
-	{		
-		// check how many inputs is connected
-		const auto is0Connected = getInput(0) == nullptr ? false : true;
-		const auto is1Connected = getInput(1) == nullptr ? false : true;
+	if (this->_processModeChoiceMenuValue == static_cast<exint>(ENUMS::ProcessModeOption::PAIR))
+	{
+		if (!is0Connected || !is1Connected)
+		{			
+			this->addError(SOP_MESSAGE, "In pair process mode both inputs needs to be connected.");
+			return error();
+		}
 
+		success = WhenProcessAsPair(progress, context, currentTime);
+		if (success != ENUMS::MethodProcessResult::SUCCESS) return error();
+	}
+		
+	// famous last job...
+	if (duplicateSource(static_cast<exint>(ENUMS::ProcessedInputType::CONVEX_HULLS), context, this->gdp) < OP_ERROR::UT_ERROR_WARNING && error() < OP_ERROR::UT_ERROR_WARNING)
+	{				
 		if (is0Connected && is1Connected)
 		{
 			success = ProcessBundleSpecific(progress, context, ENUMS::ProcessedInputType::CONVEX_HULLS, currentTime);
 			if (success != ENUMS::MethodProcessResult::SUCCESS) return error();
 		}
-	
-		success = ProcessHullSpecific(progress, currentTime);
+			
+		ProcessHullSpecific(progress, currentTime);	
 	}
 	
 	return error();
@@ -505,27 +527,41 @@ SOP_Operator::cookMySopOutput(OP_Context& context, int outputidx, SOP_Node* inte
 {
 	DEFAULTS_CookMySopOutput()
 
-	auto errorMessage = ev_GetErrorText(interests->error());
-	if (errorMessage == (std::string("One of the inputs is missing \"") + std::string(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_ID)) + std::string("\" attribute."))) std::cout << "YAY" << std::endl;
-
-	/*
 	// check how many inputs is connected
 	const auto is0Connected = getInput(0) == nullptr ? false : true;
 	const auto is1Connected = getInput(1) == nullptr ? false : true;
 		
 	if (is0Connected && !is1Connected) return result;	
+	
+	// check process mode	
+	auto success = ENUMS::MethodProcessResult::SUCCESS;
 
-	// get second input geometry	
+	PRM_ACCESS::Get::IntPRM(this, this->_processModeChoiceMenuValue, UI::processModeChoiceMenu_Parameter, currentTime);
+	if (this->_processModeChoiceMenuValue == static_cast<exint>(ENUMS::ProcessModeOption::PAIR))
+	{
+		if (!is0Connected || !is1Connected)
+		{
+			this->addError(SOP_MESSAGE, "In pair process mode both inputs needs to be connected.");
+			return result;
+		}
+
+		success = WhenProcessAsPair(progress, context, currentTime);
+		if (success != ENUMS::MethodProcessResult::SUCCESS) return result;
+	}
+	
+	// famous last job...
 	if (duplicateSource(static_cast<exint>(ENUMS::ProcessedInputType::ORIGINAL_GEOMETRY), context, this->gdp) < OP_ERROR::UT_ERROR_WARNING && error() < OP_ERROR::UT_ERROR_WARNING)
 	{
-		const auto success = ProcessBundleSpecific(progress, context, ENUMS::ProcessedInputType::ORIGINAL_GEOMETRY, currentTime);
+		success = ProcessBundleSpecific(progress, context, ENUMS::ProcessedInputType::ORIGINAL_GEOMETRY, currentTime);
 		if (success != ENUMS::MethodProcessResult::SUCCESS)
 		{
 			this->gdp->clear();
 			return result;
 		}
+
+		if (this->_processModeChoiceMenuValue == static_cast<exint>(ENUMS::ProcessModeOption::SINGLES)) ProcessHullSpecific(progress, currentTime);
 	}
-	*/
+	
 	return result;
 }
 

@@ -95,7 +95,7 @@ DECLARE_SOP_Namespace_Start()
 		ENUMS::MethodProcessResult  GRPPerBundle(GA_Offset primitiveoffset, UT_Map<exint, GA_PrimitiveGroup*>& mappedbundlegroups, const GA_ROHandleI& bundleidhandle, fpreal time);
 		ENUMS::MethodProcessResult	ProcessBundleSpecific(UT_AutoInterrupt progress, OP_Context& context, ENUMS::ProcessedInputType processedinputtype, fpreal time);
 
-		bool						_processModeChoiceMenuValue;
+		exint						_processModeChoiceMenuValue;
 
 		bool						_addHullCountAttributeValue;
 		bool						_addHullIDAttributeValue;		
@@ -103,6 +103,8 @@ DECLARE_SOP_Namespace_Start()
 		
 		bool						_addBundleCountAttributeValue;
 		bool						_groupPerBundleValue;
+
+		static ENUMS::MethodProcessResult _processResult;
 	};
 
 DECLARE_SOP_Namespace_End
