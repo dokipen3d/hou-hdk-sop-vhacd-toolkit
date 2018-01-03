@@ -1,8 +1,9 @@
 /*
-	Enum for common attribute names.
+	Volumetric-Hierarchical Approximate Convex Decomposition.
+	Based on https://github.com/kmammou/v-hacd
 
 	IMPORTANT! ------------------------------------------
-	* this should be synchronized with VHACDCommonName.h
+	* Macros starting and ending with '____' shouldn't be used anywhere outside of this file.
 	-----------------------------------------------------
 
 	Author: 	SWANN
@@ -23,88 +24,63 @@
 */
 
 #pragma once
-#ifndef ____vhacd_common_name_option_h____
-#define ____vhacd_common_name_option_h____
+#ifndef ____prms_vhacd_generate_h____
+#define ____prms_vhacd_generate_h____
 
 /* -----------------------------------------------------------------
 INCLUDES                                                           |
 ----------------------------------------------------------------- */
 
-// SESI
-#if _WIN32		
-	#include <sys/SYS_Types.h>
-#else
-	#include <SYS/SYS_Types.h>
-#endif
-
 // hou-hdk-common
-#include "Macros/Namespace.h"
+#include <Macros/SwitcherPRM.h>
+#include <Macros/GroupMenuPRM.h>
+
+// this
+#include "SOP_VHACDGenerate.h"
 
 /* -----------------------------------------------------------------
-ENUM                                                               |
+DEFINES                                                            |
 ----------------------------------------------------------------- */
 
-DECLARE_Base_Namespace_Start()
-namespace Enums
+#define SOP_Operator GET_SOP_Namespace()::SOP_VHACDGenerate
+
+/* -----------------------------------------------------------------
+PARAMETERS                                                         |
+----------------------------------------------------------------- */
+
+DECLARE_SOP_Namespace_Start()
+
+namespace UI
 {
-	enum class VHACDCommonNameOption : exint
+	__DECLARE__Filter_Section_PRM(2)
+	DECLARE_Default_PrimitiveGroup_Input_0_PRM(input0)
+
+	static auto		processModeChoiceMenuParm_Name = PRM_Name("processmode", "Process Mode");
+	static auto		processModeChoiceMenuParm_Range = PRM_Range(PRM_RANGE_RESTRICTED, 0, PRM_RANGE_RESTRICTED, 2);
+	static PRM_Name processModeChoiceMenuParm_Choices[] =
 	{
-		// toolkit global
-		TOOLKIT_TABMENU_PATH,
-		TOOLKIT_ICONNAME,
-
-		SOP_OUTPUTNAME_CONVEXHULLS,
-		SOP_OUTPUTNAME_ORIGINALGEOMETRY,
-
-		// SOP_VHACDDelete only
-		SOP_DELETE_ICONNAME,
-		SOP_DELETE_SMALLNAME,
-		SOP_DELETE_BIGNAME,
-		
-		// SOP_VHACDEngine only
-		SOP_ENGINE_ICONNAME,
-		SOP_ENGINE_SMALLNAME,
-		SOP_ENGINE_BIGNAME,
-
-		// SOP_VHACDGenerate 2.0 only
-		SOP_GENERATE_ICONNAME,
-		SOP_GENERATE_SMALLNAME,
-		SOP_GENERATE_BIGNAME,
-		SOP_GENERATE_GROUP_PRMNAME,
-		MSS_GENERATE_SMALLNAME,
-		MSS_GENERATE_BIGNAME,
-		MSS_GENERATE_PROMPT,
-
-		// SOP_VHACDScoutJunior 1.0 only
-		SOP_SCOUT_JUNIOR_ICONNAME,
-		SOP_SCOUT_JUNIOR_SMALLNAME,
-		SOP_SCOUT_JUNIOR_BIGNAME,
-
-		// SOP_VHACDScoutSenior 1.0 only
-		SOP_SCOUT_SENIOR_ICONNAME,
-		SOP_SCOUT_SENIOR_SMALLNAME,
-		SOP_SCOUT_SENIOR_BIGNAME,
-
-		// SOP_VHACDSetup 2.0 only
-		SOP_SETUP_ICONNAME,
-		SOP_SETUP_SMALLNAME,
-		SOP_SETUP_BIGNAME,
-		SOP_SETUP_GROUP_PRMNAME,
-		MSS_SETUP_SMALLNAME,
-		MSS_SETUP_BIGNAME,
-		MSS_SETUP_PROMPT,
-
-		// SOP_VHACDMerge 2.0 only
-		SOP_MERGE_ICONNAME,
-		SOP_MERGE_SMALLNAME,
-		SOP_MERGE_BIGNAME,
-
-		// SOP_VHACDTransform 2.0 only
-		SOP_TRANSFORM_ICONNAME,
-		SOP_TRANSFORM_SMALLNAME,
-		SOP_TRANSFORM_BIGNAME
+		PRM_Name("0", "As One Element"),
+		PRM_Name("1", "Per Each Element"),
+		PRM_Name("2", "Per Group"),
+		PRM_Name(nullptr)
 	};
-}
-DECLARE_Base_Namespace_End
+	static auto		processModeChoiceMenuParm_ChoiceList = PRM_ChoiceList(PRM_CHOICELIST_SINGLE, processModeChoiceMenuParm_Choices);
+	auto			processModeChoiceMenu_Parameter = PRM_Template(PRM_ORD, 1, &processModeChoiceMenuParm_Name, 0, &processModeChoiceMenuParm_ChoiceList, &processModeChoiceMenuParm_Range, 0, nullptr, 1, "Specify process mode.");
 
-#endif // !____vhacd_common_name_option_h____
+	__DECLARE_Main_Section_PRM(0)
+
+	__DECLARE_Additional_Section_PRM(4)
+	DECLARE_DescriptionPRM(SOP_Operator)
+
+	__DECLARE_Debug_Section_PRM(0)
+}
+		
+DECLARE_SOP_Namespace_End
+
+/* -----------------------------------------------------------------
+UNDEFINES                                                          |
+----------------------------------------------------------------- */
+
+#undef SOP_Operator
+
+#endif // !____prms_vhacd_generate_h____

@@ -1,5 +1,5 @@
 /*
-	Abstract base node class for VHACD toolkit.
+	Base node class for VHACD Scout nodes.
 
 	IMPORTANT! ------------------------------------------
 	* Macros starting and ending with '____' shouldn't be used anywhere outside of this file.

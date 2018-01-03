@@ -79,6 +79,44 @@ V-HACD ENGINE                                                      |
 	
 	# specify destination path	
 	HOU_SETUP_DSO_OUTPUTS(${CMAKE_CURRENT_SOURCE_DIR} ${CURRENT_PROJECT_NAME})	
+
+#[[-----------------------------------------------------------------
+V-HACD GENERATE                                                    |
+------------------------------------------------------------------]]
+
+	Set(CURRENT_PROJECT_NAME SOP_VHACDGenerate)
+	Add_Library(${CURRENT_PROJECT_NAME}
+		SHARED
+		${HDK_SOP_VHACDGENERATE_INCLUDE_FILES} 
+		${HDK_SOP_VHACDGENERATE_SOURCE_FILES}
+		${HDK_VHACDTOOLKIT_3RDPARTY_INCLUDE_FILES}
+		${HDK_VHACDTOOLKIT_3RDPARTY_SOURCE_FILES}
+		${HDK_VHACDTOOLKIT_3RDPARTY_OPENCL_KERNEL_FILES}
+	)
+	
+	# pack operator files into its own filter
+	Source_Group("Operator\\Headers" 	FILES ${HDK_SOP_VHACDGENERATE_INCLUDE_FILES})
+	Source_Group("Operator\\Source" 	FILES ${HDK_SOP_VHACDGENERATE_SOURCE_FILES})	
+	
+	# pack V-HACD files into its own filter
+	Source_Group("3rdParty\\Headers" 	FILES ${HDK_VHACDTOOLKIT_3RDPARTY_INCLUDE_FILES})
+	Source_Group("3rdParty\\Source" 	FILES ${HDK_VHACDTOOLKIT_3RDPARTY_SOURCE_FILES})	
+	Source_Group("3rdParty\\OpenCL" 	FILES ${HDK_VHACDTOOLKIT_3RDPARTY_OPENCL_KERNEL_FILES})
+	
+	Target_Include_Directories(${CURRENT_PROJECT_NAME} 
+		PUBLIC 
+		"${HDK_SOP_VHACDGENERATE_INCLUDE_DIR}"
+		PRIVATE 
+		"${HOUDINI_INCLUDE_DIRS}"
+		"${HDK_COMMON_INCLUDE_DIR}"
+		"${HDK_VHACDTOOLKIT_COMMON_INCLUDE_DIR}"
+		"${HDK_VHACDTOOLKIT_3RDPARTY_INCLUDE_DIR}"				
+	)			
+
+	Target_Link_Libraries(${CURRENT_PROJECT_NAME} PRIVATE ${HOUDINI_LIBRARIES})
+	
+	# specify destination path	
+	HOU_SETUP_DSO_OUTPUTS(${CMAKE_CURRENT_SOURCE_DIR} ${CURRENT_PROJECT_NAME})	
 	
 #[[-----------------------------------------------------------------
 V-HACD OTHER NODES                                                 |
