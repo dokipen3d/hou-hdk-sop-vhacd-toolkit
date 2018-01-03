@@ -1,8 +1,8 @@
 /*
-	Helper for specyfing process mode;
+	Volumetric-Hierarchical Approximate Convex Decomposition.
+	Based on https://github.com/kmammou/v-hacd
 
 	IMPORTANT! ------------------------------------------
-	* Macros starting and ending with '____' shouldn't be used anywhere outside of this file.
 	-----------------------------------------------------
 
 	Author: 	SWANN
@@ -23,29 +23,72 @@
 */
 
 #pragma once
-#ifndef ____process_mode_option_h____
-#define ____process_mode_option_h____
+#ifndef ____sop_vhacd_scout_junior_h____
+#define ____sop_vhacd_scout_junior_h____
 
 /* -----------------------------------------------------------------
 INCLUDES                                                           |
 ----------------------------------------------------------------- */
 
+// SESI
+#include <MSS/MSS_ReusableSelector.h>
+
 // hou-hdk-common
-#include "Macros/Namespace.h"
+#include <Macros/CookMySop.h>
+#include <Macros/DescriptionPRM.h>
+#include <Macros/Namespace.h>
+#include <Macros/UpdateParmsFlags.h>
+#include <Enums/MethodProcessResult.h>
+
+// this
+#include "SOP_VHACDScout.h"
 
 /* -----------------------------------------------------------------
-ENUM                                                               |
+FORWARDS                                                           |
 ----------------------------------------------------------------- */
 
-DECLARE_Base_Namespace_Start()
-namespace Enums
-{
-	enum class ProcessModeOption : exint
-	{
-		PAIR,
-		SINGLES
-	};
-}
-DECLARE_Base_Namespace_End
+class UT_AutoInterrupt;
+class GEO_PrimClassifier;
 
-#endif // !____process_mode_option_h____
+/* -----------------------------------------------------------------
+DEFINES                                                            |
+----------------------------------------------------------------- */
+
+#define CONTAINERS					GET_Base_Namespace()::Containers
+#define ENUMS						GET_Base_Namespace()::Enums
+
+/* -----------------------------------------------------------------
+DECLARATION                                                        |
+----------------------------------------------------------------- */
+
+DECLARE_SOP_Namespace_Start()
+
+	class SOP_VHACDScoutJunior final : public SOP_VHACDScout
+	{
+		DECLARE_CookMySop()
+		DECLARE_UpdateParmsFlags()
+
+		DECLARE_DescriptionPRM_Callback()
+
+	protected:
+		~SOP_VHACDScoutJunior() override;
+		SOP_VHACDScoutJunior(OP_Network* network, const char* name, OP_Operator* op);
+		const char*					inputLabel(unsigned input) const override;
+
+	public:
+		static OP_Node*				CreateMe(OP_Network* network, const char* name, OP_Operator* op);
+		static PRM_Template			parametersList[];		
+
+		static int					CallbackGRPPerHull(void* data, int index, float time, const PRM_Template* tmp);
+	};
+
+DECLARE_SOP_Namespace_End
+
+/* -----------------------------------------------------------------
+UNDEFINES                                                          |
+----------------------------------------------------------------- */
+
+#undef ENUMS
+#undef CONTAINERS
+
+#endif // !____sop_vhacd_scout_junior_h____

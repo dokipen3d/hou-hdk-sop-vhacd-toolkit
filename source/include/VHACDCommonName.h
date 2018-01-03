@@ -79,10 +79,15 @@ namespace Containers
 			this->Add(ENUMS::VHACDCommonNameOption::SOP_GENERATE_BIGNAME,				"Generate (v-hacd)");
 			this->Add(ENUMS::VHACDCommonNameOption::SOP_GENERATE_ICONNAME,				this->Get(ENUMS::VHACDCommonNameOption::TOOLKIT_ICONNAME));
 
-			// SOP_VHACDScout only			
-			this->Add(ENUMS::VHACDCommonNameOption::SOP_SCOUT_SMALLNAME,				"vhacd::scout::2.0");
-			this->Add(ENUMS::VHACDCommonNameOption::SOP_SCOUT_BIGNAME,					"Scout (v-hacd)");
-			this->Add(ENUMS::VHACDCommonNameOption::SOP_SCOUT_ICONNAME,					this->Get(ENUMS::VHACDCommonNameOption::TOOLKIT_ICONNAME));			
+			// SOP_VHACDScoutJunior only
+			this->Add(ENUMS::VHACDCommonNameOption::SOP_SCOUT_JUNIOR_SMALLNAME,			"vhacd::scoutjunior::1.0");
+			this->Add(ENUMS::VHACDCommonNameOption::SOP_SCOUT_JUNIOR_BIGNAME,			"Scout Jr. (v-hacd)");
+			this->Add(ENUMS::VHACDCommonNameOption::SOP_SCOUT_JUNIOR_ICONNAME,			this->Get(ENUMS::VHACDCommonNameOption::TOOLKIT_ICONNAME));
+
+			// SOP_VHACDScoutSenior only
+			this->Add(ENUMS::VHACDCommonNameOption::SOP_SCOUT_SENIOR_SMALLNAME,			"vhacd::scoutsenior::1.0");
+			this->Add(ENUMS::VHACDCommonNameOption::SOP_SCOUT_SENIOR_BIGNAME,			"Scout Sr. (v-hacd)");
+			this->Add(ENUMS::VHACDCommonNameOption::SOP_SCOUT_SENIOR_ICONNAME,			this->Get(ENUMS::VHACDCommonNameOption::TOOLKIT_ICONNAME));
 
 			// SOP_VHACDSetup only			
 			this->Add(ENUMS::VHACDCommonNameOption::SOP_SETUP_SMALLNAME,				"vhacd::setup::2.0");

@@ -23,8 +23,8 @@
 */
 
 #pragma once
-#ifndef ____prms_vhacdscout_h____
-#define ____prms_vhacdscout_h____
+#ifndef ____prms_vhacd_scout_junior_h____
+#define ____prms_vhacd_scout_junior_h____
 
 /* -----------------------------------------------------------------
 INCLUDES                                                           |
@@ -36,19 +36,13 @@ INCLUDES                                                           |
 #include <Macros/StringPRM.h>
 
 // this
-#include "SOP_VHACDScout.h"
+#include "SOP_VHACDScoutJunior.h"
 
 /* -----------------------------------------------------------------
 DEFINES                                                            |
 ----------------------------------------------------------------- */
 
-#define SOP_Operator GET_SOP_Namespace()::SOP_VHACDScout
-
-/* -----------------------------------------------------------------
-USING                                                              |
------------------------------------------------------------------ */
-
-// YOUR CODE GOES HERE...
+#define SOP_Operator		GET_SOP_Namespace()::SOP_VHACDScoutJunior
 
 /* -----------------------------------------------------------------
 PARAMETERS                                                         |
@@ -57,27 +51,12 @@ PARAMETERS                                                         |
 DECLARE_SOP_Namespace_Start()
 
 	namespace UI
-	{		
-		__DECLARE__Filter_Section_PRM(1)
-		static auto		processModeChoiceMenuParm_Name = PRM_Name("processmode", "Process Mode");
-		static auto		processModeChoiceMenuParm_Range = PRM_Range(PRM_RANGE_RESTRICTED, 0, PRM_RANGE_RESTRICTED, 1);
-		static PRM_Name processModeChoiceMenuParm_Choices[] =
-		{
-			PRM_Name("0", "Pair"),
-			PRM_Name("1", "Singles"),
-			PRM_Name(nullptr)
-		};
-		static auto		processModeChoiceMenuParm_ChoiceList = PRM_ChoiceList(PRM_CHOICELIST_SINGLE, processModeChoiceMenuParm_Choices);
-		auto			processModeChoiceMenu_Parameter = PRM_Template(PRM_ORD, 1, &processModeChoiceMenuParm_Name, nullptr, &processModeChoiceMenuParm_ChoiceList, &processModeChoiceMenuParm_Range, 0, nullptr, 1, "Define if inputs should be processed as pair or each separate.");
-
-		__DECLARE_Main_Section_PRM(12)
-		DECLARE_Toggle_with_Separator_OFF_PRM("addbundlecountattribute", "Add Bundle Count ATT", "addbundlecountattributeseparator", 0, "Create detail bundle count attribute with infomation about how many convex hulls bundles were detected.", addBundleCountAttribute)
+	{
+		__DECLARE_Main_Section_PRM(7)	
 		DECLARE_Toggle_with_Separator_OFF_PRM("addhullcountattribute", "Add Hull Count ATT", "addhullcountattributeseparator", 0, "Create detail hull count attribute with infomation about how many convex hulls were detected.", addHullCountAttribute)				
 		DECLARE_Toggle_with_Separator_OFF_PRM("addhullidattribute", "Add Hull ID ATT", "addhullidattributeseparator", 0, "Create primitive hull id attribute with membership infomation that helps identify to which convex hull polygons belongs to.", addHullIDAttribute)
 		DECLARE_Toggle_with_Separator_OFF_PRM("groupperhull", "GRP Per Hull", "groupperhullseparator", &SOP_Operator::CallbackGRPPerHull, "Create primitive bundle id attribute with membership infomation that helps identify to which bundle polygons belongs to.", groupPerHull)
-		DECLARE_Custom_String_PRM("specifyhullgroupname", "Name", "hull_", "Pick partial name for hull groups.", specifyHullGroupName)		
-		DECLARE_Toggle_with_Separator_OFF_PRM("groupperbundle", "GRP Per Bundle", "groupperbundleseparator", &SOP_Operator::CallbackGRPPerBundle, "Create primitive bundle id attribute with membership infomation that helps identify to which bundle polygons belongs to.", groupPerBundle)
-		DECLARE_Custom_String_PRM("specifybundlegroupname", "Name", "bundle_", "Pick partial name for bundle groups.", specifyBundleGroupName)
+		DECLARE_Custom_String_PRM("specifyhullgroupname", "Name", "hull_", "Pick partial name for hull groups.", specifyHullGroupName)
 
 		__DECLARE_Additional_Section_PRM(4)
 		DECLARE_DescriptionPRM(SOP_Operator)
@@ -91,4 +70,4 @@ UNDEFINES                                                          |
 
 #undef SOP_Operator
 
-#endif // !____prms_vhacdscout_h____
+#endif // !____prms_vhacd_scout_junior_h____

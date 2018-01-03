@@ -1,8 +1,8 @@
 /*
-	Abstract base node class for VHACD toolkit.
+	Volumetric-Hierarchical Approximate Convex Decomposition.
+	Based on https://github.com/kmammou/v-hacd
 
 	IMPORTANT! ------------------------------------------
-	* Macros starting and ending with '____' shouldn't be used anywhere outside of this file.
 	-----------------------------------------------------
 
 	Author: 	SWANN
@@ -23,58 +23,51 @@
 */
 
 #pragma once
-#ifndef ____sop_vhacdnode_h____
-#define ____sop_vhacdnode_h____
+#ifndef ____prms_vhacd_scout_senior_h____
+#define ____prms_vhacd_scout_senior_h____
 
 /* -----------------------------------------------------------------
 INCLUDES                                                           |
 ----------------------------------------------------------------- */
 
-// SESI
-#include <SOP/SOP_Node.h>
-
 // hou-hdk-common
-#include <Macros/Namespace.h>
-#include <Macros/ProgressEscape.h>
+#include <Macros/SwitcherPRM.h>
+#include <Macros/TogglePRM.h>
+#include <Macros/StringPRM.h>
+#include <Macros/ErrorLevelMenuPRM.h>
 
 // this
-#include "VHACDCommonName.h"
-#include "VHACDCommonAttributeName.h"
+#include "SOP_VHACDScoutSenior.h"
 
 /* -----------------------------------------------------------------
 DEFINES                                                            |
 ----------------------------------------------------------------- */
 
-#define CONTAINERS				GET_Base_Namespace()::Containers
-#define ENUMS					GET_Base_Namespace()::Enums
+#define SOP_Operator GET_SOP_Namespace()::SOP_VHACDScoutSenior
 
 /* -----------------------------------------------------------------
-DECLARATION                                                        |
+PARAMETERS                                                         |
 ----------------------------------------------------------------- */
 
 DECLARE_SOP_Namespace_Start()
 
-class SOP_VHACDNode : public SOP_Node
-{
-protected:
-	SOP_VHACDNode(OP_Network* network, const char* name, OP_Operator* op) : SOP_Node(network, name, op) { }
-	
-	CONTAINERS::VHACDCommonAttributeName	_commonAttributeNames = CONTAINERS::VHACDCommonAttributeName();
+	namespace UI
+	{
+		__DECLARE__Filter_Section_PRM(1)
+			DECLARE_ErroLevelMenu_PRM("missingbundleiderrorlevel", "Missing Bundle ID", 1, 0, "Specify error level of when \"bundle_id\" attribute is not found on one of the inputs.", missingBundleID)
 
-	GA_ROHandleI							_convexBundleIDHandle;
-	GA_ROHandleI							_originalBundleIDHandle;
+		__DECLARE_Main_Section_PRM(12)
+			DECLARE_Toggle_with_Separator_OFF_PRM("addbundlecountattribute", "Add Bundle Count ATT", "addbundlecountattributeseparator", 0, "Create detail bundle count attribute with infomation about how many convex hulls bundles were detected.", addBundleCountAttribute)
+			DECLARE_Toggle_with_Separator_OFF_PRM("addhullcountattribute", "Add Hull Count ATT", "addhullcountattributeseparator", 0, "Create detail hull count attribute with infomation about how many convex hulls were detected.", addHullCountAttribute)
+			DECLARE_Toggle_with_Separator_OFF_PRM("addhullidattribute", "Add Hull ID ATT", "addhullidattributeseparator", 0, "Create primitive hull id attribute with membership infomation that helps identify to which convex hull polygons belongs to.", addHullIDAttribute)
+			DECLARE_Toggle_with_Separator_OFF_PRM("groupperhull", "GRP Per Hull", "groupperhullseparator", &SOP_Operator::CallbackGRPPerHull, "Create primitive bundle id attribute with membership infomation that helps identify to which bundle polygons belongs to.", groupPerHull)
+			DECLARE_Custom_String_PRM("specifyhullgroupname", "Name", "hull_", "Pick partial name for hull groups.", specifyHullGroupName)
+			DECLARE_Toggle_with_Separator_OFF_PRM("groupperbundle", "GRP Per Bundle", "groupperbundleseparator", &SOP_Operator::CallbackGRPPerBundle, "Create primitive bundle id attribute with membership infomation that helps identify to which bundle polygons belongs to.", groupPerBundle)
+			DECLARE_Custom_String_PRM("specifybundlegroupname", "Name", "bundle_", "Pick partial name for bundle groups.", specifyBundleGroupName)
 
-	GA_RWHandleI							_hullCountHandle;
-	GA_RWHandleI							_hullIDHandle;
-	GA_RWHandleI							_bundleCountHandle;
-	GA_RWHandleI							_bundleIDHandle;
-};
-
-/* -----------------------------------------------------------------
-DEFAULT VARIABLES                                                  |
------------------------------------------------------------------ */
-
-static CONTAINERS::VHACDCommonName			COMMON_NAMES = CONTAINERS::VHACDCommonName();
+		__DECLARE_Additional_Section_PRM(4)
+			DECLARE_DescriptionPRM(SOP_Operator)
+	}
 
 DECLARE_SOP_Namespace_End
 
@@ -82,7 +75,6 @@ DECLARE_SOP_Namespace_End
 UNDEFINES                                                          |
 ----------------------------------------------------------------- */
 
-#undef ENUMS
-#undef CONTAINERS
+#undef SOP_Operator
 
-#endif // !____sop_vhacdnode_h____
+#endif // !____prms_vhacd_scout_senior_h____

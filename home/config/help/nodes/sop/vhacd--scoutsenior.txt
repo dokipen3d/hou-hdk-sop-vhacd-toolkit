@@ -1,0 +1,75 @@
+#type: node
+#context: sop
+#internal: setup
+#icon: /nodes/sop/SOP_VHACD.png
+
+#tags: shape
+
+= Scout (v-hacd) =
+
+""" Generate some additional data per hull/bundle. """
+
+Use this node to add/create additional data that other nodes in V-HACD toolkit may require.
+For example, V-HACD Debug node requires ((hull_id)) attribute to properly visualize and explode convex hulls.
+
+@parameters
+
+== Filter ==
+
+Process Mode:
+	#id: processmode
+	Specify how inputs should be processed.
+	
+	Pair:
+		#id: 0
+		Bundle attribute checks in this mode will be synchronized.
+
+	Singles:
+		#id: 1
+		Inputs are not synchronized and attribute checks are performed separately per input.
+		
+== Main ==
+		
+Add Bundle Count ATT:
+	#id: addbundlecountattribute
+	Add ((bundle_count)) primitive attribute that stores information about how many bundles were detected.
+
+Add Hull Count ATT:
+	#id: addhullcountattribute
+	Add ((hull_count)) detail attribute that stores information about how many convex hulls were detected.
+
+Add Hull ID ATT:
+	#id: addhullidattribute
+	Add ((hull_id)) primitive attribute that helps to identify to which convex hull polygons belongs.
+
+GRP Per Hull:
+	#id: groupperhull
+	Create primitive group per each detected convex hull.
+
+	Name:
+		#id: specifyhullgroupname
+		Specify convex hulls group partial name.
+		
+		
+GRP Per Bundle:
+	#id: groupperbundle
+	Create primitive group per each detected convex bundle.
+	
+	Name:
+		#id: specifybundlegroupname
+		Specify bundle group partial name.
+
+== Additional ==
+
+[Include:parameters--description#adddescription]
+[Include:parameters--description#cleandescription]
+[Include:parameters--description#descriptionmessage]
+
+@related
+- [Node:sop/vhacd--generate]
+- [Node:sop/vhacd--scout]
+- [Node:sop/vhacd--merge]
+- [Node:sop/vhacd--debug]
+- [Node:sop/vhacd--delete]
+- [Node:sop/vhacd--transform]
+- [Node:sop/vhacd--export]

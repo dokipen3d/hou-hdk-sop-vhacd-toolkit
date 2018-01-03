@@ -23,8 +23,8 @@
 */
 
 #pragma once
-#ifndef ____sop_vhacdscout_h____
-#define ____sop_vhacdscout_h____
+#ifndef ____sop_vhacd_scout_senior_h____
+#define ____sop_vhacd_scout_senior_h____
 
 /* -----------------------------------------------------------------
 INCLUDES                                                           |
@@ -41,7 +41,7 @@ INCLUDES                                                           |
 #include <Enums/MethodProcessResult.h>
 
 // this
-#include "SOP_VHACDNode.h"
+#include "SOP_VHACDScout.h"
 #include "ProcessedInputType.h"
 
 /* -----------------------------------------------------------------
@@ -64,7 +64,7 @@ DECLARATION                                                        |
 
 DECLARE_SOP_Namespace_Start()
 
-	class SOP_VHACDScout : public SOP_VHACDNode
+	class SOP_VHACDScoutSenior final : public SOP_VHACDScout
 	{
 		DECLARE_CookMySop_Multi()
 		DECLARE_UpdateParmsFlags()
@@ -72,34 +72,27 @@ DECLARE_SOP_Namespace_Start()
 		DECLARE_DescriptionPRM_Callback()
 
 	protected:
-		~SOP_VHACDScout() override;
-		SOP_VHACDScout(OP_Network* network, const char* name, OP_Operator* op);
+		~SOP_VHACDScoutSenior() override;
+		SOP_VHACDScoutSenior(OP_Network* network, const char* name, OP_Operator* op);
 		const char*					inputLabel(unsigned input) const override;
 
 	public:
 		static OP_Node*				CreateMe(OP_Network* network, const char* name, OP_Operator* op);
 		static PRM_Template			parametersList[];		
-
+		
 		static int					CallbackGRPPerHull(void* data, int index, float time, const PRM_Template* tmp);
 		static int					CallbackGRPPerBundle(void* data, int index, float time, const PRM_Template* tmp);
 		
 	private:
-		ENUMS::MethodProcessResult	WhenProcessAsPair(UT_AutoInterrupt progress, OP_Context& context, fpreal time);
-
-		ENUMS::MethodProcessResult  AddHullCountATT(const GEO_PrimClassifier& classifier);
-		ENUMS::MethodProcessResult  AddHullIDATT(UT_AutoInterrupt progress, const GEO_PrimClassifier& classifier);
-		ENUMS::MethodProcessResult  GRPPerHull(UT_AutoInterrupt progress, const GEO_PrimClassifier& classifier, fpreal time);
-		ENUMS::MethodProcessResult	ProcessHullSpecific(UT_AutoInterrupt progress, fpreal time);
-
+		ENUMS::MethodProcessResult  BothDetailsHaveBundleID(const GU_Detail* convexdetail, const GU_Detail* originaldetail, fpreal time);
+		ENUMS::MethodProcessResult	BundleIDsCountMatch(const UT_Set<exint>& uniqueconvexbundleids, const UT_Set<exint>& uniqueoriginalbundlids);
+		ENUMS::MethodProcessResult	AllBundleIDsAreTwins(UT_AutoInterrupt progress, const UT_Array<exint>& unsortedconvexbundleids, const UT_Array<exint>& unsortedoriginalbundlids);
+		ENUMS::MethodProcessResult	CompareBundleIDs(UT_AutoInterrupt progress, const GU_Detail* convexdetail, const GU_Detail* originaldetail, fpreal time); // TODO: this one is a good candidate for multithreading
+		ENUMS::MethodProcessResult	CheckBundleIDMismatch(UT_AutoInterrupt progress, OP_Context& context, fpreal time);
+		
 		ENUMS::MethodProcessResult  AddBundleCountATT(exint bundlescount);
 		ENUMS::MethodProcessResult  GRPPerBundle(GA_Offset primitiveoffset, UT_Map<exint, GA_PrimitiveGroup*>& mappedbundlegroups, const GA_ROHandleI& bundleidhandle, fpreal time);
 		ENUMS::MethodProcessResult	ProcessBundleSpecific(UT_AutoInterrupt progress, OP_Context& context, ENUMS::ProcessedInputType processedinputtype, fpreal time);
-
-		exint						_processModeChoiceMenuValue;
-
-		bool						_addHullCountAttributeValue;
-		bool						_addHullIDAttributeValue;		
-		bool						_groupPerHullValue;
 		
 		bool						_addBundleCountAttributeValue;
 		bool						_groupPerBundleValue;
@@ -114,4 +107,4 @@ UNDEFINES                                                          |
 #undef ENUMS
 #undef CONTAINERS
 
-#endif // !____sop_vhacdscout_h____
+#endif // !____sop_vhacd_scout_senior_h____

@@ -85,7 +85,8 @@ V-HACD OTHER NODES                                                 |
 ------------------------------------------------------------------]]	
 		
 	HDK_MODULE_SETUP_SIMPLE_NODE_PROJECT("VHACDToolkit" "SOP_VHACDMerge")
-	HDK_MODULE_SETUP_SIMPLE_NODE_PROJECT("VHACDToolkit" "SOP_VHACDScout")
+	HDK_MODULE_SETUP_SIMPLE_NODE_PROJECT("VHACDToolkit" "SOP_VHACDScoutJunior")
+	HDK_MODULE_SETUP_SIMPLE_NODE_PROJECT("VHACDToolkit" "SOP_VHACDScoutSenior")
 	HDK_MODULE_SETUP_SIMPLE_NODE_PROJECT("VHACDToolkit" "SOP_VHACDSetup")	
 	
 endif()

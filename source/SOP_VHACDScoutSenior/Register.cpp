@@ -31,13 +31,13 @@ INCLUDES                                                           |
 #include <OP/OP_OperatorTable.h>
 
 // this
-#include "SOP_VHACDScout.h"
+#include "SOP_VHACDScoutSenior.h"
 
 /* -----------------------------------------------------------------
 DEFINES                                                            |
 ----------------------------------------------------------------- */
 
-#define SOP_Operator		GET_SOP_Namespace()::SOP_VHACDScout
+#define SOP_Operator		GET_SOP_Namespace()::SOP_VHACDScoutSenior
 
 #define COMMON_NAMES		GET_SOP_Namespace()::COMMON_NAMES
 #define ENUMS				GET_Base_Namespace()::Enums
@@ -51,11 +51,11 @@ newSopOperator(OP_OperatorTable* table)
 {
 	const auto sop = new OP_Operator
 	(
-		COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::SOP_SCOUT_SMALLNAME),
-		COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::SOP_SCOUT_BIGNAME),
+		COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::SOP_SCOUT_SENIOR_SMALLNAME),
+		COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::SOP_SCOUT_SENIOR_BIGNAME),
 		SOP_Operator::CreateMe,
 		SOP_Operator::parametersList,
-		1,								// min inputs 
+		2,								// min inputs 
 		2,								// max inputs
 		nullptr,
 		0,								// type of node OP_FLAG_GENERATOR (BE CAREFUL WITH THIS LITTLE FUCKER)
