@@ -54,7 +54,7 @@ DECLARE_SOP_Namespace_Start()
 	namespace UI
 	{
 		__DECLARE__Filter_Section_PRM(1)
-			DECLARE_ErroLevelMenu_PRM("missingbundleiderrorlevel", "Missing Bundle ID", 1, 0, "Specify error level of when \"bundle_id\" attribute is not found on one of the inputs.", missingBundleID)
+			DECLARE_ErroLevelMenu_PRM("missingbundleiderrorlevel", "Missing Bundle ID", 1, 0, "Specify error level when \"bundle_id\" attribute is not found on one of the inputs.", missingBundleID)
 
 		__DECLARE_Main_Section_PRM(12)
 			DECLARE_Toggle_with_Separator_OFF_PRM("addbundlecountattribute", "Add Bundle Count ATT", "addbundlecountattributeseparator", 0, "Create detail bundle count attribute with infomation about how many convex hulls bundles were detected.", addBundleCountAttribute)

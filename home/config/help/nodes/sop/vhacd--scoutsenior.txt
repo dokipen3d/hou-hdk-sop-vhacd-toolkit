@@ -5,28 +5,35 @@
 
 #tags: shape
 
-= Scout (v-hacd) =
+= Scout Sr. (v-hacd) =
 
-""" Generate some additional data per hull/bundle. """
+""" Generate some additional data per convex hull/bundle. """
 
 Use this node to add/create additional data that other nodes in V-HACD toolkit may require.
-For example, V-HACD Debug node requires ((hull_id)) attribute to properly visualize and explode convex hulls.
+To use all available parameters, this node requires ((bundle_id)) attribute.
+By default it will only set node warning when ((bundle_id)) primitive attribute is not found on one of the inputs.
 
 @parameters
 
 == Filter ==
 
-Process Mode:
-	#id: processmode
-	Specify how inputs should be processed.
+Missing Bundle ID:
+	#id: missingbundleiderrorlevel
+	Specify error level when ((bundle_id)) attribute is not found on one of the inputs.
+	:note:
+	Node will override this behaviour and set error state when user will use any parameter that requires ((bundle_id)) attribute.
 	
-	Pair:
+	None:
 		#id: 0
-		Bundle attribute checks in this mode will be synchronized.
+		Ignore when ((bundle_id)) is missing.
 
-	Singles:
+	Warning:
 		#id: 1
-		Inputs are not synchronized and attribute checks are performed separately per input.
+		Raise warning when ((bundle_id)) is missing.
+
+	Error:
+		#id: 2
+		Raise error when ((bundle_id)) is missing.
 		
 == Main ==
 		
@@ -67,7 +74,7 @@ GRP Per Bundle:
 
 @related
 - [Node:sop/vhacd--generate]
-- [Node:sop/vhacd--scout]
+- [Node:sop/vhacd--scoutjunior]
 - [Node:sop/vhacd--merge]
 - [Node:sop/vhacd--debug]
 - [Node:sop/vhacd--delete]
