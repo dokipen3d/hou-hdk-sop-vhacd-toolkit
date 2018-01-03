@@ -51,6 +51,8 @@ namespace Enums
 	{
 		HULL_COUNT,
 		HULL_ID,
+		HULL_VOLUME,
+		HULL_CENTER,
 		BUNDLE_COUNT,
 		BUNDLE_ID,
 
