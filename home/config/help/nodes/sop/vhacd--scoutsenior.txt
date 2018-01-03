@@ -10,7 +10,7 @@
 """ Generate some additional data per convex hull/bundle. """
 
 Use this node to add/create additional data that other nodes in V-HACD toolkit may require.
-To use all available parameters, this node requires ((bundle_id)) attribute.
+To use all available parameters, this node requires ((bundle_id)) primitive attribute.
 By default it will only set node warning when ((bundle_id)) primitive attribute is not found on one of the inputs.
 
 @parameters
@@ -36,13 +36,7 @@ Missing Bundle ID:
 		Raise error when ((bundle_id)) is missing.
 		
 == Main ==
-		
-Add Bundle Count ATT:
-	#id: addbundlecountattribute
-	Add ((bundle_count)) primitive attribute that stores information about how many bundles were detected.
-	:note:
-	Requires ((bundle_id)) attribute.
-	
+			
 Add Hull Count ATT:
 	#id: addhullcountattribute
 	Add ((hull_count)) detail attribute that stores information about how many convex hulls were detected.
@@ -59,7 +53,12 @@ GRP Per Hull:
 		#id: specifyhullgroupname
 		Specify convex hulls group partial name.
 		
-		
+Add Bundle Count ATT:
+	#id: addbundlecountattribute
+	Add ((bundle_count)) primitive attribute that stores information about how many bundles were detected.
+	:note:
+	Requires ((bundle_id)) attribute.
+	
 GRP Per Bundle:
 	#id: groupperbundle
 	Create primitive group per each detected convex bundle.	
