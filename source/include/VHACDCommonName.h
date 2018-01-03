@@ -85,10 +85,10 @@ namespace Containers
 			this->Add(ENUMS::VHACDCommonNameOption::SOP_SCOUT_ICONNAME,					this->Get(ENUMS::VHACDCommonNameOption::TOOLKIT_ICONNAME));			
 
 			// SOP_VHACDSetup only			
-			this->Add(ENUMS::VHACDCommonNameOption::SOP_SETUP_SMALLNAME,				"vhacd::setup::1.2");
+			this->Add(ENUMS::VHACDCommonNameOption::SOP_SETUP_SMALLNAME,				"vhacd::setup::2.0");
 			this->Add(ENUMS::VHACDCommonNameOption::SOP_SETUP_BIGNAME,					"Setup (v-hacd)");
 			this->Add(ENUMS::VHACDCommonNameOption::SOP_SETUP_GROUP_PRMNAME,			CONST_PrimitiveGroupInput0_Name);
-			this->Add(ENUMS::VHACDCommonNameOption::MSS_SETUP_SMALLNAME,				"vhacd::setupselector::1.2");
+			this->Add(ENUMS::VHACDCommonNameOption::MSS_SETUP_SMALLNAME,				"vhacd::setupselector::2.0");
 			this->Add(ENUMS::VHACDCommonNameOption::MSS_SETUP_BIGNAME,					"Setup (v-hacd selector)");
 			this->Add(ENUMS::VHACDCommonNameOption::MSS_SETUP_PROMPT,					"Select primitives. Press <enter> to accept.");
 			this->Add(ENUMS::VHACDCommonNameOption::SOP_SETUP_ICONNAME,					this->Get(ENUMS::VHACDCommonNameOption::TOOLKIT_ICONNAME));

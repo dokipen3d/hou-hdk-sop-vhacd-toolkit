@@ -68,6 +68,8 @@ PARAMETERLIST_Start(SOP_Operator)
 	UI::processModeChoiceMenu_Parameter,
 
 	UI::mainSectionSwitcher_Parameter,
+	UI::addBundleCountAttributeToggle_Parameter,
+	UI::addBundleCountAttributeSeparator_Parameter,
 	UI::addHullCountAttributeToggle_Parameter,
 	UI::addHullCountAttributeSeparator_Parameter,
 	UI::addHullIDAttributeToggle_Parameter,
@@ -75,8 +77,6 @@ PARAMETERLIST_Start(SOP_Operator)
 	UI::groupPerHullToggle_Parameter,
 	UI::groupPerHullSeparator_Parameter,
 	UI::specifyHullGroupNameString_Parameter,
-	UI::addBundleCountAttributeToggle_Parameter,
-	UI::addBundleCountAttributeSeparator_Parameter,
 	UI::groupPerBundleToggle_Parameter,
 	UI::groupPerBundleSeparator_Parameter,
 	UI::specifyBundleGroupNameString_Parameter,
@@ -105,7 +105,6 @@ SOP_Operator::updateParmsFlags()
 
 	return changed;
 }
-
 
 /* -----------------------------------------------------------------
 CALLBACKS                                                          |
