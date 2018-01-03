@@ -25,7 +25,7 @@ V-HACD updates [22-12-2017](https://www.youtube.com/watch?v=h2VCUtb8UfE&feature=
 - [ ] port SOP Export to C++
 - [ ] port SOP Generate to C++
 - [x] port [SOP Merge](https://github.com/sebastianswann/hou-hdk-sop-vhacd-toolkit/tree/master/source/SOP_VHACDMerge) to C++
-- [x] port [SOP Scout](https://github.com/sebastianswann/hou-hdk-sop-vhacd-toolkit/tree/master/source/SOP_VHACDScout) to C++
+- [x] port [SOP Scout Jr.](https://github.com/sebastianswann/hou-hdk-sop-vhacd-toolkit/tree/master/source/SOP_VHACDScoutJunior) and [SOP Scout Sr.](https://github.com/sebastianswann/hou-hdk-sop-vhacd-toolkit/tree/master/source/SOP_VHACDScoutSenior) to C++
 - [x] port [SOP Setup](https://github.com/sebastianswann/hou-hdk-sop-vhacd-toolkit/tree/master/source/SOP_VHACDSetup) to C++
 - [ ] port SOP Transform to C++
 - [x] rework [CMakeLists.txt](https://github.com/sebastianswann/hou-hdk-sop-vhacd-toolkit/blob/master/cmake/CMakeLists.txt) to automatically link [V-HACD](https://github.com/sebastianswann/hou-hdk-sop-vhacd-toolkit/tree/master/3rdParty/VHACD_Lib) library source files
