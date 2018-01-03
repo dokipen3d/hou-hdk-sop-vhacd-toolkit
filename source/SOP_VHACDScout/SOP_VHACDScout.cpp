@@ -455,7 +455,7 @@ SOP_Operator::ProcessBundleSpecific(UT_AutoInterrupt progress, OP_Context& conte
 
 			if (inputBundleIDHandle.isInvalid())
 			{
-				auto errorMessage = std::string("Input ") + std::to_string(static_cast<exint>(processedinputtype)) + std::string(" is missing \"") + std::string(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_ID)) + std::string("\" attribute.");
+				auto errorMessage = std::string("Input ") + std::to_string(static_cast<exint>(processedinputtype)) + std::string(" is missing \"") + std::string(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_ID)) + std::string("\" attribute required for this operation.");
 				this->addError(SOP_MESSAGE, errorMessage.c_str());				
 				return ENUMS::MethodProcessResult::FAILURE;
 			}
