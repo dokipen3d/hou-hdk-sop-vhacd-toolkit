@@ -461,7 +461,7 @@ SOP_Operator::cookMySop(OP_Context& context)
 		success = GDP_UTILS::Test::IsEnoughPoints(this, gdp, 4, message);
 		if ((success && error() >= OP_ERROR::UT_ERROR_WARNING) || (!success && error() >= OP_ERROR::UT_ERROR_NONE)) return error();
 			
-		// we should have only polygons now, but we need to make sure that they are all correct			
+		// we should have only polygons now, but we need to make sure that they are all correct	
 		success = PrepareGeometry(gdp, progress);
 		if ((success && error() >= OP_ERROR::UT_ERROR_WARNING) || (!success && error() >= OP_ERROR::UT_ERROR_NONE)) return error();
 

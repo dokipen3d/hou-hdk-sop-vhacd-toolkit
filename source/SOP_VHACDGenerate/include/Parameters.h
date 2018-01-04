@@ -34,6 +34,9 @@ INCLUDES                                                           |
 // hou-hdk-common
 #include <Macros/SwitcherPRM.h>
 #include <Macros/GroupMenuPRM.h>
+#include <Macros/TogglePRM.h>
+#include <Macros/IntegerPRM.h>
+#include <Macros/FloatPRM.h>
 
 // this
 #include "SOP_VHACDGenerate.h"
@@ -42,7 +45,10 @@ INCLUDES                                                           |
 DEFINES                                                            |
 ----------------------------------------------------------------- */
 
-#define SOP_Operator GET_SOP_Namespace()::SOP_VHACDGenerate
+#define SOP_Operator		GET_SOP_Namespace()::SOP_VHACDGenerate
+#define COMMON_PRM_NAMES	GET_SOP_Namespace()::COMMON_PRM_NAMES
+#define CONTAINERS			GET_Base_Namespace()::Containers
+#define ENUMS				GET_Base_Namespace()::Enums
 
 /* -----------------------------------------------------------------
 PARAMETERS                                                         |
@@ -52,27 +58,64 @@ DECLARE_SOP_Namespace_Start()
 
 namespace UI
 {
-	__DECLARE__Filter_Section_PRM(2)
+	__DECLARE__Filter_Section_PRM(4)
 	DECLARE_Default_PrimitiveGroup_Input_0_PRM(input0)
-
 	static auto		processModeChoiceMenuParm_Name = PRM_Name("processmode", "Process Mode");
 	static auto		processModeChoiceMenuParm_Range = PRM_Range(PRM_RANGE_RESTRICTED, 0, PRM_RANGE_RESTRICTED, 2);
 	static PRM_Name processModeChoiceMenuParm_Choices[] =
 	{
-		PRM_Name("0", "As One Element"),
-		PRM_Name("1", "Per Each Element"),
+		PRM_Name("0", "As Whole"),
+		PRM_Name("1", "Per Element"),
 		PRM_Name("2", "Per Group"),
 		PRM_Name(nullptr)
 	};
 	static auto		processModeChoiceMenuParm_ChoiceList = PRM_ChoiceList(PRM_CHOICELIST_SINGLE, processModeChoiceMenuParm_Choices);
 	auto			processModeChoiceMenu_Parameter = PRM_Template(PRM_ORD, 1, &processModeChoiceMenuParm_Name, 0, &processModeChoiceMenuParm_ChoiceList, &processModeChoiceMenuParm_Range, 0, nullptr, 1, "Specify process mode.");
-
-	__DECLARE_Main_Section_PRM(0)
+	DECLARE_Toggle_with_Separator_ON_PRM("forceconverttopolygons", "Force Convert To Polygons", "forceconverttopolygonsseparator", 0, "Force convertion of non-polygon geometry to polygons.", forceConvertToPolygons)
+	
+	__DECLARE_Main_Section_PRM(17)
+	static auto		modeChoiceMenuParm_Name = PRM_Name("decompositionmode", "Mode");
+	static auto		modeChoiceMenuParm_Range = PRM_Range(PRM_RANGE_RESTRICTED, 0, PRM_RANGE_RESTRICTED, 1);
+	static PRM_Name modeChoiceMenuParm_Choices[] =
+	{
+		PRM_Name("0", COMMON_PRM_NAMES.Get(ENUMS::VHACDCommonParameterNameOption::VOXEL)),
+		PRM_Name("1", COMMON_PRM_NAMES.Get(ENUMS::VHACDCommonParameterNameOption::TETRAHEDRON)),
+		PRM_Name(nullptr)
+	};
+	static auto		modeChoiceMenuParm_ChoiceList = PRM_ChoiceList(PRM_CHOICELIST_SINGLE, modeChoiceMenuParm_Choices);
+	auto			modeChoiceMenu_Parameter = PRM_Template(PRM_ORD, 1, &modeChoiceMenuParm_Name, nullptr, &modeChoiceMenuParm_ChoiceList, &modeChoiceMenuParm_Range, 0, nullptr, 1, "0: Voxel-based approximate convex decomposition, 1: Tetrahedron-based approximate convex decomposition");
+	
+	DECLARE_Custom_Int_MinR_to_MaxR_PRM(COMMON_PRM_NAMES.Get(ENUMS::VHACDCommonParameterNameOption::RESOLUTION), "Resolution", 10000, 64000000, 100000, "Maximum number of voxels generated during the voxelization stage.", resolution)
+	DECLARE_Custom_Float_0R_to_1R_PRM(COMMON_PRM_NAMES.Get(ENUMS::VHACDCommonParameterNameOption::CONCAVITY), "Concavity", 0.0025f, 0, "Maximum concavity.", concavity)
+	DECLARE_Custom_Int_MinR_to_MaxR_PRM(COMMON_PRM_NAMES.Get(ENUMS::VHACDCommonParameterNameOption::PLANE_DOWNSAMPLING), "Plane Downsampling", 1, 16, 4, "Controls the granularity of the search for the 'best' clipping plane.", planeDownsampling)
+	DECLARE_Custom_Int_MinR_to_MaxR_PRM(COMMON_PRM_NAMES.Get(ENUMS::VHACDCommonParameterNameOption::CONVEXHULL_DOWNSAMPLING), "Convex Hull Downsampling", 1, 16, 4, "Controls the precision of the convex-hull generation process during the clipping plane selection stage.", convexHullDownsampling)
+	DECLARE_Custom_Float_0R_to_1R_PRM(COMMON_PRM_NAMES.Get(ENUMS::VHACDCommonParameterNameOption::ALPHA), "Alpha", 0.5f, 0, "Controls the bias toward clipping along symmetry planes.", alpha)
+	DECLARE_Custom_Float_0R_to_1R_PRM(COMMON_PRM_NAMES.Get(ENUMS::VHACDCommonParameterNameOption::BETA), "Beta", 0.5f, 0, "Controls the bias toward clipping along revolution axes.", beta)
+	DECLARE_Custom_Int_MinR_to_MaxR_PRM(COMMON_PRM_NAMES.Get(ENUMS::VHACDCommonParameterNameOption::MAX_CONVEXHULLS_COUNT), "Max Hull Count", 1, 1024, 64, "Controls the maximum amount of convex hulls that will be generated.", maxConvexHullsCount)
+	DECLARE_Custom_Int_MinR_to_MaxR_PRM(COMMON_PRM_NAMES.Get(ENUMS::VHACDCommonParameterNameOption::MAX_TRIANGLE_COUNT), "Max Triangle Count", 4, 1024, 64, "Controls the maximum number of triangles per convex-hull.", maxTriangleCount)
+	DECLARE_Custom_Float_0R_to_MaxR_PRM(COMMON_PRM_NAMES.Get(ENUMS::VHACDCommonParameterNameOption::ADAPTIVE_SAMPLING), "Adaptive Sampling", 0.01f, 0.0001f, 0, "Controls the adaptive sampling of the generated convex-hulls.", adaptiveSampling)
+	DECLARE_Toggle_with_Separator_OFF_PRM(COMMON_PRM_NAMES.Get(ENUMS::VHACDCommonParameterNameOption::CONVEXHULL_APPROXIMATION), "Approximate Hulls", "convexhullapproximationseparator", 0, "This will project the output convex hull vertices onto the original source mesh to increase the floating point accuracy of the results.", approximateConvexHulls)
+	DECLARE_Toggle_with_Separator_OFF_PRM(COMMON_PRM_NAMES.Get(ENUMS::VHACDCommonParameterNameOption::PROJECT_HULL_VERTICES), "Project Vertices", "projecthullverticesseparator", 0, "WTF?", projectHullVertices)
+	DECLARE_Toggle_with_Separator_OFF_PRM(COMMON_PRM_NAMES.Get(ENUMS::VHACDCommonParameterNameOption::NORMALIZE_MESH), "Normalize Mesh", "normalizemeshseparator", 0, "Enable/disable normalizing the mesh before applying the convex decomposition.", normalizeMesh)
+	DECLARE_Toggle_with_Separator_ON_PRM(COMMON_PRM_NAMES.Get(ENUMS::VHACDCommonParameterNameOption::USE_OPENCL), "Use OpenCL", "useopenclseparator", 0, "Enable/disable OpenCL acceleration.", useOpenCL)
 
 	__DECLARE_Additional_Section_PRM(4)
 	DECLARE_DescriptionPRM(SOP_Operator)
 
-	__DECLARE_Debug_Section_PRM(0)
+	__DECLARE_Debug_Section_PRM(3)
+	DECLARE_Toggle_with_Separator_OFF_PRM("showprocessreport", "Show Detailed Report", "showprocessreportseparator", 0, "Prints report in console window, which is more detailed than the information it sends to status bar.", showProcessReport)
+
+	static auto		reportModeChoiceMenuParm_Name = PRM_Name("processreportmode", "Mode");
+	static auto		reportModeChoiceMenuParm_Range = PRM_Range(PRM_RANGE_RESTRICTED, 0, PRM_RANGE_RESTRICTED, 2);
+	static PRM_Name reportModeChoiceMenuParm_Choices[] =
+	{
+		PRM_Name("0", "Progress Only"),
+		PRM_Name("1", "Details Only"),
+		PRM_Name("2", "Full"),
+		PRM_Name(nullptr)
+	};
+	static auto		reportModeChoiceMenuParm_ChoiceList = PRM_ChoiceList(PRM_CHOICELIST_SINGLE, reportModeChoiceMenuParm_Choices);
+	auto			reportModeChoiceMenu_Parameter = PRM_Template(PRM_ORD, 1, &reportModeChoiceMenuParm_Name, nullptr, &reportModeChoiceMenuParm_ChoiceList, &reportModeChoiceMenuParm_Range, 0, nullptr, 1, "How detailed report will be printed.");
 }
 		
 DECLARE_SOP_Namespace_End
@@ -81,6 +124,9 @@ DECLARE_SOP_Namespace_End
 UNDEFINES                                                          |
 ----------------------------------------------------------------- */
 
+#undef ENUMS
+#undef CONTAINERS
+#undef COMMON_PRM_NAMES
 #undef SOP_Operator
 
 #endif // !____prms_vhacd_generate_h____

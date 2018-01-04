@@ -1,8 +1,9 @@
 /*
-	Enum for common names.
+	Volumetric-Hierarchical Approximate Convex Decomposition.
+	Based on https://github.com/kmammou/v-hacd
 
 	IMPORTANT! ------------------------------------------
-	* this should be synchronized with VHACDCommonName.h
+	* Macros starting and ending with '____' shouldn't be used anywhere outside of this file.
 	-----------------------------------------------------
 
 	Author: 	SWANN
@@ -23,88 +24,52 @@
 */
 
 #pragma once
-#ifndef ____vhacd_common_name_option_h____
-#define ____vhacd_common_name_option_h____
+#ifndef ____user_callback_h____
+#define ____user_callback_h____
 
 /* -----------------------------------------------------------------
 INCLUDES                                                           |
 ----------------------------------------------------------------- */
+// std
+#include <string>
+#include <iostream>
+#include <iomanip>
 
-// SESI
-#if _WIN32		
-	#include <sys/SYS_Types.h>
-#else
-	#include <SYS/SYS_Types.h>
-#endif
+// 3rdParty
+#include <VHACD.h>
 
 // hou-hdk-common
-#include "Macros/Namespace.h"
+#include <Macros/Namespace.h>
 
 /* -----------------------------------------------------------------
-ENUM                                                               |
+CALLBACK                                                           |
 ----------------------------------------------------------------- */
 
-DECLARE_Base_Namespace_Start()
-namespace Enums
-{
-	enum class VHACDCommonNameOption : exint
+DECLARE_SOP_Namespace_Start()
+
+	class UserCallback : public VHACD::IVHACD::IUserCallback
 	{
-		// toolkit global
-		TOOLKIT_TABMENU_PATH,
-		TOOLKIT_ICONNAME,
+	public:
+		UserCallback(): showOverallProgress(false), showStageProgress(false), showOperationProgress(false) { } 
+		~UserCallback() override { }
 
-		SOP_OUTPUTNAME_CONVEXHULLS,
-		SOP_OUTPUTNAME_ORIGINALGEOMETRY,
+		void Update(const double overallProgress, const double stageProgress, const double operationProgress, const char* const stage, const char* const operation) override
+		{
+			if (this->showOverallProgress)
+			{
+				auto info = std::string("Overall Progress: ") + std::to_string(static_cast<int>(overallProgress + 0.5)).c_str() + "%";
+				std::cout << std::setfill('-') << "Overall Progress: " << std::setw(52) << " " << static_cast<int>(overallProgress + 0.5) << "% " << std::endl;
+			}
 
-		// SOP_VHACDDelete only
-		SOP_DELETE_ICONNAME,
-		SOP_DELETE_SMALLNAME,
-		SOP_DELETE_BIGNAME,
-		
-		// SOP_VHACDEngine only
-		SOP_ENGINE_ICONNAME,
-		SOP_ENGINE_SMALLNAME,
-		SOP_ENGINE_BIGNAME,
+			if (this->showStageProgress) std::cout << stage << ": " << static_cast<int>(stageProgress + 0.5) << "% " << std::endl;
+			if (this->showOperationProgress) std::cout << operation << ": " << static_cast<int>(operationProgress + 0.5) << "% " << std::endl;
+		}
 
-		// SOP_VHACDGenerate 2.0 only
-		SOP_GENERATE_ICONNAME,
-		SOP_GENERATE_SMALLNAME,
-		SOP_GENERATE_BIGNAME,
-		SOP_GENERATE_GROUP_PRMNAME,
-		MSS_GENERATE_SMALLNAME,
-		MSS_GENERATE_BIGNAME,
-		MSS_GENERATE_PROMPT,
-
-		// SOP_VHACDScoutJunior 1.0 only
-		SOP_SCOUT_JUNIOR_ICONNAME,
-		SOP_SCOUT_JUNIOR_SMALLNAME,
-		SOP_SCOUT_JUNIOR_BIGNAME,
-
-		// SOP_VHACDScoutSenior 1.0 only
-		SOP_SCOUT_SENIOR_ICONNAME,
-		SOP_SCOUT_SENIOR_SMALLNAME,
-		SOP_SCOUT_SENIOR_BIGNAME,
-
-		// SOP_VHACDSetup 2.0 only
-		SOP_SETUP_ICONNAME,
-		SOP_SETUP_SMALLNAME,
-		SOP_SETUP_BIGNAME,
-		SOP_SETUP_GROUP_PRMNAME,
-		MSS_SETUP_SMALLNAME,
-		MSS_SETUP_BIGNAME,
-		MSS_SETUP_PROMPT,
-
-		// SOP_VHACDMerge 2.0 only
-		SOP_MERGE_ICONNAME,
-		SOP_MERGE_SMALLNAME,
-		SOP_MERGE_BIGNAME,
-
-		// SOP_VHACDTransform 2.0 only
-		SOP_TRANSFORM_ICONNAME,
-		SOP_TRANSFORM_SMALLNAME,
-		SOP_TRANSFORM_BIGNAME
+		bool	showOverallProgress;
+		bool	showStageProgress;
+		bool	showOperationProgress;
 	};
-}
-DECLARE_Base_Namespace_End
 
-#endif // !____vhacd_common_name_option_h____
+DECLARE_SOP_Namespace_End
+
+#endif // !____user_callback_h____

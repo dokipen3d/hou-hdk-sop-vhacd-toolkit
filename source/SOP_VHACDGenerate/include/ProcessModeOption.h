@@ -30,6 +30,13 @@
 INCLUDES                                                           |
 ----------------------------------------------------------------- */
 
+// SESI
+#if _WIN32		
+#include <sys/SYS_Types.h>
+#else
+#include <SYS/SYS_Types.h>
+#endif
+
 // hou-hdk-common
 #include "Macros/Namespace.h"
 
@@ -40,10 +47,10 @@ ENUM                                                               |
 DECLARE_Base_Namespace_Start()
 namespace Enums
 {
-	enum class ProcessedModeOption
+	enum class ProcessedModeOption : exint
 	{
-		AS_ONE_ELEMENT,
-		PER_EACH_ELEMENT,
+		AS_WHOLE,
+		PER_ELEMENT,
 		PER_GROUP
 	};
 }

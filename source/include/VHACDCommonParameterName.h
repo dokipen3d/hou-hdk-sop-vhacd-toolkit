@@ -1,8 +1,8 @@
 /*
-	Base node class for VHACD toolkit.
+	Container for common parameter names.
 
 	IMPORTANT! ------------------------------------------
-	* Macros starting and ending with '____' shouldn't be used anywhere outside of this file.
+	* this should be synchronized with VHACDCommonParameterNameOption.h
 	-----------------------------------------------------
 
 	Author: 	SWANN
@@ -10,7 +10,7 @@
 
 	LICENSE ------------------------------------------
 
-	Copyright (c) 2016-2017 SWANN
+	Copyright (c) 2016-2018 SWANN
 	All rights reserved.
 
 	Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -23,68 +23,69 @@
 */
 
 #pragma once
-#ifndef ____sop_vhacd_node_h____
-#define ____sop_vhacd_node_h____
+#ifndef ____vhacd_common_parameter_name_h____
+#define ____vhacd_common_parameter_name_h____
 
 /* -----------------------------------------------------------------
 INCLUDES                                                           |
 ----------------------------------------------------------------- */
 
-// SESI
-#include <SOP/SOP_Node.h>
-
 // hou-hdk-common
 #include <Macros/Namespace.h>
-#include <Macros/ProgressEscape.h>
+#include <Containers/CommonTName.h>
+#include <Macros/GroupMenuPRM.h>
 
 // this
-#include "VHACDCommonName.h"
-#include "VHACDCommonAttributeName.h"
-#include "VHACDCommonParameterName.h"
+#include "VHACDCommonParameterNameOption.h"
 
 /* -----------------------------------------------------------------
 DEFINES                                                            |
 ----------------------------------------------------------------- */
 
-#define CONTAINERS				GET_Base_Namespace()::Containers
-#define ENUMS					GET_Base_Namespace()::Enums
+#define CONTAINERS	GET_Base_Namespace()::Containers
+#define ENUMS		GET_Base_Namespace()::Enums
 
 /* -----------------------------------------------------------------
 DECLARATION                                                        |
 ----------------------------------------------------------------- */
 
-DECLARE_SOP_Namespace_Start()
-
-class SOP_VHACDNode : public SOP_Node
+DECLARE_Base_Namespace_Start()
+namespace Containers
 {
-protected:
-	SOP_VHACDNode(OP_Network* network, const char* name, OP_Operator* op) : SOP_Node(network, name, op) { }
-	
-	CONTAINERS::VHACDCommonAttributeName		_commonAttributeNames = CONTAINERS::VHACDCommonAttributeName();
+	class VHACDCommonParameterName final : public CONTAINERS::CommonTName<ENUMS::VHACDCommonParameterNameOption>
+	{
+	public:
+		VHACDCommonParameterName() : CommonTName<ENUMS::VHACDCommonParameterNameOption>()
+		{
+			// vhacd global
+			this->Add(ENUMS::VHACDCommonParameterNameOption::ALPHA,							"alpha");
+			this->Add(ENUMS::VHACDCommonParameterNameOption::BETA,							"beta");
+			this->Add(ENUMS::VHACDCommonParameterNameOption::CONCAVITY,						"concavity");
+			this->Add(ENUMS::VHACDCommonParameterNameOption::CONVEXHULL_APPROXIMATION,		"convexhullapproximation");
+			this->Add(ENUMS::VHACDCommonParameterNameOption::CONVEXHULL_DOWNSAMPLING,		"convexhulldownsampling");
+			this->Add(ENUMS::VHACDCommonParameterNameOption::MAX_CONVEXHULLS_COUNT,			"maxconvexhullscount");
+			this->Add(ENUMS::VHACDCommonParameterNameOption::MAX_TRIANGLE_COUNT,			"maxtrianglecount");
+			this->Add(ENUMS::VHACDCommonParameterNameOption::ADAPTIVE_SAMPLING,				"adaptivesampling");
+			this->Add(ENUMS::VHACDCommonParameterNameOption::DECOMPOSITION_MODE,			"decompositionmode");
+			this->Add(ENUMS::VHACDCommonParameterNameOption::USE_OPENCL,					"useopencl");
+			this->Add(ENUMS::VHACDCommonParameterNameOption::NORMALIZE_MESH,				"normalizemesh");
+			this->Add(ENUMS::VHACDCommonParameterNameOption::PLANE_DOWNSAMPLING,			"planedownsampling");
+			this->Add(ENUMS::VHACDCommonParameterNameOption::PROJECT_HULL_VERTICES,			"projecthullvertices");
+			this->Add(ENUMS::VHACDCommonParameterNameOption::RESOLUTION,					"resolution");
 
-	GA_ROHandleI								_convexBundleIDHandle;
-	GA_ROHandleI								_originalBundleIDHandle;
-
-	GA_RWHandleI								_hullCountHandle;
-	GA_RWHandleI								_hullIDHandle;
-	GA_RWHandleI								_bundleCountHandle;
-	GA_RWHandleI								_bundleIDHandle;
-};
+			// decomposition mode only
+			this->Add(ENUMS::VHACDCommonParameterNameOption::VOXEL,							"Voxel");
+			this->Add(ENUMS::VHACDCommonParameterNameOption::TETRAHEDRON,					"Tetrahedron");
+		}
+	};
+}
+DECLARE_Base_Namespace_End
 
 /* -----------------------------------------------------------------
-DEFAULT VARIABLES                                                  |
------------------------------------------------------------------ */
-
-static CONTAINERS::VHACDCommonName				COMMON_NAMES = CONTAINERS::VHACDCommonName();
-static CONTAINERS::VHACDCommonParameterName		COMMON_PRM_NAMES = CONTAINERS::VHACDCommonParameterName();
-
-DECLARE_SOP_Namespace_End
-
-/* -----------------------------------------------------------------
-UNDEFINES                                                          |
+UNDEFINE                                                           |
 ----------------------------------------------------------------- */
 
 #undef ENUMS
 #undef CONTAINERS
 
-#endif // !____sop_vhacd_node_h____
+#endif // !____vhacd_common_parameter_name_h____

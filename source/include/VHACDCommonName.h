@@ -1,5 +1,5 @@
 /*
-	Container for common attribute names.
+	Container for common names.
 
 	IMPORTANT! ------------------------------------------
 	* this should be synchronized with VHACDCommonNameOption.h

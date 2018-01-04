@@ -33,6 +33,10 @@ INCLUDES                                                           |
 
 // SESI
 #include <MSS/MSS_ReusableSelector.h>
+#include <GA/GA_Types.h>
+
+// 3rdParty
+#include <VHACD.h>
 
 // hou-hdk-common
 #include <Macros/CookMySop.h>
@@ -43,6 +47,9 @@ INCLUDES                                                           |
 
 // this
 #include "SOP_VHACDNode.h"
+#include "UserLogger.h"
+#include "UserCallback.h"
+#include "ProcessedOutputType.h"
 
 /* -----------------------------------------------------------------
 FORWARDS                                                           |
@@ -54,8 +61,16 @@ class UT_AutoInterrupt;
 DEFINES                                                            |
 ----------------------------------------------------------------- */
 
-#define CONTAINERS				GET_Base_Namespace()::Containers
-#define ENUMS					GET_Base_Namespace()::Enums
+#define CONTAINERS					GET_Base_Namespace()::Containers
+#define ENUMS						GET_Base_Namespace()::Enums
+
+/* -----------------------------------------------------------------
+TYPEDEFS                                                           |
+----------------------------------------------------------------- */
+
+// only for the looks ;)
+typedef std::vector<int>			VHACDTriangleIndexes;
+typedef std::vector<float>			VHACDPointPositions;
 
 /* -----------------------------------------------------------------
 DECLARATION                                                        |
@@ -63,7 +78,7 @@ DECLARATION                                                        |
 
 DECLARE_SOP_Namespace_Start()
 
-	class SOP_VHACDGenerate : public SOP_VHACDNode
+	class SOP_VHACDGenerate final : public SOP_VHACDNode
 	{
 		DECLARE_CookMySop_Multi()
 		DECLARE_UpdateParmsFlags()
@@ -77,12 +92,33 @@ DECLARE_SOP_Namespace_Start()
 
 	public:
 		static OP_Node*				CreateMe(OP_Network* network, const char* name, OP_Operator* op);
+		OP_ERROR					cookInputGroups(OP_Context& context, int alone = 0) override;
+
 		static PRM_Template			parametersList[];
 
 	private:
-		ENUMS::MethodProcessResult	WhenAsOne();
-		ENUMS::MethodProcessResult	WhenPerEachElement();
-		ENUMS::MethodProcessResult	WhenPerGroup();
+		exint						PullIntPRM(GU_Detail* geometry, const PRM_Template& parameter, fpreal time);
+		fpreal						PullFloatPRM(GU_Detail* geometry, const PRM_Template& parameter, fpreal time);
+		ENUMS::MethodProcessResult	SeparatePrimitiveRange();
+		ENUMS::MethodProcessResult	PrepareGeometry(UT_AutoInterrupt progress, fpreal time);
+		void						SetupParametersVHACD(fpreal time);
+		ENUMS::MethodProcessResult	GatherDataForVHACD(UT_AutoInterrupt progress, fpreal time);
+
+		ENUMS::MethodProcessResult	WhenAsOne(UT_AutoInterrupt progress, ENUMS::ProcessedOutputType processedoutputtype, fpreal time);
+		ENUMS::MethodProcessResult	WhenPerElement(UT_AutoInterrupt progress, ENUMS::ProcessedOutputType processedoutputtype, fpreal time);
+		ENUMS::MethodProcessResult	WhenPerGroup(UT_AutoInterrupt progress, ENUMS::ProcessedOutputType processedoutputtype, fpreal time);
+
+		const GA_PrimitiveGroup*	_primitiveGroupInput0;
+
+		UserLogger					_loggerVHACD;
+		UserCallback				_callbackVHACD;
+		VHACD::IVHACD::Parameters	_parametersVHACD;
+		VHACD::IVHACD*				_interfaceVHACD;
+
+		VHACDTriangleIndexes		_triangleIndexes;
+		VHACDPointPositions			_pointPositions;
+
+		GA_RWHandleV3				_positionHandle;
 	};
 
 /* -----------------------------------------------------------------
