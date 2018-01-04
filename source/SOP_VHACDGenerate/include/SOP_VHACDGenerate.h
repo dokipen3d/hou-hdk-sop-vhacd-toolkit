@@ -68,7 +68,6 @@ DEFINES                                                            |
 TYPEDEFS                                                           |
 ----------------------------------------------------------------- */
 
-// only for the looks ;)
 typedef std::vector<int>			VHACDTriangleIndexes;
 typedef std::vector<float>			VHACDPointPositions;
 
@@ -100,9 +99,11 @@ DECLARE_SOP_Namespace_Start()
 		exint						PullIntPRM(GU_Detail* geometry, const PRM_Template& parameter, fpreal time);
 		fpreal						PullFloatPRM(GU_Detail* geometry, const PRM_Template& parameter, fpreal time);
 		ENUMS::MethodProcessResult	SeparatePrimitiveRange();
-		ENUMS::MethodProcessResult	PrepareGeometry(UT_AutoInterrupt progress, fpreal time);
-		void						SetupParametersVHACD(fpreal time);
-		ENUMS::MethodProcessResult	GatherDataForVHACD(UT_AutoInterrupt progress, fpreal time);
+		ENUMS::MethodProcessResult	PrepareGeometry(GU_Detail* detail, UT_AutoInterrupt progress, fpreal time);
+		void						SetupParametersVHACD(GU_Detail* detail, fpreal time);
+		ENUMS::MethodProcessResult	GatherDataForVHACD(GU_Detail* detail, UT_AutoInterrupt progress, fpreal time);
+
+		ENUMS::MethodProcessResult	GenerateConvexHulls(GU_Detail* geometry, UT_AutoInterrupt progress);
 
 		ENUMS::MethodProcessResult	WhenAsOne(UT_AutoInterrupt progress, ENUMS::ProcessedOutputType processedoutputtype, fpreal time);
 		ENUMS::MethodProcessResult	WhenPerElement(UT_AutoInterrupt progress, ENUMS::ProcessedOutputType processedoutputtype, fpreal time);
@@ -119,6 +120,7 @@ DECLARE_SOP_Namespace_Start()
 		VHACDPointPositions			_pointPositions;
 
 		GA_RWHandleV3				_positionHandle;
+		GA_RWHandleI				_bundleIDHandle;
 	};
 
 /* -----------------------------------------------------------------

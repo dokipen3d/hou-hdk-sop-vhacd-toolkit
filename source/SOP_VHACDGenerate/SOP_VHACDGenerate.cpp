@@ -35,6 +35,7 @@ INCLUDES                                                           |
 #include <PRM/PRM_Error.h>
 #include <PRM/PRM_Include.h>
 #include <GEO/GEO_ConvertParms.h>
+#include <GEO/GEO_PrimClassifier.h>
 
 // hou-hdk-common
 #include <Macros/ParameterList.h>
@@ -152,7 +153,7 @@ SOP_Operator::inputLabel(unsigned input) const
 { return std::to_string(input).c_str(); }
 
 OP_ERROR
-SOP_Operator::cookInputGroups(OP_Context &context, int alone)
+SOP_Operator::cookInputGroups(OP_Context& context, int alone)
 {
 	const auto isOrdered = true;
 	return cookInputPrimitiveGroups(context, this->_primitiveGroupInput0, alone, true, SOP_GroupFieldIndex_0, -1, true, isOrdered, true, 0);
@@ -163,7 +164,7 @@ HELPERS                                                            |
 ----------------------------------------------------------------- */
 
 exint
-SOP_Operator::PullIntPRM(GU_Detail* geometry, const PRM_Template& parameter, fpreal time /* = 0 */)
+SOP_Operator::PullIntPRM(GU_Detail* geometry, const PRM_Template& parameter, fpreal time)
 {
 	exint currentIntValue = 0;
 
@@ -185,7 +186,7 @@ SOP_Operator::PullIntPRM(GU_Detail* geometry, const PRM_Template& parameter, fpr
 }
 
 fpreal
-SOP_Operator::PullFloatPRM(GU_Detail* geometry, const PRM_Template& parameter, fpreal time /* = 0 */)
+SOP_Operator::PullFloatPRM(GU_Detail* geometry, const PRM_Template& parameter, fpreal time)
 {
 	fpreal currentFloatValue = 0;
 
@@ -236,7 +237,7 @@ SOP_Operator::SeparatePrimitiveRange()
 }
 
 ENUMS::MethodProcessResult
-SOP_Operator::PrepareGeometry(UT_AutoInterrupt progress, fpreal time)
+SOP_Operator::PrepareGeometry(GU_Detail* detail, UT_AutoInterrupt progress, fpreal time)
 {	
 	/*
 		Required element counts:
@@ -251,7 +252,7 @@ SOP_Operator::PrepareGeometry(UT_AutoInterrupt progress, fpreal time)
 
 	// make sure we got something to work on
 	auto errorMessage = UT_String("Not enough primitives to create hull.");
-	if (!GDP_UTILS::Test::IsEnoughPrimitives(this, this->gdp, requiredPrimCount, errorMessage, ENUMS::NodeErrorLevel::ERROR) || error() >= UT_ErrorSeverity::UT_ERROR_WARNING) return ENUMS::MethodProcessResult::FAILURE;
+	if (!GDP_UTILS::Test::IsEnoughPrimitives(this, detail, requiredPrimCount, errorMessage, ENUMS::NodeErrorLevel::ERROR) || error() >= UT_ErrorSeverity::UT_ERROR_WARNING) return ENUMS::MethodProcessResult::FAILURE;
 
 	// check for non-polygon geometry
 	bool forceConvertToPolygonsValue;
@@ -261,15 +262,15 @@ SOP_Operator::PrepareGeometry(UT_AutoInterrupt progress, fpreal time)
 	{
 		// this is default convertion, so we can lose some data on volumes and other primitives which required bigger resolution/settings to maintain their shape better		
 		GEO_ConvertParms parms;		
-		this->gdp->convert(parms);
+		detail->convert(parms);
 	}
 	else
 	{
-		for (auto primIt : gdp->getPrimitiveRange())
+		for (auto primIt : detail->getPrimitiveRange())
 		{
 			PROGRESS_WAS_INTERRUPTED_WITH_ERROR_AND_OBJECT(this, progress, ENUMS::MethodProcessResult::FAILURE)
 			
-			if (gdp->getPrimitive(primIt)->getTypeId() != GA_PRIMPOLY)
+			if (detail->getPrimitive(primIt)->getTypeId() != GA_PRIMPOLY)
 			{
 				errorMessage = UT_String("Non-polygon geometry detected on input.");
 				this->addError(SOP_ErrorCodes::SOP_MESSAGE, errorMessage.c_str());
@@ -281,52 +282,52 @@ SOP_Operator::PrepareGeometry(UT_AutoInterrupt progress, fpreal time)
 	
 	// we need at least 4 points...	
 	errorMessage = UT_String("Not enough points to create hull.");
-	if (!GDP_UTILS::Test::IsEnoughPoints(this, gdp, requiredPointCount, errorMessage, ENUMS::NodeErrorLevel::ERROR) || error() >= UT_ErrorSeverity::UT_ERROR_WARNING) return ENUMS::MethodProcessResult::FAILURE;
+	if (!GDP_UTILS::Test::IsEnoughPoints(this, detail, requiredPointCount, errorMessage, ENUMS::NodeErrorLevel::ERROR) || error() >= UT_ErrorSeverity::UT_ERROR_WARNING) return ENUMS::MethodProcessResult::FAILURE;
 	
 	// ... and at least 12 vertices to get up from bed	
 	errorMessage = UT_String("Not enough vertices to create hull.");
-	if (!GDP_UTILS::Test::IsEnoughVertices(this, this->gdp, requiredVertexCount, errorMessage, ENUMS::NodeErrorLevel::ERROR) || error() >= UT_ErrorSeverity::UT_ERROR_WARNING) return ENUMS::MethodProcessResult::FAILURE;
+	if (!GDP_UTILS::Test::IsEnoughVertices(this, detail, requiredVertexCount, errorMessage, ENUMS::NodeErrorLevel::ERROR) || error() >= UT_ErrorSeverity::UT_ERROR_WARNING) return ENUMS::MethodProcessResult::FAILURE;
 
 	// try to triangulate
-	const auto processResult = GDP_UTILS::Modify::Triangulate(this, progress, this->gdp, SMALLPOLYGONS_TOLERANCE);
+	const auto processResult = GDP_UTILS::Modify::Triangulate(this, progress, detail, SMALLPOLYGONS_TOLERANCE);
 	if (processResult != ENUMS::MethodProcessResult::SUCCESS || error() > UT_ErrorSeverity::UT_ERROR_WARNING) return ENUMS::MethodProcessResult::FAILURE;
 
 	// is there anything left after preparation?	
 	errorMessage = UT_String("After removing zero area and open polygons there are no other primitives left.");
-	if (!GDP_UTILS::Test::IsEnoughPrimitives(this, this->gdp, requiredPrimCount, errorMessage) || error() >= UT_ErrorSeverity::UT_ERROR_WARNING) return ENUMS::MethodProcessResult::FAILURE;
+	if (!GDP_UTILS::Test::IsEnoughPrimitives(this, detail, requiredPrimCount, errorMessage) || error() >= UT_ErrorSeverity::UT_ERROR_WARNING) return ENUMS::MethodProcessResult::FAILURE;
 	
 	// again test if triangulated data contains enough points...
 	errorMessage = UT_String("After removing zero area and open polygons there are not enough points to create hull.");
-	if (!GDP_UTILS::Test::IsEnoughPoints(this, gdp, requiredPointCount, errorMessage, ENUMS::NodeErrorLevel::ERROR) || error() >= UT_ErrorSeverity::UT_ERROR_WARNING) return ENUMS::MethodProcessResult::FAILURE;
+	if (!GDP_UTILS::Test::IsEnoughPoints(this, detail, requiredPointCount, errorMessage, ENUMS::NodeErrorLevel::ERROR) || error() >= UT_ErrorSeverity::UT_ERROR_WARNING) return ENUMS::MethodProcessResult::FAILURE;
 
 	// ... and vertices
 	errorMessage = UT_String("After removing zero area and open polygons there are not enough vertices to create hull.");
-	if (!GDP_UTILS::Test::IsEnoughVertices(this, this->gdp, requiredVertexCount, errorMessage, ENUMS::NodeErrorLevel::ERROR) || error() >= UT_ErrorSeverity::UT_ERROR_WARNING) return ENUMS::MethodProcessResult::FAILURE;
+	if (!GDP_UTILS::Test::IsEnoughVertices(this, detail, requiredVertexCount, errorMessage, ENUMS::NodeErrorLevel::ERROR) || error() >= UT_ErrorSeverity::UT_ERROR_WARNING) return ENUMS::MethodProcessResult::FAILURE;
 
 	return ENUMS::MethodProcessResult::SUCCESS;
 }
 
 void
-SOP_Operator::SetupParametersVHACD(fpreal time)
+SOP_Operator::SetupParametersVHACD(GU_Detail* detail, fpreal time)
 {
 	// logger & callback
 	this->_parametersVHACD.m_logger = &this->_loggerVHACD;
 	this->_parametersVHACD.m_callback = &this->_callbackVHACD;
 
 	// main parameters	
-	this->_parametersVHACD.m_mode =						PullIntPRM(this->gdp, UI::modeChoiceMenu_Parameter, time);
-	this->_parametersVHACD.m_resolution =				PullIntPRM(this->gdp, UI::resolutionInteger_Parameter, time);
-	this->_parametersVHACD.m_concavity =				PullFloatPRM(this->gdp, UI::concavityFloat_Parameter, time);
-	this->_parametersVHACD.m_planeDownsampling =		PullIntPRM(this->gdp, UI::planeDownsamplingInteger_Parameter, time);
-	this->_parametersVHACD.m_convexhullDownsampling =	PullIntPRM(this->gdp, UI::convexHullDownsamplingInteger_Parameter, time);
-	this->_parametersVHACD.m_alpha =					PullFloatPRM(this->gdp, UI::alphaFloat_Parameter, time);
-	this->_parametersVHACD.m_beta =						PullFloatPRM(this->gdp, UI::betaFloat_Parameter, time);
-	this->_parametersVHACD.m_maxConvexHulls =			PullIntPRM(this->gdp, UI::maxConvexHullsCountInteger_Parameter, time);
-	this->_parametersVHACD.m_maxNumVerticesPerCH =		PullIntPRM(this->gdp, UI::maxTriangleCountInteger_Parameter, time);
-	this->_parametersVHACD.m_minVolumePerCH =			PullFloatPRM(this->gdp, UI::adaptiveSamplingFloat_Parameter, time);
-	this->_parametersVHACD.m_convexhullApproximation =	PullIntPRM(this->gdp, UI::approximateConvexHullsToggle_Parameter, time);
-	this->_parametersVHACD.m_projectHullVertices =		PullIntPRM(this->gdp, UI::projectHullVerticesToggle_Parameter, time);
-	this->_parametersVHACD.m_pca =						PullIntPRM(this->gdp, UI::normalizeMeshToggle_Parameter, time);
+	this->_parametersVHACD.m_mode =						PullIntPRM(detail, UI::modeChoiceMenu_Parameter, time);
+	this->_parametersVHACD.m_resolution =				PullIntPRM(detail, UI::resolutionInteger_Parameter, time);
+	this->_parametersVHACD.m_concavity =				PullFloatPRM(detail, UI::concavityFloat_Parameter, time);
+	this->_parametersVHACD.m_planeDownsampling =		PullIntPRM(detail, UI::planeDownsamplingInteger_Parameter, time);
+	this->_parametersVHACD.m_convexhullDownsampling =	PullIntPRM(detail, UI::convexHullDownsamplingInteger_Parameter, time);
+	this->_parametersVHACD.m_alpha =					PullFloatPRM(detail, UI::alphaFloat_Parameter, time);
+	this->_parametersVHACD.m_beta =						PullFloatPRM(detail, UI::betaFloat_Parameter, time);
+	this->_parametersVHACD.m_maxConvexHulls =			PullIntPRM(detail, UI::maxConvexHullsCountInteger_Parameter, time);
+	this->_parametersVHACD.m_maxNumVerticesPerCH =		PullIntPRM(detail, UI::maxTriangleCountInteger_Parameter, time);
+	this->_parametersVHACD.m_minVolumePerCH =			PullFloatPRM(detail, UI::adaptiveSamplingFloat_Parameter, time);
+	this->_parametersVHACD.m_convexhullApproximation =	PullIntPRM(detail, UI::approximateConvexHullsToggle_Parameter, time);
+	this->_parametersVHACD.m_projectHullVertices =		PullIntPRM(detail, UI::projectHullVerticesToggle_Parameter, time);
+	this->_parametersVHACD.m_pca =						PullIntPRM(detail, UI::normalizeMeshToggle_Parameter, time);
 
 	PRM_ACCESS::Get::IntPRM(this, this->_parametersVHACD.m_oclAcceleration, UI::useOpenCLToggle_Parameter, time);
 		
@@ -351,7 +352,7 @@ SOP_Operator::SetupParametersVHACD(fpreal time)
 }
 
 ENUMS::MethodProcessResult
-SOP_Operator::GatherDataForVHACD(UT_AutoInterrupt progress, fpreal time)
+SOP_Operator::GatherDataForVHACD(GU_Detail* detail, UT_AutoInterrupt progress, fpreal time)
 {	
 	/*
 		Store data as indexed face set representation.
@@ -364,13 +365,13 @@ SOP_Operator::GatherDataForVHACD(UT_AutoInterrupt progress, fpreal time)
 	this->_triangleIndexes.clear();
 
 	// get position attribute	
-	const auto success = ATTRIB_ACCESS::Find::Vec3ATT(this, this->gdp, GA_AttributeOwner::GA_ATTRIB_POINT, "P", this->_positionHandle);
+	const auto success = ATTRIB_ACCESS::Find::Vec3ATT(this, detail, GA_AttributeOwner::GA_ATTRIB_POINT, "P", this->_positionHandle);
 	if (success)
 	{
 		// store positions, as continuous list from 0 to last, without breaking it per primitive		
-		this->_pointPositions.reserve(this->gdp->getNumPoints() * 3);
+		this->_pointPositions.reserve(detail->getNumPoints() * 3);
 
-		for (auto pointIt = GA_Iterator(this->gdp->getPointRange()); !pointIt.atEnd(); pointIt.advance())
+		for (auto pointIt = GA_Iterator(detail->getPointRange()); !pointIt.atEnd(); pointIt.advance())
 		{
 			PROGRESS_WAS_INTERRUPTED_WITH_ERROR_AND_OBJECT(this, progress, ENUMS::MethodProcessResult::FAILURE)
 
@@ -382,13 +383,13 @@ SOP_Operator::GatherDataForVHACD(UT_AutoInterrupt progress, fpreal time)
 		}
 
 		// store indexes, as (0, 1, 2) for each triangle
-		this->_triangleIndexes.reserve(this->gdp->getNumPrimitives() * 3);
+		this->_triangleIndexes.reserve(detail->getNumPrimitives() * 3);
 
-		for (auto polyIt = GA_Iterator(this->gdp->getPrimitiveRange()); !polyIt.atEnd(); polyIt.advance())
+		for (auto polyIt = GA_Iterator(detail->getPrimitiveRange()); !polyIt.atEnd(); polyIt.advance())
 		{
 			PROGRESS_WAS_INTERRUPTED_WITH_ERROR_AND_OBJECT(this, progress, ENUMS::MethodProcessResult::FAILURE)
 
-			const auto currPrim = this->gdp->getPrimitive(*polyIt);
+			const auto currPrim = detail->getPrimitive(*polyIt);
 			for (auto i = 0; i < currPrim->getVertexCount(); ++i) this->_triangleIndexes.push_back(currPrim->getPointIndex(i));
 		}
 	}
@@ -402,20 +403,146 @@ SOP_Operator::GatherDataForVHACD(UT_AutoInterrupt progress, fpreal time)
 }
 
 ENUMS::MethodProcessResult
-SOP_Operator::WhenAsOne(UT_AutoInterrupt progress, ENUMS::ProcessedOutputType processedoutputtype, fpreal time)
+SOP_Operator::GenerateConvexHulls(GU_Detail* geometry, UT_AutoInterrupt progress)
 {
 	return ENUMS::MethodProcessResult::SUCCESS;
 }
 
 ENUMS::MethodProcessResult
+SOP_Operator::WhenAsOne(UT_AutoInterrupt progress, ENUMS::ProcessedOutputType processedoutputtype, fpreal time)
+{
+	auto processResult = ENUMS::MethodProcessResult::SUCCESS;
+	
+	if (processedoutputtype == ENUMS::ProcessedOutputType::CONVEX_HULLS)
+	{
+		// make sure we have proper geometry before we try to gather data for V-HACD
+		processResult = PrepareGeometry(this->gdp, progress, time);
+		if (processResult != ENUMS::MethodProcessResult::SUCCESS || error() > OP_ERROR::UT_ERROR_WARNING) return processResult;
+
+		// setup V-HACD and collect all required data
+		SetupParametersVHACD(this->gdp, time);
+
+		processResult = GatherDataForVHACD(this->gdp, progress, time);
+		if (processResult != ENUMS::MethodProcessResult::SUCCESS || error() > OP_ERROR::UT_ERROR_WARNING) return processResult;
+
+		// lets make some hulls!
+		this->gdp->clear();
+
+		processResult = GenerateConvexHulls(this->gdp, progress);
+		if (processResult != ENUMS::MethodProcessResult::SUCCESS || error() > OP_ERROR::UT_ERROR_WARNING) return processResult;
+	}
+
+	// add bundle_id attribute
+	this->_bundleIDHandle = GA_RWHandleI(this->gdp->addIntTuple(GA_AttributeOwner::GA_ATTRIB_PRIMITIVE, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_ID), 1, GA_Defaults(0)));
+	if (this->_bundleIDHandle.isInvalid())
+	{
+		auto errorMessage = std::string("Failed to add \"") + std::string(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_ID)) + std::string("\" attribute.");
+		this->addError(SOP_MESSAGE, errorMessage.c_str());
+		processResult = ENUMS::MethodProcessResult::FAILURE;
+	}
+
+	return processResult;
+}
+
+ENUMS::MethodProcessResult
 SOP_Operator::WhenPerElement(UT_AutoInterrupt progress, ENUMS::ProcessedOutputType processedoutputtype, fpreal time)
 {
+	// partition primitives by class
+	auto primClassifier = GEO_PrimClassifier();
+	primClassifier.classifyBySharedPoints(*this->gdp);
+
+	UT_Map<exint, GA_OffsetArray> mappedOffsets;
+	mappedOffsets.clear();
+	
+	for (auto offset : this->gdp->getPrimitiveRange())
+	{
+		PROGRESS_WAS_INTERRUPTED_WITH_ERROR_AND_OBJECT(this, progress, ENUMS::MethodProcessResult::FAILURE)
+			
+		const auto currClass = primClassifier.getClass(offset);
+		if (!mappedOffsets.contains(currClass)) mappedOffsets[currClass] = GA_OffsetArray();
+		
+		mappedOffsets[currClass].append(offset);
+	}
+	
+	// add bundle_id attribute
+	this->_bundleIDHandle = GA_RWHandleI(this->gdp->addIntTuple(GA_AttributeOwner::GA_ATTRIB_PRIMITIVE, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_ID), 1));
+	if (this->_bundleIDHandle.isInvalid())
+	{
+		auto errorMessage = std::string("Failed to add \"") + std::string(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_ID)) + std::string("\" attribute.");
+		this->addError(SOP_MESSAGE, errorMessage.c_str());
+		return ENUMS::MethodProcessResult::FAILURE;
+	}
+
+	// per each element	
+	for (auto entry : mappedOffsets)
+	{	
+		auto& offsets = entry.second;
+
+		if (processedoutputtype == ENUMS::ProcessedOutputType::CONVEX_HULLS)
+		{
+			
+		}
+
+		//entry.first
+	}
+
+	if (processedoutputtype == ENUMS::ProcessedOutputType::CONVEX_HULLS)
+	{
+		
+	}
+
 	return ENUMS::MethodProcessResult::SUCCESS;
 }
 
 ENUMS::MethodProcessResult
 SOP_Operator::WhenPerGroup(UT_AutoInterrupt progress, ENUMS::ProcessedOutputType processedoutputtype, fpreal time)
 {
+	UT_String input0PrimitiveGroupNameValue;
+	PRM_ACCESS::Get::StringPRM(this, input0PrimitiveGroupNameValue, UI::input0PrimitiveGroup_Parameter, time);
+		
+	UT_StringList tokens;
+	input0PrimitiveGroupNameValue.tokenizeInPlace(tokens, " ");
+	//std::cout << tokens.size() << std::endl;
+	for (auto token : tokens) std::cout << token << std::endl;
+	
+	for (auto groupIt = this->gdp->primitiveGroups().beginTraverse(); !groupIt.atEnd(); ++groupIt)
+	{
+		PROGRESS_WAS_INTERRUPTED_WITH_ERROR_AND_OBJECT(this, progress, ENUMS::MethodProcessResult::FAILURE)		
+
+		// get group and...		
+		const auto currGroup = groupIt.group();
+		if (!currGroup->isInternal())
+		{
+			if (tokens.find(currGroup->getName()) > -1) continue;
+
+			// ... create separate detail from it
+			const auto currDetail = new GU_Detail(this->gdp, currGroup);
+			std::cout << currGroup->getName() << std::endl;
+			/*
+			if (processedoutputtype == ENUMS::ProcessedOutputType::CONVEX_HULLS)
+			{
+				// make sure we have proper geometry before we try to gather data for V-HACD
+				auto processResult = PrepareGeometry(currDetail, progress, time);
+				if (processResult != ENUMS::MethodProcessResult::SUCCESS || error() > OP_ERROR::UT_ERROR_WARNING)
+				{
+					delete currDetail;
+					return processResult;
+				}
+
+				// setup V-HACD and collect all required data
+				SetupParametersVHACD(currDetail, time);
+
+				processResult = GatherDataForVHACD(currDetail, progress, time);
+				if (processResult != ENUMS::MethodProcessResult::SUCCESS || error() > OP_ERROR::UT_ERROR_WARNING)
+				{
+					delete currDetail;
+					return processResult;
+				}
+			}
+			*/
+		}
+	}
+
 	return ENUMS::MethodProcessResult::SUCCESS;
 }
 
@@ -434,20 +561,10 @@ SOP_Operator::cookMySop(OP_Context& context)
 		auto processResult = SeparatePrimitiveRange();
 		if (processResult != ENUMS::MethodProcessResult::SUCCESS || error() > OP_ERROR::UT_ERROR_WARNING) return error();
 
-		// make sure we have proper geometry before we try to gather data for V-HACD
-		processResult = PrepareGeometry(progress, currentTime);
-		if (processResult != ENUMS::MethodProcessResult::SUCCESS || error() > OP_ERROR::UT_ERROR_WARNING) return error();
-
-		// setup V-HACD and collect all required data
-		SetupParametersVHACD(currentTime);
-
-		processResult = GatherDataForVHACD(progress, currentTime);
-		if (processResult != ENUMS::MethodProcessResult::SUCCESS || error() > OP_ERROR::UT_ERROR_WARNING) return error();
-
 		// process geometry
 		exint processModeChoiceMenuValue;
 		PRM_ACCESS::Get::IntPRM(this, processModeChoiceMenuValue, UI::processModeChoiceMenu_Parameter, currentTime);
-
+		
 		switch(processModeChoiceMenuValue)
 		{
 			case static_cast<exint>(ENUMS::ProcessedModeOption::AS_WHOLE) :			{ processResult = WhenAsOne(progress, ENUMS::ProcessedOutputType::CONVEX_HULLS, currentTime); } break;
