@@ -1,5 +1,5 @@
 /*
-	Abstract base node class for VHACD toolkit.
+	Base node class for VHACD Scout nodes.
 
 	IMPORTANT! ------------------------------------------
 	* Macros starting and ending with '____' shouldn't be used anywhere outside of this file.
@@ -71,7 +71,7 @@ protected:
 		auto hullCountHandle = GA_RWHandleI(this->gdp->addIntTuple(GA_AttributeOwner::GA_ATTRIB_DETAIL, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_COUNT), 1, GA_Defaults(classifier.getNumClass())));
 		if (hullCountHandle.isInvalid())
 		{
-			auto errorMessage = std::string("Failed to create ") + std::string(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_COUNT) + std::string(" attribute."));
+			auto errorMessage = std::string("Failed to create ") + std::string(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_BUNDLE_COUNT) + std::string(" attribute."));
 			this->addError(SOP_MESSAGE, errorMessage.c_str());
 			return ENUMS::MethodProcessResult::FAILURE;
 		}

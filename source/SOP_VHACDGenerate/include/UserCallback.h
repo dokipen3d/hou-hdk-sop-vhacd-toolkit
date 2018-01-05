@@ -1,5 +1,6 @@
 /*
-	This is a place where you should create and register all SOP's, Selectors and their custom states.
+	Volumetric-Hierarchical Approximate Convex Decomposition.
+	Based on https://github.com/kmammou/v-hacd
 
 	IMPORTANT! ------------------------------------------
 	* Macros starting and ending with '____' shouldn't be used anywhere outside of this file.
@@ -22,55 +23,53 @@
 	THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#pragma once
+#ifndef ____user_callback_h____
+#define ____user_callback_h____
+
 /* -----------------------------------------------------------------
 INCLUDES                                                           |
 ----------------------------------------------------------------- */
+// std
+#include <string>
+#include <iostream>
+#include <iomanip>
 
-// SESI
-#include <UT/UT_DSOVersion.h>
-#include <OP/OP_OperatorTable.h>
+// 3rdParty
+#include <VHACD.h>
 
-// this
-#include "SOP_VHACDEngine.h"
-
-/* -----------------------------------------------------------------
-DEFINES                                                            |
------------------------------------------------------------------ */
-
-#define SOP_Operator		GET_SOP_Namespace()::SOP_VHACDEngine
-
-#define COMMON_NAMES		GET_SOP_Namespace()::COMMON_NAMES
-#define ENUMS				GET_Base_Namespace()::Enums
+// hou-hdk-common
+#include <Macros/Namespace.h>
 
 /* -----------------------------------------------------------------
-REGISTRATION                                                       |
+CALLBACK                                                           |
 ----------------------------------------------------------------- */
 
-void
-newSopOperator(OP_OperatorTable* table)
-{
-	const auto sopVHACDEngine = new OP_Operator(
-		COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::SOP_ENGINE_SMALLNAME),
-		COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::SOP_ENGINE_BIGNAME),
-		SOP_Operator::CreateMe,
-		SOP_Operator::parametersList,
-		1,
-		1,
-		nullptr,
-		0,
-		nullptr,
-		1,
-		COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::TOOLKIT_TABMENU_PATH)
-	);
+DECLARE_SOP_Namespace_Start()
 
-	auto success = table->addOperator(sopVHACDEngine);
-}
+	class UserCallback : public VHACD::IVHACD::IUserCallback
+	{
+	public:
+		UserCallback(): showOverallProgress(false), showStageProgress(false), showOperationProgress(false) { } 
+		~UserCallback() override { }
 
-/* -----------------------------------------------------------------
-UNDEFINES                                                          |
------------------------------------------------------------------ */
+		void Update(const double overallProgress, const double stageProgress, const double operationProgress, const char* const stage, const char* const operation) override
+		{
+			if (this->showOverallProgress)
+			{
+				auto info = std::string("Overall Progress: ") + std::to_string(static_cast<int>(overallProgress + 0.5)).c_str() + "%";
+				std::cout << std::setfill('-') << "Overall Progress: " << std::setw(52) << " " << static_cast<int>(overallProgress + 0.5) << "% " << std::endl;
+			}
 
-#undef ENUMS
-#undef COMMON_NAMES
+			if (this->showStageProgress) std::cout << stage << ": " << static_cast<int>(stageProgress + 0.5) << "% " << std::endl;
+			if (this->showOperationProgress) std::cout << operation << ": " << static_cast<int>(operationProgress + 0.5) << "% " << std::endl;
+		}
 
-#undef SOP_Operator
+		bool	showOverallProgress;
+		bool	showStageProgress;
+		bool	showOperationProgress;
+	};
+
+DECLARE_SOP_Namespace_End
+
+#endif // !____user_callback_h____

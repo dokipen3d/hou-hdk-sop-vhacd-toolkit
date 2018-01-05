@@ -1,8 +1,8 @@
 /*
-	Container for common attribute names.
+	Container for common parameter names.
 
 	IMPORTANT! ------------------------------------------
-	* this should be synchronized with VHACDCommonAttributeNameOption.h
+	* this should be synchronized with VHACDCommonParameterNameOption.h
 	-----------------------------------------------------
 
 	Author: 	SWANN
@@ -23,22 +23,20 @@
 */
 
 #pragma once
-#ifndef ____vhacd_common_attribute_name_h____
-#define ____vhacd_common_attribute_name_h____
+#ifndef ____vhacd_common_parameter_name_h____
+#define ____vhacd_common_parameter_name_h____
 
 /* -----------------------------------------------------------------
 INCLUDES                                                           |
 ----------------------------------------------------------------- */
 
-// SESI
-#include <UT/UT_Map.h>
-
 // hou-hdk-common
 #include <Macros/Namespace.h>
 #include <Containers/CommonTName.h>
+#include <Macros/GroupMenuPRM.h>
 
 // this
-#include "VHACDCommonAttributeNameOption.h"
+#include "VHACDCommonParameterNameOption.h"
 
 /* -----------------------------------------------------------------
 DEFINES                                                            |
@@ -53,19 +51,31 @@ DECLARATION                                                        |
 
 DECLARE_Base_Namespace_Start()
 namespace Containers
-{	
-	class VHACDCommonAttributeName final : public CONTAINERS::CommonTName<ENUMS::VHACDCommonAttributeNameOption>
+{
+	class VHACDCommonParameterName final : public CONTAINERS::CommonTName<ENUMS::VHACDCommonParameterNameOption>
 	{
 	public:
-		VHACDCommonAttributeName() : CommonTName<ENUMS::VHACDCommonAttributeNameOption>()
+		VHACDCommonParameterName() : CommonTName<ENUMS::VHACDCommonParameterNameOption>()
 		{
-			this->Add(ENUMS::VHACDCommonAttributeNameOption::HULL_COUNT,			"hull_count");
-			this->Add(ENUMS::VHACDCommonAttributeNameOption::HULL_ID,				"hull_id");
-			this->Add(ENUMS::VHACDCommonAttributeNameOption::HULL_VOLUME,			"hull_volume");
-			this->Add(ENUMS::VHACDCommonAttributeNameOption::HULL_CENTER,			"hull_center");
-			this->Add(ENUMS::VHACDCommonAttributeNameOption::HULL_BUNDLE_COUNT,		"bundle_count");
-			this->Add(ENUMS::VHACDCommonAttributeNameOption::HULL_BUNDLE_ID,		"bundle_id");
+			// vhacd global
+			this->Add(ENUMS::VHACDCommonParameterNameOption::ALPHA,							"alpha");
+			this->Add(ENUMS::VHACDCommonParameterNameOption::BETA,							"beta");
+			this->Add(ENUMS::VHACDCommonParameterNameOption::CONCAVITY,						"concavity");
+			this->Add(ENUMS::VHACDCommonParameterNameOption::CONVEXHULL_APPROXIMATION,		"convexhullapproximation");
+			this->Add(ENUMS::VHACDCommonParameterNameOption::CONVEXHULL_DOWNSAMPLING,		"convexhulldownsampling");
+			this->Add(ENUMS::VHACDCommonParameterNameOption::MAX_CONVEXHULLS_COUNT,			"maxconvexhullscount");
+			this->Add(ENUMS::VHACDCommonParameterNameOption::MAX_TRIANGLE_COUNT,			"maxtrianglecount");
+			this->Add(ENUMS::VHACDCommonParameterNameOption::ADAPTIVE_SAMPLING,				"adaptivesampling");
+			this->Add(ENUMS::VHACDCommonParameterNameOption::DECOMPOSITION_MODE,			"decompositionmode");
+			this->Add(ENUMS::VHACDCommonParameterNameOption::USE_OPENCL,					"useopencl");
+			this->Add(ENUMS::VHACDCommonParameterNameOption::NORMALIZE_MESH,				"normalizemesh");
+			this->Add(ENUMS::VHACDCommonParameterNameOption::PLANE_DOWNSAMPLING,			"planedownsampling");
+			this->Add(ENUMS::VHACDCommonParameterNameOption::PROJECT_HULL_VERTICES,			"projecthullvertices");
+			this->Add(ENUMS::VHACDCommonParameterNameOption::RESOLUTION,					"resolution");
 
+			// decomposition mode only
+			this->Add(ENUMS::VHACDCommonParameterNameOption::VOXEL,							"Voxel");
+			this->Add(ENUMS::VHACDCommonParameterNameOption::TETRAHEDRON,					"Tetrahedron");
 		}
 	};
 }
@@ -78,4 +88,4 @@ UNDEFINE                                                           |
 #undef ENUMS
 #undef CONTAINERS
 
-#endif // !____vhacd_common_attribute_name_h____
+#endif // !____vhacd_common_parameter_name_h____

@@ -90,8 +90,8 @@ if(EXISTS ${____module_source_dir____} AND EXISTS ${____module_3rdparty_dir____}
 #[[-----------------------------------------------------------------
 COLLECT NODE PROJECT DATA                                          |
 ------------------------------------------------------------------]]
-	
-	HDK_MODULE_GET_NODE_FILES("SOP_VHACDEngine")	
+		
+	HDK_MODULE_GET_NODE_FILES("SOP_VHACDGenerate")
 	HDK_MODULE_GET_NODE_FILES("SOP_VHACDMerge")
 	HDK_MODULE_GET_NODE_FILES("SOP_VHACDScoutJunior")
 	HDK_MODULE_GET_NODE_FILES("SOP_VHACDScoutSenior")

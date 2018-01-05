@@ -1,5 +1,5 @@
 /*
-	Abstract base node class for VHACD toolkit.
+	Base node class for VHACD toolkit.
 
 	IMPORTANT! ------------------------------------------
 	* Macros starting and ending with '____' shouldn't be used anywhere outside of this file.
@@ -23,8 +23,8 @@
 */
 
 #pragma once
-#ifndef ____sop_vhacdnode_h____
-#define ____sop_vhacdnode_h____
+#ifndef ____sop_vhacd_node_h____
+#define ____sop_vhacd_node_h____
 
 /* -----------------------------------------------------------------
 INCLUDES                                                           |
@@ -40,6 +40,7 @@ INCLUDES                                                           |
 // this
 #include "VHACDCommonName.h"
 #include "VHACDCommonAttributeName.h"
+#include "VHACDCommonParameterName.h"
 
 /* -----------------------------------------------------------------
 DEFINES                                                            |
@@ -59,22 +60,23 @@ class SOP_VHACDNode : public SOP_Node
 protected:
 	SOP_VHACDNode(OP_Network* network, const char* name, OP_Operator* op) : SOP_Node(network, name, op) { }
 	
-	CONTAINERS::VHACDCommonAttributeName	_commonAttributeNames = CONTAINERS::VHACDCommonAttributeName();
+	CONTAINERS::VHACDCommonAttributeName		_commonAttributeNames = CONTAINERS::VHACDCommonAttributeName();
 
-	GA_ROHandleI							_convexBundleIDHandle;
-	GA_ROHandleI							_originalBundleIDHandle;
+	GA_ROHandleI								_convexBundleIDHandle;
+	GA_ROHandleI								_originalBundleIDHandle;
 
-	GA_RWHandleI							_hullCountHandle;
-	GA_RWHandleI							_hullIDHandle;
-	GA_RWHandleI							_bundleCountHandle;
-	GA_RWHandleI							_bundleIDHandle;
+	GA_RWHandleI								_hullCountHandle;
+	GA_RWHandleI								_hullIDHandle;
+	GA_RWHandleI								_bundleCountHandle;
+	GA_RWHandleI								_bundleIDHandle;
 };
 
 /* -----------------------------------------------------------------
 DEFAULT VARIABLES                                                  |
 ----------------------------------------------------------------- */
 
-static CONTAINERS::VHACDCommonName			COMMON_NAMES = CONTAINERS::VHACDCommonName();
+static CONTAINERS::VHACDCommonName				COMMON_NAMES = CONTAINERS::VHACDCommonName();
+static CONTAINERS::VHACDCommonParameterName		COMMON_PRM_NAMES = CONTAINERS::VHACDCommonParameterName();
 
 DECLARE_SOP_Namespace_End
 
@@ -85,4 +87,4 @@ UNDEFINES                                                          |
 #undef ENUMS
 #undef CONTAINERS
 
-#endif // !____sop_vhacdnode_h____
+#endif // !____sop_vhacd_node_h____

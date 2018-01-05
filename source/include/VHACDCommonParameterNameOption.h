@@ -1,9 +1,8 @@
 /*
-	Volumetric-Hierarchical Approximate Convex Decomposition.
-	Based on https://github.com/kmammou/v-hacd
+	Enum for common parameter names.
 
 	IMPORTANT! ------------------------------------------
-	* Macros starting and ending with '____' shouldn't be used anywhere outside of this file.
+	* this should be synchronized with VHACDCommonParameterName.h
 	-----------------------------------------------------
 
 	Author: 	SWANN
@@ -24,37 +23,53 @@
 */
 
 #pragma once
-#ifndef ____userlogger_h____
-#define ____userlogger_h____
+#ifndef ____vhacd_common_parameter_name_option_h____
+#define ____vhacd_common_parameter_name_option_h____
 
 /* -----------------------------------------------------------------
 INCLUDES                                                           |
 ----------------------------------------------------------------- */
 
-// 3rdParty
-#include <VHACD.h>
+// SESI
+#if _WIN32		
+#include <sys/SYS_Types.h>
+#else
+#include <SYS/SYS_Types.h>
+#endif
 
 // hou-hdk-common
-#include <Macros/Namespace.h>
+#include "Macros/Namespace.h"
 
 /* -----------------------------------------------------------------
-LOGGER                                                             |
+ENUM                                                               |
 ----------------------------------------------------------------- */
 
-DECLARE_SOP_Namespace_Start()
+DECLARE_Base_Namespace_Start()
+namespace Enums
+{
+	enum class VHACDCommonParameterNameOption : exint
+	{	
+		// vhacd global
+		ALPHA,
+		BETA,
+		CONCAVITY,
+		CONVEXHULL_APPROXIMATION,
+		CONVEXHULL_DOWNSAMPLING,
+		MAX_CONVEXHULLS_COUNT,
+		MAX_TRIANGLE_COUNT,
+		ADAPTIVE_SAMPLING,
+		DECOMPOSITION_MODE,
+		USE_OPENCL,
+		NORMALIZE_MESH,
+		PLANE_DOWNSAMPLING,
+		PROJECT_HULL_VERTICES,
+		RESOLUTION,
 
-	class UserLogger : public VHACD::IVHACD::IUserLogger
-	{
-	public:
-		UserLogger(): showMsg(false) { }
-		~UserLogger() override  { }
-
-		void Log(const char* const msg) override 
-		{ if (this->showMsg) std::cout << msg << std::endl; }
-
-		bool showMsg;
+		// decomposition mode only		
+		VOXEL,
+		TETRAHEDRON
 	};
+}
+DECLARE_Base_Namespace_End
 
-DECLARE_SOP_Namespace_End
-
-#endif // !____userlogger_h____
+#endif // !____vhacd_common_parameter_name_option_h____

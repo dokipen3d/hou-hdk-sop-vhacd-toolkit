@@ -1,6 +1,5 @@
 /*
-	Volumetric-Hierarchical Approximate Convex Decomposition.
-	Based on https://github.com/kmammou/v-hacd
+	Helper for specyfing process mode;
 
 	IMPORTANT! ------------------------------------------
 	* Macros starting and ending with '____' shouldn't be used anywhere outside of this file.
@@ -11,7 +10,7 @@
 
 	LICENSE ------------------------------------------
 
-	Copyright (c) 2016-2017 SWANN
+	Copyright (c) 2016-2018 SWANN
 	All rights reserved.
 
 	Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -24,48 +23,37 @@
 */
 
 #pragma once
-#ifndef ____usercallback_h____
-#define ____usercallback_h____
+#ifndef ____processed_mode_option_h____
+#define ____processed_mode_option_h____
 
 /* -----------------------------------------------------------------
 INCLUDES                                                           |
 ----------------------------------------------------------------- */
 
-// 3rdParty
-#include <VHACD.h>
+// SESI
+#if _WIN32		
+#include <sys/SYS_Types.h>
+#else
+#include <SYS/SYS_Types.h>
+#endif
 
 // hou-hdk-common
-#include <Macros/Namespace.h>
+#include "Macros/Namespace.h"
 
 /* -----------------------------------------------------------------
-CALLBACK                                                           |
+ENUM                                                               |
 ----------------------------------------------------------------- */
 
-DECLARE_SOP_Namespace_Start()
-
-	class UserCallback : public VHACD::IVHACD::IUserCallback
+DECLARE_Base_Namespace_Start()
+namespace Enums
+{
+	enum class ProcessedModeOption : exint
 	{
-	public:
-		UserCallback(): showOverallProgress(false), showStageProgress(false), showOperationProgress(false) { } 
-		~UserCallback() override { }
-
-		void Update(const double overallProgress, const double stageProgress, const double operationProgress, const char* const stage, const char* const operation) override
-		{
-			if (this->showOverallProgress)
-			{
-				auto info = std::string("Overall Progress: ") + std::to_string(static_cast<int>(overallProgress + 0.5)).c_str() + "%";
-				std::cout << std::setfill('-') << "Overall Progress: " << std::setw(52) << " " << static_cast<int>(overallProgress + 0.5) << "% " << std::endl;
-			}
-
-			if (this->showStageProgress) std::cout << stage << ": " << static_cast<int>(stageProgress + 0.5) << "% " << std::endl;
-			if (this->showOperationProgress) std::cout << operation << ": " << static_cast<int>(operationProgress + 0.5) << "% " << std::endl;
-		}
-
-		bool	showOverallProgress;
-		bool	showStageProgress;
-		bool	showOperationProgress;
+		AS_WHOLE,
+		PER_ELEMENT,
+		PER_GROUP
 	};
+}
+DECLARE_Base_Namespace_End
 
-DECLARE_SOP_Namespace_End
-
-#endif // !____usercallback_h____
+#endif // !____processed_mode_option_h____

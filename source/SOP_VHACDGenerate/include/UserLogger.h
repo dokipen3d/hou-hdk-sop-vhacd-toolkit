@@ -11,7 +11,7 @@
 
 	LICENSE ------------------------------------------
 
-	Copyright (c) 2016-2017 SWANN
+	Copyright (c) 2016-2018 SWANN
 	All rights reserved.
 
 	Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -24,12 +24,15 @@
 */
 
 #pragma once
-#ifndef ____userlogger_h____
-#define ____userlogger_h____
+#ifndef ____user_logger_h____
+#define ____user_logger_h____
 
 /* -----------------------------------------------------------------
 INCLUDES                                                           |
 ----------------------------------------------------------------- */
+
+// std
+#include <iostream>
 
 // 3rdParty
 #include <VHACD.h>
@@ -49,7 +52,7 @@ DECLARE_SOP_Namespace_Start()
 		UserLogger(): showMsg(false) { }
 		~UserLogger() override  { }
 
-		void Log(const char* const msg) override 
+		void Log(const char* const msg) override
 		{ if (this->showMsg) std::cout << msg << std::endl; }
 
 		bool showMsg;
@@ -57,4 +60,4 @@ DECLARE_SOP_Namespace_Start()
 
 DECLARE_SOP_Namespace_End
 
-#endif // !____userlogger_h____
+#endif // !____user_logger_h____

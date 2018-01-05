@@ -1,5 +1,5 @@
 /*
-	Helper for setting report mode.
+	Helper for specyfing currently processed output;
 
 	IMPORTANT! ------------------------------------------
 	* Macros starting and ending with '____' shouldn't be used anywhere outside of this file.
@@ -10,7 +10,7 @@
 
 	LICENSE ------------------------------------------
 
-	Copyright (c) 2016-2018 SWANN
+	Copyright (c) 2016-2017 SWANN
 	All rights reserved.
 
 	Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -23,8 +23,8 @@
 */
 
 #pragma once
-#ifndef ____enums_report_mode_option_h____
-#define ____enums_report_mode_option_h____
+#ifndef ____processed_output_type_h____
+#define ____processed_output_type_h____
 
 /* -----------------------------------------------------------------
 INCLUDES                                                           |
@@ -40,14 +40,13 @@ ENUM                                                               |
 DECLARE_Base_Namespace_Start()
 namespace Enums
 {
-	enum class ReportModeOption
+	enum class ProcessedOutputType
 	{
-		PROGESS_ONLY = 0,
-		DETAILS_ONLY = 1,
-		FULL = 2,
-		END_OF_OPTIONS = 3
+		CONVEX_HULLS,
+		ORIGINAL_GEOMETRY,
+		NO_TYPE
 	};
 }
 DECLARE_Base_Namespace_End
 
-#endif // !____enums_report_mode_option_h____
+#endif // !____processed_output_type_h____

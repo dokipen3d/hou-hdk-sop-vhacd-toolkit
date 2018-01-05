@@ -1,6 +1,5 @@
 /*
-	Volumetric-Hierarchical Approximate Convex Decomposition.
-	Based on https://github.com/kmammou/v-hacd
+	Helper for setting report mode.
 
 	IMPORTANT! ------------------------------------------
 	* Macros starting and ending with '____' shouldn't be used anywhere outside of this file.
@@ -24,48 +23,37 @@
 */
 
 #pragma once
-#ifndef ____usercallback_h____
-#define ____usercallback_h____
+#ifndef ____report_mode_option_h____
+#define ____report_mode_option_h____
 
 /* -----------------------------------------------------------------
 INCLUDES                                                           |
 ----------------------------------------------------------------- */
 
-// 3rdParty
-#include <VHACD.h>
+// SESI
+#if _WIN32		
+#include <sys/SYS_Types.h>
+#else
+#include <SYS/SYS_Types.h>
+#endif
 
 // hou-hdk-common
-#include <Macros/Namespace.h>
+#include "Macros/Namespace.h"
 
 /* -----------------------------------------------------------------
-CALLBACK                                                           |
+ENUM                                                               |
 ----------------------------------------------------------------- */
 
-DECLARE_SOP_Namespace_Start()
-
-	class UserCallback : public VHACD::IVHACD::IUserCallback
+DECLARE_Base_Namespace_Start()
+namespace Enums
+{
+	enum class ReportModeOption : exint
 	{
-	public:
-		UserCallback(): showOverallProgress(false), showStageProgress(false), showOperationProgress(false) { } 
-		~UserCallback() override { }
-
-		void Update(const double overallProgress, const double stageProgress, const double operationProgress, const char* const stage, const char* const operation) override
-		{
-			if (this->showOverallProgress)
-			{
-				auto info = std::string("Overall Progress: ") + std::to_string(static_cast<int>(overallProgress + 0.5)).c_str() + "%";
-				std::cout << std::setfill('-') << "Overall Progress: " << std::setw(52) << " " << static_cast<int>(overallProgress + 0.5) << "% " << std::endl;
-			}
-
-			if (this->showStageProgress) std::cout << stage << ": " << static_cast<int>(stageProgress + 0.5) << "% " << std::endl;
-			if (this->showOperationProgress) std::cout << operation << ": " << static_cast<int>(operationProgress + 0.5) << "% " << std::endl;
-		}
-
-		bool	showOverallProgress;
-		bool	showStageProgress;
-		bool	showOperationProgress;
+		PROGESS_ONLY,
+		DETAILS_ONLY,
+		FULL
 	};
+}
+DECLARE_Base_Namespace_End
 
-DECLARE_SOP_Namespace_End
-
-#endif // !____usercallback_h____
+#endif // !____report_mode_option_h____

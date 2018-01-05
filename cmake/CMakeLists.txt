@@ -43,22 +43,22 @@ else()
 	Find_Package(HDKVHACDToolkit REQUIRED)
 
 #[[-----------------------------------------------------------------
-V-HACD ENGINE                                                      |
+V-HACD GENERATE                                                    |
 ------------------------------------------------------------------]]
 
-	Set(CURRENT_PROJECT_NAME SOP_VHACDEngine)
+	Set(CURRENT_PROJECT_NAME SOP_VHACDGenerate)
 	Add_Library(${CURRENT_PROJECT_NAME}
 		SHARED
-		${HDK_SOP_VHACDENGINE_INCLUDE_FILES} 
-		${HDK_SOP_VHACDENGINE_SOURCE_FILES}
+		${HDK_SOP_VHACDGENERATE_INCLUDE_FILES} 
+		${HDK_SOP_VHACDGENERATE_SOURCE_FILES}
 		${HDK_VHACDTOOLKIT_3RDPARTY_INCLUDE_FILES}
 		${HDK_VHACDTOOLKIT_3RDPARTY_SOURCE_FILES}
 		${HDK_VHACDTOOLKIT_3RDPARTY_OPENCL_KERNEL_FILES}
 	)
 	
 	# pack operator files into its own filter
-	Source_Group("Operator\\Headers" 	FILES ${HDK_SOP_VHACDENGINE_INCLUDE_FILES})
-	Source_Group("Operator\\Source" 	FILES ${HDK_SOP_VHACDENGINE_SOURCE_FILES})	
+	Source_Group("Operator\\Headers" 	FILES ${HDK_SOP_VHACDGENERATE_INCLUDE_FILES})
+	Source_Group("Operator\\Source" 	FILES ${HDK_SOP_VHACDGENERATE_SOURCE_FILES})	
 	
 	# pack V-HACD files into its own filter
 	Source_Group("3rdParty\\Headers" 	FILES ${HDK_VHACDTOOLKIT_3RDPARTY_INCLUDE_FILES})
@@ -67,7 +67,7 @@ V-HACD ENGINE                                                      |
 	
 	Target_Include_Directories(${CURRENT_PROJECT_NAME} 
 		PUBLIC 
-		"${HDK_SOP_VHACDENGINE_INCLUDE_DIR}"
+		"${HDK_SOP_VHACDGENERATE_INCLUDE_DIR}"
 		PRIVATE 
 		"${HOUDINI_INCLUDE_DIRS}"
 		"${HDK_COMMON_INCLUDE_DIR}"
