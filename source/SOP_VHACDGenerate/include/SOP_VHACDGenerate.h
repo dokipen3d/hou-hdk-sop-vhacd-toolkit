@@ -103,13 +103,16 @@ DECLARE_SOP_Namespace_Start()
 		void						SetupParametersVHACD(GU_Detail* detail, fpreal time);
 		ENUMS::MethodProcessResult	GatherDataForVHACD(GU_Detail* detail, UT_AutoInterrupt progress, fpreal time);
 
-		ENUMS::MethodProcessResult	GenerateConvexHulls(GU_Detail* geometry, UT_AutoInterrupt progress);
+		ENUMS::MethodProcessResult	DrawConvexHull(GU_Detail* detail, VHACD::IVHACD::ConvexHull hull, UT_AutoInterrupt progress);
+		ENUMS::MethodProcessResult	GenerateConvexHulls(GU_Detail* detail, UT_AutoInterrupt progress);
 		ENUMS::MethodProcessResult	MergeCurrentDetail(const GU_Detail* detail, exint detailscount = 1, exint iteration = 0);
+		ENUMS::MethodProcessResult	ProcessCurrentDetail(GU_Detail* detail, UT_AutoInterrupt progress, ENUMS::ProcessedOutputType processedoutputtype, exint iteration, fpreal time);
 
 		ENUMS::MethodProcessResult	WhenAsOne(UT_AutoInterrupt progress, ENUMS::ProcessedOutputType processedoutputtype, fpreal time);
 		ENUMS::MethodProcessResult	WhenPerElement(UT_AutoInterrupt progress, ENUMS::ProcessedOutputType processedoutputtype, fpreal time);
 		ENUMS::MethodProcessResult	WhenPerGroup(UT_AutoInterrupt progress, ENUMS::ProcessedOutputType processedoutputtype, fpreal time);
 
+		GroupCreator				_gop;
 		GU_Detail*					_inputGDP;
 		const GA_PrimitiveGroup*	_primitiveGroupInput0;
 

@@ -157,9 +157,9 @@ OP_ERROR
 SOP_Operator::cookInputGroups(OP_Context& context, int alone)
 {	
 	const auto isOrdered = true;	
-	const auto gop = GroupCreator(this->_inputGDP);
+	this->_gop = GroupCreator(this->_inputGDP);
 
-	return cookInputPrimitiveGroups(context, this->_primitiveGroupInput0, alone, true, SOP_GroupFieldIndex_0, -1, true, isOrdered, gop);
+	return cookInputPrimitiveGroups(context, this->_primitiveGroupInput0, alone, true, SOP_GroupFieldIndex_0, -1, true, isOrdered, this->_gop);
 }
 
 /* -----------------------------------------------------------------
@@ -409,8 +409,122 @@ SOP_Operator::GatherDataForVHACD(GU_Detail* detail, UT_AutoInterrupt progress, f
 }
 
 ENUMS::MethodProcessResult
-SOP_Operator::GenerateConvexHulls(GU_Detail* geometry, UT_AutoInterrupt progress)
+SOP_Operator::DrawConvexHull(GU_Detail* detail, VHACD::IVHACD::ConvexHull hull, UT_AutoInterrupt progress)
 {
+	// add amount of points that hull consists
+	const auto start = detail->appendPointBlock(hull.m_nPoints);
+
+	// make sure that we have at least 4 points, if we have less, than it's a flat geometry, so ignore it
+	if (GDP_UTILS::Test::IsEnoughPoints(this, detail) && error() >= UT_ErrorSeverity::UT_ERROR_WARNING) return ENUMS::MethodProcessResult::FAILURE;
+
+	// set point positions				
+	exint hullP = 0;
+	GA_OffsetArray	pointOffsets;
+	pointOffsets.clear();
+	//std::vector<GA_Offset> pOffsets;
+	//pOffsets.clear();
+
+	auto pointIt = GA_Iterator(detail->getPointRangeSlice(gdp->pointIndex(start)));
+	while (!pointIt.atEnd())
+	{
+		// make sure we can escape the loop
+		if (progress.wasInterrupted())
+		{
+			this->_interfaceVHACD->Cancel();
+			this->addWarning(SOP_ErrorCodes::SOP_MESSAGE, "Operation interrupted");
+			return ENUMS::MethodProcessResult::FAILURE;
+		}
+
+		const auto currentPosition = UT_Vector3R(hull.m_points[hullP], hull.m_points[hullP + 1], hull.m_points[hullP + 2]);
+		this->_positionHandle.set(*pointIt, currentPosition);
+
+		hullP += 3;
+		//pOffsets.push_back(*pointIt);
+		pointOffsets.append(*pointIt);
+		pointIt.advance();
+	}
+
+	// draw hull
+	for (unsigned int t = 0; t < hull.m_nTriangles * 3; t += 3)
+	{
+		// make sure we can escape the loop
+		if (progress.wasInterrupted())
+		{
+			this->_interfaceVHACD->Cancel();
+			addWarning(SOP_ErrorCodes::SOP_MESSAGE, "Operation interrupted");
+			return ENUMS::MethodProcessResult::FAILURE;
+		}
+
+		// create triangle
+		auto polygon = static_cast<GEO_PrimPoly*>(detail->appendPrimitive(GEO_PRIMPOLY));
+		polygon->setSize(0);
+
+		polygon->appendVertex(pointOffsets[hull.m_triangles[t + 2]]);
+		polygon->appendVertex(pointOffsets[hull.m_triangles[t + 1]]);
+		polygon->appendVertex(pointOffsets[hull.m_triangles[t + 0]]);
+
+		//polygon->appendVertex(pOffsets[hull.m_triangles[t + 2]]);
+		//polygon->appendVertex(pOffsets[hull.m_triangles[t + 1]]);
+		//polygon->appendVertex(pOffsets[hull.m_triangles[t + 0]]);
+
+		polygon->close();
+	}
+
+	return ENUMS::MethodProcessResult::SUCCESS;
+}
+
+ENUMS::MethodProcessResult
+SOP_Operator::GenerateConvexHulls(GU_Detail* detail, UT_AutoInterrupt progress)
+{	
+	// get interface	
+	this->_interfaceVHACD = VHACD::CreateVHACD_ASYNC();
+	//this->_interfaceVHACD = VHACD::CreateVHACD();
+	
+	const auto success = this->_interfaceVHACD->Compute(&this->_pointPositions[0], static_cast<unsigned int>(this->_pointPositions.size()) / 3, reinterpret_cast<const uint32_t*>(&this->_triangleIndexes[0]), static_cast<unsigned int>(this->_triangleIndexes.size()) / 3, this->_parametersVHACD);
+
+	/*
+		This is shitty hack. Just to use asynch version of this->_interfaceVHACD
+		TODO: figure out hot to do asynch await in node, can it be done at all?!
+	 */
+	while (!this->_interfaceVHACD->IsReady()) PROGRESS_WAS_INTERRUPTED_WITH_OBJECT(this, progress, ENUMS::MethodProcessResult::FAILURE)
+
+	if (success)
+	{
+		if (this->_interfaceVHACD->IsReady())
+		{
+			const auto hullCount = this->_interfaceVHACD->GetNConvexHulls();
+
+			// generate hulls
+			for (auto id = 0; id < hullCount; ++id)
+			{
+				// make sure we can escape the loop
+				if (progress.wasInterrupted())
+				{
+					this->_interfaceVHACD->Cancel();
+					this->addError(SOP_ErrorCodes::SOP_MESSAGE, "Operation interrupted");
+					return ENUMS::MethodProcessResult::FAILURE;
+				}
+
+				// draw hull
+				VHACD::IVHACD::ConvexHull currentHull;
+
+				this->_interfaceVHACD->GetConvexHull(id, currentHull);
+				if (!currentHull.m_nPoints || !currentHull.m_nTriangles) continue;
+
+				const auto processResult = DrawConvexHull(detail, currentHull, progress);
+				if (processResult != ENUMS::MethodProcessResult::SUCCESS || error() > OP_ERROR::UT_ERROR_NONE) return processResult;				
+			}
+		}
+	}
+	else
+	{
+		addError(SOP_ErrorCodes::SOP_MESSAGE, "Computation failed");
+		return ENUMS::MethodProcessResult::FAILURE;
+	}
+
+	this->_interfaceVHACD->Clean();
+	this->_interfaceVHACD->Release();	
+
 	return ENUMS::MethodProcessResult::SUCCESS;
 }
 
@@ -464,6 +578,41 @@ SOP_Operator::MergeCurrentDetail(const GU_Detail* detail, exint detailscount /* 
 }
 
 ENUMS::MethodProcessResult
+SOP_Operator::ProcessCurrentDetail(GU_Detail* detail, UT_AutoInterrupt progress, ENUMS::ProcessedOutputType processedoutputtype, exint iteration, fpreal time)
+{
+	// handle convex hulls
+	if (processedoutputtype == ENUMS::ProcessedOutputType::CONVEX_HULLS)
+	{
+		// make sure we have proper geometry before we try to gather data for V-HACD
+		auto processResult = PrepareGeometry(detail, progress, time);
+		if (processResult != ENUMS::MethodProcessResult::SUCCESS || error() > OP_ERROR::UT_ERROR_WARNING) return processResult;
+
+		// setup V-HACD and collect all required data
+		SetupParametersVHACD(detail, time);
+
+		processResult = GatherDataForVHACD(detail, progress, time);
+		if (processResult != ENUMS::MethodProcessResult::SUCCESS || error() > OP_ERROR::UT_ERROR_WARNING) return processResult;
+
+		// lets make some hulls!
+		detail->clear();
+
+		processResult = GenerateConvexHulls(detail, progress);
+		if (processResult != ENUMS::MethodProcessResult::SUCCESS || error() > OP_ERROR::UT_ERROR_WARNING) return processResult;
+	}
+	
+	// add bundle_id attribute
+	this->_bundleIDHandle = GA_RWHandleI(detail->addIntTuple(GA_AttributeOwner::GA_ATTRIB_PRIMITIVE, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_ID), 1, GA_Defaults(iteration)));
+	if (this->_bundleIDHandle.isInvalid())
+	{
+		auto errorMessage = std::string("Failed to add \"") + std::string(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_ID)) + std::string("\" attribute.");
+		this->addError(SOP_MESSAGE, errorMessage.c_str());
+		return ENUMS::MethodProcessResult::FAILURE;
+	}
+
+	return ENUMS::MethodProcessResult::SUCCESS;
+}
+
+ENUMS::MethodProcessResult
 SOP_Operator::WhenAsOne(UT_AutoInterrupt progress, ENUMS::ProcessedOutputType processedoutputtype, fpreal time)
 {
 	auto processResult = ENUMS::MethodProcessResult::SUCCESS;
@@ -505,43 +654,75 @@ SOP_Operator::WhenAsOne(UT_AutoInterrupt progress, ENUMS::ProcessedOutputType pr
 ENUMS::MethodProcessResult
 SOP_Operator::WhenPerElement(UT_AutoInterrupt progress, ENUMS::ProcessedOutputType processedoutputtype, fpreal time)
 {
-	// partition primitives by class
-	auto primClassifier = GEO_PrimClassifier();
-	primClassifier.classifyBySharedPoints(*this->gdp);
-
-	UT_Map<exint, GA_OffsetArray> mappedOffsets;
-	mappedOffsets.clear();
+	// @CLASS of 1999
+	auto primClassifier = GEO_PrimClassifier();	
+	primClassifier.classifyBySharedPoints(*this->_inputGDP);	
 	
-	for (auto offset : this->gdp->getPrimitiveRange())
+	// group primitives by class and...
+	this->_gop = GroupCreator(this->_inputGDP);
+
+	UT_Map<exint, GA_PrimitiveGroup*>	mappedGroups;
+	UT_Array<GU_Detail*>				processedDetails;
+
+	mappedGroups.clear();
+	processedDetails.clear();
+
+	for (auto offset : this->_inputGDP->getPrimitiveRange())
 	{
 		PROGRESS_WAS_INTERRUPTED_WITH_ERROR_AND_OBJECT(this, progress, ENUMS::MethodProcessResult::FAILURE)
 			
 		const auto currClass = primClassifier.getClass(offset);
-		if (!mappedOffsets.contains(currClass)) mappedOffsets[currClass] = GA_OffsetArray();
+		if (!mappedGroups.contains(currClass)) mappedGroups[currClass] = static_cast<GA_PrimitiveGroup*>(this->_gop.createGroup(GA_GroupType::GA_GROUP_PRIMITIVE));
 		
-		mappedOffsets[currClass].append(offset);
+		mappedGroups[currClass]->addOffset(offset);
 	}
 	
-	// add bundle_id attribute
-	this->_bundleIDHandle = GA_RWHandleI(this->gdp->addIntTuple(GA_AttributeOwner::GA_ATTRIB_PRIMITIVE, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_ID), 1));
-	if (this->_bundleIDHandle.isInvalid())
+	if (mappedGroups.size() < 1)
 	{
-		auto errorMessage = std::string("Failed to add \"") + std::string(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_ID)) + std::string("\" attribute.");
-		this->addError(SOP_MESSAGE, errorMessage.c_str());
+		this->addError(SOP_MESSAGE, "There is no geometry to process.");
 		return ENUMS::MethodProcessResult::FAILURE;
 	}
 
-	// per each element	
-	for (auto entry : mappedOffsets)
-	{	
-		auto& offsets = entry.second;
+	// ... then start the real job
+	exint currIter = 0;
 
-		if (processedoutputtype == ENUMS::ProcessedOutputType::CONVEX_HULLS)
+	for (const auto entry : mappedGroups)
+	{
+		PROGRESS_WAS_INTERRUPTED_WITH_ERROR_AND_OBJECT(this, progress, ENUMS::MethodProcessResult::FAILURE)
+
+		// get group
+		const auto currGroup = entry.second;
+
+		// create separate detail from it
+		const auto currDetail = new GU_Detail(this->_inputGDP, currGroup);
+
+		const auto processResult = ProcessCurrentDetail(currDetail, progress, processedoutputtype, currIter, time);
+		if (processResult != ENUMS::MethodProcessResult::SUCCESS)
 		{
-			
+			delete currDetail;
+			return processResult;
 		}
 
-		//entry.first
+		processedDetails.append(currDetail);
+		currIter++;
+	}
+
+	if (processedDetails.size() == 0)
+	{
+		this->addError(SOP_MESSAGE, "Failed to process details.");
+		return ENUMS::MethodProcessResult::FAILURE;
+	}
+
+	// merge all details into this->gdp
+	this->gdp->clear();
+	currIter = 0;
+
+	for (auto detail : processedDetails)
+	{
+		PROGRESS_WAS_INTERRUPTED_WITH_ERROR_AND_OBJECT(this, progress, ENUMS::MethodProcessResult::FAILURE)
+
+		MergeCurrentDetail(detail, processedDetails.size(), currIter);
+		currIter++;
 	}
 
 	return ENUMS::MethodProcessResult::SUCCESS;
@@ -598,44 +779,14 @@ SOP_Operator::WhenPerGroup(UT_AutoInterrupt progress, ENUMS::ProcessedOutputType
 
 			// create separate detail from it
 			const auto currDetail = new GU_Detail(this->_inputGDP, currGroup);
-
-			// handle convex hulls
-			if (processedoutputtype == ENUMS::ProcessedOutputType::CONVEX_HULLS)
+			
+			processResult = ProcessCurrentDetail(currDetail, progress, processedoutputtype, currIter, time);
+			if (processResult != ENUMS::MethodProcessResult::SUCCESS)
 			{
-				// make sure we have proper geometry before we try to gather data for V-HACD
-				processResult = PrepareGeometry(currDetail, progress, time);
-				if (processResult != ENUMS::MethodProcessResult::SUCCESS || error() > OP_ERROR::UT_ERROR_WARNING)
-				{
-					delete currDetail;
-					return processResult;
-				}
-
-				// setup V-HACD and collect all required data
-				SetupParametersVHACD(currDetail, time);
-
-				processResult = GatherDataForVHACD(currDetail, progress, time);
-				if (processResult != ENUMS::MethodProcessResult::SUCCESS || error() > OP_ERROR::UT_ERROR_WARNING)
-				{
-					delete currDetail;
-					return processResult;
-				}
-
-				// lets make some hulls!
-				//currDetail->clear();
-
-				//processResult = GenerateConvexHulls(currDetail, progress);
-				//if (processResult != ENUMS::MethodProcessResult::SUCCESS || error() > OP_ERROR::UT_ERROR_WARNING) return processResult;
+				delete currDetail;
+				return processResult;
 			}
-
-			// add bundle_id attribute
-			this->_bundleIDHandle = GA_RWHandleI(currDetail->addIntTuple(GA_AttributeOwner::GA_ATTRIB_PRIMITIVE, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_ID), 1, GA_Defaults(currIter)));
-			if (this->_bundleIDHandle.isInvalid())
-			{
-				auto errorMessage = std::string("Failed to add \"") + std::string(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_ID)) + std::string("\" attribute.");
-				this->addError(SOP_MESSAGE, errorMessage.c_str());
-				return ENUMS::MethodProcessResult::FAILURE;
-			}
-
+	
 			processedDetails.append(currDetail);
 			currIter++;
 		}		
