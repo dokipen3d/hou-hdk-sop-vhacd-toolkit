@@ -1,0 +1,353 @@
+# Dialog script for vhacd::generate::1.0 automatically generated
+
+{
+    name	vhacd::generate::1.0
+    script	nodeway::vhacdgenerator::1.0
+    label	"Generate (v-hacd)"
+
+    help {
+	""
+    }
+
+    inputlabel	1	"Sub-Network Input #1"
+    inputlabel	2	"Sub-Network Input #2"
+    inputlabel	3	"Sub-Network Input #3"
+    inputlabel	4	"Sub-Network Input #4"
+
+    group {
+	name	"hidden"
+	label	"Hidden"
+	invisibletab
+	tabbreak
+
+	parm {
+	    name	"is0connected"
+	    label	"Is 0 Connected?"
+	    type	toggle
+	    joinnext
+	    default	{ "0" }
+	    range	{ 0 1 }
+	}
+	parm {
+	    name	"sepparm3"
+	    label	"Separator"
+	    type	separator
+	    default	{ "" }
+	    range	{ 0 1 }
+	}
+	parm {
+	    name	"collectedpolygounsgroupname"
+	    label	"Group Name"
+	    type	string
+	    default	{ "" }
+	    range	{ 0 1 }
+	}
+    }
+
+    groupsimple {
+	name	"filtersection"
+	label	"Filter"
+
+	parm {
+	    name	"primitivegroupinput0"
+	    label	"Primitive Group"
+	    type	string
+	    default	{ "" }
+	    help	"Specify primitive group that should be processed."
+	    menureplace	{
+		[ "from vhacd.common import GroupMenu" ]
+		[ "reload(GroupMenu)" ]
+		[ "" ]
+		[ "return GroupMenu.PrimitiveGroupMenu(kwargs)" ]
+		language	python
+	    }
+	    range	{ 0 1 }
+	}
+	parm {
+	    name	"processmode"
+	    label	"Process Mode"
+	    type	string
+	    default	{ "0" }
+	    help	"How the geometry should be send to VHACD Engine. 0: As One Piece, 1: Per Each Piece."
+	    menu	{
+		"0"	"As One Piece"
+		"1"	"Per Each Piece"
+		"2"	"Per Group"
+	    }
+	    range	{ 0 1 }
+	    parmtag	{ "script_callback" "hou.phm().processMode.Callback(kwargs)" }
+	    parmtag	{ "script_callback_language" "python" }
+	}
+	parm {
+	    name	"converttopolygons"
+	    label	"Convert To Polygons"
+	    type	toggle
+	    joinnext
+	    default	{ "1" }
+	    help	"Convert all incoming geometry to polygons."
+	    range	{ 0 1 }
+	}
+	parm {
+	    name	"sepparm4"
+	    label	"Separator"
+	    type	separator
+	    default	{ "" }
+	    range	{ 0 1 }
+	}
+    }
+
+    groupsimple {
+	name	"mainsection"
+	label	"Main"
+
+	parm {
+	    name	"decompositionmode"
+	    label	"Decomposition Mode"
+	    type	string
+	    default	{ "" }
+	    help	"0: Voxel-based approximate convex decomposition, 1: Tetrahedron-based approximate convex decomposition"
+	    menu	{
+		"0"	"Voxel"
+		"1"	"Tetrahedron"
+	    }
+	    range	{ 0 1 }
+	}
+	parm {
+	    name	"resolution"
+	    label	"Resolution"
+	    type	integer
+	    default	{ "100000" }
+	    help	"Maximum number of voxels generated during voxelization stage."
+	    range	{ 10000! 6.4e+07! }
+	}
+	parm {
+	    name	"concativity"
+	    label	"Concativity"
+	    type	float
+	    default	{ "0.0025" }
+	    help	"Maximum concavity."
+	    range	{ 0! 1! }
+	}
+	parm {
+	    name	"planedownsampling"
+	    label	"Plane Downsampling"
+	    type	integer
+	    default	{ "4" }
+	    help	"Controls the granularity of the search for the 'best' clipping plane."
+	    range	{ 1! 16! }
+	}
+	parm {
+	    name	"convexhulldownsampling"
+	    label	"Convex Hull Downsampling"
+	    type	integer
+	    default	{ "4" }
+	    help	"Controls the precision of the convex-hull generation process during the clipping plane selection stage."
+	    range	{ 1! 16! }
+	}
+	parm {
+	    name	"alpha"
+	    label	"Alpha"
+	    type	float
+	    default	{ "0.5" }
+	    help	"Controls the bias toward clipping along symmetry planes."
+	    range	{ 0! 1! }
+	}
+	parm {
+	    name	"beta"
+	    label	"Beta"
+	    type	float
+	    default	{ "0.5" }
+	    help	"Controls the bias toward clipping along revolution axes."
+	    range	{ 0! 1! }
+	}
+	parm {
+	    name	"maxconvexhullcount"
+	    label	"Max Hull Count"
+	    type	integer
+	    default	{ "1024" }
+	    help	"Controls the maximum amount of convex hulls that will be generated."
+	    range	{ 1! 4096! }
+	}
+	parm {
+	    name	"maxtrianglecount"
+	    label	"Max Triangle Count"
+	    type	integer
+	    default	{ "64" }
+	    help	"Controls the maximum number of triangles per convex-hull."
+	    range	{ 4! 1024! }
+	}
+	parm {
+	    name	"adaptivesampling"
+	    label	"Adaptive Sampling"
+	    type	float
+	    default	{ "0.0001" }
+	    help	"Controls the adaptive sampling of the generated convex-hulls."
+	    range	{ 0! 0.01! }
+	}
+	parm {
+	    name	"convexhullapproximation"
+	    label	"Approximate Hulls"
+	    type	toggle
+	    joinnext
+	    default	{ "0" }
+	}
+	parm {
+	    name	"_"
+	    label	"Separator"
+	    type	separator
+	    default	{ "" }
+	}
+	parm {
+	    name	"projecthullvertices"
+	    label	"Project Vertices"
+	    type	toggle
+	    joinnext
+	    default	{ "0" }
+	}
+	parm {
+	    name	"_7"
+	    label	"Separator"
+	    type	separator
+	    default	{ "" }
+	}
+	parm {
+	    name	"normalizemesh"
+	    label	"Normalize Mesh"
+	    type	toggle
+	    joinnext
+	    default	{ "0" }
+	    help	"Enable/disable normalizing the mesh before applying the convex decomposition."
+	    range	{ 0 1 }
+	}
+	parm {
+	    name	"_2"
+	    label	"Separator"
+	    type	separator
+	    default	{ "" }
+	    range	{ 0 1 }
+	}
+	parm {
+	    name	"useopencl"
+	    label	"Use OpenCL"
+	    type	toggle
+	    joinnext
+	    default	{ "1" }
+	    range	{ 0 1 }
+	}
+	parm {
+	    name	"_3"
+	    label	"Separator"
+	    type	separator
+	    default	{ "" }
+	    range	{ 0 1 }
+	}
+    }
+
+    groupsimple {
+	name	"additionalsection"
+	label	"Additional"
+
+	parm {
+	    name	"cuspnormals"
+	    label	"Cusp Normals"
+	    type	toggle
+	    joinnext
+	    default	{ "0" }
+	    help	"Use it to sharpen or smooth vertex normals of the geometry. "
+	    range	{ 0 1 }
+	    parmtag	{ "script_callback" "hou.phm().cuspNormals.Callback(kwargs)" }
+	    parmtag	{ "script_callback_language" "python" }
+	}
+	parm {
+	    name	"_4"
+	    label	"Separator"
+	    type	separator
+	    default	{ "" }
+	    range	{ 0 1 }
+	}
+	parm {
+	    name	"angle"
+	    label	"Angle"
+	    type	float
+	    default	{ "40" }
+	    help	"How much harden should be applied."
+	    hidewhen	"{ cuspnormals == 0 }"
+	    range	{ 0! 40 }
+	}
+	parm {
+	    name	"adddescription"
+	    label	"Description"
+	    type	toggle
+	    joinnext
+	    default	{ "0" }
+	    help	"Add node information that will be visible below nodes name in network view."
+	    range	{ 0 1 }
+	    parmtag	{ "script_callback" "hou.phm().description.Callback(kwargs)" }
+	    parmtag	{ "script_callback_language" "python" }
+	}
+	parm {
+	    name	"_5"
+	    label	"Separator"
+	    type	separator
+	    default	{ "" }
+	    range	{ 0 1 }
+	}
+	parm {
+	    name	"cleandescription"
+	    label	"Clean"
+	    type	button
+	    default	{ "1" }
+	    help	"Cleans message field."
+	    hidewhen	"{ adddescription == 0 }"
+	    range	{ 0 1 }
+	    parmtag	{ "script_callback" "hou.phm().description.SetDefaultState(hou.pwd())" }
+	    parmtag	{ "script_callback_language" "python" }
+	}
+	parm {
+	    name	"descriptionmessage"
+	    label	"Message"
+	    type	string
+	    default	{ "" }
+	    help	"Message that will be displayed."
+	    hidewhen	"{ adddescription == 0 }"
+	    range	{ 0 1 }
+	    parmtag	{ "editor" "1" }
+	    parmtag	{ "editorlines" "5-25" }
+	}
+    }
+
+    groupsimple {
+	name	"debugsection"
+	label	"Debug"
+
+	parm {
+	    name	"showdetailedreport"
+	    label	"Show Detailed Report"
+	    type	toggle
+	    joinnext
+	    default	{ "0" }
+	    range	{ 0 1 }
+	}
+	parm {
+	    name	"_6"
+	    label	"Separator"
+	    type	separator
+	    default	{ "" }
+	    range	{ 0 1 }
+	}
+	parm {
+	    name	"reportmode"
+	    label	"Mode"
+	    type	ordinal
+	    default	{ "0" }
+	    hidewhen	"{ showdetailedreport == 0 }"
+	    menu	{
+		"0"	"Progress Only"
+		"1"	"Detail Only"
+		"2"	"Full"
+	    }
+	    range	{ 0 1 }
+	}
+    }
+
+}

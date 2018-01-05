@@ -3,6 +3,7 @@
 	Based on https://github.com/kmammou/v-hacd
 
 	IMPORTANT! ------------------------------------------
+	* Macros starting and ending with '____' shouldn't be used anywhere outside of this file.
 	-----------------------------------------------------
 
 	Author: 	SWANN
@@ -23,73 +24,85 @@
 */
 
 #pragma once
-#ifndef ____sop_vhacd_scout_junior_h____
-#define ____sop_vhacd_scout_junior_h____
+#ifndef ____sop_vhacdengine_h____
+#define ____sop_vhacdengine_h____
 
 /* -----------------------------------------------------------------
 INCLUDES                                                           |
 ----------------------------------------------------------------- */
 
-// SESI
-#include <MSS/MSS_ReusableSelector.h>
+// std
+#include <vector>
+#include <string>
+#include <iomanip>
+
+// 3rdParty
+#include <VHACD.h>
 
 // hou-hdk-common
+#include <Macros/Namespace.h>
 #include <Macros/CookMySop.h>
 #include <Macros/DescriptionPRM.h>
-#include <Macros/Namespace.h>
 #include <Macros/UpdateParmsFlags.h>
-#include <Enums/MethodProcessResult.h>
 
 // this
-#include "SOP_VHACDScout.h"
+#include "SOP_VHACDNode.h"
+#include "UserLogger.h"
+#include "UserCallback.h"
 
 /* -----------------------------------------------------------------
 FORWARDS                                                           |
 ----------------------------------------------------------------- */
 
 class UT_AutoInterrupt;
-class GEO_PrimClassifier;
 
 /* -----------------------------------------------------------------
-DEFINES                                                            |
------------------------------------------------------------------ */
-
-#define CONTAINERS					GET_Base_Namespace()::Containers
-#define ENUMS						GET_Base_Namespace()::Enums
-
-/* -----------------------------------------------------------------
-DECLARATION                                                        |
+OPERATOR                                                           |
 ----------------------------------------------------------------- */
 
 DECLARE_SOP_Namespace_Start()
 
-	class SOP_VHACDScoutJunior final : public SOP_VHACDScout
+	class SOP_VHACDEngine : public SOP_VHACDNode
 	{
 		DECLARE_CookMySop()
-		DECLARE_UpdateParmsFlags()
-
 		DECLARE_DescriptionPRM_Callback()
+		DECLARE_UpdateParmsFlags()		
 
 	protected:
-		~SOP_VHACDScoutJunior() override;
-		SOP_VHACDScoutJunior(OP_Network* network, const char* name, OP_Operator* op);
-		const char*					inputLabel(unsigned input) const override;
+		~SOP_VHACDEngine() override;
+		SOP_VHACDEngine(OP_Network* network, const char* name, OP_Operator* op);
 
 	public:
 		static OP_Node*				CreateMe(OP_Network* network, const char* name, OP_Operator* op);
-		static PRM_Template			parametersList[];		
+		static PRM_Template			parametersList[];
 
-		static int					CallbackGRPPerHull(void* data, int index, float time, const PRM_Template* tmp);
-		static int					CallbackPointPerHullCenter(void* data, int index, float time, const PRM_Template* tmp);
+	private:
+		const char*					inputLabel(unsigned input) const override;
+
+		exint						PullIntPRM(GU_Detail* geometry, const PRM_Template& parameter, bool interfaceonly = false, fpreal time = 0);
+		fpreal						PullFloatPRM(GU_Detail* geometry, const PRM_Template& parameter, bool interfaceonly = false, fpreal time = 0);
+		bool						PrepareGeometry(GU_Detail* geometry, UT_AutoInterrupt progress);
+		void						SetupVHACD(GU_Detail* geometry, fpreal time);
+		bool						PrepareDataForVHACD(GU_Detail* geometry, UT_AutoInterrupt progress, fpreal time);
+		bool						DrawConvexHull(GU_Detail* geometry, VHACD::IVHACD::ConvexHull hull, UT_AutoInterrupt progress);
+		OP_ERROR					GenerateConvexHulls(GU_Detail* geometry, UT_AutoInterrupt progress);
+			
+		VHACD::IVHACD::Parameters	_parametersVHACD;
+		VHACD::IVHACD*				_interfaceVHACD;
+		std::vector<int>			_triangles;
+		std::vector<float>			_points;
+
+		GA_RWAttributeRef			_positionReference;
+		GA_RWHandleV3				_positionHandle;
+
+		bool						_allowParametersOverrideValueState;		
+		bool						_showReportValueState;
+		int							_reportModeChoiceValueState;	
+
+		UserLogger					_loggerVHACD;
+		UserCallback				_callbackVHACD;
 	};
 
 DECLARE_SOP_Namespace_End
 
-/* -----------------------------------------------------------------
-UNDEFINES                                                          |
------------------------------------------------------------------ */
-
-#undef ENUMS
-#undef CONTAINERS
-
-#endif // !____sop_vhacd_scout_junior_h____
+#endif // !____sop_vhacdengine_h____

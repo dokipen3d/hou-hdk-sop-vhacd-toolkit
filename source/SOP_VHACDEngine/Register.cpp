@@ -1,8 +1,8 @@
 /*
-	Volumetric-Hierarchical Approximate Convex Decomposition.
-	Based on https://github.com/kmammou/v-hacd
+	This is a place where you should create and register all SOP's, Selectors and their custom states.
 
 	IMPORTANT! ------------------------------------------
+	* Macros starting and ending with '____' shouldn't be used anywhere outside of this file.
 	-----------------------------------------------------
 
 	Author: 	SWANN
@@ -22,74 +22,56 @@
 	THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#pragma once
-#ifndef ____sop_vhacd_scout_junior_h____
-#define ____sop_vhacd_scout_junior_h____
-
 /* -----------------------------------------------------------------
 INCLUDES                                                           |
 ----------------------------------------------------------------- */
 
 // SESI
-#include <MSS/MSS_ReusableSelector.h>
-
-// hou-hdk-common
-#include <Macros/CookMySop.h>
-#include <Macros/DescriptionPRM.h>
-#include <Macros/Namespace.h>
-#include <Macros/UpdateParmsFlags.h>
-#include <Enums/MethodProcessResult.h>
+#include <UT/UT_DSOVersion.h>
+#include <OP/OP_OperatorTable.h>
 
 // this
-#include "SOP_VHACDScout.h"
-
-/* -----------------------------------------------------------------
-FORWARDS                                                           |
------------------------------------------------------------------ */
-
-class UT_AutoInterrupt;
-class GEO_PrimClassifier;
+#include "SOP_VHACDEngine.h"
 
 /* -----------------------------------------------------------------
 DEFINES                                                            |
 ----------------------------------------------------------------- */
 
-#define CONTAINERS					GET_Base_Namespace()::Containers
-#define ENUMS						GET_Base_Namespace()::Enums
+#define SOP_Operator		GET_SOP_Namespace()::SOP_VHACDEngine
+
+#define COMMON_NAMES		GET_SOP_Namespace()::COMMON_NAMES
+#define ENUMS				GET_Base_Namespace()::Enums
 
 /* -----------------------------------------------------------------
-DECLARATION                                                        |
+REGISTRATION                                                       |
 ----------------------------------------------------------------- */
 
-DECLARE_SOP_Namespace_Start()
+void
+newSopOperator(OP_OperatorTable* table)
+{
+	const auto sopVHACDEngine = new OP_Operator(
+		COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::SOP_ENGINE_SMALLNAME),
+		COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::SOP_ENGINE_BIGNAME),
+		SOP_Operator::CreateMe,
+		SOP_Operator::parametersList,
+		1,
+		1,
+		nullptr,
+		0,
+		nullptr,
+		1,
+		COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::TOOLKIT_TABMENU_PATH)
+	);
 
-	class SOP_VHACDScoutJunior final : public SOP_VHACDScout
-	{
-		DECLARE_CookMySop()
-		DECLARE_UpdateParmsFlags()
-
-		DECLARE_DescriptionPRM_Callback()
-
-	protected:
-		~SOP_VHACDScoutJunior() override;
-		SOP_VHACDScoutJunior(OP_Network* network, const char* name, OP_Operator* op);
-		const char*					inputLabel(unsigned input) const override;
-
-	public:
-		static OP_Node*				CreateMe(OP_Network* network, const char* name, OP_Operator* op);
-		static PRM_Template			parametersList[];		
-
-		static int					CallbackGRPPerHull(void* data, int index, float time, const PRM_Template* tmp);
-		static int					CallbackPointPerHullCenter(void* data, int index, float time, const PRM_Template* tmp);
-	};
-
-DECLARE_SOP_Namespace_End
+	auto success = table->addOperator(sopVHACDEngine);
+	table->addOpHidden(sopVHACDEngine->getName());
+}
 
 /* -----------------------------------------------------------------
 UNDEFINES                                                          |
 ----------------------------------------------------------------- */
 
 #undef ENUMS
-#undef CONTAINERS
+#undef COMMON_NAMES
 
-#endif // !____sop_vhacd_scout_junior_h____
+#undef SOP_Operator

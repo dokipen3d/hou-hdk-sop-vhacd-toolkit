@@ -72,6 +72,8 @@ PARAMETERLIST_Start(SOP_Operator)
 	UI::groupPerHullToggle_Parameter,
 	UI::groupPerHullSeparator_Parameter,
 	UI::specifyHullGroupNameString_Parameter,
+	UI::pointPerHullCenterToggle_Parameter,
+	UI::pointPerHullCenterSeparator_Parameter,
 
 	UI::additionalSectionSwitcher_Parameter,
 	PARAMETERLIST_DescriptionPRM(UI),
@@ -100,11 +102,33 @@ CALLBACKS                                                          |
 
 IMPLEMENT_DescriptionPRM_Callback(SOP_Operator, UI)
 
-#define THIS_CALLBACK_Reset_StringPRM(operatorname, callbackcall, parameter) int callbackcall(void* data, int index, float time, const PRM_Template* tmp) {const auto me = reinterpret_cast<operatorname*>(data); if (!me) return 0; auto defVal = UT_String(parameter.getFactoryDefaults()->getString()); PRM_ACCESS::Set::StringPRM(me, defVal, parameter, time); return 1; }
+int
+SOP_Operator::CallbackGRPPerHull(void* data, int index, float time, const PRM_Template* tmp)
+{
+	const auto me = reinterpret_cast<SOP_Operator*>(data);
+	if (!me) return 0;
 
-THIS_CALLBACK_Reset_StringPRM(SOP_Operator, SOP_Operator::CallbackGRPPerHull, UI::specifyHullGroupNameString_Parameter)
+	auto defVal1 = UT_String(UI::specifyHullGroupNameString_Parameter.getFactoryDefaults()->getString());
+	PRM_ACCESS::Set::StringPRM(me, defVal1, UI::specifyHullGroupNameString_Parameter, time);
 
-#undef THIS_CALLBACK_Reset_StringPRM
+	auto defVal2 = static_cast<exint>(UI::pointPerHullCenterToggle_Parameter.getFactoryDefaults()->getOrdinal());
+	PRM_ACCESS::Set::IntPRM(me, defVal2, UI::pointPerHullCenterToggle_Parameter, time);
+
+	return 1;
+}
+
+int
+SOP_Operator::CallbackPointPerHullCenter(void* data, int index, float time, const PRM_Template* tmp)
+{
+	const auto me = reinterpret_cast<SOP_Operator*>(data);
+	if (!me) return 0;
+
+	// TODO: figure out why restoreFactoryDefaults() doesn't work
+	auto defVal = static_cast<exint>(UI::groupPerHullToggle_Parameter.getFactoryDefaults()->getOrdinal());
+	PRM_ACCESS::Set::IntPRM(me, defVal, UI::groupPerHullToggle_Parameter, time);
+
+	return 1;
+}
 
 /* -----------------------------------------------------------------
 OPERATOR INITIALIZATION                                            |
@@ -140,6 +164,7 @@ SOP_Operator::cookMySop(OP_Context& context)
 		PRM_ACCESS::Get::IntPRM(this, this->_addHullIDAttributeValue, UI::addHullIDAttributeToggle_Parameter, currentTime);
 		PRM_ACCESS::Get::IntPRM(this, this->_groupPerHullValue, UI::groupPerHullToggle_Parameter, currentTime);		
 		PRM_ACCESS::Get::StringPRM(this, this->_partialHullGroupNameValue, UI::specifyHullGroupNameString_Parameter, currentTime);
+		PRM_ACCESS::Get::IntPRM(this, this->_pointPerHullCenterValue, UI::pointPerHullCenterToggle_Parameter, currentTime);
 
 		ProcessHullSpecific(progress, currentTime);
 	}

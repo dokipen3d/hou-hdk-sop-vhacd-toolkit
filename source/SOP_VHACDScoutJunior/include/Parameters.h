@@ -52,12 +52,13 @@ DECLARE_SOP_Namespace_Start()
 
 	namespace UI
 	{
-		__DECLARE_Main_Section_PRM(7)	
+		__DECLARE_Main_Section_PRM(9)	
 		DECLARE_Toggle_with_Separator_OFF_PRM("addhullcountattribute", "Add Hull Count ATT", "addhullcountattributeseparator", 0, "Create detail hull count attribute with infomation about how many convex hulls were detected.", addHullCountAttribute)				
 		DECLARE_Toggle_with_Separator_OFF_PRM("addhullidattribute", "Add Hull ID ATT", "addhullidattributeseparator", 0, "Create primitive hull id attribute with membership infomation that helps identify to which convex hull polygons belongs to.", addHullIDAttribute)
 		DECLARE_Toggle_with_Separator_OFF_PRM("groupperhull", "GRP Per Hull", "groupperhullseparator", &SOP_Operator::CallbackGRPPerHull, "Create primitive bundle id attribute with membership infomation that helps identify to which bundle polygons belongs to.", groupPerHull)
 		DECLARE_Custom_String_PRM("specifyhullgroupname", "Name", "hull_", "Pick partial name for hull groups.", specifyHullGroupName)
-
+		DECLARE_Toggle_with_Separator_OFF_PRM("pointperhullcenter", "Point Per Hull", "pointperhullcenterseparator", &SOP_Operator::CallbackPointPerHullCenter, "Create point per center of each convex hull.", pointPerHullCenter)
+		
 		__DECLARE_Additional_Section_PRM(4)
 		DECLARE_DescriptionPRM(SOP_Operator)
 	}

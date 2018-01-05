@@ -3,6 +3,7 @@
 	Based on https://github.com/kmammou/v-hacd
 
 	IMPORTANT! ------------------------------------------
+	* Macros starting and ending with '____' shouldn't be used anywhere outside of this file.
 	-----------------------------------------------------
 
 	Author: 	SWANN
@@ -23,73 +24,48 @@
 */
 
 #pragma once
-#ifndef ____sop_vhacd_scout_junior_h____
-#define ____sop_vhacd_scout_junior_h____
+#ifndef ____usercallback_h____
+#define ____usercallback_h____
 
 /* -----------------------------------------------------------------
 INCLUDES                                                           |
 ----------------------------------------------------------------- */
 
-// SESI
-#include <MSS/MSS_ReusableSelector.h>
+// 3rdParty
+#include <VHACD.h>
 
 // hou-hdk-common
-#include <Macros/CookMySop.h>
-#include <Macros/DescriptionPRM.h>
 #include <Macros/Namespace.h>
-#include <Macros/UpdateParmsFlags.h>
-#include <Enums/MethodProcessResult.h>
-
-// this
-#include "SOP_VHACDScout.h"
 
 /* -----------------------------------------------------------------
-FORWARDS                                                           |
------------------------------------------------------------------ */
-
-class UT_AutoInterrupt;
-class GEO_PrimClassifier;
-
-/* -----------------------------------------------------------------
-DEFINES                                                            |
------------------------------------------------------------------ */
-
-#define CONTAINERS					GET_Base_Namespace()::Containers
-#define ENUMS						GET_Base_Namespace()::Enums
-
-/* -----------------------------------------------------------------
-DECLARATION                                                        |
+CALLBACK                                                           |
 ----------------------------------------------------------------- */
 
 DECLARE_SOP_Namespace_Start()
 
-	class SOP_VHACDScoutJunior final : public SOP_VHACDScout
+	class UserCallback : public VHACD::IVHACD::IUserCallback
 	{
-		DECLARE_CookMySop()
-		DECLARE_UpdateParmsFlags()
-
-		DECLARE_DescriptionPRM_Callback()
-
-	protected:
-		~SOP_VHACDScoutJunior() override;
-		SOP_VHACDScoutJunior(OP_Network* network, const char* name, OP_Operator* op);
-		const char*					inputLabel(unsigned input) const override;
-
 	public:
-		static OP_Node*				CreateMe(OP_Network* network, const char* name, OP_Operator* op);
-		static PRM_Template			parametersList[];		
+		UserCallback(): showOverallProgress(false), showStageProgress(false), showOperationProgress(false) { } 
+		~UserCallback() override { }
 
-		static int					CallbackGRPPerHull(void* data, int index, float time, const PRM_Template* tmp);
-		static int					CallbackPointPerHullCenter(void* data, int index, float time, const PRM_Template* tmp);
+		void Update(const double overallProgress, const double stageProgress, const double operationProgress, const char* const stage, const char* const operation) override
+		{
+			if (this->showOverallProgress)
+			{
+				auto info = std::string("Overall Progress: ") + std::to_string(static_cast<int>(overallProgress + 0.5)).c_str() + "%";
+				std::cout << std::setfill('-') << "Overall Progress: " << std::setw(52) << " " << static_cast<int>(overallProgress + 0.5) << "% " << std::endl;
+			}
+
+			if (this->showStageProgress) std::cout << stage << ": " << static_cast<int>(stageProgress + 0.5) << "% " << std::endl;
+			if (this->showOperationProgress) std::cout << operation << ": " << static_cast<int>(operationProgress + 0.5) << "% " << std::endl;
+		}
+
+		bool	showOverallProgress;
+		bool	showStageProgress;
+		bool	showOperationProgress;
 	};
 
 DECLARE_SOP_Namespace_End
 
-/* -----------------------------------------------------------------
-UNDEFINES                                                          |
------------------------------------------------------------------ */
-
-#undef ENUMS
-#undef CONTAINERS
-
-#endif // !____sop_vhacd_scout_junior_h____
+#endif // !____usercallback_h____

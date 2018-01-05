@@ -3,6 +3,7 @@
 	Based on https://github.com/kmammou/v-hacd
 
 	IMPORTANT! ------------------------------------------
+	* Macros starting and ending with '____' shouldn't be used anywhere outside of this file.
 	-----------------------------------------------------
 
 	Author: 	SWANN
@@ -23,73 +24,37 @@
 */
 
 #pragma once
-#ifndef ____sop_vhacd_scout_junior_h____
-#define ____sop_vhacd_scout_junior_h____
+#ifndef ____userlogger_h____
+#define ____userlogger_h____
 
 /* -----------------------------------------------------------------
 INCLUDES                                                           |
 ----------------------------------------------------------------- */
 
-// SESI
-#include <MSS/MSS_ReusableSelector.h>
+// 3rdParty
+#include <VHACD.h>
 
 // hou-hdk-common
-#include <Macros/CookMySop.h>
-#include <Macros/DescriptionPRM.h>
 #include <Macros/Namespace.h>
-#include <Macros/UpdateParmsFlags.h>
-#include <Enums/MethodProcessResult.h>
-
-// this
-#include "SOP_VHACDScout.h"
 
 /* -----------------------------------------------------------------
-FORWARDS                                                           |
------------------------------------------------------------------ */
-
-class UT_AutoInterrupt;
-class GEO_PrimClassifier;
-
-/* -----------------------------------------------------------------
-DEFINES                                                            |
------------------------------------------------------------------ */
-
-#define CONTAINERS					GET_Base_Namespace()::Containers
-#define ENUMS						GET_Base_Namespace()::Enums
-
-/* -----------------------------------------------------------------
-DECLARATION                                                        |
+LOGGER                                                             |
 ----------------------------------------------------------------- */
 
 DECLARE_SOP_Namespace_Start()
 
-	class SOP_VHACDScoutJunior final : public SOP_VHACDScout
+	class UserLogger : public VHACD::IVHACD::IUserLogger
 	{
-		DECLARE_CookMySop()
-		DECLARE_UpdateParmsFlags()
-
-		DECLARE_DescriptionPRM_Callback()
-
-	protected:
-		~SOP_VHACDScoutJunior() override;
-		SOP_VHACDScoutJunior(OP_Network* network, const char* name, OP_Operator* op);
-		const char*					inputLabel(unsigned input) const override;
-
 	public:
-		static OP_Node*				CreateMe(OP_Network* network, const char* name, OP_Operator* op);
-		static PRM_Template			parametersList[];		
+		UserLogger(): showMsg(false) { }
+		~UserLogger() override  { }
 
-		static int					CallbackGRPPerHull(void* data, int index, float time, const PRM_Template* tmp);
-		static int					CallbackPointPerHullCenter(void* data, int index, float time, const PRM_Template* tmp);
+		void Log(const char* const msg) override 
+		{ if (this->showMsg) std::cout << msg << std::endl; }
+
+		bool showMsg;
 	};
 
 DECLARE_SOP_Namespace_End
 
-/* -----------------------------------------------------------------
-UNDEFINES                                                          |
------------------------------------------------------------------ */
-
-#undef ENUMS
-#undef CONTAINERS
-
-#endif // !____sop_vhacd_scout_junior_h____
+#endif // !____userlogger_h____

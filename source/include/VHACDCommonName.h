@@ -71,11 +71,11 @@ namespace Containers
 
 			// SOP_VHACDGenerate 2.0 only			
 			this->Add(ENUMS::VHACDCommonNameOption::SOP_GENERATE_ICONNAME,				this->Get(ENUMS::VHACDCommonNameOption::TOOLKIT_ICONNAME));
-			this->Add(ENUMS::VHACDCommonNameOption::SOP_GENERATE_SMALLNAME,				"vhacd::generate::2.0");
-			this->Add(ENUMS::VHACDCommonNameOption::SOP_GENERATE_BIGNAME,				"Generate (v-hacd)");
+			this->Add(ENUMS::VHACDCommonNameOption::SOP_GENERATE_SMALLNAME,				"wip::generate::2.0");
+			this->Add(ENUMS::VHACDCommonNameOption::SOP_GENERATE_BIGNAME,				"Generate v2.0 (v-hacd)");
 			this->Add(ENUMS::VHACDCommonNameOption::SOP_GENERATE_GROUP_PRMNAME,			CONST_PrimitiveGroupInput0_Name);
-			this->Add(ENUMS::VHACDCommonNameOption::MSS_GENERATE_SMALLNAME,				"vhacd::generateselector::2.0");
-			this->Add(ENUMS::VHACDCommonNameOption::MSS_GENERATE_BIGNAME,				"Generate (v-hacd selector)");
+			this->Add(ENUMS::VHACDCommonNameOption::MSS_GENERATE_SMALLNAME,				"wip::generateselector::2.0");
+			this->Add(ENUMS::VHACDCommonNameOption::MSS_GENERATE_BIGNAME,				"Generate v2.0 (v-hacd selector)");
 			this->Add(ENUMS::VHACDCommonNameOption::MSS_GENERATE_PROMPT,				"Select primitives. Press <enter> to accept.");
 
 			// SOP_VHACDScoutJunior 1.0 only
@@ -106,6 +106,11 @@ namespace Containers
 			this->Add(ENUMS::VHACDCommonNameOption::SOP_TRANSFORM_ICONNAME,				this->Get(ENUMS::VHACDCommonNameOption::TOOLKIT_ICONNAME));
 			this->Add(ENUMS::VHACDCommonNameOption::SOP_TRANSFORM_SMALLNAME,			"wip::transfrom::2.0");
 			this->Add(ENUMS::VHACDCommonNameOption::SOP_TRANSFORM_BIGNAME,				"Transform (v-hacd)");
+
+			// SOP_VHACDEngine only			
+			this->Add(ENUMS::VHACDCommonNameOption::SOP_ENGINE_SMALLNAME, "vhacd::engine::1.2");
+			this->Add(ENUMS::VHACDCommonNameOption::SOP_ENGINE_BIGNAME, "Engine (v-hacd)");
+			this->Add(ENUMS::VHACDCommonNameOption::SOP_ENGINE_ICONNAME, this->Get(ENUMS::VHACDCommonNameOption::TOOLKIT_ICONNAME));
 		}
 	};
 }
