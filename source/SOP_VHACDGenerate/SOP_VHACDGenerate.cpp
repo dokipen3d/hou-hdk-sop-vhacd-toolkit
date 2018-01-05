@@ -170,7 +170,17 @@ SOP_Base_Operator(network, name, op),
 _inputGDP(nullptr),
 _primitiveGroupInput0(nullptr),
 _interfaceVHACD(nullptr)
-{ op->setIconName(COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::SOP_GENERATE_ICONNAME)); }
+{
+	op->setIconName(COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::SOP_GENERATE_ICONNAME));
+
+	exint toggleFlag = 1;
+	auto message = UT_String("Version 2.0 is still work in progress. \nThis is full C++ rewrite of Generate node. \nDon't use it yet and stick to older version for now.");
+	for (auto p : parametersList)
+	{
+		if (p.getNamePtr()->getToken() == UI::descriptionToggle_Parameter.getToken()) PRM_ACCESS::Set::IntPRM(this, toggleFlag, p);
+		else if (p.getNamePtr()->getToken() == UI::descriptionTextField_Parameter.getToken()) PRM_ACCESS::Set::StringPRM(this, message, p);
+	}
+}
 
 OP_Node* 
 SOP_Operator::CreateMe(OP_Network* network, const char* name, OP_Operator* op) 
