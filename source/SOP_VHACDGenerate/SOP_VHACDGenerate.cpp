@@ -130,6 +130,10 @@ SOP_Operator::updateParmsFlags()
 	PRM_ACCESS::Get::IntPRM(this, showReportValueState, UI::showProcessReportToggle_Parameter, currentTime);
 	changed |= setVisibleState(UI::reportModeChoiceMenu_Parameter.getToken(), showReportValueState);
 
+	// TODO: remove those when convert parameters from attributes will be added
+	changed |= setVisibleState(UI::forceConvertToPolygonsToggle_Parameter.getToken(), 0);
+	changed |= setVisibleState(UI::forceConvertToPolygonsSeparator_Parameter.getToken(), 0);
+
 	// update description active state
 	UPDATE_DescriptionPRM_ActiveState(this, UI)
 
@@ -287,6 +291,7 @@ SOP_Operator::PrepareGeometry(GU_Detail* detail, UT_AutoInterrupt progress, fpre
 	bool forceConvertToPolygonsValue;
 	PRM_ACCESS::Get::IntPRM(this, forceConvertToPolygonsValue, UI::forceConvertToPolygonsToggle_Parameter, time);
 
+	// TODO: remove toggle requirement and replace it with reading parameters from attributes
 	if (forceConvertToPolygonsValue)
 	{
 		// this is default convertion, so we can lose some data on volumes and other primitives which required bigger resolution/settings to maintain their shape better		
@@ -655,40 +660,11 @@ SOP_Operator::ProcessCurrentDetail(GU_Detail* detail, UT_AutoInterrupt progress,
 ENUMS::MethodProcessResult
 SOP_Operator::WhenAsWhole(UT_AutoInterrupt progress, ENUMS::ProcessedOutputType processedoutputtype, fpreal time)
 {
-	auto processResult = ENUMS::MethodProcessResult::SUCCESS;
-	
-	if (processedoutputtype == ENUMS::ProcessedOutputType::CONVEX_HULLS)
-	{
-		// make sure we have proper geometry before we try to gather data for V-HACD
-		processResult = PrepareGeometry(this->_inputGDP, progress, time);
-		if (processResult != ENUMS::MethodProcessResult::SUCCESS || error() > OP_ERROR::UT_ERROR_WARNING) return processResult;
-
-		// setup V-HACD and collect all required data
-		SetupParametersVHACD(this->_inputGDP, time);
-
-		processResult = GatherDataForVHACD(this->_inputGDP, progress, time);
-		if (processResult != ENUMS::MethodProcessResult::SUCCESS || error() > OP_ERROR::UT_ERROR_WARNING) return processResult;
-
-		// lets make some hulls!
-		this->gdp->clear();
-		
-		processResult = GenerateConvexHulls(this->_inputGDP, progress);
-		if (processResult != ENUMS::MethodProcessResult::SUCCESS || error() > OP_ERROR::UT_ERROR_WARNING) return processResult;
-	}
-
-	// add bundle_id attribute
-	this->_bundleIDHandle = GA_RWHandleI(this->_inputGDP->addIntTuple(GA_AttributeOwner::GA_ATTRIB_PRIMITIVE, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_BUNDLE_ID), 1, GA_Defaults(0)));
-	if (this->_bundleIDHandle.isInvalid())
-	{
-		auto errorMessage = std::string("Failed to add \"") + std::string(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_BUNDLE_ID)) + std::string("\" attribute.");
-		this->addError(SOP_MESSAGE, errorMessage.c_str());
-		return ENUMS::MethodProcessResult::FAILURE;
-	}
+	const auto processResult = ProcessCurrentDetail(this->_inputGDP, progress, processedoutputtype, 0, time);
+	if (processResult != ENUMS::MethodProcessResult::SUCCESS) return processResult;
 	
 	// merge into this->gdp
-	processResult = MergeCurrentDetail(this->_inputGDP);
-
-	return processResult;
+	return MergeCurrentDetail(this->_inputGDP);
 }
 
 ENUMS::MethodProcessResult
@@ -770,10 +746,7 @@ SOP_Operator::WhenPerElement(UT_AutoInterrupt progress, ENUMS::ProcessedOutputTy
 
 ENUMS::MethodProcessResult
 SOP_Operator::WhenPerGroup(UT_AutoInterrupt progress, ENUMS::ProcessedOutputType processedoutputtype, fpreal time)
-{	
-	if (processedoutputtype == ENUMS::ProcessedOutputType::CONVEX_HULLS) std::cout << "Convex Hulls! " << std::endl;
-	else std::cout << "Original Geometry! " << std::endl;
-
+{
 	// make sure we have any primitive group at all and...
 	auto allPrimGroups = this->_inputGDP->primitiveGroups();
 	if (allPrimGroups.entries() < 1)
