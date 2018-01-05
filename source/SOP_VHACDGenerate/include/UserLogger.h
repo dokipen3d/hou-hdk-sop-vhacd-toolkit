@@ -30,6 +30,7 @@
 /* -----------------------------------------------------------------
 INCLUDES                                                           |
 ----------------------------------------------------------------- */
+
 // std
 #include <iostream>
 
@@ -51,7 +52,7 @@ DECLARE_SOP_Namespace_Start()
 		UserLogger(): showMsg(false) { }
 		~UserLogger() override  { }
 
-		void Log(const char* const msg) override 
+		void Log(const char* const msg) override
 		{ if (this->showMsg) std::cout << msg << std::endl; }
 
 		bool showMsg;
