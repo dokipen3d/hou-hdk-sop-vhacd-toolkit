@@ -444,10 +444,8 @@ SOP_Operator::DrawConvexHull(GU_Detail* detail, VHACD::IVHACD::ConvexHull hull, 
 	exint hullP = 0;
 	GA_OffsetArray	pointOffsets;
 	pointOffsets.clear();
-	//std::vector<GA_Offset> pOffsets;
-	//pOffsets.clear();
-
-	auto pointIt = GA_Iterator(detail->getPointRangeSlice(gdp->pointIndex(start)));
+	
+	auto pointIt = GA_Iterator(detail->getPointRangeSlice(detail->pointIndex(start)));
 	while (!pointIt.atEnd())
 	{
 		// make sure we can escape the loop
@@ -462,11 +460,11 @@ SOP_Operator::DrawConvexHull(GU_Detail* detail, VHACD::IVHACD::ConvexHull hull, 
 		this->_positionHandle.set(*pointIt, currentPosition);
 
 		hullP += 3;
-		//pOffsets.push_back(*pointIt);
 		pointOffsets.append(*pointIt);
+
 		pointIt.advance();
 	}
-
+	
 	// draw hull
 	for (unsigned int t = 0; t < hull.m_nTriangles * 3; t += 3)
 	{
@@ -477,18 +475,14 @@ SOP_Operator::DrawConvexHull(GU_Detail* detail, VHACD::IVHACD::ConvexHull hull, 
 			addWarning(SOP_ErrorCodes::SOP_MESSAGE, "Operation interrupted");
 			return ENUMS::MethodProcessResult::FAILURE;
 		}
-
+		
 		// create triangle
-		auto polygon = static_cast<GEO_PrimPoly*>(detail->appendPrimitive(GEO_PRIMPOLY));
+		auto polygon = static_cast<GEO_PrimPoly*>(detail->appendPrimitive(GA_PRIMPOLY));
 		polygon->setSize(0);
 
 		polygon->appendVertex(pointOffsets[hull.m_triangles[t + 2]]);
 		polygon->appendVertex(pointOffsets[hull.m_triangles[t + 1]]);
 		polygon->appendVertex(pointOffsets[hull.m_triangles[t + 0]]);
-
-		//polygon->appendVertex(pOffsets[hull.m_triangles[t + 2]]);
-		//polygon->appendVertex(pOffsets[hull.m_triangles[t + 1]]);
-		//polygon->appendVertex(pOffsets[hull.m_triangles[t + 0]]);
 
 		polygon->close();
 	}
@@ -536,7 +530,7 @@ SOP_Operator::GenerateConvexHulls(GU_Detail* detail, UT_AutoInterrupt progress)
 
 				this->_interfaceVHACD->GetConvexHull(id, currentHull);
 				if (!currentHull.m_nPoints || !currentHull.m_nTriangles) continue;
-
+				
 				const auto processResult = DrawConvexHull(detail, currentHull, progress);
 				if (processResult != ENUMS::MethodProcessResult::SUCCESS || error() > OP_ERROR::UT_ERROR_NONE) return processResult;				
 			}
@@ -639,7 +633,7 @@ SOP_Operator::ProcessCurrentDetail(GU_Detail* detail, UT_AutoInterrupt progress,
 }
 
 ENUMS::MethodProcessResult
-SOP_Operator::WhenAsOne(UT_AutoInterrupt progress, ENUMS::ProcessedOutputType processedoutputtype, fpreal time)
+SOP_Operator::WhenAsWhole(UT_AutoInterrupt progress, ENUMS::ProcessedOutputType processedoutputtype, fpreal time)
 {
 	auto processResult = ENUMS::MethodProcessResult::SUCCESS;
 	
@@ -657,7 +651,7 @@ SOP_Operator::WhenAsOne(UT_AutoInterrupt progress, ENUMS::ProcessedOutputType pr
 
 		// lets make some hulls!
 		this->gdp->clear();
-
+		std::cout << "Before GenerateConvexHulls" << std::endl;
 		processResult = GenerateConvexHulls(this->_inputGDP, progress);
 		if (processResult != ENUMS::MethodProcessResult::SUCCESS || error() > OP_ERROR::UT_ERROR_WARNING) return processResult;
 	}
@@ -861,7 +855,7 @@ SOP_Operator::cookMySop(OP_Context& context)
 
 		switch(processModeChoiceMenuValue)
 		{
-			case static_cast<exint>(ENUMS::ProcessedModeOption::AS_WHOLE) :			{ processResult = WhenAsOne(progress, ENUMS::ProcessedOutputType::CONVEX_HULLS, currentTime); } break;
+			case static_cast<exint>(ENUMS::ProcessedModeOption::AS_WHOLE) :			{ processResult = WhenAsWhole(progress, ENUMS::ProcessedOutputType::CONVEX_HULLS, currentTime); } break;
 			case static_cast<exint>(ENUMS::ProcessedModeOption::PER_ELEMENT) :		{ processResult = WhenPerElement(progress, ENUMS::ProcessedOutputType::CONVEX_HULLS, currentTime); } break;
 			case static_cast<exint>(ENUMS::ProcessedModeOption::PER_GROUP) :		{ processResult = WhenPerGroup(progress, ENUMS::ProcessedOutputType::CONVEX_HULLS, currentTime); } break;
 		}
@@ -888,7 +882,7 @@ SOP_Operator::cookMySopOutput(OP_Context& context, int outputidx, SOP_Node* inte
 		
 		switch (processModeChoiceMenuValue)
 		{
-			case static_cast<exint>(ENUMS::ProcessedModeOption::AS_WHOLE) :			{ processResult = WhenAsOne(progress, ENUMS::ProcessedOutputType::ORIGINAL_GEOMETRY, currentTime); } break;
+			case static_cast<exint>(ENUMS::ProcessedModeOption::AS_WHOLE) :			{ processResult = WhenAsWhole(progress, ENUMS::ProcessedOutputType::ORIGINAL_GEOMETRY, currentTime); } break;
 			case static_cast<exint>(ENUMS::ProcessedModeOption::PER_ELEMENT) :		{ processResult = WhenPerElement(progress, ENUMS::ProcessedOutputType::ORIGINAL_GEOMETRY, currentTime); } break;
 			case static_cast<exint>(ENUMS::ProcessedModeOption::PER_GROUP) :		{ processResult = WhenPerGroup(progress, ENUMS::ProcessedOutputType::ORIGINAL_GEOMETRY, currentTime); } break;
 		}

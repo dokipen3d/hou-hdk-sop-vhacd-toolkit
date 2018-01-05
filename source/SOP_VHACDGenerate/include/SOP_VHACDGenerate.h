@@ -110,7 +110,7 @@ DECLARE_SOP_Namespace_Start()
 		ENUMS::MethodProcessResult	MergeCurrentDetail(const GU_Detail* detail, exint detailscount = 1, exint iteration = 0);
 		ENUMS::MethodProcessResult	ProcessCurrentDetail(GU_Detail* detail, UT_AutoInterrupt progress, ENUMS::ProcessedOutputType processedoutputtype, exint iteration, fpreal time);
 
-		ENUMS::MethodProcessResult	WhenAsOne(UT_AutoInterrupt progress, ENUMS::ProcessedOutputType processedoutputtype, fpreal time);
+		ENUMS::MethodProcessResult	WhenAsWhole(UT_AutoInterrupt progress, ENUMS::ProcessedOutputType processedoutputtype, fpreal time);
 		ENUMS::MethodProcessResult	WhenPerElement(UT_AutoInterrupt progress, ENUMS::ProcessedOutputType processedoutputtype, fpreal time);
 		ENUMS::MethodProcessResult	WhenPerGroup(UT_AutoInterrupt progress, ENUMS::ProcessedOutputType processedoutputtype, fpreal time);
 
