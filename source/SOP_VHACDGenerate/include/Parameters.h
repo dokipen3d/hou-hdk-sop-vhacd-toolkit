@@ -73,7 +73,7 @@ namespace UI
 	auto			processModeChoiceMenu_Parameter = PRM_Template(PRM_ORD, 1, &processModeChoiceMenuParm_Name, 0, &processModeChoiceMenuParm_ChoiceList, &processModeChoiceMenuParm_Range, 0, nullptr, 1, "Specify process mode.");
 	DECLARE_Toggle_with_Separator_ON_PRM("forceconverttopolygons", "Force Convert To Polygons", "forceconverttopolygonsseparator", 0, "Force convertion of non-polygon geometry to polygons.", forceConvertToPolygons)
 	
-	__DECLARE_Main_Section_PRM(17)
+	__DECLARE_Main_Section_PRM(18)
 	static auto		modeChoiceMenuParm_Name = PRM_Name("decompositionmode", "Mode");
 	static auto		modeChoiceMenuParm_Range = PRM_Range(PRM_RANGE_RESTRICTED, 0, PRM_RANGE_RESTRICTED, 1);
 	static PRM_Name modeChoiceMenuParm_Choices[] =
@@ -103,10 +103,11 @@ namespace UI
 	DECLARE_DescriptionPRM(SOP_Operator)
 
 	__DECLARE_Debug_Section_PRM(3)
-	DECLARE_Toggle_with_Separator_OFF_PRM("showprocessreport", "Show Detailed Report", "showprocessreportseparator", 0, "Prints report in console window, which is more detailed than the information it sends to status bar.", showProcessReport)
+	DECLARE_Toggle_with_Separator_OFF_PRM("showprocessreport", "Show Detailed Report", "showprocessreportseparator", &SOP_Operator::CallbackShowProcessReport, "Prints report in console window, which is more detailed than the information it sends to status bar.", showProcessReport)
 
 	static auto		reportModeChoiceMenuParm_Name = PRM_Name("processreportmode", "Mode");
 	static auto		reportModeChoiceMenuParm_Range = PRM_Range(PRM_RANGE_RESTRICTED, 0, PRM_RANGE_RESTRICTED, 2);
+	static auto		reportModeChoiceMenuParm_Default = PRM_Default(0);
 	static PRM_Name reportModeChoiceMenuParm_Choices[] =
 	{
 		PRM_Name("0", "Progress Only"),
@@ -115,7 +116,7 @@ namespace UI
 		PRM_Name(nullptr)
 	};
 	static auto		reportModeChoiceMenuParm_ChoiceList = PRM_ChoiceList(PRM_CHOICELIST_SINGLE, reportModeChoiceMenuParm_Choices);
-	auto			reportModeChoiceMenu_Parameter = PRM_Template(PRM_ORD, 1, &reportModeChoiceMenuParm_Name, nullptr, &reportModeChoiceMenuParm_ChoiceList, &reportModeChoiceMenuParm_Range, 0, nullptr, 1, "How detailed report will be printed.");
+	auto			reportModeChoiceMenu_Parameter = PRM_Template(PRM_ORD, 1, &reportModeChoiceMenuParm_Name, &reportModeChoiceMenuParm_Default, &reportModeChoiceMenuParm_ChoiceList, &reportModeChoiceMenuParm_Range, 0, nullptr, 1, "How detailed report will be printed.");
 }
 		
 DECLARE_SOP_Namespace_End

@@ -78,6 +78,7 @@ PARAMETERLIST_Start(SOP_Operator)
 	UI::input0PrimitiveGroup_Parameter,
 	UI::processModeChoiceMenu_Parameter,
 	UI::forceConvertToPolygonsToggle_Parameter,
+	UI::forceConvertToPolygonsSeparator_Parameter,
 
 	UI::mainSectionSwitcher_Parameter,
 	UI::modeChoiceMenu_Parameter,
@@ -115,6 +116,15 @@ SOP_Operator::updateParmsFlags()
 {
 	DEFAULTS_UpdateParmsFlags(SOP_Base_Operator)
 
+	// is input connected?
+	const exint is0Connected = this->getInput(0) == nullptr ? 0 : 1;
+
+	/* ---------------------------- Set Global Visibility ---------------------------- */
+
+	visibilityState = is0Connected ? 1 : 0;
+
+	/* ---------------------------- Set States --------------------------------------- */
+
 	// set output report state
 	bool showReportValueState;
 	PRM_ACCESS::Get::IntPRM(this, showReportValueState, UI::showProcessReportToggle_Parameter, currentTime);
@@ -131,6 +141,19 @@ CALLBACKS                                                          |
 ----------------------------------------------------------------- */
 
 IMPLEMENT_DescriptionPRM_Callback(SOP_Operator, UI)
+
+int
+SOP_Operator::CallbackShowProcessReport(void* data, int index, float time, const PRM_Template* tmp)
+{
+	const auto me = reinterpret_cast<SOP_Operator*>(data);
+	if (!me) return 0;
+
+	// TODO: figure out why restoreFactoryDefaults() doesn't work
+	auto defVal = static_cast<exint>(UI::reportModeChoiceMenu_Parameter.getFactoryDefaults()->getOrdinal());
+	PRM_ACCESS::Set::IntPRM(me, defVal, UI::reportModeChoiceMenu_Parameter, time);
+
+	return 1;
+}
 
 /* -----------------------------------------------------------------
 OPERATOR INITIALIZATION                                            |
@@ -482,9 +505,12 @@ SOP_Operator::GenerateConvexHulls(GU_Detail* detail, UT_AutoInterrupt progress)
 	
 	const auto success = this->_interfaceVHACD->Compute(&this->_pointPositions[0], static_cast<unsigned int>(this->_pointPositions.size()) / 3, reinterpret_cast<const uint32_t*>(&this->_triangleIndexes[0]), static_cast<unsigned int>(this->_triangleIndexes.size()) / 3, this->_parametersVHACD);
 
-	/*
-		This is shitty hack. Just to use asynch version of this->_interfaceVHACD
-		TODO: figure out hot to do asynch await in node, can it be done at all?!
+	/*		
+		TODO:	
+		This is shitty hack, just to use async version of this->_interfaceVHACD
+		Figure out hot to do asynch await in node. 
+
+		Can it be done at all ?! x_X
 	 */
 	while (!this->_interfaceVHACD->IsReady()) PROGRESS_WAS_INTERRUPTED_WITH_OBJECT(this, progress, ENUMS::MethodProcessResult::FAILURE)
 
@@ -630,10 +656,10 @@ SOP_Operator::WhenAsOne(UT_AutoInterrupt progress, ENUMS::ProcessedOutputType pr
 		if (processResult != ENUMS::MethodProcessResult::SUCCESS || error() > OP_ERROR::UT_ERROR_WARNING) return processResult;
 
 		// lets make some hulls!
-		//this->gdp->clear();
+		this->gdp->clear();
 
-		//processResult = GenerateConvexHulls(this->_inputGDP, progress);
-		//if (processResult != ENUMS::MethodProcessResult::SUCCESS || error() > OP_ERROR::UT_ERROR_WARNING) return processResult;
+		processResult = GenerateConvexHulls(this->_inputGDP, progress);
+		if (processResult != ENUMS::MethodProcessResult::SUCCESS || error() > OP_ERROR::UT_ERROR_WARNING) return processResult;
 	}
 
 	// add bundle_id attribute

@@ -95,6 +95,8 @@ DECLARE_SOP_Namespace_Start()
 
 		static PRM_Template			parametersList[];
 
+		static int					CallbackShowProcessReport(void* data, int index, float time, const PRM_Template* tmp);
+
 	private:
 		exint						PullIntPRM(GU_Detail* geometry, const PRM_Template& parameter, fpreal time);
 		fpreal						PullFloatPRM(GU_Detail* geometry, const PRM_Template& parameter, fpreal time);
