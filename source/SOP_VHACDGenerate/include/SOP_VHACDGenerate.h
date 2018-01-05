@@ -100,6 +100,7 @@ DECLARE_SOP_Namespace_Start()
 	private:
 		exint						PullIntPRM(GU_Detail* geometry, const PRM_Template& parameter, fpreal time);
 		fpreal						PullFloatPRM(GU_Detail* geometry, const PRM_Template& parameter, fpreal time);
+
 		ENUMS::MethodProcessResult	SeparatePrimitiveRange(GU_Detail* detail);
 		ENUMS::MethodProcessResult	PrepareGeometry(GU_Detail* detail, UT_AutoInterrupt progress, fpreal time);
 		void						SetupParametersVHACD(GU_Detail* detail, fpreal time);

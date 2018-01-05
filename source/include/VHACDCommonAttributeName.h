@@ -10,7 +10,7 @@
 
 	LICENSE ------------------------------------------
 
-	Copyright (c) 2016-2017 SWANN
+	Copyright (c) 2016-2018 SWANN
 	All rights reserved.
 
 	Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -59,10 +59,12 @@ namespace Containers
 	public:
 		VHACDCommonAttributeName() : CommonTName<ENUMS::VHACDCommonAttributeNameOption>()
 		{
-			this->Add(ENUMS::VHACDCommonAttributeNameOption::HULL_COUNT,	"hull_count");
-			this->Add(ENUMS::VHACDCommonAttributeNameOption::HULL_ID,		"hull_id");
-			this->Add(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_COUNT,	"bundle_count");
-			this->Add(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_ID,		"bundle_id");
+			this->Add(ENUMS::VHACDCommonAttributeNameOption::HULL_COUNT,			"hull_count");
+			this->Add(ENUMS::VHACDCommonAttributeNameOption::HULL_ID,				"hull_id");
+			this->Add(ENUMS::VHACDCommonAttributeNameOption::HULL_VOLUME,			"hull_volume");
+			this->Add(ENUMS::VHACDCommonAttributeNameOption::HULL_CENTER,			"hull_center");
+			this->Add(ENUMS::VHACDCommonAttributeNameOption::HULL_BUNDLE_COUNT,		"bundle_count");
+			this->Add(ENUMS::VHACDCommonAttributeNameOption::HULL_BUNDLE_ID,		"bundle_id");
 
 		}
 	};

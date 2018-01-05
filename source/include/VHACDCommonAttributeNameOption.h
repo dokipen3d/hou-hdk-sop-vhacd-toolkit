@@ -10,7 +10,7 @@
 
 	LICENSE ------------------------------------------
 
-	Copyright (c) 2016-2017 SWANN
+	Copyright (c) 2016-2018 SWANN
 	All rights reserved.
 
 	Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -51,8 +51,10 @@ namespace Enums
 	{
 		HULL_COUNT,
 		HULL_ID,
-		BUNDLE_COUNT,
-		BUNDLE_ID,
+		HULL_VOLUME,
+		HULL_CENTER,
+		HULL_BUNDLE_COUNT,
+		HULL_BUNDLE_ID,
 
 		MAX_ENUM_SIZE
 	};

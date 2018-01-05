@@ -487,6 +487,26 @@ SOP_Operator::DrawConvexHull(GU_Detail* detail, VHACD::IVHACD::ConvexHull hull, 
 		polygon->close();
 	}
 
+	// add hull attributes
+	auto hullVolumeHandle = GA_RWHandleD(detail->addFloatTuple(GA_AttributeOwner::GA_ATTRIB_PRIMITIVE, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_VOLUME), 1, GA_Defaults(hull.m_volume)));
+	if (hullVolumeHandle.isInvalid())
+	{
+		auto errorMessage = std::string("Failed to create \"") + std::string(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_VOLUME)) + std::string("\" attribute.");
+		this->addError(SOP_MESSAGE, errorMessage.c_str());
+		return ENUMS::MethodProcessResult::FAILURE;
+	}
+	
+	auto center = UT_Vector3(hull.m_center[0], hull.m_center[1], hull.m_center[2]);
+	/*
+	auto hullCenterHandle = GA_RWHandleV3(detail->addFloatTuple(GA_AttributeOwner::GA_ATTRIB_PRIMITIVE, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_CENTER), 3, GA_Defaults(center)));
+	if (hullCenterHandle.isInvalid())
+	{
+		auto errorMessage = std::string("Failed to create \"") + std::string(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_CENTER)) + std::string("\" attribute.");
+		this->addError(SOP_MESSAGE, errorMessage.c_str());
+		return ENUMS::MethodProcessResult::FAILURE;
+	}
+	*/
+
 	return ENUMS::MethodProcessResult::SUCCESS;
 }
 
@@ -621,10 +641,10 @@ SOP_Operator::ProcessCurrentDetail(GU_Detail* detail, UT_AutoInterrupt progress,
 	}
 	
 	// add bundle_id attribute
-	this->_bundleIDHandle = GA_RWHandleI(detail->addIntTuple(GA_AttributeOwner::GA_ATTRIB_PRIMITIVE, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_ID), 1, GA_Defaults(iteration)));
+	this->_bundleIDHandle = GA_RWHandleI(detail->addIntTuple(GA_AttributeOwner::GA_ATTRIB_PRIMITIVE, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_BUNDLE_ID), 1, GA_Defaults(iteration)));
 	if (this->_bundleIDHandle.isInvalid())
 	{
-		auto errorMessage = std::string("Failed to add \"") + std::string(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_ID)) + std::string("\" attribute.");
+		auto errorMessage = std::string("Failed to add \"") + std::string(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_BUNDLE_ID)) + std::string("\" attribute.");
 		this->addError(SOP_MESSAGE, errorMessage.c_str());
 		return ENUMS::MethodProcessResult::FAILURE;
 	}
@@ -651,18 +671,18 @@ SOP_Operator::WhenAsWhole(UT_AutoInterrupt progress, ENUMS::ProcessedOutputType 
 
 		// lets make some hulls!
 		this->gdp->clear();
-		std::cout << "Before GenerateConvexHulls" << std::endl;
+		
 		processResult = GenerateConvexHulls(this->_inputGDP, progress);
 		if (processResult != ENUMS::MethodProcessResult::SUCCESS || error() > OP_ERROR::UT_ERROR_WARNING) return processResult;
 	}
 
 	// add bundle_id attribute
-	this->_bundleIDHandle = GA_RWHandleI(this->_inputGDP->addIntTuple(GA_AttributeOwner::GA_ATTRIB_PRIMITIVE, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_ID), 1, GA_Defaults(0)));
+	this->_bundleIDHandle = GA_RWHandleI(this->_inputGDP->addIntTuple(GA_AttributeOwner::GA_ATTRIB_PRIMITIVE, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_BUNDLE_ID), 1, GA_Defaults(0)));
 	if (this->_bundleIDHandle.isInvalid())
 	{
-		auto errorMessage = std::string("Failed to add \"") + std::string(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_ID)) + std::string("\" attribute.");
+		auto errorMessage = std::string("Failed to add \"") + std::string(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_BUNDLE_ID)) + std::string("\" attribute.");
 		this->addError(SOP_MESSAGE, errorMessage.c_str());
-		processResult = ENUMS::MethodProcessResult::FAILURE;
+		return ENUMS::MethodProcessResult::FAILURE;
 	}
 	
 	// merge into this->gdp

@@ -248,13 +248,13 @@ SOP_Operator::WhenOverrideAttributeMismatch(UT_AutoInterrupt progress, UT_Array<
 			if (mismatch.GetOwner() == GA_AttributeOwner::GA_ATTRIB_DETAIL)
 			{
 				if (mismatch.Contains(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_COUNT))) currNames.erase(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_COUNT));
-				if (mismatch.Contains(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_COUNT))) currNames.erase(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_COUNT));
+				if (mismatch.Contains(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_BUNDLE_COUNT))) currNames.erase(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_BUNDLE_COUNT));
 			}
 
 			if (mismatch.GetOwner() == GA_AttributeOwner::GA_ATTRIB_PRIMITIVE)
 			{
 				if (mismatch.Contains(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_ID))) currNames.erase(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_ID));
-				if (mismatch.Contains(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_ID))) currNames.erase(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_ID));
+				if (mismatch.Contains(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_BUNDLE_ID))) currNames.erase(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_BUNDLE_ID));
 			}
 		}		
 		filteredNames.append(currNames);
@@ -265,13 +265,13 @@ SOP_Operator::WhenOverrideAttributeMismatch(UT_AutoInterrupt progress, UT_Array<
 			if (mismatch.GetOwner() == GA_AttributeOwner::GA_ATTRIB_DETAIL)
 			{
 				if ((mismatch.Contains(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_COUNT)) && processedinput == ENUMS::ProcessedInputType::CONVEX_HULLS) || (mismatch.Contains(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_COUNT)) && processModeChoiceMenuOption == static_cast<exint>(ENUMS::ProcessedModeOption::SINGLE))) WhenSpecificAttributeMismatch(UI::hullCountMismatchErrorModeChoiceMenu_Parameter, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_COUNT), time);
-				if (mismatch.Contains(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_COUNT))) WhenSpecificAttributeMismatch(UI::bundleCountMismatchErrorModeChoiceMenu_Parameter, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_COUNT), time);
+				if (mismatch.Contains(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_BUNDLE_COUNT))) WhenSpecificAttributeMismatch(UI::bundleCountMismatchErrorModeChoiceMenu_Parameter, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_BUNDLE_COUNT), time);
 			}
 
 			if (mismatch.GetOwner() == GA_AttributeOwner::GA_ATTRIB_PRIMITIVE)
 			{
 				if ((mismatch.Contains(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_ID)) && processedinput == ENUMS::ProcessedInputType::CONVEX_HULLS) || (mismatch.Contains(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_ID)) && processModeChoiceMenuOption == static_cast<exint>(ENUMS::ProcessedModeOption::SINGLE))) WhenSpecificAttributeMismatch(UI::hullIDMismatchErrorModeChoiceMenu_Parameter, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_ID), time);
-				if (mismatch.Contains(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_ID))) WhenSpecificAttributeMismatch(UI::bundleIDMismatchErrorModeChoiceMenu_Parameter, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_ID), time);
+				if (mismatch.Contains(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_BUNDLE_ID))) WhenSpecificAttributeMismatch(UI::bundleIDMismatchErrorModeChoiceMenu_Parameter, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_BUNDLE_ID), time);
 			}
 		}
 	}
@@ -334,8 +334,8 @@ SOP_Operator::AddFoundVHACDAttributes(UT_AutoInterrupt progress, UT_Array<const 
 			if (!this->_createHullID) this->_createHullID = hullIDAttribute != nullptr;
 		}
 
-		const auto bundleCountAttribute = currDetail->findIntTuple(GA_AttributeOwner::GA_ATTRIB_DETAIL, GA_AttributeScope::GA_SCOPE_PUBLIC, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_COUNT));
-		const auto bundleIDAttribute = currDetail->findIntTuple(GA_AttributeOwner::GA_ATTRIB_PRIMITIVE, GA_AttributeScope::GA_SCOPE_PUBLIC, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_ID));
+		const auto bundleCountAttribute = currDetail->findIntTuple(GA_AttributeOwner::GA_ATTRIB_DETAIL, GA_AttributeScope::GA_SCOPE_PUBLIC, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_BUNDLE_COUNT));
+		const auto bundleIDAttribute = currDetail->findIntTuple(GA_AttributeOwner::GA_ATTRIB_PRIMITIVE, GA_AttributeScope::GA_SCOPE_PUBLIC, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_BUNDLE_ID));
 
 		if (!this->_createBundleCount) this->_createBundleCount = bundleCountAttribute != nullptr;
 		if (!this->_createBundleID) this->_createBundleID = bundleIDAttribute != nullptr;
@@ -350,8 +350,8 @@ SOP_Operator::AddFoundVHACDAttributes(UT_AutoInterrupt progress, UT_Array<const 
 		if (this->_createHullID) this->_hullIDHandle = GA_RWHandleI(this->gdp->addIntTuple(GA_AttributeOwner::GA_ATTRIB_PRIMITIVE, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_ID), 1));
 	}
 
-	if (this->_createBundleCount) this->_bundleCountHandle = GA_RWHandleI(this->gdp->addIntTuple(GA_AttributeOwner::GA_ATTRIB_DETAIL, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_COUNT), 1, GA_Defaults(exint(0))));
-	if (this->_createBundleID) this->_bundleIDHandle = GA_RWHandleI(this->gdp->addIntTuple(GA_AttributeOwner::GA_ATTRIB_PRIMITIVE, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_ID), 1));
+	if (this->_createBundleCount) this->_bundleCountHandle = GA_RWHandleI(this->gdp->addIntTuple(GA_AttributeOwner::GA_ATTRIB_DETAIL, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_BUNDLE_COUNT), 1, GA_Defaults(exint(0))));
+	if (this->_createBundleID) this->_bundleIDHandle = GA_RWHandleI(this->gdp->addIntTuple(GA_AttributeOwner::GA_ATTRIB_PRIMITIVE, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_BUNDLE_ID), 1));
 
 	return true;
 }
@@ -401,7 +401,7 @@ SOP_Operator::ShiftCurrentDetailPrimitiveAttributes(GU_Detail* currentdetail, UT
 	if (this->_bundleIDHandle.isValid())
 	{
 		// find attribute in current detail
-		success = ATTRIB_ACCESS::Find::IntATT(this, currentdetail, GA_AttributeOwner::GA_ATTRIB_PRIMITIVE, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_ID), currBundleIDHandle);
+		success = ATTRIB_ACCESS::Find::IntATT(this, currentdetail, GA_AttributeOwner::GA_ATTRIB_PRIMITIVE, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_BUNDLE_ID), currBundleIDHandle);
 		if (success)
 		{
 			// shift values to create 0 - N range
@@ -511,7 +511,7 @@ SOP_Operator::MergeAllInputDetails(UT_AutoInterrupt progress, UT_Array<const GU_
 
 		if (this->_bundleCountHandle.isValid())
 		{
-			success = ATTRIB_ACCESS::Find::IntATT(this, currDetailRW, GA_AttributeOwner::GA_ATTRIB_DETAIL, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_COUNT), currBundleCountHandle);
+			success = ATTRIB_ACCESS::Find::IntATT(this, currDetailRW, GA_AttributeOwner::GA_ATTRIB_DETAIL, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_BUNDLE_COUNT), currBundleCountHandle);
 			if (success) bundleCountMainValue += currBundleCountHandle.get(GA_Offset(0));
 		}			
 
@@ -538,7 +538,7 @@ SOP_Operator::MergeAllInputDetails(UT_AutoInterrupt progress, UT_Array<const GU_
 
 	if (this->_bundleCountHandle.isValid())
 	{
-		success = ATTRIB_ACCESS::Find::IntATT(this, this->gdp, GA_AttributeOwner::GA_ATTRIB_DETAIL, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_COUNT), this->_bundleCountHandle);
+		success = ATTRIB_ACCESS::Find::IntATT(this, this->gdp, GA_AttributeOwner::GA_ATTRIB_DETAIL, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_BUNDLE_COUNT), this->_bundleCountHandle);
 		if (success) this->_bundleCountHandle.set(GA_Offset(0), bundleCountMainValue);
 	}
 }
