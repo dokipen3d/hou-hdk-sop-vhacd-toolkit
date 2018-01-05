@@ -68,11 +68,6 @@ namespace Containers
 			this->Add(ENUMS::VHACDCommonNameOption::SOP_DELETE_ICONNAME,				this->Get(ENUMS::VHACDCommonNameOption::TOOLKIT_ICONNAME));
 			this->Add(ENUMS::VHACDCommonNameOption::SOP_DELETE_SMALLNAME,				"wip::delete::2.0");
 			this->Add(ENUMS::VHACDCommonNameOption::SOP_DELETE_BIGNAME,					"Delete (v-hacd)");			
-			
-			// SOP_VHACDEngine only			
-			this->Add(ENUMS::VHACDCommonNameOption::SOP_ENGINE_ICONNAME,				this->Get(ENUMS::VHACDCommonNameOption::TOOLKIT_ICONNAME));
-			this->Add(ENUMS::VHACDCommonNameOption::SOP_ENGINE_SMALLNAME,				"vhacd::engine::1.2");
-			this->Add(ENUMS::VHACDCommonNameOption::SOP_ENGINE_BIGNAME,					"Engine (v-hacd)");
 
 			// SOP_VHACDGenerate 2.0 only			
 			this->Add(ENUMS::VHACDCommonNameOption::SOP_GENERATE_ICONNAME,				this->Get(ENUMS::VHACDCommonNameOption::TOOLKIT_ICONNAME));
