@@ -98,17 +98,19 @@ DECLARE_SOP_Namespace_Start()
 	private:
 		exint						PullIntPRM(GU_Detail* geometry, const PRM_Template& parameter, fpreal time);
 		fpreal						PullFloatPRM(GU_Detail* geometry, const PRM_Template& parameter, fpreal time);
-		ENUMS::MethodProcessResult	SeparatePrimitiveRange();
+		ENUMS::MethodProcessResult	SeparatePrimitiveRange(GU_Detail* detail);
 		ENUMS::MethodProcessResult	PrepareGeometry(GU_Detail* detail, UT_AutoInterrupt progress, fpreal time);
 		void						SetupParametersVHACD(GU_Detail* detail, fpreal time);
 		ENUMS::MethodProcessResult	GatherDataForVHACD(GU_Detail* detail, UT_AutoInterrupt progress, fpreal time);
 
 		ENUMS::MethodProcessResult	GenerateConvexHulls(GU_Detail* geometry, UT_AutoInterrupt progress);
+		ENUMS::MethodProcessResult	MergeCurrentDetail(const GU_Detail* detail, exint detailscount = 1, exint iteration = 0);
 
 		ENUMS::MethodProcessResult	WhenAsOne(UT_AutoInterrupt progress, ENUMS::ProcessedOutputType processedoutputtype, fpreal time);
 		ENUMS::MethodProcessResult	WhenPerElement(UT_AutoInterrupt progress, ENUMS::ProcessedOutputType processedoutputtype, fpreal time);
 		ENUMS::MethodProcessResult	WhenPerGroup(UT_AutoInterrupt progress, ENUMS::ProcessedOutputType processedoutputtype, fpreal time);
 
+		GU_Detail*					_inputGDP;
 		const GA_PrimitiveGroup*	_primitiveGroupInput0;
 
 		UserLogger					_loggerVHACD;
