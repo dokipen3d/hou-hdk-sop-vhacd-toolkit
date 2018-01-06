@@ -32,6 +32,12 @@ GRP Per Hull:
 		#id: specifyhullgroupname
 		Specify convex hulls group partial name.		
 
+Point Per Hull:
+	#id: pointperhullcenter
+	Use primitive ((hull_center)) attribute to create point with coordinates specified by this attriibute.
+	:note:
+	If ((hull_count)), ((hull_id)) or ((bundle_id)) attributes are found, they will be preserved. Primitive attributes will converted to point attributes.
+	
 == Additional ==
 
 [Include:parameters--description#adddescription]
