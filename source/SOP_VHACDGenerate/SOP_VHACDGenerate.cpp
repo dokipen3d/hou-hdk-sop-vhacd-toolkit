@@ -40,9 +40,10 @@ INCLUDES                                                           |
 // hou-hdk-common
 #include <Macros/ParameterList.h>
 #include <Macros/ProgressEscape.h>
-#include <Utility/ParameterAccessing.h>
-#include <Utility/AttributeAccessing.h>
-#include <Utility/GeometryProcessing.h>
+#include <Utility/PRM_TemplateAccessors.h>
+#include <Utility/GA_AttributeAccessors.h>
+#include <Utility/GU_DetailModifier.h>
+#include <Utility/GU_DetailTester.h>
 
 // this
 #include "Parameters.h"
@@ -62,9 +63,11 @@ DEFINES                                                            |
 
 #define COMMON_NAMES			GET_SOP_Namespace()::COMMON_NAMES
 #define UI						GET_SOP_Namespace()::UI
-#define PRM_ACCESS				GET_Base_Namespace()::Utility::PRM
-#define ATTRIB_ACCESS			GET_Base_Namespace()::Utility::Attribute
-#define GDP_UTILS				GET_Base_Namespace()::Utility::Geometry
+
+#define UTILS					GET_Base_Namespace()::Utility
+#define PRM_ACCESS				UTILS::PRM_TemplateAccessors
+#define ATTRIB_ACCESS			UTILS::GA_AttributeAccessors
+
 #define CONTAINERS				GET_Base_Namespace()::Containers
 #define ENUMS					GET_Base_Namespace()::Enums
 
@@ -295,7 +298,7 @@ SOP_Operator::PrepareGeometry(GU_Detail* detail, UT_AutoInterrupt progress, fpre
 
 	// make sure we got something to work on
 	auto errorMessage = UT_String("Not enough primitives to create hull.");
-	if (!GDP_UTILS::Test::IsEnoughPrimitives(this, detail, requiredPrimCount, errorMessage, ENUMS::NodeErrorLevel::ERROR) || error() >= UT_ErrorSeverity::UT_ERROR_WARNING) return ENUMS::MethodProcessResult::FAILURE;
+	if (!UTILS::GU_DetailTester::IsEnoughPrimitives(this, detail, requiredPrimCount, errorMessage, ENUMS::NodeErrorLevel::ERROR) || error() >= UT_ErrorSeverity::UT_ERROR_WARNING) return ENUMS::MethodProcessResult::FAILURE;
 
 	// check for non-polygon geometry
 	bool forceConvertToPolygonsValue;
@@ -326,27 +329,27 @@ SOP_Operator::PrepareGeometry(GU_Detail* detail, UT_AutoInterrupt progress, fpre
 	
 	// we need at least 4 points...	
 	errorMessage = UT_String("Not enough points to create hull.");
-	if (!GDP_UTILS::Test::IsEnoughPoints(this, detail, requiredPointCount, errorMessage, ENUMS::NodeErrorLevel::ERROR) || error() >= UT_ErrorSeverity::UT_ERROR_WARNING) return ENUMS::MethodProcessResult::FAILURE;
+	if (!UTILS::GU_DetailTester::IsEnoughPoints(this, detail, requiredPointCount, errorMessage, ENUMS::NodeErrorLevel::ERROR) || error() >= UT_ErrorSeverity::UT_ERROR_WARNING) return ENUMS::MethodProcessResult::FAILURE;
 	
 	// ... and at least 12 vertices to get up from bed	
 	errorMessage = UT_String("Not enough vertices to create hull.");
-	if (!GDP_UTILS::Test::IsEnoughVertices(this, detail, requiredVertexCount, errorMessage, ENUMS::NodeErrorLevel::ERROR) || error() >= UT_ErrorSeverity::UT_ERROR_WARNING) return ENUMS::MethodProcessResult::FAILURE;
+	if (!UTILS::GU_DetailTester::IsEnoughVertices(this, detail, requiredVertexCount, errorMessage, ENUMS::NodeErrorLevel::ERROR) || error() >= UT_ErrorSeverity::UT_ERROR_WARNING) return ENUMS::MethodProcessResult::FAILURE;
 
 	// try to triangulate
-	const auto processResult = GDP_UTILS::Modify::Triangulate(this, progress, detail, SMALLPOLYGONS_TOLERANCE);
+	const auto processResult = UTILS::GU_DetailModifier::Triangulate(this, progress, detail);
 	if (processResult != ENUMS::MethodProcessResult::SUCCESS || error() > UT_ErrorSeverity::UT_ERROR_WARNING) return ENUMS::MethodProcessResult::FAILURE;
 
 	// is there anything left after preparation?	
 	errorMessage = UT_String("After removing zero area and open polygons there are no other primitives left.");
-	if (!GDP_UTILS::Test::IsEnoughPrimitives(this, detail, requiredPrimCount, errorMessage) || error() >= UT_ErrorSeverity::UT_ERROR_WARNING) return ENUMS::MethodProcessResult::FAILURE;
+	if (!UTILS::GU_DetailTester::IsEnoughPrimitives(this, detail, requiredPrimCount, errorMessage) || error() >= UT_ErrorSeverity::UT_ERROR_WARNING) return ENUMS::MethodProcessResult::FAILURE;
 	
 	// again test if triangulated data contains enough points...
 	errorMessage = UT_String("After removing zero area and open polygons there are not enough points to create hull.");
-	if (!GDP_UTILS::Test::IsEnoughPoints(this, detail, requiredPointCount, errorMessage, ENUMS::NodeErrorLevel::ERROR) || error() >= UT_ErrorSeverity::UT_ERROR_WARNING) return ENUMS::MethodProcessResult::FAILURE;
+	if (!UTILS::GU_DetailTester::IsEnoughPoints(this, detail, requiredPointCount, errorMessage, ENUMS::NodeErrorLevel::ERROR) || error() >= UT_ErrorSeverity::UT_ERROR_WARNING) return ENUMS::MethodProcessResult::FAILURE;
 
 	// ... and vertices
 	errorMessage = UT_String("After removing zero area and open polygons there are not enough vertices to create hull.");
-	if (!GDP_UTILS::Test::IsEnoughVertices(this, detail, requiredVertexCount, errorMessage, ENUMS::NodeErrorLevel::ERROR) || error() >= UT_ErrorSeverity::UT_ERROR_WARNING) return ENUMS::MethodProcessResult::FAILURE;
+	if (!UTILS::GU_DetailTester::IsEnoughVertices(this, detail, requiredVertexCount, errorMessage, ENUMS::NodeErrorLevel::ERROR) || error() >= UT_ErrorSeverity::UT_ERROR_WARNING) return ENUMS::MethodProcessResult::FAILURE;
 
 	return ENUMS::MethodProcessResult::SUCCESS;
 }
@@ -453,7 +456,7 @@ SOP_Operator::DrawConvexHull(GU_Detail* detail, const VHACD::IVHACD::ConvexHull&
 	const auto start = detail->appendPointBlock(hull.m_nPoints);
 
 	// make sure that we have at least 4 points, if we have less, than it's a flat geometry, so ignore it
-	if (GDP_UTILS::Test::IsEnoughPoints(this, detail) && error() >= UT_ErrorSeverity::UT_ERROR_WARNING) return ENUMS::MethodProcessResult::FAILURE;
+	if (UTILS::GU_DetailTester::IsEnoughPoints(this, detail) && error() >= UT_ErrorSeverity::UT_ERROR_WARNING) return ENUMS::MethodProcessResult::FAILURE;
 
 	// set point positions				
 	exint hullP = 0;
@@ -514,8 +517,8 @@ ENUMS::MethodProcessResult
 SOP_Operator::GenerateConvexHulls(GU_Detail* detail, UT_AutoInterrupt progress)
 {	
 	// get interface	
-	this->_interfaceVHACD = VHACD::CreateVHACD_ASYNC();
-	//this->_interfaceVHACD = VHACD::CreateVHACD();
+	//this->_interfaceVHACD = VHACD::CreateVHACD_ASYNC();
+	this->_interfaceVHACD = VHACD::CreateVHACD();
 
 	const auto success = this->_interfaceVHACD->Compute(&this->_pointPositions[0], static_cast<unsigned int>(this->_pointPositions.size()) / 3, reinterpret_cast<const uint32_t*>(&this->_triangleIndexes[0]), static_cast<unsigned int>(this->_triangleIndexes.size()) / 3, this->_parametersVHACD);
 
@@ -526,11 +529,11 @@ SOP_Operator::GenerateConvexHulls(GU_Detail* detail, UT_AutoInterrupt progress)
 
 		Can it be done at all ?! x_X
 	 */
-	while (!this->_interfaceVHACD->IsReady()) PROGRESS_WAS_INTERRUPTED_WITH_OBJECT(this, progress, ENUMS::MethodProcessResult::FAILURE)
+	//while (!this->_interfaceVHACD->IsReady()) PROGRESS_WAS_INTERRUPTED_WITH_OBJECT(this, progress, ENUMS::MethodProcessResult::FAILURE)
 
 	if (success)
 	{
-		if (this->_interfaceVHACD->IsReady())
+		//if (this->_interfaceVHACD->IsReady())
 		{
 			// add hull attributes
 			this->_hullVolumeHandle = GA_RWHandleD(detail->addFloatTuple(GA_AttributeOwner::GA_ATTRIB_PRIMITIVE, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_VOLUME), 1));
@@ -873,7 +876,7 @@ GU_DetailHandle
 SOP_Operator::cookMySopOutput(OP_Context& context, int outputidx, SOP_Node* interests)
 {
 	DEFAULTS_CookMySopOutput()
-
+		
 	this->_inputGDP = new GU_Detail(inputGeo(0, context));
 	if (this->_inputGDP && error() < OP_ERROR::UT_ERROR_WARNING && cookInputGroups(context) < OP_ERROR::UT_ERROR_WARNING)
 	{		
@@ -919,9 +922,11 @@ UNDEFINES                                                          |
 
 #undef ENUMS
 #undef CONTAINERS
-#undef GDP_UTILS
+
 #undef ATTRIB_ACCESS
 #undef PRM_ACCESS
+#undef UTILS
+
 #undef UI
 #undef COMMON_NAMES
 

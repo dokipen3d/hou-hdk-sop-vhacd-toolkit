@@ -39,8 +39,9 @@ INCLUDES                                                           |
 // hou-hdk-common
 #include <Macros/ParameterList.h>
 #include <Macros/ProgressEscape.h>
-#include <Utility/ParameterAccessing.h>
-#include <Utility/AttributeAccessing.h>
+#include <Utility/PRM_TemplateAccessors.h>
+#include <Utility/GA_AttributeAccessors.h>
+#include <Utility/GA_AttributeMismatchTester.h>
 
 // this
 #include "Parameters.h"
@@ -55,8 +56,11 @@ DEFINES                                                            |
 
 #define COMMON_NAMES			GET_SOP_Namespace()::COMMON_NAMES
 #define UI						GET_SOP_Namespace()::UI
-#define PRM_ACCESS				GET_Base_Namespace()::Utility::PRM
-#define ATTRIB_ACCESS			GET_Base_Namespace()::Utility::Attribute
+
+#define UTILS					GET_Base_Namespace()::Utility
+#define PRM_ACCESS				UTILS::PRM_TemplateAccessors
+#define ATTRIB_ACCESS			UTILS::GA_AttributeAccessors
+
 #define CONTAINERS				GET_Base_Namespace()::Containers
 #define ENUMS					GET_Base_Namespace()::Enums
 
@@ -238,7 +242,7 @@ SOP_Operator::WhenOverrideAttributeMismatch(UT_AutoInterrupt progress, UT_Array<
 	filteredNames.clear();
 	PRM_ACCESS::Get::IntPRM(this, processModeChoiceMenuOption, UI::processModeChoiceMenu_Parameter, time);	
 
-	auto mismatchInfos = ATTRIB_ACCESS::Check::MismatchOfAllOwners(this, progress, details, GA_AttributeScope::GA_SCOPE_PUBLIC, ENUMS::NodeErrorLevel::NONE);
+	auto mismatchInfos = UTILS::GA_AttributeMismatchTester::MismatchOfAllOwners(this, progress, details, GA_AttributeScope::GA_SCOPE_PUBLIC, ENUMS::NodeErrorLevel::NONE);
 	for (auto mismatch : mismatchInfos)
 	{	
 		// remove V-HACD specific attributes from list
@@ -279,7 +283,7 @@ SOP_Operator::WhenOverrideAttributeMismatch(UT_AutoInterrupt progress, UT_Array<
 	// set global mismatch warning
 	if (mismatchoption == ENUMS::MismatchErrorModeOption::WARNING_AND_OVERRIDE)
 	{
-		const auto mismatchMessage = ATTRIB_ACCESS::Check::ComposeMismatchMessage(this, progress, filteredNames);
+		const auto mismatchMessage = UTILS::GA_AttributeMismatchTester::ComposeMismatchMessage(this, progress, filteredNames);
 		if (mismatchMessage != nullptr) this->addWarning(SOP_MESSAGE, mismatchMessage.c_str());
 	}
 }
@@ -295,8 +299,8 @@ SOP_Operator::HandleAttributesMismatch(UT_AutoInterrupt progress, UT_Array<const
 		case static_cast<exint>(ENUMS::MismatchErrorModeOption::NONE_AND_OVERRIDE) :		{ WhenOverrideAttributeMismatch(progress, details, ENUMS::MismatchErrorModeOption::NONE_AND_OVERRIDE, processedinput, time); } break;
 		case static_cast<exint>(ENUMS::MismatchErrorModeOption::WARNING_AND_OVERRIDE) :		{ WhenOverrideAttributeMismatch(progress, details, ENUMS::MismatchErrorModeOption::WARNING_AND_OVERRIDE, processedinput, time); } break;
 		case static_cast<exint>(ENUMS::MismatchErrorModeOption::NONE) :						break;
-		case static_cast<exint>(ENUMS::MismatchErrorModeOption::WARNING) :					{ ATTRIB_ACCESS::Check::MismatchOfAllOwners(this, progress, details, GA_AttributeScope::GA_SCOPE_PUBLIC, ENUMS::NodeErrorLevel::WARNING); } break;
-		case static_cast<exint>(ENUMS::MismatchErrorModeOption::ERROR) :					{ ATTRIB_ACCESS::Check::MismatchOfAllOwners(this, progress, details, GA_AttributeScope::GA_SCOPE_PUBLIC, ENUMS::NodeErrorLevel::ERROR); } break;
+		case static_cast<exint>(ENUMS::MismatchErrorModeOption::WARNING) :					{ UTILS::GA_AttributeMismatchTester::MismatchOfAllOwners(this, progress, details, GA_AttributeScope::GA_SCOPE_PUBLIC, ENUMS::NodeErrorLevel::WARNING); } break;
+		case static_cast<exint>(ENUMS::MismatchErrorModeOption::ERROR) :					{ UTILS::GA_AttributeMismatchTester::MismatchOfAllOwners(this, progress, details, GA_AttributeScope::GA_SCOPE_PUBLIC, ENUMS::NodeErrorLevel::ERROR); } break;
 	}
 }
 
@@ -619,8 +623,11 @@ UNDEFINES                                                          |
 
 #undef ENUMS
 #undef CONTAINERS
+
 #undef ATTRIB_ACCESS
 #undef PRM_ACCESS
+#undef UTILS
+
 #undef UI
 #undef COMMON_NAMES
 

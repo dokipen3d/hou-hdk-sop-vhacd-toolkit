@@ -40,9 +40,10 @@ INCLUDES                                                           |
 // hou-hdk-common
 #include <Macros/ParameterList.h>
 #include <Macros/ProgressEscape.h>
-#include <Utility/GeometryProcessing.h>
-#include <Utility/AttributeAccessing.h>
-#include <Utility/ParameterAccessing.h>
+#include <Utility/GU_DetailModifier.h>
+#include <Utility/GU_DetailTester.h>
+#include <Utility/GA_AttributeAccessors.h>
+#include <Utility/PRM_TemplateAccessors.h>
 
 #include <Enums/NodeErrorLevel.h>
 #include <Enums/AttributeClass.h>
@@ -61,9 +62,11 @@ DEFINES                                                            |
 
 #define COMMON_NAMES					GET_SOP_Namespace()::COMMON_NAMES
 #define UI								GET_SOP_Namespace()::PRMs_VHACDEngine
-#define PRM_ACCESS						GET_Base_Namespace()::Utility::PRM
-#define ATTRIB_ACCESS					GET_Base_Namespace()::Utility::Attribute
-#define GDP_UTILS						GET_Base_Namespace()::Utility::Geometry
+
+#define UTILS							GET_Base_Namespace()::Utility
+#define PRM_ACCESS						UTILS::PRM_TemplateAccessors
+#define ATTRIB_ACCESS					UTILS::GA_AttributeAccessors
+
 #define ENUMS							GET_Base_Namespace()::Enums
 
 /* -----------------------------------------------------------------
@@ -217,16 +220,16 @@ SOP_Operator::PullFloatPRM(GU_Detail* geometry, const PRM_Template& parameter, b
 bool 
 SOP_Operator::PrepareGeometry(GU_Detail* geometry, UT_AutoInterrupt progress)
 {
-	auto processResult = GDP_UTILS::Modify::Triangulate(this, progress, geometry, SMALLPOLYGONS_TOLERANCE);
+	auto processResult = UTILS::GU_DetailModifier::Triangulate(this, progress, geometry);
 	if ((processResult == ENUMS::MethodProcessResult::SUCCESS && error() >= UT_ErrorSeverity::UT_ERROR_WARNING) || (processResult != ENUMS::MethodProcessResult::SUCCESS && error() >= UT_ErrorSeverity::UT_ERROR_NONE)) return false;
 	
 	// is there anything left after preparation?	
 	auto message = UT_String("After removing zero area and open polygons there are no other primitives left.");
-	auto success = GDP_UTILS::Test::IsEnoughPrimitives(this, geometry, 1, message);
+	auto success = UTILS::GU_DetailTester::IsEnoughPrimitives(this, geometry, 1, message);
 	if ((success && error() >= UT_ErrorSeverity::UT_ERROR_WARNING) || (!success && error() >= UT_ErrorSeverity::UT_ERROR_NONE)) return false;
 
 	message = UT_String("Not enough points to create hull.");
-	return	GDP_UTILS::Test::IsEnoughPoints(this, gdp, 4, message);	
+	return	UTILS::GU_DetailTester::IsEnoughPoints(this, gdp, 4, message);
 }
 
 void 
@@ -322,7 +325,7 @@ SOP_Operator::DrawConvexHull(GU_Detail* geometry, VHACD::IVHACD::ConvexHull hull
 	const auto start = geometry->appendPointBlock(hull.m_nPoints);
 
 	// make sure that we have at least 4 points, if we have less, than it's a flat geometry, so ignore it
-	if (GDP_UTILS::Test::IsEnoughPoints(this, geometry) && error() >= UT_ErrorSeverity::UT_ERROR_WARNING) return false;
+	if (UTILS::GU_DetailTester::IsEnoughPoints(this, geometry) && error() >= UT_ErrorSeverity::UT_ERROR_WARNING) return false;
 
 	// set point positions				
 	exint hullP = 0;
@@ -430,7 +433,7 @@ SOP_Operator::cookMySop(OP_Context& context)
 	{			
 		// make sure we got something to work on
 		auto message = UT_String("Not enough primitives to create hull.");
-		auto success = GDP_UTILS::Test::IsEnoughPrimitives(this, gdp, 1, message);
+		auto success = UTILS::GU_DetailTester::IsEnoughPrimitives(this, gdp, 1, message);
 		if ((success && error() >= OP_ERROR::UT_ERROR_WARNING) || (!success && error() >= OP_ERROR::UT_ERROR_NONE)) return error();
 			
 		// do we want only polygons or do we try to convert anything to polygons?			
@@ -458,7 +461,7 @@ SOP_Operator::cookMySop(OP_Context& context)
 
 		// we need at least 4 points to get up from bed
 		message = UT_String("Not enough points to create hull.");
-		success = GDP_UTILS::Test::IsEnoughPoints(this, gdp, 4, message);
+		success = UTILS::GU_DetailTester::IsEnoughPoints(this, gdp, 4, message);
 		if ((success && error() >= OP_ERROR::UT_ERROR_WARNING) || (!success && error() >= OP_ERROR::UT_ERROR_NONE)) return error();
 			
 		// we should have only polygons now, but we need to make sure that they are all correct			
@@ -488,9 +491,11 @@ UNDEFINES                                                          |
 ----------------------------------------------------------------- */
 
 #undef ENUMS
-#undef GDP_UTILS
+
 #undef ATTRIB_ACCESS
 #undef PRM_ACCESS
+#undef UTILS
+
 #undef UI
 #undef COMMON_NAMES
 

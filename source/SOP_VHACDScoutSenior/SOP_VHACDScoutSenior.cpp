@@ -37,8 +37,8 @@ INCLUDES                                                           |
 
 // hou-hdk-common
 #include <Macros/ParameterList.h>
-#include <Utility/ParameterAccessing.h>
-#include <Utility/AttributeAccessing.h>
+#include <Utility/PRM_TemplateAccessors.h>
+#include <Utility/GA_AttributeAccessors.h>
 
 // this
 #include "Parameters.h"
@@ -52,8 +52,11 @@ DEFINES                                                            |
 
 #define COMMON_NAMES			GET_SOP_Namespace()::COMMON_NAMES
 #define UI						GET_SOP_Namespace()::UI
-#define PRM_ACCESS				GET_Base_Namespace()::Utility::PRM
-#define ATTRIB_ACCESS			GET_Base_Namespace()::Utility::Attribute
+
+#define UTILS					GET_Base_Namespace()::Utility
+#define PRM_ACCESS				UTILS::PRM_TemplateAccessors
+#define ATTRIB_ACCESS			UTILS::GA_AttributeAccessors
+
 #define CONTAINERS				GET_Base_Namespace()::Containers
 #define ENUMS					GET_Base_Namespace()::Enums
 
@@ -454,8 +457,11 @@ UNDEFINES                                                          |
 
 #undef ENUMS
 #undef CONTAINERS
+
 #undef ATTRIB_ACCESS
 #undef PRM_ACCESS
+#undef UTILS
+
 #undef UI
 #undef COMMON_NAMES
 

@@ -37,7 +37,7 @@ INCLUDES                                                           |
 // hou-hdk-common
 #include <Macros/Namespace.h>
 #include <Macros/ProgressEscape.h>
-#include <Utility/AttributeAccessing.h>
+#include <Utility/GA_AttributeAccessors.h>
 
 // this
 #include "SOP_VHACDNode.h"
@@ -46,7 +46,9 @@ INCLUDES                                                           |
 DEFINES                                                            |
 ----------------------------------------------------------------- */
 
-#define ATTRIB_ACCESS			GET_Base_Namespace()::Utility::Attribute
+#define UTILS					GET_Base_Namespace()::Utility
+#define ATTRIB_ACCESS			UTILS::GA_AttributeAccessors
+
 #define CONTAINERS				GET_Base_Namespace()::Containers
 #define ENUMS					GET_Base_Namespace()::Enums
 
@@ -262,6 +264,8 @@ UNDEFINES                                                          |
 
 #undef ENUMS
 #undef CONTAINERS
+
 #undef ATTRIB_ACCESS
+#undef UTILS
 
 #endif // !____sop_vhacd_scout_h____
