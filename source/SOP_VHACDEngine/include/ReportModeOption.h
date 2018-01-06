@@ -23,12 +23,19 @@
 */
 
 #pragma once
-#ifndef ____enums_report_mode_option_h____
-#define ____enums_report_mode_option_h____
+#ifndef ____report_mode_option_h____
+#define ____report_mode_option_h____
 
 /* -----------------------------------------------------------------
 INCLUDES                                                           |
 ----------------------------------------------------------------- */
+
+// SESI
+#if _WIN32		
+#include <sys/SYS_Types.h>
+#else
+#include <SYS/SYS_Types.h>
+#endif
 
 // hou-hdk-common
 #include "Macros/Namespace.h"
@@ -40,14 +47,13 @@ ENUM                                                               |
 DECLARE_Base_Namespace_Start()
 namespace Enums
 {
-	enum class ReportModeOption
+	enum class ReportModeOption : exint
 	{
-		PROGESS_ONLY = 0,
-		DETAILS_ONLY = 1,
-		FULL = 2,
-		END_OF_OPTIONS = 3
+		PROGESS_ONLY,
+		DETAILS_ONLY,
+		FULL
 	};
 }
 DECLARE_Base_Namespace_End
 
-#endif // !____enums_report_mode_option_h____
+#endif // !____report_mode_option_h____

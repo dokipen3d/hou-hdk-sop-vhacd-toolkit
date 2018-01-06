@@ -165,7 +165,7 @@ HELPERS                                                            |
 ----------------------------------------------------------------- */
 
 exint 
-SOP_Operator::PullIntPRM(GU_Detail* geometry, const PRM_Template& parameter, bool interfaceonly /* = false */, fpreal time /* = 0 */)
+SOP_Operator::PullIntPRM(GU_Detail* detail, const PRM_Template& parameter, bool interfaceonly /* = false */, fpreal time /* = 0 */)
 {
 	exint currentIntValue = 0;
 
@@ -175,7 +175,7 @@ SOP_Operator::PullIntPRM(GU_Detail* geometry, const PRM_Template& parameter, boo
 
 		// check is there attribute with the name that matches parameter name
 		// if it exist, use it as parm value, otherwise use UI value		
-		const auto success = ATTRIB_ACCESS::Find::IntATT(this, geometry, GA_AttributeOwner::GA_ATTRIB_PRIMITIVE, parameter.getToken(), attributeHandle, ENUMS::NodeErrorLevel::NONE);
+		const auto success = ATTRIB_ACCESS::Find::IntATT(this, detail, GA_AttributeOwner::GA_ATTRIB_PRIMITIVE, parameter.getToken(), attributeHandle, ENUMS::NodeErrorLevel::NONE);
 		if (success)
 		{
 			currentIntValue = attributeHandle.get(GA_Offset(0));
@@ -191,7 +191,7 @@ SOP_Operator::PullIntPRM(GU_Detail* geometry, const PRM_Template& parameter, boo
 }
 
 fpreal 
-SOP_Operator::PullFloatPRM(GU_Detail* geometry, const PRM_Template& parameter, bool interfaceonly /* = false */, fpreal time /* = 0 */)
+SOP_Operator::PullFloatPRM(GU_Detail* detail, const PRM_Template& parameter, bool interfaceonly /* = false */, fpreal time /* = 0 */)
 {
 	fpreal currentFloatValue = 0;
 
@@ -202,7 +202,7 @@ SOP_Operator::PullFloatPRM(GU_Detail* geometry, const PRM_Template& parameter, b
 
 		// check is there attribute with the name that matches parameter name
 		// if it exist, use it as parm value, otherwise use UI value		
-		const auto success = ATTRIB_ACCESS::Find::FloatATT(this, geometry, GA_AttributeOwner::GA_ATTRIB_PRIMITIVE, parameter.getToken(), attributeHandle, ENUMS::NodeErrorLevel::NONE);
+		const auto success = ATTRIB_ACCESS::Find::FloatATT(this, detail, GA_AttributeOwner::GA_ATTRIB_PRIMITIVE, parameter.getToken(), attributeHandle, ENUMS::NodeErrorLevel::NONE);
 		if (success)
 		{			
 			currentFloatValue = attributeHandle.get(GA_Offset(0));
@@ -217,42 +217,79 @@ SOP_Operator::PullFloatPRM(GU_Detail* geometry, const PRM_Template& parameter, b
 	return currentFloatValue;
 }
 
-bool 
-SOP_Operator::PrepareGeometry(GU_Detail* geometry, UT_AutoInterrupt progress)
+ENUMS::MethodProcessResult
+SOP_Operator::PrepareGeometry(GU_Detail* detail, UT_AutoInterrupt progress, fpreal time)
 {
-	auto processResult = UTILS::GU_DetailModifier::Triangulate(this, progress, geometry);
-	if ((processResult == ENUMS::MethodProcessResult::SUCCESS && error() >= UT_ErrorSeverity::UT_ERROR_WARNING) || (processResult != ENUMS::MethodProcessResult::SUCCESS && error() >= UT_ErrorSeverity::UT_ERROR_NONE)) return false;
+	// make sure we got something to work on
+	auto message = UT_String("Not enough primitives to create hull.");
+	auto success = UTILS::GU_DetailTester::IsEnoughPrimitives(this, detail, 1, message);
+	if ((success && error() >= OP_ERROR::UT_ERROR_WARNING) || (!success && error() >= OP_ERROR::UT_ERROR_NONE)) return ENUMS::MethodProcessResult::FAILURE;
+
+	// do we want only polygons or do we try to convert anything to polygons?			
+	bool convertToPolygonsState;
+	PRM_ACCESS::Get::IntPRM(this, convertToPolygonsState, UI::convertToPolygonsToggle_Parameter, time);
+	if (convertToPolygonsState)
+	{
+		GEO_ConvertParms parms;
+		detail->convert(parms);
+	}
+	else
+	{
+		for (auto primIt : detail->getPrimitiveRange())
+		{
+			PROGRESS_WAS_INTERRUPTED_WITH_ERROR_AND_OBJECT(this, progress, ENUMS::MethodProcessResult::INTERRUPT)
+
+			// only polygons allowed
+			if (detail->getPrimitive(primIt)->getTypeId() != GA_PRIMPOLY)
+			{
+				addError(SOP_ErrorCodes::SOP_MESSAGE, "Non-polygon geometry detected on input.");
+				return ENUMS::MethodProcessResult::FAILURE;
+			}
+		}
+	}
+
+	// we need at least 4 points to get up from bed
+	message = UT_String("Not enough points to create hull.");
+	success = UTILS::GU_DetailTester::IsEnoughPoints(this, detail, 4, message);
+	if ((success && error() >= OP_ERROR::UT_ERROR_WARNING) || (!success && error() >= OP_ERROR::UT_ERROR_NONE)) return ENUMS::MethodProcessResult::FAILURE;
+
+	const auto processResult = UTILS::GU_DetailModifier::Triangulate(this, progress, detail);
+	if ((processResult == ENUMS::MethodProcessResult::SUCCESS && error() >= UT_ErrorSeverity::UT_ERROR_WARNING) || (processResult != ENUMS::MethodProcessResult::SUCCESS && error() >= UT_ErrorSeverity::UT_ERROR_NONE)) return ENUMS::MethodProcessResult::FAILURE;
 	
 	// is there anything left after preparation?	
-	auto message = UT_String("After removing zero area and open polygons there are no other primitives left.");
-	auto success = UTILS::GU_DetailTester::IsEnoughPrimitives(this, geometry, 1, message);
-	if ((success && error() >= UT_ErrorSeverity::UT_ERROR_WARNING) || (!success && error() >= UT_ErrorSeverity::UT_ERROR_NONE)) return false;
+	message = UT_String("After removing zero area and open polygons there are no other primitives left.");
+	success = UTILS::GU_DetailTester::IsEnoughPrimitives(this, detail, 1, message);
+	if ((success && error() >= UT_ErrorSeverity::UT_ERROR_WARNING) || (!success && error() >= UT_ErrorSeverity::UT_ERROR_NONE)) return ENUMS::MethodProcessResult::FAILURE;
 
 	message = UT_String("Not enough points to create hull.");
-	return	UTILS::GU_DetailTester::IsEnoughPoints(this, gdp, 4, message);
+	return UTILS::GU_DetailTester::IsEnoughPoints(this, detail, 4, message) ? ENUMS::MethodProcessResult::SUCCESS : ENUMS::MethodProcessResult::FAILURE;
 }
 
 void 
-SOP_Operator::SetupVHACD(GU_Detail* geometry, fpreal time)
+SOP_Operator::SetupVHACD(GU_Detail* detail, fpreal time)
 {		
 	PRM_ACCESS::Get::IntPRM(this, this->_allowParametersOverrideValueState, UI::allowParametersOverrideToggle_Parameter, time);
 
 	// main parameters
-	this->_parametersVHACD.m_mode						= PullIntPRM(geometry, UI::modeChoiceMenu_Parameter, !this->_allowParametersOverrideValueState, time);
-	this->_parametersVHACD.m_resolution					= PullIntPRM(geometry, UI::resolutionInteger_Parameter, !this->_allowParametersOverrideValueState, time);	
-	this->_parametersVHACD.m_concavity					= PullFloatPRM(geometry, UI::concavityFloat_Parameter, !this->_allowParametersOverrideValueState, time);
-	this->_parametersVHACD.m_planeDownsampling			= PullIntPRM(geometry, UI::planeDownsamplingInteger_Parameter, !this->_allowParametersOverrideValueState, time);
-	this->_parametersVHACD.m_convexhullDownsampling		= PullIntPRM(geometry, UI::convexHullDownsamplingInteger_Parameter, !this->_allowParametersOverrideValueState, time);
-	this->_parametersVHACD.m_alpha						= PullFloatPRM(geometry, UI::alphaFloat_Parameter, !this->_allowParametersOverrideValueState, time);
-	this->_parametersVHACD.m_beta						= PullFloatPRM(geometry, UI::betaFloat_Parameter, !this->_allowParametersOverrideValueState, time);	
-	this->_parametersVHACD.m_maxConvexHulls				= PullIntPRM(geometry, UI::maxConvexHullsCountInteger_Parameter, !this->_allowParametersOverrideValueState, time);
-	this->_parametersVHACD.m_maxNumVerticesPerCH		= PullIntPRM(geometry, UI::maxTriangleCountInteger_Parameter, !this->_allowParametersOverrideValueState, time);
-	this->_parametersVHACD.m_minVolumePerCH				= PullFloatPRM(geometry, UI::adaptiveSamplingFloat_Parameter, !this->_allowParametersOverrideValueState, time);
-	this->_parametersVHACD.m_convexhullApproximation	= PullIntPRM(geometry, UI::approximateConvexHullsToggle_Parameter, !this->_allowParametersOverrideValueState, time);
-	this->_parametersVHACD.m_projectHullVertices		= PullIntPRM(geometry, UI::projectHullVerticesToggle_Parameter, !this->_allowParametersOverrideValueState, time);
-	this->_parametersVHACD.m_pca						= PullIntPRM(geometry, UI::normalizeMeshToggle_Parameter, !this->_allowParametersOverrideValueState, time);	
+	this->_parametersVHACD.m_mode						= PullIntPRM(detail, UI::modeChoiceMenu_Parameter, !this->_allowParametersOverrideValueState, time);
+	this->_parametersVHACD.m_resolution					= PullIntPRM(detail, UI::resolutionInteger_Parameter, !this->_allowParametersOverrideValueState, time);
+	this->_parametersVHACD.m_concavity					= PullFloatPRM(detail, UI::concavityFloat_Parameter, !this->_allowParametersOverrideValueState, time);
+	this->_parametersVHACD.m_planeDownsampling			= PullIntPRM(detail, UI::planeDownsamplingInteger_Parameter, !this->_allowParametersOverrideValueState, time);
+	this->_parametersVHACD.m_convexhullDownsampling		= PullIntPRM(detail, UI::convexHullDownsamplingInteger_Parameter, !this->_allowParametersOverrideValueState, time);
+	this->_parametersVHACD.m_alpha						= PullFloatPRM(detail, UI::alphaFloat_Parameter, !this->_allowParametersOverrideValueState, time);
+	this->_parametersVHACD.m_beta						= PullFloatPRM(detail, UI::betaFloat_Parameter, !this->_allowParametersOverrideValueState, time);
+	this->_parametersVHACD.m_maxConvexHulls				= PullIntPRM(detail, UI::maxConvexHullsCountInteger_Parameter, !this->_allowParametersOverrideValueState, time);
+	this->_parametersVHACD.m_maxNumVerticesPerCH		= PullIntPRM(detail, UI::maxTriangleCountInteger_Parameter, !this->_allowParametersOverrideValueState, time);
+	this->_parametersVHACD.m_minVolumePerCH				= PullFloatPRM(detail, UI::adaptiveSamplingFloat_Parameter, !this->_allowParametersOverrideValueState, time);
+	this->_parametersVHACD.m_convexhullApproximation	= PullIntPRM(detail, UI::approximateConvexHullsToggle_Parameter, !this->_allowParametersOverrideValueState, time);
+	this->_parametersVHACD.m_projectHullVertices		= PullIntPRM(detail, UI::projectHullVerticesToggle_Parameter, !this->_allowParametersOverrideValueState, time);
+	this->_parametersVHACD.m_pca						= PullIntPRM(detail, UI::normalizeMeshToggle_Parameter, !this->_allowParametersOverrideValueState, time);
 
 	PRM_ACCESS::Get::IntPRM(this, this->_parametersVHACD.m_oclAcceleration, UI::useOpenCLToggle_Parameter, time);
+
+	// logger/callback
+	this->_parametersVHACD.m_logger						= &this->_loggerVHACD;
+	this->_parametersVHACD.m_callback					= &this->_callbackVHACD;
 
 	// debug parameters
 #define VHACD_ReportModeHelper(showmsg, showoverallprogress, showstageprogress, showoperationprogress) this->_loggerVHACD.showMsg = showmsg; this->_callbackVHACD.showOverallProgress = showoverallprogress; this->_callbackVHACD.showStageProgress = showstageprogress; this->_callbackVHACD.showOperationProgress = showoperationprogress;	
@@ -271,8 +308,8 @@ SOP_Operator::SetupVHACD(GU_Detail* geometry, fpreal time)
 #undef VHACD_ReportModeHelper
 }
 
-bool 
-SOP_Operator::PrepareDataForVHACD(GU_Detail* geometry, UT_AutoInterrupt progress, fpreal time)
+ENUMS::MethodProcessResult
+SOP_Operator::PrepareDataForVHACD(GU_Detail* detail, UT_AutoInterrupt progress, fpreal time)
 {
 	/*
 		Store data as indexed face set representation.
@@ -281,58 +318,58 @@ SOP_Operator::PrepareDataForVHACD(GU_Detail* geometry, UT_AutoInterrupt progress
 	*/
 
 	// clear containers to make sure nothing is cached
-	this->_points.clear();
-	this->_triangles.clear();
+	this->_pointPositions.clear();
+	this->_triangleIndexes.clear();
 
 	// get position attribute
-	const auto success = ATTRIB_ACCESS::Find::Vec3ATT(this, geometry, GA_AttributeOwner::GA_ATTRIB_POINT, "P", this->_positionHandle);
+	const auto success = ATTRIB_ACCESS::Find::Vec3ATT(this, detail, GA_AttributeOwner::GA_ATTRIB_POINT, "P", this->_positionHandle);
 	if (success && error() < UT_ErrorSeverity::UT_ERROR_WARNING)
 	{
 		// store positions, as continuous list from 0 to last, without breaking it per primitive		
-		this->_points.reserve(geometry->getNumPoints() * 3);
+		this->_pointPositions.reserve(detail->getNumPoints() * 3);
 		
-		for (auto pointIt = GA_Iterator(geometry->getPointRange()); !pointIt.atEnd(); pointIt.advance())
+		for (auto pointIt = GA_Iterator(detail->getPointRange()); !pointIt.atEnd(); pointIt.advance())
 		{
-			PROGRESS_WAS_INTERRUPTED_WITH_WARNING_AND_BOOL(this, progress, false)
+			PROGRESS_WAS_INTERRUPTED_WITH_WARNING_AND_BOOL(this, progress, ENUMS::MethodProcessResult::INTERRUPT)
 
 			auto currentPosition = this->_positionHandle.get(*pointIt);
 
-			this->_points.push_back(currentPosition.x());
-			this->_points.push_back(currentPosition.y());
-			this->_points.push_back(currentPosition.z());
+			this->_pointPositions.push_back(currentPosition.x());
+			this->_pointPositions.push_back(currentPosition.y());
+			this->_pointPositions.push_back(currentPosition.z());
 		}
 
 		// store indexes, as (0, 1, 2) for each triangle
-		this->_triangles.reserve(geometry->getNumPrimitives() * 3);
+		this->_triangleIndexes.reserve(detail->getNumPrimitives() * 3);
 		
-		for (auto polyIt = GA_Iterator(geometry->getPrimitiveRange()); !polyIt.atEnd(); polyIt.advance())
+		for (auto polyIt = GA_Iterator(detail->getPrimitiveRange()); !polyIt.atEnd(); polyIt.advance())
 		{			
-			PROGRESS_WAS_INTERRUPTED_WITH_WARNING_AND_BOOL(this, progress, false)
+			PROGRESS_WAS_INTERRUPTED_WITH_WARNING_AND_BOOL(this, progress, ENUMS::MethodProcessResult::INTERRUPT)
 
-			const auto currPrim = geometry->getPrimitive(*polyIt);
-			for (auto i = 0; i < currPrim->getVertexCount(); ++i) this->_triangles.push_back(currPrim->getPointIndex(i));
+			const auto currPrim = detail->getPrimitive(*polyIt);
+			for (auto i = 0; i < currPrim->getVertexCount(); ++i) this->_triangleIndexes.push_back(currPrim->getPointIndex(i));
 		}
 	}
-	else return false;
+	else return ENUMS::MethodProcessResult::FAILURE;
 
-	return true;
+	return ENUMS::MethodProcessResult::SUCCESS;
 }
 
-bool
-SOP_Operator::DrawConvexHull(GU_Detail* geometry, VHACD::IVHACD::ConvexHull hull, UT_AutoInterrupt progress)
+ENUMS::MethodProcessResult
+SOP_Operator::DrawConvexHull(GU_Detail* detail, VHACD::IVHACD::ConvexHull hull, UT_AutoInterrupt progress)
 {
 	// add amount of points that hull consists
-	const auto start = geometry->appendPointBlock(hull.m_nPoints);
+	const auto start = detail->appendPointBlock(hull.m_nPoints);
 
 	// make sure that we have at least 4 points, if we have less, than it's a flat geometry, so ignore it
-	if (UTILS::GU_DetailTester::IsEnoughPoints(this, geometry) && error() >= UT_ErrorSeverity::UT_ERROR_WARNING) return false;
+	if (UTILS::GU_DetailTester::IsEnoughPoints(this, detail) && error() >= UT_ErrorSeverity::UT_ERROR_WARNING) return ENUMS::MethodProcessResult::FAILURE;
 
 	// set point positions				
 	exint hullP = 0;
-	std::vector<GA_Offset> pOffsets;
-	pOffsets.clear();
+	GA_OffsetArray	pointOffsets;
+	pointOffsets.clear();
 
-	auto pointIt = GA_Iterator(geometry->getPointRangeSlice(gdp->pointIndex(start)));
+	auto pointIt = GA_Iterator(detail->getPointRangeSlice(gdp->pointIndex(start)));
 	while (!pointIt.atEnd())
 	{
 		// make sure we can escape the loop
@@ -340,14 +377,14 @@ SOP_Operator::DrawConvexHull(GU_Detail* geometry, VHACD::IVHACD::ConvexHull hull
 		{
 			this->_interfaceVHACD->Cancel();
 			addWarning(SOP_ErrorCodes::SOP_MESSAGE, "Operation interrupted");
-			return false;
+			return ENUMS::MethodProcessResult::FAILURE;
 		}
 
 		const auto currentPosition = UT_Vector3R(hull.m_points[hullP], hull.m_points[hullP + 1], hull.m_points[hullP + 2]);
 		this->_positionHandle.set(*pointIt, currentPosition);
 
 		hullP += 3;
-		pOffsets.push_back(*pointIt);
+		pointOffsets.append(*pointIt);
 		pointIt.advance();
 	}
 
@@ -359,65 +396,101 @@ SOP_Operator::DrawConvexHull(GU_Detail* geometry, VHACD::IVHACD::ConvexHull hull
 		{
 			this->_interfaceVHACD->Cancel();
 			addWarning(SOP_ErrorCodes::SOP_MESSAGE, "Operation interrupted");
-			return false;
+			return ENUMS::MethodProcessResult::FAILURE;
 		}
 
 		// create triangle
-		auto polygon = static_cast<GEO_PrimPoly*>(geometry->appendPrimitive(GEO_PRIMPOLY));
+		auto polygon = static_cast<GEO_PrimPoly*>(detail->appendPrimitive(GEO_PRIMPOLY));
 		polygon->setSize(0);
 
-		polygon->appendVertex(pOffsets[hull.m_triangles[t + 2]]);
-		polygon->appendVertex(pOffsets[hull.m_triangles[t + 1]]);
-		polygon->appendVertex(pOffsets[hull.m_triangles[t + 0]]);				
+		polygon->appendVertex(pointOffsets[hull.m_triangles[t + 2]]);
+		polygon->appendVertex(pointOffsets[hull.m_triangles[t + 1]]);
+		polygon->appendVertex(pointOffsets[hull.m_triangles[t + 0]]);
 
 		polygon->close();
+
+		// set 'hull_volume' and 'hull_center' attributes
+		const auto currPolyOffset = polygon->getMapOffset();
+		this->_hullVolumeHandle.set(currPolyOffset, hull.m_volume);
+		this->_hullCenterHandle.set(currPolyOffset, UT_Vector3(hull.m_center[0], hull.m_center[1], hull.m_center[2]));
 	}
 
-	return true;
+	return ENUMS::MethodProcessResult::SUCCESS;
 }
 
-OP_ERROR 
-SOP_Operator::GenerateConvexHulls(GU_Detail* geometry, UT_AutoInterrupt progress)
+ENUMS::MethodProcessResult
+SOP_Operator::GenerateConvexHulls(GU_Detail* detail, UT_AutoInterrupt progress)
 {
-	// get interface
+	// get interface	
 	this->_interfaceVHACD = VHACD::CreateVHACD();
-	
-	auto success = this->_interfaceVHACD->Compute( &this->_points[0], static_cast<unsigned int>(this->_points.size()) / 3, reinterpret_cast<const uint32_t*>(&this->_triangles[0]), static_cast<unsigned int>(this->_triangles.size()) / 3, this->_parametersVHACD);
+	//this->_interfaceVHACD = VHACD::CreateVHACD_ASYNC();
+
+	const auto success = this->_interfaceVHACD->Compute( &this->_pointPositions[0], static_cast<unsigned int>(this->_pointPositions.size()) / 3, reinterpret_cast<const uint32_t*>(&this->_triangleIndexes[0]), static_cast<unsigned int>(this->_triangleIndexes.size()) / 3, this->_parametersVHACD);
+
+	/*
+		TODO:
+		This is shitty hack, just to use async version of this->_interfaceVHACD
+		Figure out hot to do asynch await in node.
+
+		Can it be done at all ?! x_X
+	*/
+	//while (!this->_interfaceVHACD->IsReady()) PROGRESS_WAS_INTERRUPTED_WITH_OBJECT(this, progress, error())
+
 	if (success)
 	{
-		const auto hullCount = this->_interfaceVHACD->GetNConvexHulls();
-
-		// generate hulls
-		for (auto id = 0; id < hullCount; ++id)
+		//if (this->_interfaceVHACD->IsReady())
 		{
-			// make sure we can escape the loop
-			if (progress.wasInterrupted())
+			// add hull attributes
+			this->_hullVolumeHandle = GA_RWHandleD(detail->addFloatTuple(GA_AttributeOwner::GA_ATTRIB_PRIMITIVE, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_VOLUME), 1));
+			if (this->_hullVolumeHandle.isInvalid())
 			{
-				this->_interfaceVHACD->Cancel();
-				addWarning(SOP_ErrorCodes::SOP_MESSAGE, "Operation interrupted");
-				return this->error();
+				auto errorMessage = std::string("Failed to create \"") + std::string(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_VOLUME)) + std::string("\" attribute.");
+				this->addError(SOP_MESSAGE, errorMessage.c_str());
+				return ENUMS::MethodProcessResult::FAILURE;
 			}
 
-			// draw hull
-			VHACD::IVHACD::ConvexHull currentHull;
+			this->_hullCenterHandle = GA_RWHandleV3(detail->addFloatTuple(GA_AttributeOwner::GA_ATTRIB_PRIMITIVE, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_CENTER), 3));
+			if (this->_hullCenterHandle.isInvalid())
+			{
+				auto errorMessage = std::string("Failed to create \"") + std::string(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_CENTER)) + std::string("\" attribute.");
+				this->addError(SOP_MESSAGE, errorMessage.c_str());
+				return ENUMS::MethodProcessResult::FAILURE;
+			}
 
-			this->_interfaceVHACD->GetConvexHull(id, currentHull);
-			if (!currentHull.m_nPoints || !currentHull.m_nTriangles) continue;
+			const auto hullCount = this->_interfaceVHACD->GetNConvexHulls();
 
-			success = DrawConvexHull(geometry, currentHull, progress);
-			if (!success && error() > UT_ErrorSeverity::UT_ERROR_NONE) return error();
-		}		
+			// generate hulls
+			for (auto id = 0; id < hullCount; ++id)
+			{
+				// make sure we can escape the loop
+				if (progress.wasInterrupted())
+				{
+					this->_interfaceVHACD->Cancel();
+					addWarning(SOP_ErrorCodes::SOP_MESSAGE, "Operation interrupted");
+					return ENUMS::MethodProcessResult::INTERRUPT;
+				}
+
+				// draw hull
+				VHACD::IVHACD::ConvexHull currentHull;
+
+				this->_interfaceVHACD->GetConvexHull(id, currentHull);
+				if (!currentHull.m_nPoints || !currentHull.m_nTriangles) continue;
+
+				const auto processResult = DrawConvexHull(detail, currentHull, progress);
+				if (processResult != ENUMS::MethodProcessResult::SUCCESS && error() > UT_ErrorSeverity::UT_ERROR_NONE) return processResult;
+			}
+		}
 	}
 	else
 	{
 		addError(SOP_ErrorCodes::SOP_MESSAGE, "Computation failed");
-		return error();
+		return ENUMS::MethodProcessResult::FAILURE;
 	}
 
 	this->_interfaceVHACD->Clean();
 	this->_interfaceVHACD->Release();
 
-	return error();
+	return ENUMS::MethodProcessResult::SUCCESS;
 }
 
 /* -----------------------------------------------------------------
@@ -430,57 +503,23 @@ SOP_Operator::cookMySop(OP_Context& context)
 	DEFAULTS_CookMySop()
 		
 	if (duplicateSource(0, context) < OP_ERROR::UT_ERROR_WARNING && error() < OP_ERROR::UT_ERROR_WARNING)
-	{			
-		// make sure we got something to work on
-		auto message = UT_String("Not enough primitives to create hull.");
-		auto success = UTILS::GU_DetailTester::IsEnoughPrimitives(this, gdp, 1, message);
-		if ((success && error() >= OP_ERROR::UT_ERROR_WARNING) || (!success && error() >= OP_ERROR::UT_ERROR_NONE)) return error();
-			
-		// do we want only polygons or do we try to convert anything to polygons?			
-		bool convertToPolygonsState;
-		PRM_ACCESS::Get::IntPRM(this, convertToPolygonsState, UI::convertToPolygonsToggle_Parameter, currentTime);
-		if (convertToPolygonsState)
-		{
-			GEO_ConvertParms parms;
-			gdp->convert(parms);
-		}
-		else
-		{
-			for (auto primIt : gdp->getPrimitiveRange())
-			{
-				PROGRESS_WAS_INTERRUPTED_WITH_ERROR(this, progress)
-
-				// only polygons allowed
-				if (gdp->getPrimitive(primIt)->getTypeId() != GA_PRIMPOLY)
-				{
-					addError(SOP_ErrorCodes::SOP_MESSAGE, "Non-polygon geometry detected on input.");
-					return error();
-				}
-			}
-		}
-
-		// we need at least 4 points to get up from bed
-		message = UT_String("Not enough points to create hull.");
-		success = UTILS::GU_DetailTester::IsEnoughPoints(this, gdp, 4, message);
-		if ((success && error() >= OP_ERROR::UT_ERROR_WARNING) || (!success && error() >= OP_ERROR::UT_ERROR_NONE)) return error();
-			
+	{		
 		// we should have only polygons now, but we need to make sure that they are all correct			
-		success = PrepareGeometry(gdp, progress);
-		if ((success && error() >= OP_ERROR::UT_ERROR_WARNING) || (!success && error() >= OP_ERROR::UT_ERROR_NONE)) return error();
+		auto processResult = PrepareGeometry(this->gdp, progress, currentTime);
+		if ((processResult == ENUMS::MethodProcessResult::SUCCESS && error() >= OP_ERROR::UT_ERROR_WARNING) || (processResult != ENUMS::MethodProcessResult::SUCCESS && error() >= OP_ERROR::UT_ERROR_NONE)) return error();
 
-		// get parameters and logger/callback
-		SetupVHACD(gdp, currentTime);
-		this->_parametersVHACD.m_logger = &this->_loggerVHACD;
-		this->_parametersVHACD.m_callback = &this->_callbackVHACD;
+		// get parameters
+		SetupVHACD(this->gdp, currentTime);
 
 		// prepare data for V-HACD
-		success = PrepareDataForVHACD(gdp, progress, currentTime);
-		if ((success && error() >= OP_ERROR::UT_ERROR_WARNING) || (!success && error() >= OP_ERROR::UT_ERROR_NONE)) return error();
+		processResult = PrepareDataForVHACD(this->gdp, progress, currentTime);
+		if ((processResult == ENUMS::MethodProcessResult::SUCCESS && error() >= OP_ERROR::UT_ERROR_WARNING) || (processResult != ENUMS::MethodProcessResult::SUCCESS && error() >= OP_ERROR::UT_ERROR_NONE)) return error();
 
 		// lets make some hulls!
-		gdp->clear();
+		this->gdp->clear();
 			
-		if (GenerateConvexHulls(gdp, progress) >= OP_ERROR::UT_ERROR_WARNING && error() >= OP_ERROR::UT_ERROR_WARNING) return error();
+		processResult = GenerateConvexHulls(this->gdp, progress);
+		if ((processResult == ENUMS::MethodProcessResult::SUCCESS && error() >= OP_ERROR::UT_ERROR_WARNING) || (processResult != ENUMS::MethodProcessResult::SUCCESS && error() >= OP_ERROR::UT_ERROR_NONE)) return error();
 	}
 
 	return error();

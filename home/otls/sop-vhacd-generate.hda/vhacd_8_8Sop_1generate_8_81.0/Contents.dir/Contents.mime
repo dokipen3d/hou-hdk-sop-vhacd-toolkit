@@ -32,23 +32,27 @@ Content-Type: text/plain
 
 sopflags sopflags = 
 comment ""
-position 7.83654 -5.54548
-connectornextid 0
-flags =  lock off model off template off footprint off xray off bypass off display off render off highlight off unload off savedata off compress on colordefault on exposed on
+position 6.59664 -9.59677
+connectornextid 3
+flags =  lock off model off template off footprint off xray off bypass off display on render on highlight off unload off savedata off compress on colordefault on exposed on
 outputsNamed3
 {
+1 "output1"
+2 "output2"
 }
 inputsNamed3
 {
+0 	merge2 2 1 "input1"
 }
 inputs
 {
+0 	merge2 0 1
 }
 stat
 {
-  create 1507126406
-  modify 1507126540
-  author nodeway@lv-426
+  create 1515168664
+  modify 1515239723
+  author swann@lv-426
   access 0777
 }
 color UT_Color RGB 0.8 0.8 0.8 
@@ -85,7 +89,7 @@ Content-Type: text/plain
 }
 {
   create 1456090687
-  modify 1507126482
+  modify 1515239623
   author nodeway@lv-422
   access 0777
 }
@@ -142,179 +146,179 @@ Content-Disposition: attachment; filename="hdaroot/as_one_piece.spareparmdef"
 Content-Type: text/plain
 
     groupsimple {
-	name	"userdata"
-	label	"User Data"
+        name    "userdata"
+        label   "User Data"
 
-	parm {
-	    name	"opname"
-	    label	"OP Name"
-	    type	string
-	    default	{ "`opname(\".\")`" }
-	    range	{ 0 1 }
-	}
-	parm {
-	    name	"hullbundleidname"
-	    label	"Hull Bundle ID"
-	    type	string
-	    default	{ "" }
-	    range	{ 0 1 }
-	}
+        parm {
+            name    "opname"
+            label   "OP Name"
+            type    string
+            default { "`opname(\".\")`" }
+            range   { 0 1 }
+        }
+        parm {
+            name    "hullbundleidname"
+            label   "Hull Bundle ID"
+            type    string
+            default { "" }
+            range   { 0 1 }
+        }
     }
 
     group {
-	name	"folder1"
-	label	"Code"
+        name    "folder1"
+        label   "Code"
 
-	parm {
-	    name	"group"
-	    baseparm
-	    label	"Group"
-	    export	none
-	    bindselector points "Modify Points"
-	        "Select the points to affect and press Enter to complete."
-	        0 1 0xffffffff 0 grouptype 0
-	}
-	parm {
-	    name	"grouptype"
-	    baseparm
-	    label	"Group Type"
-	    export	none
-	}
-	parm {
-	    name	"class"
-	    baseparm
-	    label	"Run Over"
-	    export	none
-	}
-	parm {
-	    name	"vex_numcount"
-	    baseparm
-	    label	"Number Count"
-	    export	none
-	}
-	parm {
-	    name	"vex_threadjobsize"
-	    baseparm
-	    label	"Thread Job Size"
-	    export	none
-	}
-	parm {
-	    name	"snippet"
-	    baseparm
-	    label	"VEXpression"
-	    export	all
-	}
-	parm {
-	    name	"exportlist"
-	    baseparm
-	    label	"Attributes to Create"
-	    export	none
-	}
-	parm {
-	    name	"vex_strict"
-	    baseparm
-	    label	"Enforce Prototypes"
-	    export	none
-	}
+        parm {
+            name    "group"
+            baseparm
+            label   "Group"
+            export  none
+            bindselector points "Modify Points"
+                "Select the points to affect and press Enter to complete."
+                0 1 0xffffffff 0 grouptype 0
+        }
+        parm {
+            name    "grouptype"
+            baseparm
+            label   "Group Type"
+            export  none
+        }
+        parm {
+            name    "class"
+            baseparm
+            label   "Run Over"
+            export  none
+        }
+        parm {
+            name    "vex_numcount"
+            baseparm
+            label   "Number Count"
+            export  none
+        }
+        parm {
+            name    "vex_threadjobsize"
+            baseparm
+            label   "Thread Job Size"
+            export  none
+        }
+        parm {
+            name    "snippet"
+            baseparm
+            label   "VEXpression"
+            export  all
+        }
+        parm {
+            name    "exportlist"
+            baseparm
+            label   "Attributes to Create"
+            export  none
+        }
+        parm {
+            name    "vex_strict"
+            baseparm
+            label   "Enforce Prototypes"
+            export  none
+        }
     }
 
     group {
-	name	"folder1_1"
-	label	"Bindings"
+        name    "folder1_1"
+        label   "Bindings"
 
-	parm {
-	    name	"autobind"
-	    baseparm
-	    label	"Autobind by Name"
-	    export	none
-	}
-	multiparm {
-	    name	"bindings"
-	    label	"Number of Bindings"
-	    baseparm
-	    default	0
-	    parmtag	{ "autoscope" "0000000000000000" }
-	    parmtag	{ "multistartoffset" "1" }
+        parm {
+            name    "autobind"
+            baseparm
+            label   "Autobind by Name"
+            export  none
+        }
+        multiparm {
+            name    "bindings"
+            label    "Number of Bindings"
+            baseparm
+            default 0
+            parmtag { "autoscope" "0000000000000000" }
+            parmtag { "multistartoffset" "1" }
 
-	    parm {
-		name	"bindname#"
-		baseparm
-		label	"Attribute Name"
-		export	none
-	    }
-	    parm {
-		name	"bindparm#"
-		baseparm
-		label	"VEX Parameter"
-		export	none
-	    }
-	}
+            parm {
+                name    "bindname#"
+                baseparm
+                label   "Attribute Name"
+                export  none
+            }
+            parm {
+                name    "bindparm#"
+                baseparm
+                label   "VEX Parameter"
+                export  none
+            }
+        }
 
-	parm {
-	    name	"groupautobind"
-	    baseparm
-	    label	"Autobind Groups by Name"
-	    export	none
-	}
-	multiparm {
-	    name	"groupbindings"
-	    label	"Group Bindings"
-	    baseparm
-	    default	0
-	    parmtag	{ "autoscope" "0000000000000000" }
-	    parmtag	{ "multistartoffset" "1" }
+        parm {
+            name    "groupautobind"
+            baseparm
+            label   "Autobind Groups by Name"
+            export  none
+        }
+        multiparm {
+            name    "groupbindings"
+            label    "Group Bindings"
+            baseparm
+            default 0
+            parmtag { "autoscope" "0000000000000000" }
+            parmtag { "multistartoffset" "1" }
 
-	    parm {
-		name	"bindgroupname#"
-		baseparm
-		label	"Group Name"
-		export	none
-	    }
-	    parm {
-		name	"bindgroupparm#"
-		baseparm
-		label	"VEX Parameter"
-		export	none
-	    }
-	}
+            parm {
+                name    "bindgroupname#"
+                baseparm
+                label   "Group Name"
+                export  none
+            }
+            parm {
+                name    "bindgroupparm#"
+                baseparm
+                label   "VEX Parameter"
+                export  none
+            }
+        }
 
-	parm {
-	    name	"vex_cwdpath"
-	    baseparm
-	    label	"Evaluation Node Path"
-	    export	none
-	}
-	parm {
-	    name	"vex_outputmask"
-	    baseparm
-	    label	"Export Parameters"
-	    export	none
-	}
-	parm {
-	    name	"vex_updatenmls"
-	    baseparm
-	    label	"Update Normals If Displaced"
-	    export	none
-	}
-	parm {
-	    name	"vex_matchattrib"
-	    baseparm
-	    label	"Attribute to Match"
-	    export	none
-	}
+        parm {
+            name    "vex_cwdpath"
+            baseparm
+            label   "Evaluation Node Path"
+            export  none
+        }
+        parm {
+            name    "vex_outputmask"
+            baseparm
+            label   "Export Parameters"
+            export  none
+        }
+        parm {
+            name    "vex_updatenmls"
+            baseparm
+            label   "Update Normals If Displaced"
+            export  none
+        }
+        parm {
+            name    "vex_matchattrib"
+            baseparm
+            label   "Attribute to Match"
+            export  none
+        }
     }
 
     parm {
-	name	"vex_inplace"
-	baseparm
-	label	"Compute Results In Place"
-	export	none
+        name    "vex_inplace"
+        baseparm
+        label   "Compute Results In Place"
+        export  none
     }
     parm {
-	name	"vex_selectiongroup"
-	baseparm
-	label	"Output Selection Group"
-	export	none
+        name    "vex_selectiongroup"
+        baseparm
+        label   "Output Selection Group"
+        export  none
     }
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
@@ -445,179 +449,179 @@ Content-Disposition: attachment; filename="hdaroot/transfer_bundle_id_to_hull.sp
 Content-Type: text/plain
 
     groupsimple {
-	name	"userdata"
-	label	"User Data"
+        name    "userdata"
+        label   "User Data"
 
-	parm {
-	    name	"opname"
-	    label	"OP Name"
-	    type	string
-	    default	{ "`opname(\".\")`" }
-	    range	{ 0 1 }
-	}
-	parm {
-	    name	"hullbundleidname"
-	    label	"Hull Bundle ID"
-	    type	string
-	    default	{ "" }
-	    range	{ 0 1 }
-	}
+        parm {
+            name    "opname"
+            label   "OP Name"
+            type    string
+            default { "`opname(\".\")`" }
+            range   { 0 1 }
+        }
+        parm {
+            name    "hullbundleidname"
+            label   "Hull Bundle ID"
+            type    string
+            default { "" }
+            range   { 0 1 }
+        }
     }
 
     group {
-	name	"folder1"
-	label	"Code"
+        name    "folder1"
+        label   "Code"
 
-	parm {
-	    name	"group"
-	    baseparm
-	    label	"Group"
-	    export	none
-	    bindselector points "Modify Points"
-	        "Select the points to affect and press Enter to complete."
-	        0 1 0xffffffff 0 grouptype 0
-	}
-	parm {
-	    name	"grouptype"
-	    baseparm
-	    label	"Group Type"
-	    export	none
-	}
-	parm {
-	    name	"class"
-	    baseparm
-	    label	"Run Over"
-	    export	none
-	}
-	parm {
-	    name	"vex_numcount"
-	    baseparm
-	    label	"Number Count"
-	    export	none
-	}
-	parm {
-	    name	"vex_threadjobsize"
-	    baseparm
-	    label	"Thread Job Size"
-	    export	none
-	}
-	parm {
-	    name	"snippet"
-	    baseparm
-	    label	"VEXpression"
-	    export	all
-	}
-	parm {
-	    name	"exportlist"
-	    baseparm
-	    label	"Attributes to Create"
-	    export	none
-	}
-	parm {
-	    name	"vex_strict"
-	    baseparm
-	    label	"Enforce Prototypes"
-	    export	none
-	}
+        parm {
+            name    "group"
+            baseparm
+            label   "Group"
+            export  none
+            bindselector points "Modify Points"
+                "Select the points to affect and press Enter to complete."
+                0 1 0xffffffff 0 grouptype 0
+        }
+        parm {
+            name    "grouptype"
+            baseparm
+            label   "Group Type"
+            export  none
+        }
+        parm {
+            name    "class"
+            baseparm
+            label   "Run Over"
+            export  none
+        }
+        parm {
+            name    "vex_numcount"
+            baseparm
+            label   "Number Count"
+            export  none
+        }
+        parm {
+            name    "vex_threadjobsize"
+            baseparm
+            label   "Thread Job Size"
+            export  none
+        }
+        parm {
+            name    "snippet"
+            baseparm
+            label   "VEXpression"
+            export  all
+        }
+        parm {
+            name    "exportlist"
+            baseparm
+            label   "Attributes to Create"
+            export  none
+        }
+        parm {
+            name    "vex_strict"
+            baseparm
+            label   "Enforce Prototypes"
+            export  none
+        }
     }
 
     group {
-	name	"folder1_1"
-	label	"Bindings"
+        name    "folder1_1"
+        label   "Bindings"
 
-	parm {
-	    name	"autobind"
-	    baseparm
-	    label	"Autobind by Name"
-	    export	none
-	}
-	multiparm {
-	    name	"bindings"
-	    label	"Number of Bindings"
-	    baseparm
-	    default	0
-	    parmtag	{ "autoscope" "0000000000000000" }
-	    parmtag	{ "multistartoffset" "1" }
+        parm {
+            name    "autobind"
+            baseparm
+            label   "Autobind by Name"
+            export  none
+        }
+        multiparm {
+            name    "bindings"
+            label    "Number of Bindings"
+            baseparm
+            default 0
+            parmtag { "autoscope" "0000000000000000" }
+            parmtag { "multistartoffset" "1" }
 
-	    parm {
-		name	"bindname#"
-		baseparm
-		label	"Attribute Name"
-		export	none
-	    }
-	    parm {
-		name	"bindparm#"
-		baseparm
-		label	"VEX Parameter"
-		export	none
-	    }
-	}
+            parm {
+                name    "bindname#"
+                baseparm
+                label   "Attribute Name"
+                export  none
+            }
+            parm {
+                name    "bindparm#"
+                baseparm
+                label   "VEX Parameter"
+                export  none
+            }
+        }
 
-	parm {
-	    name	"groupautobind"
-	    baseparm
-	    label	"Autobind Groups by Name"
-	    export	none
-	}
-	multiparm {
-	    name	"groupbindings"
-	    label	"Group Bindings"
-	    baseparm
-	    default	0
-	    parmtag	{ "autoscope" "0000000000000000" }
-	    parmtag	{ "multistartoffset" "1" }
+        parm {
+            name    "groupautobind"
+            baseparm
+            label   "Autobind Groups by Name"
+            export  none
+        }
+        multiparm {
+            name    "groupbindings"
+            label    "Group Bindings"
+            baseparm
+            default 0
+            parmtag { "autoscope" "0000000000000000" }
+            parmtag { "multistartoffset" "1" }
 
-	    parm {
-		name	"bindgroupname#"
-		baseparm
-		label	"Group Name"
-		export	none
-	    }
-	    parm {
-		name	"bindgroupparm#"
-		baseparm
-		label	"VEX Parameter"
-		export	none
-	    }
-	}
+            parm {
+                name    "bindgroupname#"
+                baseparm
+                label   "Group Name"
+                export  none
+            }
+            parm {
+                name    "bindgroupparm#"
+                baseparm
+                label   "VEX Parameter"
+                export  none
+            }
+        }
 
-	parm {
-	    name	"vex_cwdpath"
-	    baseparm
-	    label	"Evaluation Node Path"
-	    export	none
-	}
-	parm {
-	    name	"vex_outputmask"
-	    baseparm
-	    label	"Export Parameters"
-	    export	none
-	}
-	parm {
-	    name	"vex_updatenmls"
-	    baseparm
-	    label	"Update Normals If Displaced"
-	    export	none
-	}
-	parm {
-	    name	"vex_matchattrib"
-	    baseparm
-	    label	"Attribute to Match"
-	    export	none
-	}
+        parm {
+            name    "vex_cwdpath"
+            baseparm
+            label   "Evaluation Node Path"
+            export  none
+        }
+        parm {
+            name    "vex_outputmask"
+            baseparm
+            label   "Export Parameters"
+            export  none
+        }
+        parm {
+            name    "vex_updatenmls"
+            baseparm
+            label   "Update Normals If Displaced"
+            export  none
+        }
+        parm {
+            name    "vex_matchattrib"
+            baseparm
+            label   "Attribute to Match"
+            export  none
+        }
     }
 
     parm {
-	name	"vex_inplace"
-	baseparm
-	label	"Compute Results In Place"
-	export	none
+        name    "vex_inplace"
+        baseparm
+        label   "Compute Results In Place"
+        export  none
     }
     parm {
-	name	"vex_selectiongroup"
-	baseparm
-	label	"Output Selection Group"
-	export	none
+        name    "vex_selectiongroup"
+        baseparm
+        label   "Output Selection Group"
+        export  none
     }
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
@@ -744,179 +748,179 @@ Content-Disposition: attachment; filename="hdaroot/transfer_bundle_id_to_origina
 Content-Type: text/plain
 
     groupsimple {
-	name	"userdata"
-	label	"User Data"
+        name    "userdata"
+        label   "User Data"
 
-	parm {
-	    name	"opname"
-	    label	"OP Name"
-	    type	string
-	    default	{ "`opname(\".\")`" }
-	    range	{ 0 1 }
-	}
-	parm {
-	    name	"hullbundleidname"
-	    label	"Hull Bundle ID"
-	    type	string
-	    default	{ "" }
-	    range	{ 0 1 }
-	}
+        parm {
+            name    "opname"
+            label   "OP Name"
+            type    string
+            default { "`opname(\".\")`" }
+            range   { 0 1 }
+        }
+        parm {
+            name    "hullbundleidname"
+            label   "Hull Bundle ID"
+            type    string
+            default { "" }
+            range   { 0 1 }
+        }
     }
 
     group {
-	name	"folder1"
-	label	"Code"
+        name    "folder1"
+        label   "Code"
 
-	parm {
-	    name	"group"
-	    baseparm
-	    label	"Group"
-	    export	none
-	    bindselector points "Modify Points"
-	        "Select the points to affect and press Enter to complete."
-	        0 1 0xffffffff 0 grouptype 0
-	}
-	parm {
-	    name	"grouptype"
-	    baseparm
-	    label	"Group Type"
-	    export	none
-	}
-	parm {
-	    name	"class"
-	    baseparm
-	    label	"Run Over"
-	    export	none
-	}
-	parm {
-	    name	"vex_numcount"
-	    baseparm
-	    label	"Number Count"
-	    export	none
-	}
-	parm {
-	    name	"vex_threadjobsize"
-	    baseparm
-	    label	"Thread Job Size"
-	    export	none
-	}
-	parm {
-	    name	"snippet"
-	    baseparm
-	    label	"VEXpression"
-	    export	all
-	}
-	parm {
-	    name	"exportlist"
-	    baseparm
-	    label	"Attributes to Create"
-	    export	none
-	}
-	parm {
-	    name	"vex_strict"
-	    baseparm
-	    label	"Enforce Prototypes"
-	    export	none
-	}
+        parm {
+            name    "group"
+            baseparm
+            label   "Group"
+            export  none
+            bindselector points "Modify Points"
+                "Select the points to affect and press Enter to complete."
+                0 1 0xffffffff 0 grouptype 0
+        }
+        parm {
+            name    "grouptype"
+            baseparm
+            label   "Group Type"
+            export  none
+        }
+        parm {
+            name    "class"
+            baseparm
+            label   "Run Over"
+            export  none
+        }
+        parm {
+            name    "vex_numcount"
+            baseparm
+            label   "Number Count"
+            export  none
+        }
+        parm {
+            name    "vex_threadjobsize"
+            baseparm
+            label   "Thread Job Size"
+            export  none
+        }
+        parm {
+            name    "snippet"
+            baseparm
+            label   "VEXpression"
+            export  all
+        }
+        parm {
+            name    "exportlist"
+            baseparm
+            label   "Attributes to Create"
+            export  none
+        }
+        parm {
+            name    "vex_strict"
+            baseparm
+            label   "Enforce Prototypes"
+            export  none
+        }
     }
 
     group {
-	name	"folder1_1"
-	label	"Bindings"
+        name    "folder1_1"
+        label   "Bindings"
 
-	parm {
-	    name	"autobind"
-	    baseparm
-	    label	"Autobind by Name"
-	    export	none
-	}
-	multiparm {
-	    name	"bindings"
-	    label	"Number of Bindings"
-	    baseparm
-	    default	0
-	    parmtag	{ "autoscope" "0000000000000000" }
-	    parmtag	{ "multistartoffset" "1" }
+        parm {
+            name    "autobind"
+            baseparm
+            label   "Autobind by Name"
+            export  none
+        }
+        multiparm {
+            name    "bindings"
+            label    "Number of Bindings"
+            baseparm
+            default 0
+            parmtag { "autoscope" "0000000000000000" }
+            parmtag { "multistartoffset" "1" }
 
-	    parm {
-		name	"bindname#"
-		baseparm
-		label	"Attribute Name"
-		export	none
-	    }
-	    parm {
-		name	"bindparm#"
-		baseparm
-		label	"VEX Parameter"
-		export	none
-	    }
-	}
+            parm {
+                name    "bindname#"
+                baseparm
+                label   "Attribute Name"
+                export  none
+            }
+            parm {
+                name    "bindparm#"
+                baseparm
+                label   "VEX Parameter"
+                export  none
+            }
+        }
 
-	parm {
-	    name	"groupautobind"
-	    baseparm
-	    label	"Autobind Groups by Name"
-	    export	none
-	}
-	multiparm {
-	    name	"groupbindings"
-	    label	"Group Bindings"
-	    baseparm
-	    default	0
-	    parmtag	{ "autoscope" "0000000000000000" }
-	    parmtag	{ "multistartoffset" "1" }
+        parm {
+            name    "groupautobind"
+            baseparm
+            label   "Autobind Groups by Name"
+            export  none
+        }
+        multiparm {
+            name    "groupbindings"
+            label    "Group Bindings"
+            baseparm
+            default 0
+            parmtag { "autoscope" "0000000000000000" }
+            parmtag { "multistartoffset" "1" }
 
-	    parm {
-		name	"bindgroupname#"
-		baseparm
-		label	"Group Name"
-		export	none
-	    }
-	    parm {
-		name	"bindgroupparm#"
-		baseparm
-		label	"VEX Parameter"
-		export	none
-	    }
-	}
+            parm {
+                name    "bindgroupname#"
+                baseparm
+                label   "Group Name"
+                export  none
+            }
+            parm {
+                name    "bindgroupparm#"
+                baseparm
+                label   "VEX Parameter"
+                export  none
+            }
+        }
 
-	parm {
-	    name	"vex_cwdpath"
-	    baseparm
-	    label	"Evaluation Node Path"
-	    export	none
-	}
-	parm {
-	    name	"vex_outputmask"
-	    baseparm
-	    label	"Export Parameters"
-	    export	none
-	}
-	parm {
-	    name	"vex_updatenmls"
-	    baseparm
-	    label	"Update Normals If Displaced"
-	    export	none
-	}
-	parm {
-	    name	"vex_matchattrib"
-	    baseparm
-	    label	"Attribute to Match"
-	    export	none
-	}
+        parm {
+            name    "vex_cwdpath"
+            baseparm
+            label   "Evaluation Node Path"
+            export  none
+        }
+        parm {
+            name    "vex_outputmask"
+            baseparm
+            label   "Export Parameters"
+            export  none
+        }
+        parm {
+            name    "vex_updatenmls"
+            baseparm
+            label   "Update Normals If Displaced"
+            export  none
+        }
+        parm {
+            name    "vex_matchattrib"
+            baseparm
+            label   "Attribute to Match"
+            export  none
+        }
     }
 
     parm {
-	name	"vex_inplace"
-	baseparm
-	label	"Compute Results In Place"
-	export	none
+        name    "vex_inplace"
+        baseparm
+        label   "Compute Results In Place"
+        export  none
     }
     parm {
-	name	"vex_selectiongroup"
-	baseparm
-	label	"Output Selection Group"
-	export	none
+        name    "vex_selectiongroup"
+        baseparm
+        label   "Output Selection Group"
+        export  none
     }
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
@@ -1070,7 +1074,7 @@ Content-Type: text/plain
 {
 	"___Version___":{
 		"type":"string",
-		"value":"16.0.705"
+		"value":"16.5.268"
 	}
 }
 
@@ -1129,186 +1133,186 @@ Content-Disposition: attachment; filename="hdaroot/for_each_group/as_one_piece.s
 Content-Type: text/plain
 
     groupsimple {
-	name	"userdata"
-	label	"User Data"
+        name    "userdata"
+        label   "User Data"
 
-	parm {
-	    name	"opname"
-	    label	"OP Name"
-	    type	string
-	    default	{ "`opname(\".\")`" }
-	    range	{ 0 1 }
-	}
-	parm {
-	    name	"hullbundleidname"
-	    label	"Hull Bundle ID"
-	    type	string
-	    default	{ "" }
-	    range	{ 0 1 }
-	}
-	parm {
-	    name	"currentbundleidvalue"
-	    label	"Bundle ID Value"
-	    type	integer
-	    default	{ "0" }
-	    range	{ 0 10 }
-	}
+        parm {
+            name    "opname"
+            label   "OP Name"
+            type    string
+            default { "`opname(\".\")`" }
+            range   { 0 1 }
+        }
+        parm {
+            name    "hullbundleidname"
+            label   "Hull Bundle ID"
+            type    string
+            default { "" }
+            range   { 0 1 }
+        }
+        parm {
+            name    "currentbundleidvalue"
+            label   "Bundle ID Value"
+            type    integer
+            default { "0" }
+            range   { 0 10 }
+        }
     }
 
     group {
-	name	"folder1"
-	label	"Code"
+        name    "folder1"
+        label   "Code"
 
-	parm {
-	    name	"group"
-	    baseparm
-	    label	"Group"
-	    export	none
-	    bindselector points "Modify Points"
-	        "Select the points to affect and press Enter to complete."
-	        0 1 0xffffffff 0 grouptype 0
-	}
-	parm {
-	    name	"grouptype"
-	    baseparm
-	    label	"Group Type"
-	    export	none
-	}
-	parm {
-	    name	"class"
-	    baseparm
-	    label	"Run Over"
-	    export	none
-	}
-	parm {
-	    name	"vex_numcount"
-	    baseparm
-	    label	"Number Count"
-	    export	none
-	}
-	parm {
-	    name	"vex_threadjobsize"
-	    baseparm
-	    label	"Thread Job Size"
-	    export	none
-	}
-	parm {
-	    name	"snippet"
-	    baseparm
-	    label	"VEXpression"
-	    export	all
-	}
-	parm {
-	    name	"exportlist"
-	    baseparm
-	    label	"Attributes to Create"
-	    export	none
-	}
-	parm {
-	    name	"vex_strict"
-	    baseparm
-	    label	"Enforce Prototypes"
-	    export	none
-	}
+        parm {
+            name    "group"
+            baseparm
+            label   "Group"
+            export  none
+            bindselector points "Modify Points"
+                "Select the points to affect and press Enter to complete."
+                0 1 0xffffffff 0 grouptype 0
+        }
+        parm {
+            name    "grouptype"
+            baseparm
+            label   "Group Type"
+            export  none
+        }
+        parm {
+            name    "class"
+            baseparm
+            label   "Run Over"
+            export  none
+        }
+        parm {
+            name    "vex_numcount"
+            baseparm
+            label   "Number Count"
+            export  none
+        }
+        parm {
+            name    "vex_threadjobsize"
+            baseparm
+            label   "Thread Job Size"
+            export  none
+        }
+        parm {
+            name    "snippet"
+            baseparm
+            label   "VEXpression"
+            export  all
+        }
+        parm {
+            name    "exportlist"
+            baseparm
+            label   "Attributes to Create"
+            export  none
+        }
+        parm {
+            name    "vex_strict"
+            baseparm
+            label   "Enforce Prototypes"
+            export  none
+        }
     }
 
     group {
-	name	"folder1_1"
-	label	"Bindings"
+        name    "folder1_1"
+        label   "Bindings"
 
-	parm {
-	    name	"autobind"
-	    baseparm
-	    label	"Autobind by Name"
-	    export	none
-	}
-	multiparm {
-	    name	"bindings"
-	    label	"Number of Bindings"
-	    baseparm
-	    default	0
-	    parmtag	{ "autoscope" "0000000000000000" }
-	    parmtag	{ "multistartoffset" "1" }
+        parm {
+            name    "autobind"
+            baseparm
+            label   "Autobind by Name"
+            export  none
+        }
+        multiparm {
+            name    "bindings"
+            label    "Number of Bindings"
+            baseparm
+            default 0
+            parmtag { "autoscope" "0000000000000000" }
+            parmtag { "multistartoffset" "1" }
 
-	    parm {
-		name	"bindname#"
-		baseparm
-		label	"Attribute Name"
-		export	none
-	    }
-	    parm {
-		name	"bindparm#"
-		baseparm
-		label	"VEX Parameter"
-		export	none
-	    }
-	}
+            parm {
+                name    "bindname#"
+                baseparm
+                label   "Attribute Name"
+                export  none
+            }
+            parm {
+                name    "bindparm#"
+                baseparm
+                label   "VEX Parameter"
+                export  none
+            }
+        }
 
-	parm {
-	    name	"groupautobind"
-	    baseparm
-	    label	"Autobind Groups by Name"
-	    export	none
-	}
-	multiparm {
-	    name	"groupbindings"
-	    label	"Group Bindings"
-	    baseparm
-	    default	0
-	    parmtag	{ "autoscope" "0000000000000000" }
-	    parmtag	{ "multistartoffset" "1" }
+        parm {
+            name    "groupautobind"
+            baseparm
+            label   "Autobind Groups by Name"
+            export  none
+        }
+        multiparm {
+            name    "groupbindings"
+            label    "Group Bindings"
+            baseparm
+            default 0
+            parmtag { "autoscope" "0000000000000000" }
+            parmtag { "multistartoffset" "1" }
 
-	    parm {
-		name	"bindgroupname#"
-		baseparm
-		label	"Group Name"
-		export	none
-	    }
-	    parm {
-		name	"bindgroupparm#"
-		baseparm
-		label	"VEX Parameter"
-		export	none
-	    }
-	}
+            parm {
+                name    "bindgroupname#"
+                baseparm
+                label   "Group Name"
+                export  none
+            }
+            parm {
+                name    "bindgroupparm#"
+                baseparm
+                label   "VEX Parameter"
+                export  none
+            }
+        }
 
-	parm {
-	    name	"vex_cwdpath"
-	    baseparm
-	    label	"Evaluation Node Path"
-	    export	none
-	}
-	parm {
-	    name	"vex_outputmask"
-	    baseparm
-	    label	"Export Parameters"
-	    export	none
-	}
-	parm {
-	    name	"vex_updatenmls"
-	    baseparm
-	    label	"Update Normals If Displaced"
-	    export	none
-	}
-	parm {
-	    name	"vex_matchattrib"
-	    baseparm
-	    label	"Attribute to Match"
-	    export	none
-	}
+        parm {
+            name    "vex_cwdpath"
+            baseparm
+            label   "Evaluation Node Path"
+            export  none
+        }
+        parm {
+            name    "vex_outputmask"
+            baseparm
+            label   "Export Parameters"
+            export  none
+        }
+        parm {
+            name    "vex_updatenmls"
+            baseparm
+            label   "Update Normals If Displaced"
+            export  none
+        }
+        parm {
+            name    "vex_matchattrib"
+            baseparm
+            label   "Attribute to Match"
+            export  none
+        }
     }
 
     parm {
-	name	"vex_inplace"
-	baseparm
-	label	"Compute Results In Place"
-	export	none
+        name    "vex_inplace"
+        baseparm
+        label   "Compute Results In Place"
+        export  none
     }
     parm {
-	name	"vex_selectiongroup"
-	baseparm
-	label	"Output Selection Group"
-	export	none
+        name    "vex_selectiongroup"
+        baseparm
+        label   "Output Selection Group"
+        export  none
     }
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
@@ -1453,7 +1457,7 @@ Content-Type: text/plain
 {
 	"___Version___":{
 		"type":"string",
-		"value":"16.0.705"
+		"value":"16.5.268"
 	}
 }
 
@@ -1513,7 +1517,7 @@ Content-Type: text/plain
 {
 	"___Version___":{
 		"type":"string",
-		"value":"16.0.705"
+		"value":"16.5.268"
 	}
 }
 
@@ -1573,7 +1577,7 @@ Content-Type: text/plain
 {
 	"___Version___":{
 		"type":"string",
-		"value":"16.0.705"
+		"value":"16.5.268"
 	}
 }
 
@@ -1649,7 +1653,7 @@ Content-Type: text/plain
 {
 	"___Version___":{
 		"type":"string",
-		"value":"16.0.705"
+		"value":"16.5.268"
 	}
 }
 
@@ -1684,7 +1688,7 @@ inputs
 stat
 {
   create 1456025162
-  modify 1495074936
+  modify 1515239726
   author nodeway@lv-422
   access 0777
 }
@@ -1712,7 +1716,7 @@ Content-Type: text/plain
 {
 	"___Version___":{
 		"type":"string",
-		"value":"16.0.705"
+		"value":"16.5.268"
 	}
 }
 
@@ -1783,7 +1787,7 @@ Content-Type: text/plain
 {
 	"___Version___":{
 		"type":"string",
-		"value":"16.0.705"
+		"value":"16.5.268"
 	}
 }
 
@@ -1916,7 +1920,7 @@ Content-Type: text/plain
 {
 	"___Version___":{
 		"type":"string",
-		"value":"16.0.705"
+		"value":"16.5.268"
 	}
 }
 
@@ -1983,7 +1987,7 @@ Content-Type: text/plain
 
 {
 version 0.8
-input	[ 0	locks=0 ]	(	[ input	0 ] 	)
+input	[ 0	locks=0 ]	(	[ input	1 ] 	)
 }
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
@@ -1993,7 +1997,7 @@ Content-Type: text/plain
 {
 	"___Version___":{
 		"type":"string",
-		"value":"16.0.705"
+		"value":"16.5.268"
 	}
 }
 
@@ -2068,7 +2072,7 @@ Content-Type: text/plain
 {
 	"___Version___":{
 		"type":"string",
-		"value":"16.0.705"
+		"value":"16.5.268"
 	}
 }
 
@@ -2189,7 +2193,7 @@ Content-Type: text/plain
 {
 	"___Version___":{
 		"type":"string",
-		"value":"16.0.705"
+		"value":"16.5.268"
 	}
 }
 
@@ -2360,7 +2364,7 @@ Content-Type: text/plain
 {
 	"___Version___":{
 		"type":"string",
-		"value":"16.0.705"
+		"value":"16.5.268"
 	}
 }
 
@@ -2512,7 +2516,7 @@ douvw	[ 0	locks=0 ]	(	"off"	)
 map	[ 8	locks=0 ]	(	[ mapu	0 ] 	[ mapv	0 ] 	[ mapw	0 ] 	)
 docrease	[ 0	locks=0 ]	(	"off"	)
 crease	[ 8	locks=0 ]	(	[ crease	0 ] 	)
-donormal	[ 8	locks=0 ]	(	[ donormal	2 ] 	)
+donormal	[ 8	locks=0 ]	(	[ donormal	0 ] 	)
 normal	[ 8	locks=0 ]	(	[ normalx	0 ] 	[ normaly	0 ] 	[ normalz	0 ] 	)
 angle	[ 8	locks=0 ]	(	[ angle	40 ] 	)
 }
@@ -2524,7 +2528,7 @@ Content-Type: text/plain
 {
 	"___Version___":{
 		"type":"string",
-		"value":"16.0.705"
+		"value":"16.5.268"
 	}
 }
 
@@ -2681,7 +2685,7 @@ Content-Type: text/plain
 {
 	"___Version___":{
 		"type":"string",
-		"value":"16.0.705"
+		"value":"16.5.268"
 	}
 }
 
@@ -2788,7 +2792,7 @@ Content-Type: text/plain
 {
 	"___Version___":{
 		"type":"string",
-		"value":"16.0.705"
+		"value":"16.5.268"
 	}
 }
 
@@ -2926,7 +2930,7 @@ Content-Type: text/plain
 {
 	"___Version___":{
 		"type":"string",
-		"value":"16.0.705"
+		"value":"16.5.268"
 	}
 }
 
@@ -3083,7 +3087,7 @@ Content-Type: text/plain
 {
 	"___Version___":{
 		"type":"string",
-		"value":"16.0.705"
+		"value":"16.5.268"
 	}
 }
 
@@ -3132,30 +3136,30 @@ Content-Disposition: attachment; filename="hdaroot/TEMP_FILTER.spareparmdef"
 Content-Type: text/plain
 
     groupsimple {
-	name	"userdata"
-	label	"User Data"
+        name    "userdata"
+        label   "User Data"
 
-	parm {
-	    name	"errorlevelname"
-	    label	"Error Level Name"
-	    type	string
-	    default	{ "" }
-	    range	{ 0 1 }
-	}
-	parm {
-	    name	"areaname"
-	    label	"Area Name"
-	    type	string
-	    default	{ "" }
-	    range	{ 0 1 }
-	}
+        parm {
+            name    "errorlevelname"
+            label   "Error Level Name"
+            type    string
+            default { "" }
+            range   { 0 1 }
+        }
+        parm {
+            name    "areaname"
+            label   "Area Name"
+            type    string
+            default { "" }
+            range   { 0 1 }
+        }
     }
 
     parm {
-	name	"python"
-	baseparm
-	label	"Python Code"
-	export	none
+        name    "python"
+        baseparm
+        label   "Python Code"
+        export  none
     }
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
@@ -3230,7 +3234,7 @@ Content-Type: text/plain
 {
 	"___Version___":{
 		"type":"string",
-		"value":"16.0.705"
+		"value":"16.5.268"
 	}
 }
 
@@ -3410,8 +3414,8 @@ resolution	[ 0	locks=0 ]	(	[ resolution	100000 ] 	)
 concavity	[ 0	locks=0 ]	(	[ concavity	0.0025000000000000001 ] 	)
 planedownsampling	[ 0	locks=0 ]	(	[ planedownsampling	4 ] 	)
 convexhulldownsampling	[ 0	locks=0 ]	(	[ convexhulldownsampling	4 ] 	)
-alpha	[ 0	locks=0 ]	(	[ alpha	0.5 ] 	)
-beta	[ 0	locks=0 ]	(	[ beta	0.5 ] 	)
+alpha	[ 0	locks=0 ]	(	[ alpha	1 ] 	)
+beta	[ 0	locks=0 ]	(	[ beta	0 ] 	)
 maxconvexhullscount	[ 0	locks=0 ]	(	[ maxconvexhullscount	1024 ] 	)
 maxtrianglecount	[ 0	locks=0 ]	(	[ maxtrianglecount	64 ] 	)
 adaptivesampling	[ 0	locks=0 ]	(	[ adaptivesampling	0.0001 ] 	)
@@ -3441,7 +3445,7 @@ Content-Type: text/plain
 {
 	"___Version___":{
 		"type":"string",
-		"value":"16.0.705"
+		"value":"16.5.268"
 	}
 }
 

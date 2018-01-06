@@ -24,17 +24,12 @@
 */
 
 #pragma once
-#ifndef ____sop_vhacdengine_h____
-#define ____sop_vhacdengine_h____
+#ifndef ____sop_vhacd_engine_h____
+#define ____sop_vhacd_engine_h____
 
 /* -----------------------------------------------------------------
 INCLUDES                                                           |
 ----------------------------------------------------------------- */
-
-// std
-#include <vector>
-#include <string>
-#include <iomanip>
 
 // 3rdParty
 #include <VHACD.h>
@@ -44,6 +39,7 @@ INCLUDES                                                           |
 #include <Macros/CookMySop.h>
 #include <Macros/DescriptionPRM.h>
 #include <Macros/UpdateParmsFlags.h>
+#include <Enums/MethodProcessResult.h>
 
 // this
 #include "SOP_VHACDNode.h"
@@ -55,6 +51,19 @@ FORWARDS                                                           |
 ----------------------------------------------------------------- */
 
 class UT_AutoInterrupt;
+
+/* -----------------------------------------------------------------
+DEFINES                                                            |
+----------------------------------------------------------------- */
+
+#define ENUMS						GET_Base_Namespace()::Enums
+
+/* -----------------------------------------------------------------
+TYPEDEFS                                                           |
+----------------------------------------------------------------- */
+
+typedef std::vector<int>			VHACDTriangleIndexes;
+typedef std::vector<float>			VHACDPointPositions;
 
 /* -----------------------------------------------------------------
 OPERATOR                                                           |
@@ -79,30 +88,38 @@ DECLARE_SOP_Namespace_Start()
 	private:
 		const char*					inputLabel(unsigned input) const override;
 
-		exint						PullIntPRM(GU_Detail* geometry, const PRM_Template& parameter, bool interfaceonly = false, fpreal time = 0);
-		fpreal						PullFloatPRM(GU_Detail* geometry, const PRM_Template& parameter, bool interfaceonly = false, fpreal time = 0);
-		bool						PrepareGeometry(GU_Detail* geometry, UT_AutoInterrupt progress);
+		exint						PullIntPRM(GU_Detail* detail, const PRM_Template& parameter, bool interfaceonly = false, fpreal time = 0);
+		fpreal						PullFloatPRM(GU_Detail* detail, const PRM_Template& parameter, bool interfaceonly = false, fpreal time = 0);
+		ENUMS::MethodProcessResult	PrepareGeometry(GU_Detail* detail, UT_AutoInterrupt progress, fpreal time);
 		void						SetupVHACD(GU_Detail* geometry, fpreal time);
-		bool						PrepareDataForVHACD(GU_Detail* geometry, UT_AutoInterrupt progress, fpreal time);
-		bool						DrawConvexHull(GU_Detail* geometry, VHACD::IVHACD::ConvexHull hull, UT_AutoInterrupt progress);
-		OP_ERROR					GenerateConvexHulls(GU_Detail* geometry, UT_AutoInterrupt progress);
+		ENUMS::MethodProcessResult	PrepareDataForVHACD(GU_Detail* detail, UT_AutoInterrupt progress, fpreal time);
+		ENUMS::MethodProcessResult	DrawConvexHull(GU_Detail* detail, VHACD::IVHACD::ConvexHull hull, UT_AutoInterrupt progress);
+		ENUMS::MethodProcessResult	GenerateConvexHulls(GU_Detail* detail, UT_AutoInterrupt progress);
 			
+		UserLogger					_loggerVHACD;
+		UserCallback				_callbackVHACD;
 		VHACD::IVHACD::Parameters	_parametersVHACD;
 		VHACD::IVHACD*				_interfaceVHACD;
-		std::vector<int>			_triangles;
-		std::vector<float>			_points;
+
+		VHACDTriangleIndexes		_triangleIndexes;
+		VHACDPointPositions			_pointPositions;
 
 		GA_RWAttributeRef			_positionReference;
 		GA_RWHandleV3				_positionHandle;
+		GA_RWHandleV3				_hullCenterHandle;
+		GA_RWHandleD				_hullVolumeHandle;
 
 		bool						_allowParametersOverrideValueState;		
 		bool						_showReportValueState;
-		int							_reportModeChoiceValueState;	
-
-		UserLogger					_loggerVHACD;
-		UserCallback				_callbackVHACD;
+		int							_reportModeChoiceValueState;
 	};
 
 DECLARE_SOP_Namespace_End
 
-#endif // !____sop_vhacdengine_h____
+/* -----------------------------------------------------------------
+UNDEFINES                                                          |
+----------------------------------------------------------------- */
+
+#undef ENUMS
+
+#endif // !____sop_vhacd_engine_h____

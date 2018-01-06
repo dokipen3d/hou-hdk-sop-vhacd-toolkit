@@ -24,12 +24,16 @@
 */
 
 #pragma once
-#ifndef ____usercallback_h____
-#define ____usercallback_h____
+#ifndef ____user_callback_h____
+#define ____user_callback_h____
 
 /* -----------------------------------------------------------------
 INCLUDES                                                           |
 ----------------------------------------------------------------- */
+// std
+#include <string>
+#include <iostream>
+#include <iomanip>
 
 // 3rdParty
 #include <VHACD.h>
@@ -68,4 +72,4 @@ DECLARE_SOP_Namespace_Start()
 
 DECLARE_SOP_Namespace_End
 
-#endif // !____usercallback_h____
+#endif // !____user_callback_h____
