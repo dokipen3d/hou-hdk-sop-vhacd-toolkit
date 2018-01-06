@@ -71,7 +71,7 @@ OPERATOR                                                           |
 
 DECLARE_SOP_Namespace_Start()
 
-	class SOP_VHACDEngine : public SOP_VHACDNode
+	class SOP_VHACDEngine final : public SOP_VHACDNode
 	{
 		DECLARE_CookMySop()
 		DECLARE_DescriptionPRM_Callback()
@@ -80,20 +80,19 @@ DECLARE_SOP_Namespace_Start()
 	protected:
 		~SOP_VHACDEngine() override;
 		SOP_VHACDEngine(OP_Network* network, const char* name, OP_Operator* op);
+		const char*					inputLabel(unsigned input) const override;
 
 	public:
 		static OP_Node*				CreateMe(OP_Network* network, const char* name, OP_Operator* op);
 		static PRM_Template			parametersList[];
 
 	private:
-		const char*					inputLabel(unsigned input) const override;
-
 		exint						PullIntPRM(GU_Detail* detail, const PRM_Template& parameter, bool interfaceonly = false, fpreal time = 0);
 		fpreal						PullFloatPRM(GU_Detail* detail, const PRM_Template& parameter, bool interfaceonly = false, fpreal time = 0);
 		ENUMS::MethodProcessResult	PrepareGeometry(GU_Detail* detail, UT_AutoInterrupt progress, fpreal time);
-		void						SetupVHACD(GU_Detail* geometry, fpreal time);
-		ENUMS::MethodProcessResult	PrepareDataForVHACD(GU_Detail* detail, UT_AutoInterrupt progress, fpreal time);
-		ENUMS::MethodProcessResult	DrawConvexHull(GU_Detail* detail, VHACD::IVHACD::ConvexHull hull, UT_AutoInterrupt progress);
+		void						SetupParametersVHACD(GU_Detail* geometry, fpreal time);
+		ENUMS::MethodProcessResult	GatherDataForVHACD(GU_Detail* detail, UT_AutoInterrupt progress, fpreal time);
+		ENUMS::MethodProcessResult	DrawConvexHull(GU_Detail* detail, const VHACD::IVHACD::ConvexHull hull, UT_AutoInterrupt progress);
 		ENUMS::MethodProcessResult	GenerateConvexHulls(GU_Detail* detail, UT_AutoInterrupt progress);
 			
 		UserLogger					_loggerVHACD;

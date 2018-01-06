@@ -220,9 +220,18 @@ SOP_Operator::PullFloatPRM(GU_Detail* detail, const PRM_Template& parameter, boo
 ENUMS::MethodProcessResult
 SOP_Operator::PrepareGeometry(GU_Detail* detail, UT_AutoInterrupt progress, fpreal time)
 {
+	/*
+	Required element counts:
+	- one primitive, so that we could have a chance to get some polygons from it, even if it's non-polygon geometry
+	- 4 points, which gives us combination of 4 triangles that create shape
+	*/
+
+	const exint requiredPrimCount = 1;
+	const exint requiredPointCount = 4;
+
 	// make sure we got something to work on
-	auto message = UT_String("Not enough primitives to create hull.");
-	auto success = UTILS::GU_DetailTester::IsEnoughPrimitives(this, detail, 1, message);
+	auto errorMessage = UT_String("Not enough primitives to create hull.");
+	auto success = UTILS::GU_DetailTester::IsEnoughPrimitives(this, detail, requiredPrimCount, errorMessage);
 	if ((success && error() >= OP_ERROR::UT_ERROR_WARNING) || (!success && error() >= OP_ERROR::UT_ERROR_NONE)) return ENUMS::MethodProcessResult::FAILURE;
 
 	// do we want only polygons or do we try to convert anything to polygons?			
@@ -249,26 +258,30 @@ SOP_Operator::PrepareGeometry(GU_Detail* detail, UT_AutoInterrupt progress, fpre
 	}
 
 	// we need at least 4 points to get up from bed
-	message = UT_String("Not enough points to create hull.");
-	success = UTILS::GU_DetailTester::IsEnoughPoints(this, detail, 4, message);
+	errorMessage = UT_String("Not enough points to create hull.");
+	success = UTILS::GU_DetailTester::IsEnoughPoints(this, detail, requiredPointCount, errorMessage);
 	if ((success && error() >= OP_ERROR::UT_ERROR_WARNING) || (!success && error() >= OP_ERROR::UT_ERROR_NONE)) return ENUMS::MethodProcessResult::FAILURE;
 
 	const auto processResult = UTILS::GU_DetailModifier::Triangulate(this, progress, detail);
 	if ((processResult == ENUMS::MethodProcessResult::SUCCESS && error() >= UT_ErrorSeverity::UT_ERROR_WARNING) || (processResult != ENUMS::MethodProcessResult::SUCCESS && error() >= UT_ErrorSeverity::UT_ERROR_NONE)) return ENUMS::MethodProcessResult::FAILURE;
 	
 	// is there anything left after preparation?	
-	message = UT_String("After removing zero area and open polygons there are no other primitives left.");
-	success = UTILS::GU_DetailTester::IsEnoughPrimitives(this, detail, 1, message);
+	errorMessage = UT_String("After removing zero area and open polygons there are no other primitives left.");
+	success = UTILS::GU_DetailTester::IsEnoughPrimitives(this, detail, requiredPrimCount, errorMessage);
 	if ((success && error() >= UT_ErrorSeverity::UT_ERROR_WARNING) || (!success && error() >= UT_ErrorSeverity::UT_ERROR_NONE)) return ENUMS::MethodProcessResult::FAILURE;
 
-	message = UT_String("Not enough points to create hull.");
-	return UTILS::GU_DetailTester::IsEnoughPoints(this, detail, 4, message) ? ENUMS::MethodProcessResult::SUCCESS : ENUMS::MethodProcessResult::FAILURE;
+	errorMessage = UT_String("Not enough points to create hull.");
+	return UTILS::GU_DetailTester::IsEnoughPoints(this, detail, requiredPointCount, errorMessage) ? ENUMS::MethodProcessResult::SUCCESS : ENUMS::MethodProcessResult::FAILURE;
 }
 
 void 
-SOP_Operator::SetupVHACD(GU_Detail* detail, fpreal time)
+SOP_Operator::SetupParametersVHACD(GU_Detail* detail, fpreal time)
 {		
 	PRM_ACCESS::Get::IntPRM(this, this->_allowParametersOverrideValueState, UI::allowParametersOverrideToggle_Parameter, time);
+
+	// logger/callback
+	this->_parametersVHACD.m_logger = &this->_loggerVHACD;
+	this->_parametersVHACD.m_callback = &this->_callbackVHACD;
 
 	// main parameters
 	this->_parametersVHACD.m_mode						= PullIntPRM(detail, UI::modeChoiceMenu_Parameter, !this->_allowParametersOverrideValueState, time);
@@ -287,10 +300,6 @@ SOP_Operator::SetupVHACD(GU_Detail* detail, fpreal time)
 
 	PRM_ACCESS::Get::IntPRM(this, this->_parametersVHACD.m_oclAcceleration, UI::useOpenCLToggle_Parameter, time);
 
-	// logger/callback
-	this->_parametersVHACD.m_logger						= &this->_loggerVHACD;
-	this->_parametersVHACD.m_callback					= &this->_callbackVHACD;
-
 	// debug parameters
 #define VHACD_ReportModeHelper(showmsg, showoverallprogress, showstageprogress, showoperationprogress) this->_loggerVHACD.showMsg = showmsg; this->_callbackVHACD.showOverallProgress = showoverallprogress; this->_callbackVHACD.showStageProgress = showstageprogress; this->_callbackVHACD.showOperationProgress = showoperationprogress;	
 	PRM_ACCESS::Get::IntPRM(this, this->_showReportValueState, UI::showProcessReportToggle_Parameter, time);
@@ -299,9 +308,9 @@ SOP_Operator::SetupVHACD(GU_Detail* detail, fpreal time)
 		PRM_ACCESS::Get::IntPRM(this, this->_reportModeChoiceValueState, UI::reportModeChoiceMenu_Parameter, time);
 		switch (this->_reportModeChoiceValueState)
 		{
-			case static_cast<exint>(ENUMS::ReportModeOption::PROGESS_ONLY): { VHACD_ReportModeHelper(false, true, true, true) } break;
-			case static_cast<exint>(ENUMS::ReportModeOption::DETAILS_ONLY): { VHACD_ReportModeHelper(true, false, false, false) } break;
-			case static_cast<exint>(ENUMS::ReportModeOption::FULL): { VHACD_ReportModeHelper(true, true, true, true) } break;
+			case static_cast<exint>(ENUMS::ReportModeOption::PROGESS_ONLY):		{ VHACD_ReportModeHelper(false, true, true, true) } break;
+			case static_cast<exint>(ENUMS::ReportModeOption::DETAILS_ONLY):		{ VHACD_ReportModeHelper(true, false, false, false) } break;
+			case static_cast<exint>(ENUMS::ReportModeOption::FULL):				{ VHACD_ReportModeHelper(true, true, true, true) } break;
 		}
 	}
 	else { VHACD_ReportModeHelper(false, false, false, false) }
@@ -309,7 +318,7 @@ SOP_Operator::SetupVHACD(GU_Detail* detail, fpreal time)
 }
 
 ENUMS::MethodProcessResult
-SOP_Operator::PrepareDataForVHACD(GU_Detail* detail, UT_AutoInterrupt progress, fpreal time)
+SOP_Operator::GatherDataForVHACD(GU_Detail* detail, UT_AutoInterrupt progress, fpreal time)
 {
 	/*
 		Store data as indexed face set representation.
@@ -350,13 +359,17 @@ SOP_Operator::PrepareDataForVHACD(GU_Detail* detail, UT_AutoInterrupt progress, 
 			for (auto i = 0; i < currPrim->getVertexCount(); ++i) this->_triangleIndexes.push_back(currPrim->getPointIndex(i));
 		}
 	}
-	else return ENUMS::MethodProcessResult::FAILURE;
+	else
+	{
+		this->addError(SOP_MESSAGE, "Failed to find position attribute.");
+		return ENUMS::MethodProcessResult::FAILURE;
+	}
 
 	return ENUMS::MethodProcessResult::SUCCESS;
 }
 
 ENUMS::MethodProcessResult
-SOP_Operator::DrawConvexHull(GU_Detail* detail, VHACD::IVHACD::ConvexHull hull, UT_AutoInterrupt progress)
+SOP_Operator::DrawConvexHull(GU_Detail* detail, const VHACD::IVHACD::ConvexHull hull, UT_AutoInterrupt progress)
 {
 	// add amount of points that hull consists
 	const auto start = detail->appendPointBlock(hull.m_nPoints);
@@ -369,7 +382,7 @@ SOP_Operator::DrawConvexHull(GU_Detail* detail, VHACD::IVHACD::ConvexHull hull, 
 	GA_OffsetArray	pointOffsets;
 	pointOffsets.clear();
 
-	auto pointIt = GA_Iterator(detail->getPointRangeSlice(gdp->pointIndex(start)));
+	auto pointIt = GA_Iterator(detail->getPointRangeSlice(detail->pointIndex(start)));
 	while (!pointIt.atEnd())
 	{
 		// make sure we can escape the loop
@@ -385,6 +398,7 @@ SOP_Operator::DrawConvexHull(GU_Detail* detail, VHACD::IVHACD::ConvexHull hull, 
 
 		hullP += 3;
 		pointOffsets.append(*pointIt);
+
 		pointIt.advance();
 	}
 
@@ -509,10 +523,10 @@ SOP_Operator::cookMySop(OP_Context& context)
 		if ((processResult == ENUMS::MethodProcessResult::SUCCESS && error() >= OP_ERROR::UT_ERROR_WARNING) || (processResult != ENUMS::MethodProcessResult::SUCCESS && error() >= OP_ERROR::UT_ERROR_NONE)) return error();
 
 		// get parameters
-		SetupVHACD(this->gdp, currentTime);
+		SetupParametersVHACD(this->gdp, currentTime);
 
 		// prepare data for V-HACD
-		processResult = PrepareDataForVHACD(this->gdp, progress, currentTime);
+		processResult = GatherDataForVHACD(this->gdp, progress, currentTime);
 		if ((processResult == ENUMS::MethodProcessResult::SUCCESS && error() >= OP_ERROR::UT_ERROR_WARNING) || (processResult != ENUMS::MethodProcessResult::SUCCESS && error() >= OP_ERROR::UT_ERROR_NONE)) return error();
 
 		// lets make some hulls!

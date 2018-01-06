@@ -33,7 +33,6 @@ INCLUDES                                                           |
 
 // SESI
 #include <MSS/MSS_ReusableSelector.h>
-#include <GA/GA_Types.h>
 
 // 3rdParty
 #include <VHACD.h>

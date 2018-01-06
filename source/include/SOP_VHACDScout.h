@@ -41,6 +41,7 @@ INCLUDES                                                           |
 
 // this
 #include "SOP_VHACDNode.h"
+#include "HullCenterData.h"
 
 /* -----------------------------------------------------------------
 DEFINES                                                            |
@@ -57,23 +58,6 @@ DECLARATION                                                        |
 ----------------------------------------------------------------- */
 
 DECLARE_SOP_Namespace_Start()
-
-struct HullCenterData
-{
-	HullCenterData() { }
-	HullCenterData(UT_Vector3 center, exint hullid = -1) : HullCenterData()
-	{
-		this->_center = center;
-		this->_hullID = hullid;
-	}
-
-	UT_Vector3		GetCenter() const { return this->_center; }
-	exint			GetHullID() const { return this->_hullID; }
-
-private:
-	UT_Vector3		_center;
-	exint			_hullID;
-};
 
 class SOP_VHACDScout : public SOP_VHACDNode
 {	
@@ -156,16 +140,17 @@ protected:
 	{
 		// find 'hull_center' attribute
 		GA_RWHandleV3 hullCenterHandle;
-
+		
 		auto success = ATTRIB_ACCESS::Find::Vec3ATT(this, this->gdp, GA_AttributeOwner::GA_ATTRIB_PRIMITIVE, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_CENTER), hullCenterHandle, ENUMS::NodeErrorLevel::WARNING);
 		if (!success) return ENUMS::MethodProcessResult::FAILURE;
-
-		// find 'hull_id' attribute
-		success = ATTRIB_ACCESS::Find::IntATT(this, this->gdp, GA_AttributeOwner::GA_ATTRIB_PRIMITIVE, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_ID), this->_hullIDHandle);
+		
+		// find attributes that could be preserved		
+		success = ATTRIB_ACCESS::Find::IntATT(this, this->gdp, GA_AttributeOwner::GA_ATTRIB_PRIMITIVE, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_ID), this->_hullIDHandle);		
+		success = ATTRIB_ACCESS::Find::IntATT(this, this->gdp, GA_AttributeOwner::GA_ATTRIB_PRIMITIVE, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_BUNDLE_ID), this->_bundleIDHandle);
 		success = ATTRIB_ACCESS::Find::IntATT(this, this->gdp, GA_AttributeOwner::GA_ATTRIB_DETAIL, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_COUNT), this->_hullCountHandle);
 		
 		// get each unique 'hull_center'
-		UT_Map<exint, HullCenterData> mappedCenters;
+		UT_Map<exint, CONTAINERS::HullCenterData> mappedCenters;
 		mappedCenters.clear();
 
 		for (auto offset : this->gdp->getPrimitiveRange())
@@ -176,8 +161,10 @@ protected:
 			if (!mappedCenters.contains(currClass))
 			{
 				// collect data
-				if (this->_hullIDHandle.isValid()) mappedCenters[currClass] = HullCenterData(hullCenterHandle.get(offset), this->_hullIDHandle.get(offset));
-				else mappedCenters[currClass] = HullCenterData(hullCenterHandle.get(offset));
+				if (this->_hullIDHandle.isValid() && this->_bundleIDHandle.isInvalid()) mappedCenters[currClass] = CONTAINERS::HullCenterData(hullCenterHandle.get(offset), this->_hullIDHandle.get(offset));
+				else if (this->_hullIDHandle.isValid() && this->_bundleIDHandle.isValid()) mappedCenters[currClass] = CONTAINERS::HullCenterData(hullCenterHandle.get(offset), this->_hullIDHandle.get(offset), this->_bundleIDHandle.get(offset));
+				else if (this->_hullIDHandle.isInvalid() && this->_bundleIDHandle.isValid()) mappedCenters[currClass] = CONTAINERS::HullCenterData(hullCenterHandle.get(offset), -1, this->_bundleIDHandle.get(offset));
+				else mappedCenters[currClass] = CONTAINERS::HullCenterData(hullCenterHandle.get(offset));
 			}
 		}
 
@@ -185,7 +172,10 @@ protected:
 		this->gdp->clear();			
 		
 		GA_RWHandleI hullIDPointHandle;
+		GA_RWHandleI bundlIDPointHandle;
+
 		if (this->_hullIDHandle.isValid()) hullIDPointHandle = GA_RWHandleI(this->gdp->addIntTuple(GA_AttributeOwner::GA_ATTRIB_POINT, GA_AttributeScope::GA_SCOPE_PUBLIC, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_ID), 1));
+		if (this->_bundleIDHandle.isValid()) bundlIDPointHandle = GA_RWHandleI(this->gdp->addIntTuple(GA_AttributeOwner::GA_ATTRIB_POINT, GA_AttributeScope::GA_SCOPE_PUBLIC, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_BUNDLE_ID), 1));
 
 		for (auto map : mappedCenters)
 		{
@@ -194,8 +184,12 @@ protected:
 			auto currOffset = this->gdp->appendPoint();
 			this->gdp->setPos3(currOffset, map.second.GetCenter());
 			
-			auto currID = map.second.GetHullID();
-			if (currID > -1 && hullIDPointHandle.isValid()) hullIDPointHandle.set(currOffset, currID);
+			// add preserved attributes
+			auto currHullID = map.second.GetHullID();
+			auto currBundleID = map.second.GetBundleID();
+
+			if (currHullID > -1 && hullIDPointHandle.isValid()) hullIDPointHandle.set(currOffset, currHullID);
+			if (currBundleID > -1 && bundlIDPointHandle.isValid()) bundlIDPointHandle.set(currOffset, currBundleID);
 		}
 
 		// reasign 'hull_count'
@@ -213,7 +207,7 @@ protected:
 	{
 		auto processResult = ENUMS::MethodProcessResult::SUCCESS;
 
-		if (this->_addHullCountAttributeValue || this->_addHullIDAttributeValue || this->_groupPerHullValue)
+		if (this->_addHullCountAttributeValue || this->_addHullIDAttributeValue || this->_groupPerHullValue || this->_pointPerHullCenterValue)
 		{
 			// @CLASS of 1999 (for more info check http://www.imdb.com/title/tt0099277/)
 			auto primClassifier = GEO_PrimClassifier();

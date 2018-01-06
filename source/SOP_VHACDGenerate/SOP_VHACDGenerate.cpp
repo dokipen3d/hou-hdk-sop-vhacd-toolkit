@@ -289,69 +289,54 @@ SOP_Operator::PrepareGeometry(GU_Detail* detail, UT_AutoInterrupt progress, fpre
 		Required element counts:
 		- one primitive, so that we could have a chance to get some polygons from it, even if it's non-polygon geometry
 		- 4 points, which gives us combination of 4 triangles that create shape
-		- 12 vertices, 3 for each triangle
 	 */
 
 	const exint requiredPrimCount = 1;
 	const exint requiredPointCount = 4;
-	const exint requiredVertexCount = 12;	
 
 	// make sure we got something to work on
 	auto errorMessage = UT_String("Not enough primitives to create hull.");
-	if (!UTILS::GU_DetailTester::IsEnoughPrimitives(this, detail, requiredPrimCount, errorMessage, ENUMS::NodeErrorLevel::ERROR) || error() >= UT_ErrorSeverity::UT_ERROR_WARNING) return ENUMS::MethodProcessResult::FAILURE;
+	auto success = UTILS::GU_DetailTester::IsEnoughPrimitives(this, detail, requiredPrimCount, errorMessage);
+	if ((success && error() >= OP_ERROR::UT_ERROR_WARNING) || (!success && error() >= OP_ERROR::UT_ERROR_NONE)) return ENUMS::MethodProcessResult::FAILURE;
 
-	// check for non-polygon geometry
-	bool forceConvertToPolygonsValue;
-	PRM_ACCESS::Get::IntPRM(this, forceConvertToPolygonsValue, UI::forceConvertToPolygonsToggle_Parameter, time);
-
-	// TODO: remove toggle requirement and replace it with reading parameters from attributes
-	if (forceConvertToPolygonsValue)
+	// do we want only polygons or do we try to convert anything to polygons?			
+	bool convertToPolygonsState;
+	PRM_ACCESS::Get::IntPRM(this, convertToPolygonsState, UI::forceConvertToPolygonsToggle_Parameter, time);
+	if (convertToPolygonsState)
 	{
-		// this is default convertion, so we can lose some data on volumes and other primitives which required bigger resolution/settings to maintain their shape better		
-		GEO_ConvertParms parms;		
+		GEO_ConvertParms parms;
 		detail->convert(parms);
 	}
 	else
 	{
 		for (auto primIt : detail->getPrimitiveRange())
 		{
-			PROGRESS_WAS_INTERRUPTED_WITH_ERROR_AND_OBJECT(this, progress, ENUMS::MethodProcessResult::FAILURE)
-			
-			if (detail->getPrimitive(primIt)->getTypeId() != GA_PRIMPOLY)
-			{
-				errorMessage = UT_String("Non-polygon geometry detected on input.");
-				this->addError(SOP_ErrorCodes::SOP_MESSAGE, errorMessage.c_str());
+			PROGRESS_WAS_INTERRUPTED_WITH_ERROR_AND_OBJECT(this, progress, ENUMS::MethodProcessResult::INTERRUPT)
 
-				return ENUMS::MethodProcessResult::FAILURE;
-			}
+				// only polygons allowed
+				if (detail->getPrimitive(primIt)->getTypeId() != GA_PRIMPOLY)
+				{
+					addError(SOP_ErrorCodes::SOP_MESSAGE, "Non-polygon geometry detected on input.");
+					return ENUMS::MethodProcessResult::FAILURE;
+				}
 		}
 	}
-	
-	// we need at least 4 points...	
-	errorMessage = UT_String("Not enough points to create hull.");
-	if (!UTILS::GU_DetailTester::IsEnoughPoints(this, detail, requiredPointCount, errorMessage, ENUMS::NodeErrorLevel::ERROR) || error() >= UT_ErrorSeverity::UT_ERROR_WARNING) return ENUMS::MethodProcessResult::FAILURE;
-	
-	// ... and at least 12 vertices to get up from bed	
-	errorMessage = UT_String("Not enough vertices to create hull.");
-	if (!UTILS::GU_DetailTester::IsEnoughVertices(this, detail, requiredVertexCount, errorMessage, ENUMS::NodeErrorLevel::ERROR) || error() >= UT_ErrorSeverity::UT_ERROR_WARNING) return ENUMS::MethodProcessResult::FAILURE;
 
-	// try to triangulate
+	// we need at least 4 points to get up from bed
+	errorMessage = UT_String("Not enough points to create hull.");
+	success = UTILS::GU_DetailTester::IsEnoughPoints(this, detail, requiredPointCount, errorMessage);
+	if ((success && error() >= OP_ERROR::UT_ERROR_WARNING) || (!success && error() >= OP_ERROR::UT_ERROR_NONE)) return ENUMS::MethodProcessResult::FAILURE;
+
 	const auto processResult = UTILS::GU_DetailModifier::Triangulate(this, progress, detail);
-	if (processResult != ENUMS::MethodProcessResult::SUCCESS || error() > UT_ErrorSeverity::UT_ERROR_WARNING) return ENUMS::MethodProcessResult::FAILURE;
+	if ((processResult == ENUMS::MethodProcessResult::SUCCESS && error() >= UT_ErrorSeverity::UT_ERROR_WARNING) || (processResult != ENUMS::MethodProcessResult::SUCCESS && error() >= UT_ErrorSeverity::UT_ERROR_NONE)) return ENUMS::MethodProcessResult::FAILURE;
 
 	// is there anything left after preparation?	
 	errorMessage = UT_String("After removing zero area and open polygons there are no other primitives left.");
-	if (!UTILS::GU_DetailTester::IsEnoughPrimitives(this, detail, requiredPrimCount, errorMessage) || error() >= UT_ErrorSeverity::UT_ERROR_WARNING) return ENUMS::MethodProcessResult::FAILURE;
-	
-	// again test if triangulated data contains enough points...
-	errorMessage = UT_String("After removing zero area and open polygons there are not enough points to create hull.");
-	if (!UTILS::GU_DetailTester::IsEnoughPoints(this, detail, requiredPointCount, errorMessage, ENUMS::NodeErrorLevel::ERROR) || error() >= UT_ErrorSeverity::UT_ERROR_WARNING) return ENUMS::MethodProcessResult::FAILURE;
+	success = UTILS::GU_DetailTester::IsEnoughPrimitives(this, detail, requiredPrimCount, errorMessage);
+	if ((success && error() >= UT_ErrorSeverity::UT_ERROR_WARNING) || (!success && error() >= UT_ErrorSeverity::UT_ERROR_NONE)) return ENUMS::MethodProcessResult::FAILURE;
 
-	// ... and vertices
-	errorMessage = UT_String("After removing zero area and open polygons there are not enough vertices to create hull.");
-	if (!UTILS::GU_DetailTester::IsEnoughVertices(this, detail, requiredVertexCount, errorMessage, ENUMS::NodeErrorLevel::ERROR) || error() >= UT_ErrorSeverity::UT_ERROR_WARNING) return ENUMS::MethodProcessResult::FAILURE;
-
-	return ENUMS::MethodProcessResult::SUCCESS;
+	errorMessage = UT_String("Not enough points to create hull.");
+	return UTILS::GU_DetailTester::IsEnoughPoints(this, detail, requiredPointCount, errorMessage) ? ENUMS::MethodProcessResult::SUCCESS : ENUMS::MethodProcessResult::FAILURE;
 }
 
 void
@@ -470,7 +455,7 @@ SOP_Operator::DrawConvexHull(GU_Detail* detail, const VHACD::IVHACD::ConvexHull&
 		if (progress.wasInterrupted())
 		{
 			this->_interfaceVHACD->Cancel();
-			this->addWarning(SOP_ErrorCodes::SOP_MESSAGE, "Operation interrupted");
+			addWarning(SOP_ErrorCodes::SOP_MESSAGE, "Operation interrupted");
 			return ENUMS::MethodProcessResult::FAILURE;
 		}
 
@@ -495,7 +480,7 @@ SOP_Operator::DrawConvexHull(GU_Detail* detail, const VHACD::IVHACD::ConvexHull&
 		}
 		
 		// create triangle
-		auto polygon = static_cast<GEO_PrimPoly*>(detail->appendPrimitive(GA_PRIMPOLY));
+		auto polygon = static_cast<GEO_PrimPoly*>(detail->appendPrimitive(GEO_PRIMPOLY));
 		polygon->setSize(0);
 
 		polygon->appendVertex(pointOffsets[hull.m_triangles[t + 2]]);
