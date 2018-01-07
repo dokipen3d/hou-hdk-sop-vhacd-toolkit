@@ -468,6 +468,10 @@ SOP_Operator::DrawConvexHull(GU_Detail* detail, const VHACD::IVHACD::ConvexHull&
 		pointIt.advance();
 	}
 	
+	// calculate 'bundle_mass_center' center	
+	double centerOfMass[3];
+	const auto addMassCenter = this->_interfaceVHACD->ComputeCenterOfMass(centerOfMass);
+
 	// draw hull
 	for (unsigned int t = 0; t < hull.m_nTriangles * 3; t += 3)
 	{
@@ -491,8 +495,10 @@ SOP_Operator::DrawConvexHull(GU_Detail* detail, const VHACD::IVHACD::ConvexHull&
 
 		// set 'hull_volume' and 'hull_center' attributes
 		const auto currPolyOffset = polygon->getMapOffset();
-		this->_hullVolumeHandle.set(currPolyOffset, hull.m_volume);
-		this->_hullCenterHandle.set(currPolyOffset, UT_Vector3(hull.m_center[0], hull.m_center[1], hull.m_center[2]));
+
+		if (this->_hullVolumeHandle.isValid()) this->_hullVolumeHandle.set(currPolyOffset, hull.m_volume);
+		if (this->_hullMassCenterHandle.isValid()) this->_hullMassCenterHandle.set(currPolyOffset, UT_Vector3(hull.m_center[0], hull.m_center[1], hull.m_center[2]));
+		if (this->_bundleMassCenterHandle.isValid() && addMassCenter) this->_bundleMassCenterHandle.set(currPolyOffset, UT_Vector3(centerOfMass[0], centerOfMass[1], centerOfMass[2]));
 	}
 
 	return ENUMS::MethodProcessResult::SUCCESS;
@@ -520,7 +526,7 @@ SOP_Operator::GenerateConvexHulls(GU_Detail* detail, UT_AutoInterrupt progress)
 	{
 		//if (this->_interfaceVHACD->IsReady())
 		{
-			// add hull attributes
+			// add hull/bundle attributes
 			this->_hullVolumeHandle = GA_RWHandleD(detail->addFloatTuple(GA_AttributeOwner::GA_ATTRIB_PRIMITIVE, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_VOLUME), 1));
 			if (this->_hullVolumeHandle.isInvalid())
 			{
@@ -529,25 +535,32 @@ SOP_Operator::GenerateConvexHulls(GU_Detail* detail, UT_AutoInterrupt progress)
 				return ENUMS::MethodProcessResult::FAILURE;
 			}
 
-			this->_hullCenterHandle = GA_RWHandleV3(detail->addFloatTuple(GA_AttributeOwner::GA_ATTRIB_PRIMITIVE, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_CENTER), 3));
-			if (this->_hullCenterHandle.isInvalid())
+			this->_hullMassCenterHandle = GA_RWHandleV3(detail->addFloatTuple(GA_AttributeOwner::GA_ATTRIB_PRIMITIVE, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_MASS_CENTER), 3));
+			if (this->_hullMassCenterHandle.isInvalid())
 			{
-				auto errorMessage = std::string("Failed to create \"") + std::string(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_CENTER)) + std::string("\" attribute.");
+				auto errorMessage = std::string("Failed to create \"") + std::string(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_MASS_CENTER)) + std::string("\" attribute.");
 				this->addError(SOP_MESSAGE, errorMessage.c_str());
 				return ENUMS::MethodProcessResult::FAILURE;
 			}
 
-			const auto hullCount = this->_interfaceVHACD->GetNConvexHulls();
+			this->_bundleMassCenterHandle = GA_RWHandleV3(detail->addFloatTuple(GA_AttributeOwner::GA_ATTRIB_PRIMITIVE, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_MASS_CENTER), 3));
+			if (this->_bundleMassCenterHandle.isInvalid())
+			{
+				auto errorMessage = std::string("Failed to create \"") + std::string(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_MASS_CENTER)) + std::string("\" attribute.");
+				this->addError(SOP_MESSAGE, errorMessage.c_str());
+				return ENUMS::MethodProcessResult::FAILURE;
+			}
 
 			// generate hulls
+			const auto hullCount = this->_interfaceVHACD->GetNConvexHulls();
 			for (auto id = 0; id < hullCount; ++id)
 			{
 				// make sure we can escape the loop
 				if (progress.wasInterrupted())
 				{
 					this->_interfaceVHACD->Cancel();
-					this->addError(SOP_ErrorCodes::SOP_MESSAGE, "Operation interrupted");
-					return ENUMS::MethodProcessResult::FAILURE;
+					addWarning(SOP_ErrorCodes::SOP_MESSAGE, "Operation interrupted");
+					return ENUMS::MethodProcessResult::INTERRUPT;
 				}
 
 				// draw hull
@@ -555,9 +568,9 @@ SOP_Operator::GenerateConvexHulls(GU_Detail* detail, UT_AutoInterrupt progress)
 
 				this->_interfaceVHACD->GetConvexHull(id, currentHull);
 				if (!currentHull.m_nPoints || !currentHull.m_nTriangles) continue;
-				
+
 				const auto processResult = DrawConvexHull(detail, currentHull, progress);
-				if (processResult != ENUMS::MethodProcessResult::SUCCESS || error() > OP_ERROR::UT_ERROR_NONE) return processResult;			
+				if (processResult != ENUMS::MethodProcessResult::SUCCESS && error() > UT_ErrorSeverity::UT_ERROR_NONE) return processResult;
 			}
 		}
 	}
@@ -646,10 +659,10 @@ SOP_Operator::ProcessCurrentDetail(GU_Detail* detail, UT_AutoInterrupt progress,
 	}
 	
 	// add bundle_id attribute
-	this->_bundleIDHandle = GA_RWHandleI(detail->addIntTuple(GA_AttributeOwner::GA_ATTRIB_PRIMITIVE, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_BUNDLE_ID), 1, GA_Defaults(iteration)));
+	this->_bundleIDHandle = GA_RWHandleI(detail->addIntTuple(GA_AttributeOwner::GA_ATTRIB_PRIMITIVE, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_ID), 1, GA_Defaults(iteration)));
 	if (this->_bundleIDHandle.isInvalid())
 	{
-		auto errorMessage = std::string("Failed to add \"") + std::string(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_BUNDLE_ID)) + std::string("\" attribute.");
+		auto errorMessage = std::string("Failed to add \"") + std::string(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_ID)) + std::string("\" attribute.");
 		this->addError(SOP_MESSAGE, errorMessage.c_str());
 		return ENUMS::MethodProcessResult::FAILURE;
 	}

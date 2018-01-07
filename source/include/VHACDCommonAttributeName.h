@@ -62,10 +62,11 @@ namespace Containers
 			this->Add(ENUMS::VHACDCommonAttributeNameOption::HULL_COUNT,			"hull_count");
 			this->Add(ENUMS::VHACDCommonAttributeNameOption::HULL_ID,				"hull_id");
 			this->Add(ENUMS::VHACDCommonAttributeNameOption::HULL_VOLUME,			"hull_volume");
-			this->Add(ENUMS::VHACDCommonAttributeNameOption::HULL_CENTER,			"hull_center");
-			this->Add(ENUMS::VHACDCommonAttributeNameOption::HULL_BUNDLE_COUNT,		"bundle_count");
-			this->Add(ENUMS::VHACDCommonAttributeNameOption::HULL_BUNDLE_ID,		"bundle_id");
+			this->Add(ENUMS::VHACDCommonAttributeNameOption::HULL_MASS_CENTER,		"hull_mass_center");
 
+			this->Add(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_COUNT,			"bundle_count");
+			this->Add(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_ID,				"bundle_id");
+			this->Add(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_MASS_CENTER,	"bundle_mass_center");
 		}
 	};
 }

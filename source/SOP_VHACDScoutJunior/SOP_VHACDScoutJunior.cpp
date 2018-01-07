@@ -121,7 +121,7 @@ SOP_Operator::CallbackGRPPerHull(void* data, int index, float time, const PRM_Te
 }
 
 int
-SOP_Operator::CallbackPointPerHullCenter(void* data, int index, float time, const PRM_Template* tmp)
+SOP_Operator::CallbackPointPerHullMassCenter(void* data, int index, float time, const PRM_Template* tmp)
 {
 	const auto me = reinterpret_cast<SOP_Operator*>(data);
 	if (!me) return 0;
@@ -167,7 +167,7 @@ SOP_Operator::cookMySop(OP_Context& context)
 		PRM_ACCESS::Get::IntPRM(this, this->_addHullIDAttributeValue, UI::addHullIDAttributeToggle_Parameter, currentTime);
 		PRM_ACCESS::Get::IntPRM(this, this->_groupPerHullValue, UI::groupPerHullToggle_Parameter, currentTime);		
 		PRM_ACCESS::Get::StringPRM(this, this->_partialHullGroupNameValue, UI::specifyHullGroupNameString_Parameter, currentTime);
-		PRM_ACCESS::Get::IntPRM(this, this->_pointPerHullCenterValue, UI::pointPerHullCenterToggle_Parameter, currentTime);
+		PRM_ACCESS::Get::IntPRM(this, this->_pointPerHullMassCenterValue, UI::pointPerHullCenterToggle_Parameter, currentTime);
 
 		ProcessHullSpecific(progress, currentTime);
 	}

@@ -11,7 +11,7 @@
 
 Use this node to add/create additional data that other nodes in V-HACD toolkit may require.
 To use all available parameters, this node requires ((bundle_id)) primitive attribute.
-By default it will only set node warning when ((bundle_id)) primitive attribute is not found on one of the inputs.
+By default it will only set node warning when ((bundle_id)) primitive attribute is not found on one of the inputs, but, the moment user touches any parameter that requires this attribute, it will set node error if it's not present.
 
 @parameters
 

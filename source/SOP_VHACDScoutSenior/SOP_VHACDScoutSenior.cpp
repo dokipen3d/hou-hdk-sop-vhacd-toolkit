@@ -155,8 +155,8 @@ ENUMS::MethodProcessResult
 SOP_Operator::BothDetailsHaveBundleID(const GU_Detail* convexdetail, const GU_Detail* originaldetail, fpreal time)
 {
 	// make sure both inputs have hull_bundle_id
-	ATTRIB_ACCESS::Find::IntATT(this, convexdetail, GA_AttributeOwner::GA_ATTRIB_PRIMITIVE, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_BUNDLE_ID), this->_convexBundleIDHandle);
-	ATTRIB_ACCESS::Find::IntATT(this, originaldetail, GA_AttributeOwner::GA_ATTRIB_PRIMITIVE, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_BUNDLE_ID), this->_originalBundleIDHandle);
+	ATTRIB_ACCESS::Find::IntATT(this, convexdetail, GA_AttributeOwner::GA_ATTRIB_PRIMITIVE, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_ID), this->_convexBundleIDHandle);
+	ATTRIB_ACCESS::Find::IntATT(this, originaldetail, GA_AttributeOwner::GA_ATTRIB_PRIMITIVE, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_ID), this->_originalBundleIDHandle);
 
 	if (this->_convexBundleIDHandle.isInvalid() || this->_originalBundleIDHandle.isInvalid())
 	{
@@ -169,7 +169,7 @@ SOP_Operator::BothDetailsHaveBundleID(const GU_Detail* convexdetail, const GU_De
 
 		if (this->_addBundleCountAttributeValue || this->_groupPerBundleValue)
 		{
-			auto errorMessage = errorMesssagePrefix + std::string(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_BUNDLE_ID)) + std::string("\" attribute required for this operation.");
+			auto errorMessage = errorMesssagePrefix + std::string(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_ID)) + std::string("\" attribute required for this operation.");
 
 			// set error
 			this->addError(SOP_MESSAGE, errorMessage.c_str());
@@ -179,7 +179,7 @@ SOP_Operator::BothDetailsHaveBundleID(const GU_Detail* convexdetail, const GU_De
 		exint missingBundleIDErrorLevelValue;
 		PRM_ACCESS::Get::IntPRM(this, missingBundleIDErrorLevelValue, UI::missingBundleIDErrorModeChoiceMenu_Parameter, time);
 		
-		auto errorMessage = errorMesssagePrefix + std::string(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_BUNDLE_ID)) + std::string("\" attribute.");
+		auto errorMessage = errorMesssagePrefix + std::string(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_ID)) + std::string("\" attribute.");
 		switch(missingBundleIDErrorLevelValue)
 		{
 			case static_cast<exint>(ENUMS::NodeErrorLevel::NONE) : /* do nothing */ break;
@@ -196,7 +196,7 @@ SOP_Operator::BundleIDsCountMatch(const UT_Set<exint>& uniqueconvexbundleids, co
 {
 	if (uniqueconvexbundleids.size() != uniqueoriginalbundlids.size())
 	{
-		auto errorMessage = std::string("Count of \"") + std::string(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_BUNDLE_ID)) + std::string("\" attribute unique values between both inputs doesn't match.");
+		auto errorMessage = std::string("Count of \"") + std::string(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_ID)) + std::string("\" attribute unique values between both inputs doesn't match.");
 		if (this->_addBundleCountAttributeValue || this->_groupPerBundleValue) this->addError(SOP_MESSAGE, errorMessage.c_str());
 		else this->addWarning(SOP_MESSAGE, errorMessage.c_str());
 		
@@ -217,7 +217,7 @@ SOP_Operator::AllBundleIDsAreTwins(UT_AutoInterrupt progress, const UT_Array<exi
 
 			if (unsortedconvexbundleids[i] != unsortedoriginalbundlids[i])
 			{
-				auto errorMessage = std::string("One or more \"") + std::string(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_BUNDLE_ID)) + std::string("\" value doesn't match its pair counterpart.");
+				auto errorMessage = std::string("One or more \"") + std::string(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_ID)) + std::string("\" value doesn't match its pair counterpart.");
 				if (this->_addBundleCountAttributeValue || this->_groupPerBundleValue) this->addError(SOP_MESSAGE, errorMessage.c_str());
 				else this->addWarning(SOP_MESSAGE, errorMessage.c_str());
 
@@ -305,10 +305,10 @@ SOP_Operator::CheckBundleIDMismatch(UT_AutoInterrupt progress, OP_Context& conte
 ENUMS::MethodProcessResult  
 SOP_Operator::AddBundleCountATT(exint bundlescount)
 {		
-	auto bundleCountHandle = GA_RWHandleI(this->gdp->addIntTuple(GA_AttributeOwner::GA_ATTRIB_DETAIL, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_BUNDLE_COUNT), 1, GA_Defaults(bundlescount)));	
+	auto bundleCountHandle = GA_RWHandleI(this->gdp->addIntTuple(GA_AttributeOwner::GA_ATTRIB_DETAIL, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_COUNT), 1, GA_Defaults(bundlescount)));	
 	if (bundleCountHandle.isInvalid())
 	{
-		auto errorMessage = std::string("Failed to create ") + std::string(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_BUNDLE_COUNT) + std::string(" attribute."));
+		auto errorMessage = std::string("Failed to create ") + std::string(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_COUNT) + std::string(" attribute."));
 		this->addError(SOP_MESSAGE, errorMessage.c_str());
 		return ENUMS::MethodProcessResult::FAILURE;
 	}
@@ -364,11 +364,11 @@ SOP_Operator::ProcessBundleSpecific(UT_AutoInterrupt progress, OP_Context& conte
 		{
 			// get this processed input bundle_id handle
 			GA_ROHandleI inputBundleIDHandle;
-			ATTRIB_ACCESS::Find::IntATT(this, inputGDP, GA_AttributeOwner::GA_ATTRIB_PRIMITIVE, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_BUNDLE_ID), inputBundleIDHandle);
+			ATTRIB_ACCESS::Find::IntATT(this, inputGDP, GA_AttributeOwner::GA_ATTRIB_PRIMITIVE, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_ID), inputBundleIDHandle);
 
 			if (inputBundleIDHandle.isInvalid())
 			{
-				auto errorMessage = std::string("Input ") + std::to_string(static_cast<exint>(processedinputtype)) + std::string(" is missing \"") + std::string(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_BUNDLE_ID)) + std::string("\" attribute required for this operation.");
+				auto errorMessage = std::string("Input ") + std::to_string(static_cast<exint>(processedinputtype)) + std::string(" is missing \"") + std::string(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_ID)) + std::string("\" attribute required for this operation.");
 				this->addError(SOP_MESSAGE, errorMessage.c_str());				
 				return ENUMS::MethodProcessResult::FAILURE;
 			}

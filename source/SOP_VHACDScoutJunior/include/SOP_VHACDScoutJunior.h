@@ -48,7 +48,6 @@ FORWARDS                                                           |
 ----------------------------------------------------------------- */
 
 class UT_AutoInterrupt;
-class GEO_PrimClassifier;
 
 /* -----------------------------------------------------------------
 DEFINES                                                            |
@@ -80,7 +79,7 @@ DECLARE_SOP_Namespace_Start()
 		static PRM_Template			parametersList[];		
 
 		static int					CallbackGRPPerHull(void* data, int index, float time, const PRM_Template* tmp);
-		static int					CallbackPointPerHullCenter(void* data, int index, float time, const PRM_Template* tmp);
+		static int					CallbackPointPerHullMassCenter(void* data, int index, float time, const PRM_Template* tmp);
 	};
 
 DECLARE_SOP_Namespace_End

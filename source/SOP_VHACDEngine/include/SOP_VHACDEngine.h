@@ -105,8 +105,6 @@ DECLARE_SOP_Namespace_Start()
 
 		GA_RWAttributeRef			_positionReference;
 		GA_RWHandleV3				_positionHandle;
-		GA_RWHandleV3				_hullCenterHandle;
-		GA_RWHandleD				_hullVolumeHandle;
 
 		bool						_allowParametersOverrideValueState;		
 		bool						_showReportValueState;

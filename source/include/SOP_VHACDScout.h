@@ -141,12 +141,12 @@ protected:
 		// find 'hull_center' attribute
 		GA_RWHandleV3 hullCenterHandle;
 		
-		auto success = ATTRIB_ACCESS::Find::Vec3ATT(this, this->gdp, GA_AttributeOwner::GA_ATTRIB_PRIMITIVE, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_CENTER), hullCenterHandle, ENUMS::NodeErrorLevel::WARNING);
+		auto success = ATTRIB_ACCESS::Find::Vec3ATT(this, this->gdp, GA_AttributeOwner::GA_ATTRIB_PRIMITIVE, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_MASS_CENTER), hullCenterHandle, ENUMS::NodeErrorLevel::WARNING);
 		if (!success) return ENUMS::MethodProcessResult::FAILURE;
 		
 		// find attributes that could be preserved		
 		success = ATTRIB_ACCESS::Find::IntATT(this, this->gdp, GA_AttributeOwner::GA_ATTRIB_PRIMITIVE, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_ID), this->_hullIDHandle);		
-		success = ATTRIB_ACCESS::Find::IntATT(this, this->gdp, GA_AttributeOwner::GA_ATTRIB_PRIMITIVE, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_BUNDLE_ID), this->_bundleIDHandle);
+		success = ATTRIB_ACCESS::Find::IntATT(this, this->gdp, GA_AttributeOwner::GA_ATTRIB_PRIMITIVE, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_ID), this->_bundleIDHandle);
 		success = ATTRIB_ACCESS::Find::IntATT(this, this->gdp, GA_AttributeOwner::GA_ATTRIB_DETAIL, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_COUNT), this->_hullCountHandle);
 		
 		// get each unique 'hull_center'
@@ -175,7 +175,7 @@ protected:
 		GA_RWHandleI bundlIDPointHandle;
 
 		if (this->_hullIDHandle.isValid()) hullIDPointHandle = GA_RWHandleI(this->gdp->addIntTuple(GA_AttributeOwner::GA_ATTRIB_POINT, GA_AttributeScope::GA_SCOPE_PUBLIC, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_ID), 1));
-		if (this->_bundleIDHandle.isValid()) bundlIDPointHandle = GA_RWHandleI(this->gdp->addIntTuple(GA_AttributeOwner::GA_ATTRIB_POINT, GA_AttributeScope::GA_SCOPE_PUBLIC, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_BUNDLE_ID), 1));
+		if (this->_bundleIDHandle.isValid()) bundlIDPointHandle = GA_RWHandleI(this->gdp->addIntTuple(GA_AttributeOwner::GA_ATTRIB_POINT, GA_AttributeScope::GA_SCOPE_PUBLIC, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_ID), 1));
 
 		for (auto map : mappedCenters)
 		{
@@ -207,7 +207,7 @@ protected:
 	{
 		auto processResult = ENUMS::MethodProcessResult::SUCCESS;
 
-		if (this->_addHullCountAttributeValue || this->_addHullIDAttributeValue || this->_groupPerHullValue || this->_pointPerHullCenterValue)
+		if (this->_addHullCountAttributeValue || this->_addHullIDAttributeValue || this->_groupPerHullValue || this->_pointPerHullMassCenterValue)
 		{
 			// @CLASS of 1999 (for more info check http://www.imdb.com/title/tt0099277/)
 			auto primClassifier = GEO_PrimClassifier();
@@ -232,7 +232,7 @@ protected:
 				if (processResult != ENUMS::MethodProcessResult::SUCCESS) return processResult;
 			}
 
-			if (this->_pointPerHullCenterValue)
+			if (this->_pointPerHullMassCenterValue)
 			{
 				processResult = PointPerHullCenter(progress, primClassifier);
 				if (processResult != ENUMS::MethodProcessResult::SUCCESS) return processResult;
@@ -245,7 +245,7 @@ protected:
 	bool						_addHullCountAttributeValue = false;
 	bool						_addHullIDAttributeValue = false;
 	bool						_groupPerHullValue = false;	
-	bool						_pointPerHullCenterValue = false;
+	bool						_pointPerHullMassCenterValue = false;
 
 	UT_String					_partialHullGroupNameValue;
 };

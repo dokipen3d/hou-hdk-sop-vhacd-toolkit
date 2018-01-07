@@ -67,8 +67,12 @@ protected:
 
 	GA_RWHandleI								_hullCountHandle;
 	GA_RWHandleI								_hullIDHandle;
+	GA_RWHandleD								_hullVolumeHandle;
+	GA_RWHandleV3								_hullMassCenterHandle;
+
 	GA_RWHandleI								_bundleCountHandle;
 	GA_RWHandleI								_bundleIDHandle;
+	GA_RWHandleV3								_bundleMassCenterHandle;
 };
 
 /* -----------------------------------------------------------------
