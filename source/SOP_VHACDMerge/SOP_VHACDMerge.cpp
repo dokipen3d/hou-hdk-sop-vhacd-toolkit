@@ -189,7 +189,7 @@ SOP_Operator::CallbackAttributeMismatchErrorModeChoiceMenu(void* data, int index
 HELPERS                                                            |
 ----------------------------------------------------------------- */
 
-bool
+ENUMS::MethodProcessResult
 SOP_Operator::GetAllDetailsOfType(UT_AutoInterrupt progress, UT_Array<const GU_Detail*>& details, ENUMS::ProcessedInputType processedinput, fpreal time)
 {	
 	// get which input is processed
@@ -202,18 +202,18 @@ SOP_Operator::GetAllDetailsOfType(UT_AutoInterrupt progress, UT_Array<const GU_D
 	const auto inputsCount = nInputs();	
 	for (auto inputNumber = processedInputStart; inputNumber < inputsCount; inputNumber += (processModeChoiceMenuValue? 1 : 2 ))
 	{		
-		PROGRESS_WAS_INTERRUPTED_WITH_ERROR_AND_BOOL(this, progress, false)
+		PROGRESS_WAS_INTERRUPTED_WITH_ERROR_AND_BOOL(this, progress, ENUMS::MethodProcessResult::INTERRUPT)
 
 		const auto currDetail = inputGeo(inputNumber);
 		if (currDetail) details.append(currDetail);
 		else
 		{
 			this->addError(SOP_MESSAGE, "Found NULL input.");
-			return false;
+			return ENUMS::MethodProcessResult::FAILURE;
 		}
 	}
 
-	return true;
+	return ENUMS::MethodProcessResult::SUCCESS;
 }
 
 void
@@ -304,7 +304,7 @@ SOP_Operator::HandleAttributesMismatch(UT_AutoInterrupt progress, UT_Array<const
 	}
 }
 
-bool
+ENUMS::MethodProcessResult
 SOP_Operator::AddFoundVHACDAttributes(UT_AutoInterrupt progress, UT_Array<const GU_Detail*>& details, ENUMS::ProcessedInputType processedinput, fpreal time)
 {
 	// reset on each cook
@@ -326,7 +326,7 @@ SOP_Operator::AddFoundVHACDAttributes(UT_AutoInterrupt progress, UT_Array<const 
 	// check which attributes should be created
 	for (auto currDetail : details)
 	{
-		PROGRESS_WAS_INTERRUPTED_WITH_ERROR_AND_BOOL(this, progress, false)
+		PROGRESS_WAS_INTERRUPTED_WITH_ERROR_AND_BOOL(this, progress, ENUMS::MethodProcessResult::INTERRUPT)
 
 		// check each attribute
 		if (processedinput == ENUMS::ProcessedInputType::CONVEX_HULLS)
@@ -357,7 +357,7 @@ SOP_Operator::AddFoundVHACDAttributes(UT_AutoInterrupt progress, UT_Array<const 
 	if (this->_createBundleCount) this->_bundleCountHandle = GA_RWHandleI(this->gdp->addIntTuple(GA_AttributeOwner::GA_ATTRIB_DETAIL, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_COUNT), 1, GA_Defaults(exint(0))));
 	if (this->_createBundleID) this->_bundleIDHandle = GA_RWHandleI(this->gdp->addIntTuple(GA_AttributeOwner::GA_ATTRIB_PRIMITIVE, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_ID), 1));
 
-	return true;
+	return ENUMS::MethodProcessResult::SUCCESS;
 }
 
 void
@@ -438,7 +438,7 @@ SOP_Operator::ShiftCurrentDetailPrimitiveAttributes(GU_Detail* currentdetail, UT
 	}
 }
 
-bool 
+ENUMS::MethodProcessResult
 SOP_Operator::MergeCurrentDetail(const GU_Detail* detail, exint iteration, exint detailscount)
 {
 	auto success = false;
@@ -452,7 +452,7 @@ SOP_Operator::MergeCurrentDetail(const GU_Detail* detail, exint iteration, exint
 			if (!success)
 			{
 				this->addError(SOP_MESSAGE, "Geometry merge failure on GEO_COPY_START");
-				return success;
+				return ENUMS::MethodProcessResult::FAILURE;
 			}			
 		}
 		else if (iteration == detailscount - 1)
@@ -461,7 +461,7 @@ SOP_Operator::MergeCurrentDetail(const GU_Detail* detail, exint iteration, exint
 			if (!success)
 			{
 				this->addError(SOP_MESSAGE, "Geometry merge failure on GEO_COPY_END");
-				return success;
+				return ENUMS::MethodProcessResult::FAILURE;
 			}			
 		}
 		else
@@ -470,7 +470,7 @@ SOP_Operator::MergeCurrentDetail(const GU_Detail* detail, exint iteration, exint
 			if (!success)
 			{
 				this->addError(SOP_MESSAGE, "Geometry merge failure on GEO_COPY_ADD");
-				return success;
+				return ENUMS::MethodProcessResult::FAILURE;
 			}
 		}
 	}
@@ -480,11 +480,11 @@ SOP_Operator::MergeCurrentDetail(const GU_Detail* detail, exint iteration, exint
 		if (!success)
 		{
 			this->addError(SOP_MESSAGE, "Geometry merge failure on GEO_COPY_ONCE");
-			return success;
+			return ENUMS::MethodProcessResult::FAILURE;
 		}
 	}
 
-	return success;
+	return ENUMS::MethodProcessResult::SUCCESS;
 }
 
 void
@@ -523,8 +523,8 @@ SOP_Operator::MergeAllInputDetails(UT_AutoInterrupt progress, UT_Array<const GU_
 		ShiftCurrentDetailPrimitiveAttributes(currDetailRW, progress, currIter, hullShiftValue, bundleShiftValue, processedinput);
 		
 		// merge current detail into main detail	
-		success = MergeCurrentDetail(currDetailRW, currIter, details.size());
-		if (!success) return;
+		const auto processResult = MergeCurrentDetail(currDetailRW, currIter, details.size());
+		if (processResult != ENUMS::MethodProcessResult::SUCCESS) return;
 		
 		// delete current detail as it's not needed anymore
 		delete currDetailRW;
@@ -560,16 +560,16 @@ SOP_Operator::cookMySop(OP_Context& context)
 	UT_Array<const GU_Detail*> allInputDetails;
 	allInputDetails.clear();
 		
-	auto success = GetAllDetailsOfType(progress, allInputDetails, ENUMS::ProcessedInputType::CONVEX_HULLS, currentTime);
-	if ((success && error() > OP_ERROR::UT_ERROR_WARNING) || (!success && error() >= OP_ERROR::UT_ERROR_NONE)) return error();
+	auto processResult = GetAllDetailsOfType(progress, allInputDetails, ENUMS::ProcessedInputType::CONVEX_HULLS, currentTime);
+	if ((processResult == ENUMS::MethodProcessResult::SUCCESS && error() > OP_ERROR::UT_ERROR_WARNING) || (processResult != ENUMS::MethodProcessResult::SUCCESS && error() >= OP_ERROR::UT_ERROR_NONE)) return error();
 	
 	// check for attributes mismatch	
 	HandleAttributesMismatch(progress, allInputDetails, ENUMS::ProcessedInputType::CONVEX_HULLS, currentTime);	
 	if (error() > OP_ERROR::UT_ERROR_WARNING) return error();
 		
 	// does any input have V-HACD specific attributes?	
-	success = AddFoundVHACDAttributes(progress, allInputDetails, ENUMS::ProcessedInputType::CONVEX_HULLS, currentTime);
-	if ((success && error() > OP_ERROR::UT_ERROR_WARNING) || (!success && error() > OP_ERROR::UT_ERROR_WARNING)) return error();
+	processResult = AddFoundVHACDAttributes(progress, allInputDetails, ENUMS::ProcessedInputType::CONVEX_HULLS, currentTime);
+	if ((processResult == ENUMS::MethodProcessResult::SUCCESS && error() > OP_ERROR::UT_ERROR_WARNING) || (processResult != ENUMS::MethodProcessResult::SUCCESS && error() > OP_ERROR::UT_ERROR_WARNING)) return error();
 	
 	// update and merge all input details
 	MergeAllInputDetails( progress, allInputDetails, ENUMS::ProcessedInputType::CONVEX_HULLS, currentTime);
@@ -594,8 +594,8 @@ SOP_Operator::cookMySopOutput(OP_Context& context, int outputidx, SOP_Node* inte
 			UT_Array<const GU_Detail*> allInputDetails;
 			allInputDetails.clear();
 
-			auto success = GetAllDetailsOfType(progress, allInputDetails, ENUMS::ProcessedInputType::ORIGINAL_GEOMETRY, currentTime);
-			if ((success && error() > OP_ERROR::UT_ERROR_WARNING) || (!success && error() >= OP_ERROR::UT_ERROR_NONE)) return result;
+			auto processResult = GetAllDetailsOfType(progress, allInputDetails, ENUMS::ProcessedInputType::ORIGINAL_GEOMETRY, currentTime);
+			if ((processResult == ENUMS::MethodProcessResult::SUCCESS && error() > OP_ERROR::UT_ERROR_WARNING) || (processResult != ENUMS::MethodProcessResult::SUCCESS && error() >= OP_ERROR::UT_ERROR_NONE)) return result;
 
 			// check for attribute mismatch	
 			exint attributeMismatchErrorLevelValue;
@@ -605,9 +605,9 @@ SOP_Operator::cookMySopOutput(OP_Context& context, int outputidx, SOP_Node* inte
 			if (error() > OP_ERROR::UT_ERROR_WARNING) return result;
 			
 			// does any input have V-HACD specific attributes?	
-			success = AddFoundVHACDAttributes(progress, allInputDetails, ENUMS::ProcessedInputType::ORIGINAL_GEOMETRY, currentTime);
-			if ((success && error() > OP_ERROR::UT_ERROR_WARNING) || (!success && error() > OP_ERROR::UT_ERROR_WARNING)) return result;
-						
+			processResult = AddFoundVHACDAttributes(progress, allInputDetails, ENUMS::ProcessedInputType::ORIGINAL_GEOMETRY, currentTime);
+			if ((processResult == ENUMS::MethodProcessResult::SUCCESS && error() > OP_ERROR::UT_ERROR_WARNING) || (processResult != ENUMS::MethodProcessResult::SUCCESS && error() > OP_ERROR::UT_ERROR_WARNING)) return result;
+
 			// update and merge all input details
 			MergeAllInputDetails(progress, allInputDetails, ENUMS::ProcessedInputType::ORIGINAL_GEOMETRY, currentTime);
 		}

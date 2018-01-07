@@ -36,6 +36,7 @@ INCLUDES                                                           |
 #include <Macros/DescriptionPRM.h>
 #include <Macros/Namespace.h>
 #include <Macros/UpdateParmsFlags.h>
+#include <Enums/MethodProcessResult.h>
 
 // this
 #include "SOP_VHACDNode.h"
@@ -71,28 +72,28 @@ DECLARE_SOP_Namespace_Start()
 	protected:
 		~SOP_VHACDMerge() override;
 		SOP_VHACDMerge(OP_Network* network, const char* name, OP_Operator* op);
-		const char*				inputLabel(unsigned input) const override;
+		const char*					inputLabel(unsigned input) const override;
 
 	public:
-		static OP_Node*			CreateMe(OP_Network* network, const char* name, OP_Operator* op);
-		static PRM_Template		parametersList[];
+		static OP_Node*				CreateMe(OP_Network* network, const char* name, OP_Operator* op);
+		static PRM_Template			parametersList[];
 
-		static int				CallbackAttributeMismatchErrorModeChoiceMenu(void* data, int index, float time, const PRM_Template* tmp);
+		static int					CallbackAttributeMismatchErrorModeChoiceMenu(void* data, int index, float time, const PRM_Template* tmp);
 
 	private:
-		bool					GetAllDetailsOfType(UT_AutoInterrupt progress, UT_Array<const GU_Detail*>& details, ENUMS::ProcessedInputType processedinput, fpreal time);
-		void					WhenSpecificAttributeMismatch(const PRM_Template& parameter, UT_String attributename, fpreal time);
-		void					WhenOverrideAttributeMismatch(UT_AutoInterrupt progress, UT_Array<const GU_Detail*>& details, ENUMS::MismatchErrorModeOption mismatchoption, ENUMS::ProcessedInputType processedinput, fpreal time);
-		void					HandleAttributesMismatch(UT_AutoInterrupt progress, UT_Array<const GU_Detail*>& details, ENUMS::ProcessedInputType processedinput, fpreal time);
-		bool					AddFoundVHACDAttributes(UT_AutoInterrupt progress, UT_Array<const GU_Detail*>& details, ENUMS::ProcessedInputType processedinput, fpreal time);
-		void					ShiftCurrentDetailPrimitiveAttributes(GU_Detail* currentdetail, UT_AutoInterrupt progress, exint iteration, exint& hullshiftvalue, exint& bundleshiftvalue, ENUMS::ProcessedInputType processedinput);
-		bool					MergeCurrentDetail(const GU_Detail* currentdetail, exint iteration, exint detailscount);
-		void					MergeAllInputDetails(UT_AutoInterrupt progress, UT_Array<const GU_Detail*>& details, ENUMS::ProcessedInputType processedinput, fpreal time);
+		ENUMS::MethodProcessResult	GetAllDetailsOfType(UT_AutoInterrupt progress, UT_Array<const GU_Detail*>& details, ENUMS::ProcessedInputType processedinput, fpreal time);
+		void						WhenSpecificAttributeMismatch(const PRM_Template& parameter, UT_String attributename, fpreal time);
+		void						WhenOverrideAttributeMismatch(UT_AutoInterrupt progress, UT_Array<const GU_Detail*>& details, ENUMS::MismatchErrorModeOption mismatchoption, ENUMS::ProcessedInputType processedinput, fpreal time);
+		void						HandleAttributesMismatch(UT_AutoInterrupt progress, UT_Array<const GU_Detail*>& details, ENUMS::ProcessedInputType processedinput, fpreal time);
+		ENUMS::MethodProcessResult	AddFoundVHACDAttributes(UT_AutoInterrupt progress, UT_Array<const GU_Detail*>& details, ENUMS::ProcessedInputType processedinput, fpreal time);
+		void						ShiftCurrentDetailPrimitiveAttributes(GU_Detail* currentdetail, UT_AutoInterrupt progress, exint iteration, exint& hullshiftvalue, exint& bundleshiftvalue, ENUMS::ProcessedInputType processedinput);
+		ENUMS::MethodProcessResult	MergeCurrentDetail(const GU_Detail* currentdetail, exint iteration, exint detailscount);
+		void						MergeAllInputDetails(UT_AutoInterrupt progress, UT_Array<const GU_Detail*>& details, ENUMS::ProcessedInputType processedinput, fpreal time);
 		
-		bool					_createHullCount;
-		bool					_createHullID;
-		bool					_createBundleCount;
-		bool					_createBundleID;
+		bool						_createHullCount;
+		bool						_createHullID;
+		bool						_createBundleCount;
+		bool						_createBundleID;
 	};
 
 DECLARE_SOP_Namespace_End
