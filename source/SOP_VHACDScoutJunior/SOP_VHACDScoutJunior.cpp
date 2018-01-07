@@ -43,13 +43,14 @@ INCLUDES                                                           |
 // this
 #include "Parameters.h"
 #include "ProcessedInputType.h"
+#include "HullCenterData.h"
 
 /* -----------------------------------------------------------------
 DEFINES                                                            |
 ----------------------------------------------------------------- */
 
 #define SOP_Operator			GET_SOP_Namespace()::SOP_VHACDScoutJunior
-#define SOP_Base_Operator		SOP_VHACDScout
+#define SOP_Base_Operator		SOP_VHACDNode
 
 #define COMMON_NAMES			GET_SOP_Namespace()::COMMON_NAMES
 #define UI						GET_SOP_Namespace()::UI
@@ -152,6 +153,146 @@ SOP_Operator::inputLabel(unsigned input) const
 { return std::to_string(input).c_str(); }
 
 /* -----------------------------------------------------------------
+HELPERS                                                            |
+----------------------------------------------------------------- */
+
+ENUMS::MethodProcessResult
+SOP_Operator::AddHullCountATT(const GEO_PrimClassifier& classifier)
+{
+	// we need at least 3 primitives, otherwise we have no hull
+	if (this->gdp->getPrimitiveRange().getEntries() < 3)
+	{
+		addError(SOP_MESSAGE, "Not enough primitives to set convex hull attribute.");
+		return ENUMS::MethodProcessResult::FAILURE;
+	}
+
+	this->_hullCountHandle = GA_RWHandleI(this->gdp->addIntTuple(GA_AttributeOwner::GA_ATTRIB_DETAIL, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_COUNT), 1, GA_Defaults(classifier.getNumClass())));
+	if (this->_hullCountHandle.isInvalid())
+	{
+		auto errorMessage = std::string("Failed to create ") + std::string(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_COUNT) + std::string(" attribute."));
+		this->addError(SOP_MESSAGE, errorMessage.c_str());
+		return ENUMS::MethodProcessResult::FAILURE;
+	}
+
+	return ENUMS::MethodProcessResult::SUCCESS;
+}
+
+ENUMS::MethodProcessResult
+SOP_Operator::AddHullIDATT(UT_AutoInterrupt progress, const GEO_PrimClassifier& classifier)
+{
+	this->_hullIDHandle = GA_RWHandleI(this->gdp->addIntTuple(GA_AttributeOwner::GA_ATTRIB_PRIMITIVE, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_ID), 1));
+	if (this->_hullIDHandle.isInvalid())
+	{
+		auto errorMessage = std::string("Failed to create ") + std::string(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_ID) + std::string(" attribute."));
+		this->addError(SOP_MESSAGE, errorMessage.c_str());
+		return ENUMS::MethodProcessResult::FAILURE;
+	}
+
+	for (auto primIt = GA_Iterator(this->gdp->getPrimitiveRange()); !primIt.atEnd(); primIt.advance())
+	{
+		PROGRESS_WAS_INTERRUPTED_WITH_ERROR_AND_OBJECT(this, progress, ENUMS::MethodProcessResult::INTERRUPT)
+		this->_hullIDHandle.set(*primIt, classifier.getClass(primIt.getIndex()));
+	}
+
+	return ENUMS::MethodProcessResult::SUCCESS;
+}
+
+ENUMS::MethodProcessResult
+SOP_Operator::GRPPerHull(UT_AutoInterrupt progress, const UT_String& partialhullgroupname, const GEO_PrimClassifier& classifier, fpreal time)
+{
+	// create groups
+	if (partialhullgroupname.length() < 1)
+	{
+		addError(SOP_MESSAGE, "Specified hull group name is invalid.");
+		return ENUMS::MethodProcessResult::FAILURE;
+	}
+
+	UT_Map<exint, GA_PrimitiveGroup*> hullGroups;
+	hullGroups.clear();
+	for (auto classID = 0; classID < classifier.getNumClass(); classID++)
+	{
+		PROGRESS_WAS_INTERRUPTED_WITH_ERROR_AND_OBJECT(this, progress, ENUMS::MethodProcessResult::INTERRUPT)
+		hullGroups[classID] = this->gdp->newPrimitiveGroup(partialhullgroupname.c_str() + std::to_string(classID));
+	}
+
+	// fill groups
+	for (auto primIt = GA_Iterator(this->gdp->getPrimitiveRange()); !primIt.atEnd(); primIt.advance())
+	{
+		PROGRESS_WAS_INTERRUPTED_WITH_ERROR_AND_OBJECT(this, progress, ENUMS::MethodProcessResult::INTERRUPT)
+		hullGroups[classifier.getClass(primIt.getIndex())]->addOffset(*primIt);
+	}
+
+	return ENUMS::MethodProcessResult::SUCCESS;
+}
+
+ENUMS::MethodProcessResult
+SOP_Operator::PointPerHullCenter(UT_AutoInterrupt progress, const GEO_PrimClassifier& classifier)
+{
+	// find 'hull_center' attribute
+	GA_RWHandleV3 hullCenterHandle;
+
+	auto success = ATTRIB_ACCESS::Find::Vec3ATT(this, this->gdp, GA_AttributeOwner::GA_ATTRIB_PRIMITIVE, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_MASS_CENTER), hullCenterHandle, ENUMS::NodeErrorLevel::WARNING);
+	if (!success) return ENUMS::MethodProcessResult::FAILURE;
+
+	// find attributes that could be preserved		
+	success = ATTRIB_ACCESS::Find::IntATT(this, this->gdp, GA_AttributeOwner::GA_ATTRIB_PRIMITIVE, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_ID), this->_hullIDHandle);
+	success = ATTRIB_ACCESS::Find::IntATT(this, this->gdp, GA_AttributeOwner::GA_ATTRIB_PRIMITIVE, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_ID), this->_bundleIDHandle);
+	success = ATTRIB_ACCESS::Find::IntATT(this, this->gdp, GA_AttributeOwner::GA_ATTRIB_DETAIL, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_COUNT), this->_hullCountHandle);
+
+	// get each unique 'hull_center'
+	UT_Map<exint, CONTAINERS::HullCenterData> mappedCenters;
+	mappedCenters.clear();
+
+	for (auto offset : this->gdp->getPrimitiveRange())
+	{
+		PROGRESS_WAS_INTERRUPTED_WITH_ERROR_AND_OBJECT(this, progress, ENUMS::MethodProcessResult::INTERRUPT)
+
+		const auto currClass = classifier.getClass(offset);
+		if (!mappedCenters.contains(currClass))
+		{
+			// collect data
+			if (this->_hullIDHandle.isValid() && this->_bundleIDHandle.isInvalid()) mappedCenters[currClass] = CONTAINERS::HullCenterData(hullCenterHandle.get(offset), this->_hullIDHandle.get(offset));
+			else if (this->_hullIDHandle.isValid() && this->_bundleIDHandle.isValid()) mappedCenters[currClass] = CONTAINERS::HullCenterData(hullCenterHandle.get(offset), this->_hullIDHandle.get(offset), this->_bundleIDHandle.get(offset));
+			else if (this->_hullIDHandle.isInvalid() && this->_bundleIDHandle.isValid()) mappedCenters[currClass] = CONTAINERS::HullCenterData(hullCenterHandle.get(offset), -1, this->_bundleIDHandle.get(offset));
+			else mappedCenters[currClass] = CONTAINERS::HullCenterData(hullCenterHandle.get(offset));
+		}
+	}
+
+	// add centers
+	this->gdp->clear();
+
+	GA_RWHandleI hullIDPointHandle;
+	GA_RWHandleI bundlIDPointHandle;
+
+	if (this->_hullIDHandle.isValid()) hullIDPointHandle = GA_RWHandleI(this->gdp->addIntTuple(GA_AttributeOwner::GA_ATTRIB_POINT, GA_AttributeScope::GA_SCOPE_PUBLIC, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_ID), 1));
+	if (this->_bundleIDHandle.isValid()) bundlIDPointHandle = GA_RWHandleI(this->gdp->addIntTuple(GA_AttributeOwner::GA_ATTRIB_POINT, GA_AttributeScope::GA_SCOPE_PUBLIC, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_ID), 1));
+
+	for (auto map : mappedCenters)
+	{
+		PROGRESS_WAS_INTERRUPTED_WITH_ERROR_AND_OBJECT(this, progress, ENUMS::MethodProcessResult::INTERRUPT)
+
+		const auto currOffset = this->gdp->appendPoint();
+		this->gdp->setPos3(currOffset, map.second.GetCenter());
+
+		// add preserved attributes
+		const auto currHullID = map.second.GetHullID();
+		const auto currBundleID = map.second.GetBundleID();
+
+		if (currHullID > -1 && hullIDPointHandle.isValid()) hullIDPointHandle.set(currOffset, currHullID);
+		if (currBundleID > -1 && bundlIDPointHandle.isValid()) bundlIDPointHandle.set(currOffset, currBundleID);
+	}
+
+	// reasign 'hull_count'
+	if (success)
+	{
+		this->_hullCountHandle = GA_RWHandleI(this->gdp->addIntTuple(GA_AttributeOwner::GA_ATTRIB_DETAIL, GA_AttributeScope::GA_SCOPE_PUBLIC, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_COUNT), 1));
+		if (this->_hullCountHandle.isValid()) this->_hullCountHandle.set(GA_Offset(0), mappedCenters.size());
+	}
+
+	return ENUMS::MethodProcessResult::SUCCESS;
+}
+
+/* -----------------------------------------------------------------
 MAIN                                                               |
 ----------------------------------------------------------------- */
 
@@ -162,14 +303,45 @@ SOP_Operator::cookMySop(OP_Context& context)
 	
 	if (duplicateSource(static_cast<exint>(ENUMS::ProcessedInputType::CONVEX_HULLS), context, this->gdp) <= OP_ERROR::UT_ERROR_WARNING && error() <= OP_ERROR::UT_ERROR_WARNING)
 	{
-		// get parameters
+		auto processResult = ENUMS::MethodProcessResult::SUCCESS;
+
 		PRM_ACCESS::Get::IntPRM(this, this->_addHullCountAttributeValue, UI::addHullCountAttributeToggle_Parameter, currentTime);
 		PRM_ACCESS::Get::IntPRM(this, this->_addHullIDAttributeValue, UI::addHullIDAttributeToggle_Parameter, currentTime);
-		PRM_ACCESS::Get::IntPRM(this, this->_groupPerHullValue, UI::groupPerHullToggle_Parameter, currentTime);		
+		PRM_ACCESS::Get::IntPRM(this, this->_groupPerHullValue, UI::groupPerHullToggle_Parameter, currentTime);
 		PRM_ACCESS::Get::StringPRM(this, this->_partialHullGroupNameValue, UI::specifyHullGroupNameString_Parameter, currentTime);
 		PRM_ACCESS::Get::IntPRM(this, this->_pointPerHullMassCenterValue, UI::pointPerHullCenterToggle_Parameter, currentTime);
 
-		ProcessHullSpecific(progress, currentTime);
+		if (this->_addHullCountAttributeValue || this->_addHullIDAttributeValue || this->_groupPerHullValue || this->_pointPerHullMassCenterValue)
+		{
+			// @CLASS of 1999 (for more info check http://www.imdb.com/title/tt0099277/)
+			auto primClassifier = GEO_PrimClassifier();
+			primClassifier.classifyBySharedPoints(*this->gdp);
+			
+			// generate data per toggle
+			if (this->_addHullCountAttributeValue)
+			{
+				processResult = AddHullCountATT(primClassifier);
+				if (processResult != ENUMS::MethodProcessResult::SUCCESS) return error();
+			}
+
+			if (this->_addHullIDAttributeValue)
+			{
+				processResult = AddHullIDATT(progress, primClassifier);
+				if (processResult != ENUMS::MethodProcessResult::SUCCESS) return error();
+			}
+
+			if (this->_groupPerHullValue)
+			{
+				processResult = GRPPerHull(progress, this->_partialHullGroupNameValue, primClassifier, currentTime);
+				if (processResult != ENUMS::MethodProcessResult::SUCCESS) return error();
+			}
+
+			if (this->_pointPerHullMassCenterValue)
+			{
+				processResult = PointPerHullCenter(progress, primClassifier);
+				if (processResult != ENUMS::MethodProcessResult::SUCCESS) return error();
+			}
+		}
 	}
 	
 	return error();

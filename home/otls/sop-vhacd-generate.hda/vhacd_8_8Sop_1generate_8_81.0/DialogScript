@@ -148,7 +148,7 @@
             name    "alpha"
             label   "Alpha"
             type    float
-            default { "0.5" }
+            default { "1" }
             help    "Controls the bias toward clipping along symmetry planes."
             range   { 0! 1! }
         }
@@ -156,7 +156,7 @@
             name    "beta"
             label   "Beta"
             type    float
-            default { "0.5" }
+            default { "0" }
             help    "Controls the bias toward clipping along revolution axes."
             range   { 0! 1! }
         }

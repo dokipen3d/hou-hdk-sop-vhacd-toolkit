@@ -177,7 +177,7 @@ _interfaceVHACD(nullptr)
 	op->setIconName(COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::SOP_GENERATE_ICONNAME));
 
 	exint toggleFlag = 1;
-	auto message = UT_String("Version 2.0 is still work in progress. \nThis is full C++ rewrite of Generate node. \nDon't use it yet and stick to older version for now.");
+	auto message = UT_String("Version 2.0 is still work in progress. \nThis is full C++ rewrite of Generate node. \nOpen issue if you found some error https://github.com/sebastianswann/hou-hdk-sop-vhacd-toolkit/issues.");
 	for (auto p : parametersList)
 	{
 		if (p.getNamePtr()->getToken() == UI::descriptionToggle_Parameter.getToken()) PRM_ACCESS::Set::IntPRM(this, toggleFlag, p);
@@ -696,14 +696,14 @@ SOP_Operator::WhenPerElement(UT_AutoInterrupt progress, ENUMS::ProcessedOutputTy
 	mappedGroups.clear();
 	processedDetails.clear();
 
-	for (auto offset : this->_inputGDP->getPrimitiveRange())
+	for (auto primIt = GA_Iterator(this->_inputGDP->getPrimitiveRange()); !primIt.atEnd(); primIt.advance())	
 	{
 		PROGRESS_WAS_INTERRUPTED_WITH_ERROR_AND_OBJECT(this, progress, ENUMS::MethodProcessResult::FAILURE)
 			
-		const auto currClass = primClassifier.getClass(offset);
+		const auto currClass = primClassifier.getClass(primIt.getIndex());
 		if (!mappedGroups.contains(currClass)) mappedGroups[currClass] = static_cast<GA_PrimitiveGroup*>(this->_gop.createGroup(GA_GroupType::GA_GROUP_PRIMITIVE));
 		
-		mappedGroups[currClass]->addOffset(offset);
+		mappedGroups[currClass]->addOffset(*primIt);
 	}
 	
 	if (mappedGroups.size() < 1)

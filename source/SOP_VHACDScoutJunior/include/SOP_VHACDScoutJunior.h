@@ -41,13 +41,14 @@ INCLUDES                                                           |
 #include <Enums/MethodProcessResult.h>
 
 // this
-#include "SOP_VHACDScout.h"
+#include "SOP_VHACDNode.h"
 
 /* -----------------------------------------------------------------
 FORWARDS                                                           |
 ----------------------------------------------------------------- */
 
 class UT_AutoInterrupt;
+class GEO_PrimClassifier;
 
 /* -----------------------------------------------------------------
 DEFINES                                                            |
@@ -62,7 +63,7 @@ DECLARATION                                                        |
 
 DECLARE_SOP_Namespace_Start()
 
-	class SOP_VHACDScoutJunior final : public SOP_VHACDScout
+	class SOP_VHACDScoutJunior final : public SOP_VHACDNode
 	{
 		DECLARE_CookMySop()
 		DECLARE_UpdateParmsFlags()
@@ -80,6 +81,19 @@ DECLARE_SOP_Namespace_Start()
 
 		static int					CallbackGRPPerHull(void* data, int index, float time, const PRM_Template* tmp);
 		static int					CallbackPointPerHullMassCenter(void* data, int index, float time, const PRM_Template* tmp);
+
+	private:
+		ENUMS::MethodProcessResult	AddHullCountATT(const GEO_PrimClassifier& classifier);
+		ENUMS::MethodProcessResult	AddHullIDATT(UT_AutoInterrupt progress, const GEO_PrimClassifier& classifier);
+		ENUMS::MethodProcessResult	GRPPerHull(UT_AutoInterrupt progress, const UT_String& partialhullgroupname, const GEO_PrimClassifier& classifier, fpreal time);
+		ENUMS::MethodProcessResult	PointPerHullCenter(UT_AutoInterrupt progress, const GEO_PrimClassifier& classifier);
+
+		bool						_addHullCountAttributeValue = false;
+		bool						_addHullIDAttributeValue = false;
+		bool						_groupPerHullValue = false;
+		bool						_pointPerHullMassCenterValue = false;
+
+		UT_String					_partialHullGroupNameValue;
 	};
 
 DECLARE_SOP_Namespace_End

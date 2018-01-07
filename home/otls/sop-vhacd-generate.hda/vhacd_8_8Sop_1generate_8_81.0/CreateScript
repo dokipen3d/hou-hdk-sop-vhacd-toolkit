@@ -12,3 +12,5 @@ endif
 # Node $arg1 (vhacd::Sop/generate::1.0)
 opexprlanguage -s hscript $arg1
 opuserdata -n '___Version___' -v '' $arg1
+opuserdata -n '___toolcount___' -v '3' $arg1
+opuserdata -n '___toolid___' -v 'vhacd::sop_generate::1.0' $arg1

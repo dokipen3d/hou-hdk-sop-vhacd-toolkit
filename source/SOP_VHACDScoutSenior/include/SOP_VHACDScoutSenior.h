@@ -41,7 +41,7 @@ INCLUDES                                                           |
 #include <Enums/MethodProcessResult.h>
 
 // this
-#include "SOP_VHACDScout.h"
+#include "SOP_VHACDNode.h"
 #include "ProcessedInputType.h"
 
 /* -----------------------------------------------------------------
@@ -64,7 +64,7 @@ DECLARATION                                                        |
 
 DECLARE_SOP_Namespace_Start()
 
-	class SOP_VHACDScoutSenior final : public SOP_VHACDScout
+	class SOP_VHACDScoutSenior final : public SOP_VHACDNode
 	{
 		DECLARE_CookMySop_Multi()
 		DECLARE_UpdateParmsFlags()

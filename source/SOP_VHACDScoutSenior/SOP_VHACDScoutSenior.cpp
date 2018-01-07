@@ -48,7 +48,7 @@ DEFINES                                                            |
 ----------------------------------------------------------------- */
 
 #define SOP_Operator			GET_SOP_Namespace()::SOP_VHACDScoutSenior
-#define SOP_Base_Operator		SOP_VHACDScout
+#define SOP_Base_Operator		SOP_VHACDNode
 
 #define COMMON_NAMES			GET_SOP_Namespace()::COMMON_NAMES
 #define UI						GET_SOP_Namespace()::UI
@@ -70,13 +70,6 @@ PARAMETERLIST_Start(SOP_Operator)
 	UI::missingBundleIDErrorModeChoiceMenu_Parameter,
 
 	UI::mainSectionSwitcher_Parameter,
-	UI::addHullCountAttributeToggle_Parameter,
-	UI::addHullCountAttributeSeparator_Parameter,
-	UI::addHullIDAttributeToggle_Parameter,
-	UI::addHullIDAttributeSeparator_Parameter,
-	UI::groupPerHullToggle_Parameter,
-	UI::groupPerHullSeparator_Parameter,
-	UI::specifyHullGroupNameString_Parameter,
 	UI::addBundleCountAttributeToggle_Parameter,
 	UI::addBundleCountAttributeSeparator_Parameter,
 	UI::groupPerBundleToggle_Parameter,
@@ -94,10 +87,6 @@ SOP_Operator::updateParmsFlags()
 	DEFAULTS_UpdateParmsFlags(SOP_Base_Operator)
 			
 	// update visibility
-	bool groupPerHullValue;
-	PRM_ACCESS::Get::IntPRM(this, groupPerHullValue, UI::groupPerHullToggle_Parameter, currentTime);
-	changed |= setVisibleState(UI::specifyHullGroupNameString_Parameter.getToken(), groupPerHullValue);
-
 	bool groupPerBundleValue;
 	PRM_ACCESS::Get::IntPRM(this, groupPerBundleValue, UI::groupPerBundleToggle_Parameter, currentTime);	
 	changed |= setVisibleState(UI::specifyBundleGroupNameString_Parameter.getToken(), groupPerBundleValue);
@@ -116,7 +105,6 @@ IMPLEMENT_DescriptionPRM_Callback(SOP_Operator, UI)
 
 #define THIS_CALLBACK_Reset_StringPRM(operatorname, callbackcall, parameter) int callbackcall(void* data, int index, float time, const PRM_Template* tmp) {const auto me = reinterpret_cast<operatorname*>(data); if (!me) return 0; auto defVal = UT_String(parameter.getFactoryDefaults()->getString()); PRM_ACCESS::Set::StringPRM(me, defVal, parameter, time); return 1; }
 
-THIS_CALLBACK_Reset_StringPRM(SOP_Operator, SOP_Operator::CallbackGRPPerHull, UI::specifyHullGroupNameString_Parameter)
 THIS_CALLBACK_Reset_StringPRM(SOP_Operator, SOP_Operator::CallbackGRPPerBundle, UI::specifyBundleGroupNameString_Parameter)
 
 #undef THIS_CALLBACK_Reset_StringPRM
@@ -419,14 +407,6 @@ SOP_Operator::cookMySop(OP_Context& context)
 	{
 		success = ProcessBundleSpecific(progress, context, ENUMS::ProcessedInputType::CONVEX_HULLS, currentTime);
 		if (success != ENUMS::MethodProcessResult::SUCCESS) return error();
-	
-		// get parameters
-		PRM_ACCESS::Get::IntPRM(this, this->_addHullCountAttributeValue, UI::addHullCountAttributeToggle_Parameter, currentTime);
-		PRM_ACCESS::Get::IntPRM(this, this->_addHullIDAttributeValue, UI::addHullIDAttributeToggle_Parameter, currentTime);
-		PRM_ACCESS::Get::IntPRM(this, this->_groupPerHullValue, UI::groupPerHullToggle_Parameter, currentTime);
-		PRM_ACCESS::Get::StringPRM(this, this->_partialHullGroupNameValue, UI::specifyHullGroupNameString_Parameter, currentTime);
-
-		ProcessHullSpecific(progress, currentTime);
 	}
 	
 	return error();
