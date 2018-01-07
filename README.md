@@ -23,7 +23,7 @@ V-HACD updates [22-12-2017](https://www.youtube.com/watch?v=h2VCUtb8UfE&feature=
 - [ ] port SOP Debug to C++
 - [ ] port SOP Delete to C++
 - [ ] port SOP Export to C++
-- [ ] port [SOP Generate](https://github.com/sebastianswann/hou-hdk-sop-vhacd-toolkit/tree/master/source/SOP_VHACDGenerate) to C++
+- [x] port [SOP Generate](https://github.com/sebastianswann/hou-hdk-sop-vhacd-toolkit/tree/master/source/SOP_VHACDGenerate) to C++
 - [x] port [SOP Merge](https://github.com/sebastianswann/hou-hdk-sop-vhacd-toolkit/tree/master/source/SOP_VHACDMerge) to C++
 - [x] port [SOP Scout Jr.](https://github.com/sebastianswann/hou-hdk-sop-vhacd-toolkit/tree/master/source/SOP_VHACDScoutJunior) and [SOP Scout Sr.](https://github.com/sebastianswann/hou-hdk-sop-vhacd-toolkit/tree/master/source/SOP_VHACDScoutSenior) to C++
 - [x] port [SOP Setup](https://github.com/sebastianswann/hou-hdk-sop-vhacd-toolkit/tree/master/source/SOP_VHACDSetup) to C++
