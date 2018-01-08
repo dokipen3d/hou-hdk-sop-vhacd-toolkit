@@ -24,6 +24,10 @@ Add Hull ID ATT:
 	#id: addhullidattribute
 	Add ((hull_id)) primitive attribute that helps to identify to which convex hull polygons belongs.
 
+Add Hull Volume ATT:
+	#id: addhullvolumeattribute
+	Add ((hull_volume)) primitive attribute with information about volume size of convex hull..
+	
 GRP Per Hull:
 	#id: groupperhull
 	Create primitive group per each detected convex hull.
