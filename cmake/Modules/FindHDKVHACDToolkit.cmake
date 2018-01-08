@@ -51,7 +51,13 @@ EndMacro()
 Macro(HDK_MODULE_GET_3RDPARTY_SOURCE_FILES _dir)
 	File(GLOB_RECURSE ____module_3rdparty_source_files____
 		"${_dir}/*.cpp" 
-		"${_dir}/*.c"
+		"${_dir}/*.c"		
+	)
+EndMacro()
+
+Macro(HDK_MODULE_GET_3RDPARTY_INLINE_FILES _dir)
+	File(GLOB_RECURSE ____module_3rdparty_inline_files____
+		"${_dir}/*.inl"	
 	)
 EndMacro()
 
@@ -74,8 +80,7 @@ if(EXISTS ${____module_source_dir____} AND EXISTS ${____module_3rdparty_dir____}
 	# find 3rdParty header and source files
 	HDK_MODULE_GET_3RDPARTY_INCLUDE_FILES(${____module_3rdparty_dir____})
 	HDK_MODULE_GET_3RDPARTY_SOURCE_FILES(${____module_3rdparty_dir____})
-
-	# find OpenCL kernel
+	HDK_MODULE_GET_3RDPARTY_INLINE_FILES(${____module_3rdparty_dir____})	
 	HDK_MODULE_GET_3RDPARTY_OPENCL_KERNEL_FILES(${____module_3rdparty_dir____})
 
 	# output data
@@ -85,14 +90,15 @@ if(EXISTS ${____module_source_dir____} AND EXISTS ${____module_3rdparty_dir____}
 	Set(HDK_VHACDTOOLKIT_3RDPARTY_INCLUDE_DIR 				"${____module_3rdparty_dir____}/VHACD_Lib/inc" "${____module_3rdparty_dir____}/VHACD_Lib/public")
 	Set(HDK_VHACDTOOLKIT_3RDPARTY_INCLUDE_FILES 			"${____module_3rdparty_include_files____}")
 	Set(HDK_VHACDTOOLKIT_3RDPARTY_SOURCE_FILES 				"${____module_3rdparty_source_files____}")
+	Set(HDK_VHACDTOOLKIT_3RDPARTY_INLINE_FILES 				"${____module_3rdparty_inline_files____}")
 	Set(HDK_VHACDTOOLKIT_3RDPARTY_OPENCL_KERNEL_FILES 		"${____module_3rdparty_opencl_kernel_files____}")
 
 #[[-----------------------------------------------------------------
 COLLECT NODE PROJECT DATA                                          |
 ------------------------------------------------------------------]]
-		
-	HDK_MODULE_GET_NODE_FILES("SOP_VHACDEngine")
-	HDK_MODULE_GET_NODE_FILES("SOP_VHACDGenerate")
+			
+	HDK_MODULE_GET_NODE_FILES("SOP_VHACDDelete")
+	HDK_MODULE_GET_NODE_FILES("SOP_VHACDGenerate")	
 	HDK_MODULE_GET_NODE_FILES("SOP_VHACDMerge")
 	HDK_MODULE_GET_NODE_FILES("SOP_VHACDScoutJunior")
 	HDK_MODULE_GET_NODE_FILES("SOP_VHACDScoutSenior")

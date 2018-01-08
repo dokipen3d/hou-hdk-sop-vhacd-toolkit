@@ -134,8 +134,8 @@ SOP_Operator::updateParmsFlags()
 	changed |= setVisibleState(UI::reportModeChoiceMenu_Parameter.getToken(), showReportValueState);
 
 	// TODO: remove those when convert parameters from attributes will be added
-	changed |= setVisibleState(UI::forceConvertToPolygonsToggle_Parameter.getToken(), 0);
-	changed |= setVisibleState(UI::forceConvertToPolygonsSeparator_Parameter.getToken(), 0);
+	changed |= setVisibleState(UI::forceConvertToPolygonsToggle_Parameter.getToken(), false);
+	changed |= setVisibleState(UI::forceConvertToPolygonsSeparator_Parameter.getToken(), false);
 
 	// update description active state
 	UPDATE_DescriptionPRM_ActiveState(this, UI)
@@ -496,7 +496,6 @@ SOP_Operator::DrawConvexHull(GU_Detail* detail, const VHACD::IVHACD::ConvexHull&
 		// set 'hull_volume' and 'hull_center' attributes
 		const auto currPolyOffset = polygon->getMapOffset();
 
-		if (this->_hullVolumeHandle.isValid()) this->_hullVolumeHandle.set(currPolyOffset, hull.m_volume);
 		if (this->_hullMassCenterHandle.isValid()) this->_hullMassCenterHandle.set(currPolyOffset, UT_Vector3(hull.m_center[0], hull.m_center[1], hull.m_center[2]));
 		if (this->_bundleMassCenterHandle.isValid() && addMassCenter) this->_bundleMassCenterHandle.set(currPolyOffset, UT_Vector3(centerOfMass[0], centerOfMass[1], centerOfMass[2]));
 	}
@@ -527,14 +526,6 @@ SOP_Operator::GenerateConvexHulls(GU_Detail* detail, UT_AutoInterrupt progress)
 		//if (this->_interfaceVHACD->IsReady())
 		{
 			// add hull/bundle attributes
-			this->_hullVolumeHandle = GA_RWHandleD(detail->addFloatTuple(GA_AttributeOwner::GA_ATTRIB_PRIMITIVE, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_VOLUME), 1));
-			if (this->_hullVolumeHandle.isInvalid())
-			{
-				auto errorMessage = std::string("Failed to create \"") + std::string(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_VOLUME)) + std::string("\" attribute.");
-				this->addError(SOP_MESSAGE, errorMessage.c_str());
-				return ENUMS::MethodProcessResult::FAILURE;
-			}
-
 			this->_hullMassCenterHandle = GA_RWHandleV3(detail->addFloatTuple(GA_AttributeOwner::GA_ATTRIB_PRIMITIVE, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_MASS_CENTER), 3));
 			if (this->_hullMassCenterHandle.isInvalid())
 			{
@@ -861,9 +852,9 @@ SOP_Operator::cookMySop(OP_Context& context)
 
 		switch(processModeChoiceMenuValue)
 		{
-			case static_cast<exint>(ENUMS::ProcessedModeOption::AS_WHOLE) :			{ processResult = WhenAsWhole(progress, ENUMS::ProcessedOutputType::CONVEX_HULLS, currentTime); } break;
-			case static_cast<exint>(ENUMS::ProcessedModeOption::PER_ELEMENT) :		{ processResult = WhenPerElement(progress, ENUMS::ProcessedOutputType::CONVEX_HULLS, currentTime); } break;
-			case static_cast<exint>(ENUMS::ProcessedModeOption::PER_GROUP) :		{ processResult = WhenPerGroup(progress, ENUMS::ProcessedOutputType::CONVEX_HULLS, currentTime); } break;
+			case static_cast<exint>(ENUMS::ProcessModeOption::AS_WHOLE) :			{ processResult = WhenAsWhole(progress, ENUMS::ProcessedOutputType::CONVEX_HULLS, currentTime); } break;
+			case static_cast<exint>(ENUMS::ProcessModeOption::PER_ELEMENT) :		{ processResult = WhenPerElement(progress, ENUMS::ProcessedOutputType::CONVEX_HULLS, currentTime); } break;
+			case static_cast<exint>(ENUMS::ProcessModeOption::PER_GROUP) :			{ processResult = WhenPerGroup(progress, ENUMS::ProcessedOutputType::CONVEX_HULLS, currentTime); } break;
 		}
 	}
 	
@@ -888,9 +879,9 @@ SOP_Operator::cookMySopOutput(OP_Context& context, int outputidx, SOP_Node* inte
 		
 		switch (processModeChoiceMenuValue)
 		{
-			case static_cast<exint>(ENUMS::ProcessedModeOption::AS_WHOLE) :			{ processResult = WhenAsWhole(progress, ENUMS::ProcessedOutputType::ORIGINAL_GEOMETRY, currentTime); } break;
-			case static_cast<exint>(ENUMS::ProcessedModeOption::PER_ELEMENT) :		{ processResult = WhenPerElement(progress, ENUMS::ProcessedOutputType::ORIGINAL_GEOMETRY, currentTime); } break;
-			case static_cast<exint>(ENUMS::ProcessedModeOption::PER_GROUP) :		{ processResult = WhenPerGroup(progress, ENUMS::ProcessedOutputType::ORIGINAL_GEOMETRY, currentTime); } break;
+			case static_cast<exint>(ENUMS::ProcessModeOption::AS_WHOLE) :			{ processResult = WhenAsWhole(progress, ENUMS::ProcessedOutputType::ORIGINAL_GEOMETRY, currentTime); } break;
+			case static_cast<exint>(ENUMS::ProcessModeOption::PER_ELEMENT) :		{ processResult = WhenPerElement(progress, ENUMS::ProcessedOutputType::ORIGINAL_GEOMETRY, currentTime); } break;
+			case static_cast<exint>(ENUMS::ProcessModeOption::PER_GROUP) :			{ processResult = WhenPerGroup(progress, ENUMS::ProcessedOutputType::ORIGINAL_GEOMETRY, currentTime); } break;
 		}
 	}
 

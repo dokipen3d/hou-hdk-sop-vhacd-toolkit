@@ -45,17 +45,18 @@ namespace Containers
 {
 	struct HullCenterData
 	{
-		HullCenterData() { }
-		HullCenterData(UT_Vector3 center, exint hullid = -1, exint bundleid = -1) : HullCenterData()
-		{
-			this->_center = center;
-			this->_hullID = hullid;
-			this->_bundleID = bundleid;
-		}
+		HullCenterData() : 
+		_hullID(-1), 
+		_bundleID(-1) 
+		{ }
 
 		UT_Vector3		GetCenter() const { return this->_center; }
 		exint			GetHullID() const { return this->_hullID; }
 		exint			GetBundleID() const { return this->_bundleID; }
+
+		void			SetCenter(UT_Vector3 center) { this->_center = center; }
+		void			SetHullID(exint hullid) { this->_hullID = hullid; }
+		void			SetBundleID(exint bundleid) { this->_bundleID = bundleid; }
 
 	private:
 		UT_Vector3		_center;

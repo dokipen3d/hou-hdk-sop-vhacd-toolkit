@@ -23,8 +23,8 @@
 */
 
 #pragma once
-#ifndef ____processed_mode_option_h____
-#define ____processed_mode_option_h____
+#ifndef ____process_mode_option_h____
+#define ____process_mode_option_h____
 
 /* -----------------------------------------------------------------
 INCLUDES                                                           |
@@ -47,7 +47,7 @@ ENUM                                                               |
 DECLARE_Base_Namespace_Start()
 namespace Enums
 {
-	enum class ProcessedModeOption : exint
+	enum class ProcessModeOption : exint
 	{
 		AS_WHOLE,
 		PER_ELEMENT,
@@ -56,4 +56,4 @@ namespace Enums
 }
 DECLARE_Base_Namespace_End
 
-#endif // !____processed_mode_option_h____
+#endif // !____process_mode_option_h____

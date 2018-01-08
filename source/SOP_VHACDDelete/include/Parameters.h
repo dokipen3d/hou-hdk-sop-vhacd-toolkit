@@ -24,52 +24,68 @@
 */
 
 #pragma once
-#ifndef ____user_callback_h____
-#define ____user_callback_h____
+#ifndef ____prms_vhacd_delete_h____
+#define ____prms_vhacd_delete_h____
 
 /* -----------------------------------------------------------------
 INCLUDES                                                           |
 ----------------------------------------------------------------- */
-// std
-#include <string>
-#include <iostream>
-#include <iomanip>
-
-// 3rdParty
-#include <VHACD.h>
 
 // hou-hdk-common
-#include <Macros/Namespace.h>
+#include <Macros/SwitcherPRM.h>
+#include <Macros/GroupMenuPRM.h>
+#include <Macros/FloatPRM.h>
+#include <Macros/StringPRM.h>
+
+// this
+#include "SOP_VHACDDelete.h"
 
 /* -----------------------------------------------------------------
-CALLBACK                                                           |
+DEFINES                                                            |
+----------------------------------------------------------------- */
+
+#define SOP_Operator		GET_SOP_Namespace()::SOP_VHACDDelete
+#define COMMON_PRM_NAMES	GET_SOP_Namespace()::COMMON_PRM_NAMES
+#define CONTAINERS			GET_Base_Namespace()::Containers
+#define ENUMS				GET_Base_Namespace()::Enums
+
+/* -----------------------------------------------------------------
+PARAMETERS                                                         |
 ----------------------------------------------------------------- */
 
 DECLARE_SOP_Namespace_Start()
 
-	class UserCallback : public VHACD::IVHACD::IUserCallback
+namespace UI
+{
+	__DECLARE__Filter_Section_PRM(3)	
+	static auto		filterModeChoiceMenuParm_Name = PRM_Name("filtermode", "Mode");
+	static auto		filterModeChoiceMenuParm_Range = PRM_Range(PRM_RANGE_RESTRICTED, 0, PRM_RANGE_RESTRICTED, 1);
+	static PRM_Name filterModeChoiceMenuParm_Choices[] =
 	{
-	public:
-		UserCallback(): showOverallProgress(false), showStageProgress(false), showOperationProgress(false) { } 
-		~UserCallback() override { }
-
-		void Update(const double overallProgress, const double stageProgress, const double operationProgress, const char* const stage, const char* const operation) override
-		{
-			if (this->showOverallProgress)
-			{
-				auto info = std::string("Overall Progress: ") + std::to_string(static_cast<int>(overallProgress + 0.5)).c_str() + "%";
-				std::cout << std::setfill('-') << "Overall Progress: " << std::setw(52) << " " << static_cast<int>(overallProgress + 0.5) << "% " << std::endl;
-			}
-
-			if (this->showStageProgress) std::cout << stage << ": " << static_cast<int>(stageProgress + 0.5) << "% " << std::endl;
-			if (this->showOperationProgress) std::cout << operation << ": " << static_cast<int>(operationProgress + 0.5) << "% " << std::endl;
-		}
-
-		bool	showOverallProgress;
-		bool	showStageProgress;
-		bool	showOperationProgress;
+		PRM_Name("0", "By Group"),
+		PRM_Name("1", "By Bundle ID"),
+		PRM_Name(nullptr)
 	};
+	static auto		filterModeChoiceMenuParm_ChoiceList = PRM_ChoiceList(PRM_CHOICELIST_SINGLE, filterModeChoiceMenuParm_Choices);
+	auto			filterModeChoiceMenu_Parameter = PRM_Template(PRM_ORD, 1, &filterModeChoiceMenuParm_Name, 0, &filterModeChoiceMenuParm_ChoiceList, &filterModeChoiceMenuParm_Range, 0, nullptr, 1, "Specify filter mode.");	
+	DECLARE_Default_PrimitiveGroup_Input_0_PRM(input0)
+	DECLARE_Custom_Empty_String_PRM("bundleidpattern", "Pattern", "Specify bundle_id attribute pattern.", bundleIDPattern)
 
+	__DECLARE_Main_Section_PRM(0)
+
+	__DECLARE_Additional_Section_PRM(4)
+	DECLARE_DescriptionPRM(SOP_Operator)
+}
+		
 DECLARE_SOP_Namespace_End
 
-#endif // !____user_callback_h____
+/* -----------------------------------------------------------------
+UNDEFINES                                                          |
+----------------------------------------------------------------- */
+
+#undef ENUMS
+#undef CONTAINERS
+#undef COMMON_PRM_NAMES
+#undef SOP_Operator
+
+#endif // !____prms_vhacd_delete_h____

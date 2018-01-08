@@ -61,7 +61,7 @@ protected:
 	SOP_VHACDNode(OP_Network* network, const char* name, OP_Operator* op) : SOP_Node(network, name, op) { }
 	
 	CONTAINERS::VHACDCommonAttributeName		_commonAttributeNames = CONTAINERS::VHACDCommonAttributeName();
-
+	
 	GA_ROHandleI								_convexBundleIDHandle;
 	GA_ROHandleI								_originalBundleIDHandle;
 

@@ -1,6 +1,5 @@
 /*
-	Volumetric-Hierarchical Approximate Convex Decomposition.
-	Based on https://github.com/kmammou/v-hacd
+	Helper for specyfing filter mode;
 
 	IMPORTANT! ------------------------------------------
 	* Macros starting and ending with '____' shouldn't be used anywhere outside of this file.
@@ -24,40 +23,36 @@
 */
 
 #pragma once
-#ifndef ____user_logger_h____
-#define ____user_logger_h____
+#ifndef ____filter_mode_option_h____
+#define ____filter_mode_option_h____
 
 /* -----------------------------------------------------------------
 INCLUDES                                                           |
 ----------------------------------------------------------------- */
 
-// std
-#include <iostream>
-
-// 3rdParty
-#include <VHACD.h>
+// SESI
+#if _WIN32		
+#include <sys/SYS_Types.h>
+#else
+#include <SYS/SYS_Types.h>
+#endif
 
 // hou-hdk-common
-#include <Macros/Namespace.h>
+#include "Macros/Namespace.h"
 
 /* -----------------------------------------------------------------
-LOGGER                                                             |
+ENUM                                                               |
 ----------------------------------------------------------------- */
 
-DECLARE_SOP_Namespace_Start()
-
-	class UserLogger : public VHACD::IVHACD::IUserLogger
+DECLARE_Base_Namespace_Start()
+namespace Enums
+{
+	enum class FilterModeOption : exint
 	{
-	public:
-		UserLogger(): showMsg(false) { }
-		~UserLogger() override  { }
-
-		void Log(const char* const msg) override
-		{ if (this->showMsg) std::cout << msg << std::endl; }
-
-		bool showMsg;
+		BY_GROUP,
+		BY_BUNDLE_ID
 	};
+}
+DECLARE_Base_Namespace_End
 
-DECLARE_SOP_Namespace_End
-
-#endif // !____user_logger_h____
+#endif // !____filter_mode_option_h____

@@ -23,100 +23,115 @@
 	THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#pragma once
-#ifndef ____sop_vhacd_engine_h____
-#define ____sop_vhacd_engine_h____
-
 /* -----------------------------------------------------------------
 INCLUDES                                                           |
 ----------------------------------------------------------------- */
 
-// 3rdParty
-#include <VHACD.h>
-
-// hou-hdk-common
-#include <Macros/Namespace.h>
-#include <Macros/CookMySop.h>
-#include <Macros/DescriptionPRM.h>
-#include <Macros/UpdateParmsFlags.h>
-#include <Enums/MethodProcessResult.h>
+// SESI
+#include <UT/UT_DSOVersion.h>
+#include <OP/OP_OperatorTable.h>
+#include <BM/BM_ResourceManager.h>
 
 // this
-#include "SOP_VHACDNode.h"
-#include "UserLogger.h"
-#include "UserCallback.h"
-
-/* -----------------------------------------------------------------
-FORWARDS                                                           |
------------------------------------------------------------------ */
-
-class UT_AutoInterrupt;
+#include "SOP_VHACDDelete.h"
 
 /* -----------------------------------------------------------------
 DEFINES                                                            |
 ----------------------------------------------------------------- */
 
-#define ENUMS						GET_Base_Namespace()::Enums
-
-/* -----------------------------------------------------------------
-TYPEDEFS                                                           |
------------------------------------------------------------------ */
-
-typedef std::vector<int>			VHACDTriangleIndexes;
-typedef std::vector<float>			VHACDPointPositions;
+#define SOP_Operator		GET_SOP_Namespace()::SOP_VHACDDelete
+#define MSS_Selector		GET_SOP_Namespace()::MSS_VHACDDelete
+#define COMMON_NAMES		GET_SOP_Namespace()::COMMON_NAMES
+#define ENUMS				GET_Base_Namespace()::Enums
 
 /* -----------------------------------------------------------------
 OPERATOR                                                           |
 ----------------------------------------------------------------- */
 
-DECLARE_SOP_Namespace_Start()
+void 
+newSopOperator(OP_OperatorTable* table)
+{	
+	const auto sop = new OP_Operator
+	(
+		COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::SOP_DELETE_SMALLNAME),
+		COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::SOP_DELETE_BIGNAME),
+		SOP_Operator::CreateMe,
+		SOP_Operator::parametersList,
+		2,								// min inputs 
+		2,								// max inputs
+		nullptr,
+		0,								// type of node OP_FLAG_GENERATOR (BE CAREFUL WITH THIS LITTLE FUCKER)
+		nullptr,
+		2,								// outputs count
+		COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::TOOLKIT_TABMENU_PATH)
+	);
 
-	class SOP_VHACDEngine final : public SOP_VHACDNode
+	auto success = table->addOperator(sop);
+	table->addOpHidden(sop->getName());
+}
+
+/* -----------------------------------------------------------------
+SELECTOR                                                           |
+----------------------------------------------------------------- */
+
+void
+newSelector(BM_ResourceManager* manager)
+{
+	// find operator
+	const auto sopOperator = OP_Network::getOperatorTable(SOP_TABLE_NAME)->getOperator(COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::SOP_GENERATE_SMALLNAME));
+	if (!sopOperator)
 	{
-		DECLARE_CookMySop()
-		DECLARE_DescriptionPRM_Callback()
-		DECLARE_UpdateParmsFlags()		
+		UT_ASSERT(!"Could not find required operator!");
+		return;
+	}
 
-	protected:
-		~SOP_VHACDEngine() override;
-		SOP_VHACDEngine(OP_Network* network, const char* name, OP_Operator* op);
-		const char*					inputLabel(unsigned input) const override;
+	// create selector
+	auto sopSelector = new PI_SelectorTemplate
+	(
+		COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::MSS_DELETE_SMALLNAME),
+		COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::MSS_DELETE_BIGNAME),
+		SOP_TABLE_NAME
+	);
 
-	public:
-		static OP_Node*				CreateMe(OP_Network* network, const char* name, OP_Operator* op);
-		static PRM_Template			parametersList[];
+	if (sopOperator)
+	{
+		// setup selector
+#if _WIN32		
+		sopSelector->constructor(static_cast<void*>(&MSS_Selector::CreateMe));
+#else
+		sopSelector->constructor((void*)&MSS_Selector::CreateMe);
+#endif
 
-	private:
-		exint						PullIntPRM(GU_Detail* detail, const PRM_Template& parameter, bool interfaceonly = false, fpreal time = 0);
-		fpreal						PullFloatPRM(GU_Detail* detail, const PRM_Template& parameter, bool interfaceonly = false, fpreal time = 0);
-		ENUMS::MethodProcessResult	PrepareGeometry(GU_Detail* detail, UT_AutoInterrupt progress, fpreal time);
-		void						SetupParametersVHACD(GU_Detail* geometry, fpreal time);
-		ENUMS::MethodProcessResult	GatherDataForVHACD(GU_Detail* detail, UT_AutoInterrupt progress, fpreal time);
-		ENUMS::MethodProcessResult	DrawConvexHull(GU_Detail* detail, const VHACD::IVHACD::ConvexHull hull, UT_AutoInterrupt progress);
-		ENUMS::MethodProcessResult	GenerateConvexHulls(GU_Detail* detail, UT_AutoInterrupt progress);
-			
-		UserLogger					_loggerVHACD;
-		UserCallback				_callbackVHACD;
-		VHACD::IVHACD::Parameters	_parametersVHACD;
-		VHACD::IVHACD*				_interfaceVHACD;
+		sopSelector->data(OP3DthePrimSelTypes);
 
-		VHACDTriangleIndexes		_triangleIndexes;
-		VHACDPointPositions			_pointPositions;
+		auto success = manager->registerSelector(sopSelector);
+		if (!success) return;
 
-		GA_RWAttributeRef			_positionReference;
-		GA_RWHandleV3				_positionHandle;
-
-		bool						_allowParametersOverrideValueState;		
-		bool						_showReportValueState;
-		int							_reportModeChoiceValueState;
-	};
-
-DECLARE_SOP_Namespace_End
+		// bind selector		
+		success = manager->bindSelector
+		(
+			sopOperator,
+			COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::MSS_DELETE_SMALLNAME),
+			COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::MSS_DELETE_BIGNAME),
+			COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::MSS_DELETE_PROMPT),
+			COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::SOP_DELETE_GROUP_PRMNAME),
+			0,								// Input number to wire up.
+			1,								// 1 means this input is required.
+			"0x000000ff",					// Prim/point mask selection.
+			0,
+			nullptr,
+			0,
+			nullptr,
+			false
+		);
+	}
+}
 
 /* -----------------------------------------------------------------
 UNDEFINES                                                          |
 ----------------------------------------------------------------- */
 
 #undef ENUMS
-
-#endif // !____sop_vhacd_engine_h____
+#undef COMMON_NAMES
+#undef MSS_Selector
+#undef SOP_Operator

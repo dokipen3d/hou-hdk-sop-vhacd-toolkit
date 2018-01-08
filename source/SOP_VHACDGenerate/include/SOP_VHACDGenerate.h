@@ -127,8 +127,7 @@ DECLARE_SOP_Namespace_Start()
 		VHACDPointPositions			_pointPositions;
 
 		GA_RWHandleV3				_positionHandle;		
-		GA_RWHandleV3				_hullCenterHandle;
-		GA_RWHandleD				_hullVolumeHandle;
+		GA_RWHandleV3				_hullCenterHandle;		
 	};
 
 /* -----------------------------------------------------------------
