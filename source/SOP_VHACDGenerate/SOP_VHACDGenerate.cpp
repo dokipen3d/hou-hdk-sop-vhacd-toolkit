@@ -681,11 +681,8 @@ SOP_Operator::WhenPerElement(UT_AutoInterrupt progress, ENUMS::ProcessedOutputTy
 	// group primitives by class and...
 	this->_gop = GroupCreator(this->_inputGDP);
 
-	UT_Map<exint, GA_PrimitiveGroup*>	mappedGroups;
-	UT_Array<GU_Detail*>				processedDetails;
-
+	UT_Map<exint, GA_PrimitiveGroup*> mappedGroups;
 	mappedGroups.clear();
-	processedDetails.clear();
 
 	for (auto primIt = GA_Iterator(this->_inputGDP->getPrimitiveRange()); !primIt.atEnd(); primIt.advance())	
 	{
@@ -703,9 +700,12 @@ SOP_Operator::WhenPerElement(UT_AutoInterrupt progress, ENUMS::ProcessedOutputTy
 		return ENUMS::MethodProcessResult::FAILURE;
 	}
 
-	// ... then start the real job
+	// ... then start the real job	
+	UT_Array<GU_Detail*> processedDetails;
 	exint currIter = 0;
 
+	processedDetails.clear();
+	
 	for (const auto entry : mappedGroups)
 	{
 		PROGRESS_WAS_INTERRUPTED_WITH_ERROR_AND_OBJECT(this, progress, ENUMS::MethodProcessResult::FAILURE)

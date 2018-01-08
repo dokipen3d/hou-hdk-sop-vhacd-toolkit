@@ -118,12 +118,12 @@ DECLARE_SOP_Namespace_Start()
 
 		auto composer6 = CommonNameComposer(names, CommonNameOption::ALPHA);
 		DECLARE_Toggle_with_Separator_OFF_PRM(composer6.AddName(), "Add Alpha ATT", composer6.AddSeparatorName(), &SOP_Operator::CallbackAddAlphaATT, "Controls the bias toward clipping along symmetry planes.", addAlphaAttribute)
-		DECLARE_Custom_Float_0R_to_1R_PRM(composer6.ValueName(), COMMON_VALUE_BIGNAME, 0.5f, 0, COMMON_VALUE_HELPTEXT, alphaValue)
+		DECLARE_Custom_Float_0R_to_1R_PRM(composer6.ValueName(), COMMON_VALUE_BIGNAME, 1.0f, 0, COMMON_VALUE_HELPTEXT, alphaValue)
 		DECLARE_Custom_Float_MinR_to_MaxR_PRM(composer6.FallbackName(), COMMON_FALLBACK_BIGNAME, -1.0f, alphaValueFloat_Parameter.getRangePtr()->getParmMax(), -1.0f, 0, COMMON_FALLBACK_HELPTEXT, alphaFallback)
 
 		auto composer7 = CommonNameComposer(names, CommonNameOption::BETA);
 		DECLARE_Toggle_with_Separator_OFF_PRM(composer7.AddName(), "Add Beta ATT", composer7.AddSeparatorName(), &SOP_Operator::CallbackAddBetaATT, "Controls the bias toward clipping along revolution axes.", addBetaAttribute)
-		DECLARE_Custom_Float_0R_to_1R_PRM(composer7.ValueName(), COMMON_VALUE_BIGNAME, 0.5f, 0, COMMON_VALUE_HELPTEXT, betaValue)
+		DECLARE_Custom_Float_0R_to_1R_PRM(composer7.ValueName(), COMMON_VALUE_BIGNAME, 0.0f, 0, COMMON_VALUE_HELPTEXT, betaValue)
 		DECLARE_Custom_Float_MinR_to_MaxR_PRM(composer7.FallbackName(), COMMON_FALLBACK_BIGNAME, -1.0f, betaValueFloat_Parameter.getRangePtr()->getParmMax(), -1.0f, 0, COMMON_FALLBACK_HELPTEXT, betaFallback)
 
 		auto composer2 = CommonNameComposer(names, CommonNameOption::MAX_CONVEX_HULLS_COUNT);

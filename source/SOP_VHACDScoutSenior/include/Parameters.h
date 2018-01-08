@@ -54,15 +54,15 @@ DECLARE_SOP_Namespace_Start()
 	namespace UI
 	{
 		__DECLARE__Filter_Section_PRM(1)
-			DECLARE_ErroLevelMenu_PRM("missingbundleiderrorlevel", "Missing Bundle ID", 1, 0, "Specify error level when \"bundle_id\" attribute is not found on one of the inputs.", missingBundleID)
+		DECLARE_ErroLevelMenu_PRM("missingbundleiderrorlevel", "Missing Bundle ID", 1, 0, "Specify error level when \"bundle_id\" attribute is not found on one of the inputs.", missingBundleID)
 
 		__DECLARE_Main_Section_PRM(5)
-			DECLARE_Toggle_with_Separator_OFF_PRM("addbundlecountattribute", "Add Bundle Count ATT", "addbundlecountattributeseparator", 0, "Create detail bundle count attribute with infomation about how many convex hulls bundles were detected.", addBundleCountAttribute)
-			DECLARE_Toggle_with_Separator_OFF_PRM("groupperbundle", "GRP Per Bundle", "groupperbundleseparator", &SOP_Operator::CallbackGRPPerBundle, "Create primitive bundle id attribute with membership infomation that helps identify to which bundle polygons belongs to.", groupPerBundle)
-			DECLARE_Custom_String_PRM("specifybundlegroupname", "Name", "bundle_", "Pick partial name for bundle groups.", specifyBundleGroupName)
+		DECLARE_Toggle_with_Separator_OFF_PRM("addbundlecountattribute", "Add Bundle Count ATT", "addbundlecountattributeseparator", 0, "Create detail bundle count attribute with infomation about how many convex hulls bundles were detected.", addBundleCountAttribute)
+		DECLARE_Toggle_with_Separator_OFF_PRM("groupperbundle", "GRP Per Bundle", "groupperbundleseparator", &SOP_Operator::CallbackGRPPerBundle, "Create primitive bundle id attribute with membership infomation that helps identify to which bundle polygons belongs to.", groupPerBundle)
+		DECLARE_Custom_String_PRM("specifybundlegroupname", "Name", "bundle_", "Pick partial name for bundle groups.", specifyBundleGroupName)
 
 		__DECLARE_Additional_Section_PRM(4)
-			DECLARE_DescriptionPRM(SOP_Operator)
+		DECLARE_DescriptionPRM(SOP_Operator)
 	}
 
 DECLARE_SOP_Namespace_End

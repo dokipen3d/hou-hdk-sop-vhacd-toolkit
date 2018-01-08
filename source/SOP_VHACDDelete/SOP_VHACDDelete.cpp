@@ -153,8 +153,7 @@ HELPERS                                                            |
 /* -----------------------------------------------------------------
 MAIN                                                               |
 ----------------------------------------------------------------- */
-#include <GEO/GEO_PrimClassifier.h>
-#include <sys/SYS_Math.h>
+
 OP_ERROR 
 SOP_Operator::cookMySop(OP_Context& context)
 {
@@ -162,6 +161,7 @@ SOP_Operator::cookMySop(OP_Context& context)
 		
 	if (duplicateSource(static_cast<exint>(ENUMS::ProcessedInputType::CONVEX_HULLS), context) < OP_ERROR::UT_ERROR_WARNING && error() < OP_ERROR::UT_ERROR_WARNING)// && cookInputGroups(context) < OP_ERROR::UT_ERROR_WARNING)
 	{			
+
 		//cookInputPrimitiveGroups(context, this->_primitiveGroupInput0, false, true, SOP_GroupFieldIndex_0, -1, true, true, true, 0);
 		if (this->_primitiveGroupInput0)
 		{

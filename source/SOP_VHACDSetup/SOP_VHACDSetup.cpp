@@ -57,6 +57,7 @@ DEFINES                                                            |
 #define SOP_GroupFieldIndex_0	1
 
 #define COMMON_NAMES			GET_SOP_Namespace()::COMMON_NAMES
+#define COMMON_PRM_NAMES		GET_SOP_Namespace()::COMMON_PRM_NAMES
 #define UI						GET_SOP_Namespace()::PRMs_VHACDSetup
 
 #define UTILS					GET_Base_Namespace()::Utility
@@ -411,20 +412,20 @@ SOP_Operator::SetupAttributes(GA_Iterator primit, UT_AutoInterrupt progress, fpr
 	PRM_ACCESS::Get::IntPRM(this, addApproximateHullsState, UI::addConvexHullApproximationAttributeToggle_Parameter, time);
 	PRM_ACCESS::Get::IntPRM(this, addProjectVerticesState, UI::addProjectVerticesAttributeToggle_Parameter, time);
 	PRM_ACCESS::Get::IntPRM(this, addNormalizeMeshState, UI::addNormalizeMeshAttributeToggle_Parameter, time);
-
-	if (addDecompositionModeState) AddIntATT(decompositionModeHandle, UI::decompositionModeValueChoiceMenu_Parameter, UI::decompositionModeFallbackInteger_Parameter, UI::names.Get(CommonNameOption::DECOMPOSITION_MODE), time);
-	if (addResolutionState) AddIntATT(resolutionHandle, UI::resolutionValueInteger_Parameter, UI::resolutionFallbackInteger_Parameter, UI::names.Get(CommonNameOption::RESOLUTION), time);		
-	if (addConcavityState) AddFloatATT(concavityHandle, UI::concavityValueFloat_Parameter, UI::concavityFallbackFloat_Parameter, UI::names.Get(CommonNameOption::CONCAVITY), time);
-	if (addPlaneDownsamplingState) AddIntATT(planeDownsamplingHandle, UI::planeDownsamplingValueInteger_Parameter, UI::planeDownsamplingFallbackInteger_Parameter, UI::names.Get(CommonNameOption::PLANE_DOWNSAMPLING), time);		
-	if (addConvexHullDownsamplingState) AddIntATT(convexHullDownsamplingHandle, UI::convexHullDownsamplingValueInteger_Parameter, UI::convexHullDownsamplingFallbackInteger_Parameter, UI::names.Get(CommonNameOption::PLANE_DOWNSAMPLING), time);	
-	if (addAlphaState) AddFloatATT(alphaHandle, UI::alphaValueFloat_Parameter, UI::alphaFallbackFloat_Parameter, UI::names.Get(CommonNameOption::ALPHA), time);
-	if (addBetaState) AddFloatATT(betaHandle, UI::betaValueFloat_Parameter, UI::betaFallbackFloat_Parameter, UI::names.Get(CommonNameOption::BETA), time);	
-	if (addMaxConvexHullsCountState) AddIntATT(maxConvexHullsCountHandle, UI::maxConvexHullsValueInteger_Parameter, UI::maxConvexHullsFallbackInteger_Parameter, UI::names.Get(CommonNameOption::MAX_CONVEX_HULLS_COUNT), time);
-	if (addMaxTriangleCountState) AddIntATT(maxTriangleCountHandle, UI::maxTriangleCountValueInteger_Parameter, UI::maxTriangleCountFallbackInteger_Parameter, UI::names.Get(CommonNameOption::MAX_TRIANGLE_COUNT), time);
-	if (addAdaptiveSamplingState) AddFloatATT(adaptiveSamplingHandle, UI::adaptiveSamplingValueFloat_Parameter, UI::adaptiveSamplingFallbackFloat_Parameter, UI::names.Get(CommonNameOption::ADAPTIVE_SAMPLING), time);		
-	if (addApproximateHullsState) AddIntATT(approximateHullsHandle, UI::convexHullApproximationValueToggle_Parameter, UI::convexHullApproximationFallbackInteger_Parameter, UI::names.Get(CommonNameOption::CONVEX_HULL_APPROXIMATION), time);
-	if (addProjectVerticesState) AddIntATT(projectVerticesHandle, UI::projectVerticesValueToggle_Parameter, UI::projectVertivcesFallbackInteger_Parameter, UI::names.Get(CommonNameOption::PROJECT_HULL_VERTICES), time);
-	if (addNormalizeMeshState) AddIntATT(normalizeMeshHandle, UI::normalizeMeshValueToggle_Parameter, UI::normalizeMeshFallbackInteger_Parameter, UI::names.Get(CommonNameOption::NORMALIZE_MESH), time);
+	
+	if (addDecompositionModeState) AddIntATT(decompositionModeHandle, UI::decompositionModeValueChoiceMenu_Parameter, UI::decompositionModeFallbackInteger_Parameter, COMMON_PRM_NAMES.Get(ENUMS::VHACDCommonParameterNameOption::DECOMPOSITION_MODE), time);
+	if (addResolutionState) AddIntATT(resolutionHandle, UI::resolutionValueInteger_Parameter, UI::resolutionFallbackInteger_Parameter, COMMON_PRM_NAMES.Get(ENUMS::VHACDCommonParameterNameOption::RESOLUTION), time);
+	if (addConcavityState) AddFloatATT(concavityHandle, UI::concavityValueFloat_Parameter, UI::concavityFallbackFloat_Parameter, COMMON_PRM_NAMES.Get(ENUMS::VHACDCommonParameterNameOption::CONCAVITY), time);
+	if (addPlaneDownsamplingState) AddIntATT(planeDownsamplingHandle, UI::planeDownsamplingValueInteger_Parameter, UI::planeDownsamplingFallbackInteger_Parameter, COMMON_PRM_NAMES.Get(ENUMS::VHACDCommonParameterNameOption::PLANE_DOWNSAMPLING), time);
+	if (addConvexHullDownsamplingState) AddIntATT(convexHullDownsamplingHandle, UI::convexHullDownsamplingValueInteger_Parameter, UI::convexHullDownsamplingFallbackInteger_Parameter, COMMON_PRM_NAMES.Get(ENUMS::VHACDCommonParameterNameOption::CONVEXHULL_DOWNSAMPLING), time);
+	if (addAlphaState) AddFloatATT(alphaHandle, UI::alphaValueFloat_Parameter, UI::alphaFallbackFloat_Parameter, COMMON_PRM_NAMES.Get(ENUMS::VHACDCommonParameterNameOption::ALPHA), time);
+	if (addBetaState) AddFloatATT(betaHandle, UI::betaValueFloat_Parameter, UI::betaFallbackFloat_Parameter, COMMON_PRM_NAMES.Get(ENUMS::VHACDCommonParameterNameOption::BETA), time);
+	if (addMaxConvexHullsCountState) AddIntATT(maxConvexHullsCountHandle, UI::maxConvexHullsValueInteger_Parameter, UI::maxConvexHullsFallbackInteger_Parameter, COMMON_PRM_NAMES.Get(ENUMS::VHACDCommonParameterNameOption::MAX_CONVEXHULLS_COUNT), time);
+	if (addMaxTriangleCountState) AddIntATT(maxTriangleCountHandle, UI::maxTriangleCountValueInteger_Parameter, UI::maxTriangleCountFallbackInteger_Parameter, COMMON_PRM_NAMES.Get(ENUMS::VHACDCommonParameterNameOption::MAX_TRIANGLE_COUNT), time);
+	if (addAdaptiveSamplingState) AddFloatATT(adaptiveSamplingHandle, UI::adaptiveSamplingValueFloat_Parameter, UI::adaptiveSamplingFallbackFloat_Parameter, COMMON_PRM_NAMES.Get(ENUMS::VHACDCommonParameterNameOption::ADAPTIVE_SAMPLING), time);
+	if (addApproximateHullsState) AddIntATT(approximateHullsHandle, UI::convexHullApproximationValueToggle_Parameter, UI::convexHullApproximationFallbackInteger_Parameter, COMMON_PRM_NAMES.Get(ENUMS::VHACDCommonParameterNameOption::CONVEXHULL_APPROXIMATION), time);
+	if (addProjectVerticesState) AddIntATT(projectVerticesHandle, UI::projectVerticesValueToggle_Parameter, UI::projectVertivcesFallbackInteger_Parameter, COMMON_PRM_NAMES.Get(ENUMS::VHACDCommonParameterNameOption::PROJECT_HULL_VERTICES), time);
+	if (addNormalizeMeshState) AddIntATT(normalizeMeshHandle, UI::normalizeMeshValueToggle_Parameter, UI::normalizeMeshFallbackInteger_Parameter, COMMON_PRM_NAMES.Get(ENUMS::VHACDCommonParameterNameOption::NORMALIZE_MESH), time);
 	
 	// update attributes
 	for (; !primit.atEnd(); primit.advance())
@@ -500,6 +501,7 @@ UNDEFINES                                                          |
 #undef UTILS
 
 #undef UI
+#undef COMMON_PRM_NAMES
 #undef COMMON_NAMES
 
 #undef SOP_GroupFieldIndex_0

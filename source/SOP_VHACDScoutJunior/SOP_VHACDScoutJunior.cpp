@@ -35,12 +35,18 @@ INCLUDES                                                           |
 #include <PRM/PRM_Include.h>
 #include <GEO/GEO_PrimClassifier.h>
 
+#if _WIN32		
+#include <sys/SYS_Math.h>
+#else
+#include <SYS/SYS_Math.h>
+#endif
+
 // hou-hdk-common
 #include <Macros/ParameterList.h>
+#include <Enums/NodeErrorLevel.h>
 #include <Utility/PRM_TemplateAccessors.h>
 #include <Utility/GA_AttributeAccessors.h>
 #include <Utility/GU_DetailCalculator.h>
-#include <Enums/NodeErrorLevel.h>
 
 // this
 #include "Parameters.h"
@@ -215,7 +221,7 @@ SOP_Operator::AddHullVolumeATT(UT_AutoInterrupt progress, const GEO_PrimClassifi
 	UT_Map<exint, GA_PrimitiveGroup*> mappedData;
 	mappedData.clear();
 	
-	auto gop = GroupCreator(this->gdp);
+	auto gop = GOP_Manager::GroupCreator(this->gdp);
 
 	for (auto primIt = GA_Iterator(this->gdp->getPrimitiveRange()); !primIt.atEnd(); primIt.advance())
 	{
@@ -359,12 +365,12 @@ SOP_Operator::cookMySop(OP_Context& context)
 	DEFAULTS_CookMySop()		
 	
 	if (duplicateSource(static_cast<exint>(ENUMS::ProcessedInputType::CONVEX_HULLS), context, this->gdp) <= OP_ERROR::UT_ERROR_WARNING && error() <= OP_ERROR::UT_ERROR_WARNING)
-	{		
-		bool		addHullCountAttributeValue = false;
-		bool		addHullIDAttributeValue = false;
-		bool		addHullVolumeAttributeValue = false;
-		bool		groupPerHullValue = false;
-		bool		pointPerHullMassCenterValue = false;
+	{
+		auto		addHullCountAttributeValue = false;
+		auto		addHullIDAttributeValue = false;
+		auto		addHullVolumeAttributeValue = false;
+		auto		groupPerHullValue = false;
+		auto		pointPerHullMassCenterValue = false;
 
 		UT_String	partialHullGroupNameValue;
 
@@ -375,41 +381,44 @@ SOP_Operator::cookMySop(OP_Context& context)
 		PRM_ACCESS::Get::StringPRM(this, partialHullGroupNameValue, UI::specifyHullGroupNameString_Parameter, currentTime);
 		PRM_ACCESS::Get::IntPRM(this, pointPerHullMassCenterValue, UI::pointPerHullCenterToggle_Parameter, currentTime);
 
-		// @CLASS of 1999 (for more info check http://www.imdb.com/title/tt0099277/)
-		auto primClassifier = GEO_PrimClassifier();
-		primClassifier.classifyBySharedPoints(*this->gdp);
-
-		// generate data per toggle
-		auto processResult = ENUMS::MethodProcessResult::SUCCESS;
-
-		if (addHullCountAttributeValue)
+		if (addHullCountAttributeValue || addHullIDAttributeValue || addHullVolumeAttributeValue || groupPerHullValue || pointPerHullMassCenterValue)
 		{
-			processResult = AddHullCountATT(primClassifier);
-			if (processResult != ENUMS::MethodProcessResult::SUCCESS) return error();
-		}
+			// @CLASS of 1999 (for more info check http://www.imdb.com/title/tt0099277/)
+			auto primClassifier = GEO_PrimClassifier();
+			primClassifier.classifyBySharedPoints(*this->gdp);
 
-		if (addHullIDAttributeValue)
-		{
-			processResult = AddHullIDATT(progress, primClassifier);
-			if (processResult != ENUMS::MethodProcessResult::SUCCESS) return error();
-		}
+			// generate data per toggle
+			auto processResult = ENUMS::MethodProcessResult::SUCCESS;
 
-		if (addHullVolumeAttributeValue)
-		{
-			processResult = AddHullVolumeATT(progress, primClassifier);
-			if (processResult != ENUMS::MethodProcessResult::SUCCESS) return error();
-		}
+			if (addHullCountAttributeValue)
+			{
+				processResult = AddHullCountATT(primClassifier);
+				if (processResult != ENUMS::MethodProcessResult::SUCCESS) return error();
+			}
 
-		if (groupPerHullValue)
-		{
-			processResult = GRPPerHull(progress, partialHullGroupNameValue, primClassifier, currentTime);
-			if (processResult != ENUMS::MethodProcessResult::SUCCESS) return error();
-		}
+			if (addHullIDAttributeValue)
+			{
+				processResult = AddHullIDATT(progress, primClassifier);
+				if (processResult != ENUMS::MethodProcessResult::SUCCESS) return error();
+			}
 
-		if (pointPerHullMassCenterValue)
-		{
-			processResult = PointPerHullCenter(progress, primClassifier);
-			if (processResult != ENUMS::MethodProcessResult::SUCCESS) return error();
+			if (addHullVolumeAttributeValue)
+			{
+				processResult = AddHullVolumeATT(progress, primClassifier);
+				if (processResult != ENUMS::MethodProcessResult::SUCCESS) return error();
+			}
+
+			if (groupPerHullValue)
+			{
+				processResult = GRPPerHull(progress, partialHullGroupNameValue, primClassifier, currentTime);
+				if (processResult != ENUMS::MethodProcessResult::SUCCESS) return error();
+			}
+
+			if (pointPerHullMassCenterValue)
+			{
+				processResult = PointPerHullCenter(progress, primClassifier);
+				if (processResult != ENUMS::MethodProcessResult::SUCCESS) return error();
+			}
 		}
 	}
 	
