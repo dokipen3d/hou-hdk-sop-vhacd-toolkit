@@ -17,8 +17,9 @@ V-HACD updates [22-12-2017](https://www.youtube.com/watch?v=h2VCUtb8UfE&feature=
 - [x] Linux
 
 **TODO:**
-- [ ] add support for SOP Setup generated attributes in SOP Merge
-- [ ] add export to FBX for UE4
+- [ ] add possibility to regenerate `bundle_id` attribute from primitive groups
+- [ ] add support for `SOP Setup` generated attributes in `SOP Merge`
+- [ ] add export to `FBX` for `UE4`
 - [ ] update HDAs
 - [ ] update Python scripts
 - [ ] port SOP Debug to C++
