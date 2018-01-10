@@ -68,6 +68,8 @@ namespace Containers
 			this->Add(ENUMS::VHACDCommonNameOption::SOP_DEBUG_ICONNAME,					this->Get(ENUMS::VHACDCommonNameOption::TOOLKIT_ICONNAME));
 			this->Add(ENUMS::VHACDCommonNameOption::SOP_DEBUG_SMALLNAME,				"wip::debug::2.0");
 			this->Add(ENUMS::VHACDCommonNameOption::SOP_DEBUG_BIGNAME,					"Debug (v-hacd)");
+			this->Add(ENUMS::VHACDCommonNameOption::GUI_DEBUG_SMALLNAME,				"wip::debughook::2.0");
+			this->Add(ENUMS::VHACDCommonNameOption::GUI_DEBUG_BIGNAME,					"Debug (v-hacd hook)");
 
 			// SOP_VHACDDelete only			
 			this->Add(ENUMS::VHACDCommonNameOption::SOP_DELETE_ICONNAME,				this->Get(ENUMS::VHACDCommonNameOption::TOOLKIT_ICONNAME));

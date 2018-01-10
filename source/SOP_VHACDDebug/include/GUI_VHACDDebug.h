@@ -1,8 +1,9 @@
 /*
-	Enum for common names.
+	Volumetric-Hierarchical Approximate Convex Decomposition.
+	Based on https://github.com/kmammou/v-hacd
 
 	IMPORTANT! ------------------------------------------
-	* this should be synchronized with VHACDCommonName.h
+	* Macros starting and ending with '____' shouldn't be used anywhere outside of this file.
 	-----------------------------------------------------
 
 	Author: 	SWANN
@@ -23,98 +24,46 @@
 */
 
 #pragma once
-#ifndef ____vhacd_common_name_option_h____
-#define ____vhacd_common_name_option_h____
+#ifndef ____gui_vhacd_debug_h____
+#define ____gui_vhacd_debug_h____
 
 /* -----------------------------------------------------------------
 INCLUDES                                                           |
 ----------------------------------------------------------------- */
 
 // SESI
-#if _WIN32		
-	#include <sys/SYS_Types.h>
-#else
-	#include <SYS/SYS_Types.h>
-#endif
+#include <GUI/GUI_PrimitiveHook.h>
 
 // hou-hdk-common
-#include "Macros/Namespace.h"
+#include <Macros/Namespace.h>
 
 /* -----------------------------------------------------------------
-ENUM                                                               |
+DECLARATION                                                        |
 ----------------------------------------------------------------- */
 
-DECLARE_Base_Namespace_Start()
-namespace Enums
-{
-	enum class VHACDCommonNameOption : exint
+DECLARE_GUI_Namespace_Start()
+
+	/// Render hook which visualizes normals by painting a normal map on 
+	/// polygon geometry with Cd.
+	class GUI_VHACDDebug : public GUI_PrimitiveHook
 	{
-		// toolkit global
-		TOOLKIT_TABMENU_PATH,
-		TOOLKIT_ICONNAME,
+	public:
+		GUI_VHACDDebug();
+		~GUI_VHACDDebug();
 
-		SOP_OUTPUTNAME_CONVEXHULLS,
-		SOP_OUTPUTNAME_ORIGINALGEOMETRY,
-
-		// SOP_VHACDDebug only
-		SOP_DEBUG_ICONNAME,
-		SOP_DEBUG_SMALLNAME,
-		SOP_DEBUG_BIGNAME,
-		GUI_DEBUG_SMALLNAME,
-		GUI_DEBUG_BIGNAME,
-
-		// SOP_VHACDDelete only
-		SOP_DELETE_ICONNAME,
-		SOP_DELETE_SMALLNAME,
-		SOP_DELETE_BIGNAME,	
-		SOP_DELETE_GROUP_PRMNAME,
-		MSS_DELETE_SMALLNAME,
-		MSS_DELETE_BIGNAME,
-		MSS_DELETE_PROMPT,
-
-		// SOP_VHACDGenerate only
-		SOP_GENERATE_ICONNAME,
-		SOP_GENERATE_SMALLNAME,
-		SOP_GENERATE_BIGNAME,
-		SOP_GENERATE_GROUP_PRMNAME,
-		MSS_GENERATE_SMALLNAME,
-		MSS_GENERATE_BIGNAME,
-		MSS_GENERATE_PROMPT,
-
-		// SOP_VHACDScoutJunior only
-		SOP_SCOUT_JUNIOR_ICONNAME,
-		SOP_SCOUT_JUNIOR_SMALLNAME,
-		SOP_SCOUT_JUNIOR_BIGNAME,
-
-		// SOP_VHACDScoutSenior only
-		SOP_SCOUT_SENIOR_ICONNAME,
-		SOP_SCOUT_SENIOR_SMALLNAME,
-		SOP_SCOUT_SENIOR_BIGNAME,
-
-		// SOP_VHACDSetup only
-		SOP_SETUP_ICONNAME,
-		SOP_SETUP_SMALLNAME,
-		SOP_SETUP_BIGNAME,
-		SOP_SETUP_GROUP_PRMNAME,
-		MSS_SETUP_SMALLNAME,
-		MSS_SETUP_BIGNAME,
-		MSS_SETUP_PROMPT,
-
-		// SOP_VHACDMerge only
-		SOP_MERGE_ICONNAME,
-		SOP_MERGE_SMALLNAME,
-		SOP_MERGE_BIGNAME,
-
-		// SOP_VHACDTransform only
-		SOP_TRANSFORM_ICONNAME,
-		SOP_TRANSFORM_SMALLNAME,
-		SOP_TRANSFORM_BIGNAME,
-		SOP_TRANSFORM_GROUP_PRMNAME,
-		MSS_TRANSFORM_SMALLNAME,
-		MSS_TRANSFORM_BIGNAME,
-		MSS_TRANSFORM_PROMPT
+		/// The main virtual for filtering GT or GEO primitives. If the hook is
+		/// interested in the primitive, it should set 'processed' to  GR_PROCESSED,
+		/// even if it is not actively modifying the primitive (in which case
+		/// return a NULL primitive handle). This ensures that the primitive will
+		/// be updated when its display option is toggled. If not interested in the
+		/// primitive at all, set 'processed' to GR_NOT_PROCESSED.
+		GT_PrimitiveHandle filterPrimitive(const GT_PrimitiveHandle& gt_prm, const GEO_Primitive* geo_prm, const GR_RenderInfo* info, GR_PrimAcceptResult& processed) override;
 	};
-}
-DECLARE_Base_Namespace_End
 
-#endif // !____vhacd_common_name_option_h____
+DECLARE_GUI_Namespace_End
+
+/* -----------------------------------------------------------------
+UNDEFINES                                                          |
+----------------------------------------------------------------- */
+
+#endif // !____gui_vhacd_debug_h____

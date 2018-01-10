@@ -36,7 +36,6 @@ INCLUDES                                                           |
 //#include <Macros/GroupMenuPRM.h>
 #include <Macros/TogglePRM.h>
 #include <Macros/FloatPRM.h>
-#include <Macros/StringPRM.h>
 
 // this
 #include "SOP_VHACDDebug.h"
@@ -79,7 +78,7 @@ namespace UI
 	DECLARE_Toggle_with_Separator_OFF_PRM("explodebundleid", "Explode By Bundle ID ATT", "explodebundleidseparator", 0, "Explode geometry by using 'bundle_id' attribute.", explodeByBundleIDAttribute)
 
 	__DECLARE_Additional_Section_PRM(7)
-	DECLARE_Toggle_with_Separator_OFF_PRM("cuspvertexnormals", "Cusp Normals", "cuspvertexnormalsseparator", &SOP_Operator::CallbackSpecifyCuspAngle, "Cusp vertex normals. Affects only convex hulls input geometry.", cuspVertexNormals)
+	DECLARE_Toggle_with_Separator_ON_PRM("cuspvertexnormals", "Cusp Normals", "cuspvertexnormalsseparator", &SOP_Operator::CallbackSpecifyCuspAngle, "Cusp vertex normals. Affects only convex hulls input geometry.", cuspVertexNormals)
 	DECLARE_Custom_Float_0R_to_MaxR_PRM("specifycuspangle", "Angle", 180.0f, 0.0f, 0, "Specify cusp angle.", specifyCuspAngle)
 	DECLARE_DescriptionPRM(SOP_Operator)	
 }

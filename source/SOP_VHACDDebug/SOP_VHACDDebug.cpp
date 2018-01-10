@@ -46,7 +46,6 @@ INCLUDES                                                           |
 // this
 #include "Parameters.h"
 #include "FilterModeOption.h"
-#include <Utility/GA_AttributeMismatchTester.h>
 
 /* -----------------------------------------------------------------
 DEFINES                                                            |
@@ -99,12 +98,10 @@ SOP_Operator::updateParmsFlags()
 {
 	DEFAULTS_UpdateParmsFlags(SOP_Base_Operator)
 
-	// is input connected?
-	const exint is1Connected = this->getInput(static_cast<exint>(ENUMS::ProcessedInputType::ORIGINAL_GEOMETRY)) == nullptr ? 0 : 1;
-
 	/* ---------------------------- Set States --------------------------------------- */
 
-	changed |= enableParm(UI::switchVisibleInputChoiceMenu_Parameter.getToken(), is1Connected);
+	const exint is1Connected = this->getInput(static_cast<exint>(ENUMS::ProcessedInputType::ORIGINAL_GEOMETRY)) == nullptr ? 0 : 1;	
+	changed |= setVisibleState(UI::filterSectionSwitcher_Parameter.getToken(), is1Connected);
 
 	bool cuspVertexNormalsValue;
 	PRM_ACCESS::Get::IntPRM(this, cuspVertexNormalsValue, UI::cuspVertexNormalsToggle_Parameter, currentTime);
@@ -192,11 +189,6 @@ SOP_Operator::CuspConvexInputVertexNormals(GU_Detail* detail, fpreal time)
 ENUMS::MethodProcessResult
 SOP_Operator::SwitchVisibleInput(const GA_Range convexrange, const GA_Range originalrange, GA_Offset lastoffset, fpreal time)
 {
-	/*
-		:note:
-		This could be simply achieved by not copying second input.
-		But as an example for the future generations, we do this this way.
-	*/
 	exint switchVisibleInputValue;
 	PRM_ACCESS::Get::IntPRM(this, switchVisibleInputValue, UI::switchVisibleInputChoiceMenu_Parameter, time);
 
@@ -236,34 +228,61 @@ OP_ERROR
 SOP_Operator::cookMySop(OP_Context& context)
 {
 	DEFAULTS_CookMySop()
-	
+		
 	// duplicate first input
 	this->_convexGDP = new GU_Detail(inputGeo(static_cast<exint>(ENUMS::ProcessedInputType::CONVEX_HULLS), context));
-
+	
 	// duplicate second input
-	const exint is1Connected = this->getInput(static_cast<exint>(ENUMS::ProcessedInputType::ORIGINAL_GEOMETRY)) == nullptr ? 0 : 1;
-	if (is1Connected) this->_originalGDP = new GU_Detail(inputGeo(static_cast<exint>(ENUMS::ProcessedInputType::ORIGINAL_GEOMETRY), context));
+	auto success = this->getInput(static_cast<exint>(ENUMS::ProcessedInputType::ORIGINAL_GEOMETRY)) == nullptr ? false : true;
+	if (success) this->_originalGDP = new GU_Detail(inputGeo(static_cast<exint>(ENUMS::ProcessedInputType::ORIGINAL_GEOMETRY), context));
 
 	// we can work with only first input geometry
 	if (this->_convexGDP&& error() <= UT_ErrorSeverity::UT_ERROR_WARNING)
 	{
 		auto processResult = CuspConvexInputVertexNormals(this->_convexGDP, currentTime);
 		if (processResult != ENUMS::MethodProcessResult::SUCCESS) return error();
-	
-		if (this->_originalGDP)
-		{			
-			// merge geometry
-			this->gdp->copy(*this->_convexGDP, GEO_CopyMethod::GEO_COPY_START);
-			const auto convexRange = this->gdp->getPrimitiveRange();
-			const auto lastOffset = this->gdp->getPrimitiveMap().lastOffset();
 			
-			this->gdp->copy(*this->_originalGDP, GEO_CopyMethod::GEO_COPY_END);
-			const auto originalRange = this->gdp->getPrimitiveRangeSlice(this->gdp->primitiveIndex(lastOffset));
+		/* 			
+			this could be simply achieved by not copying second input,
+			but as an example for the future generations, we do this this way
+		*/
+		if (this->_originalGDP)
+		{						
+			success = this->gdp->copy(*this->_convexGDP, GEO_CopyMethod::GEO_COPY_START);
+			if (success)
+			{
+				const auto convexRange = this->gdp->getPrimitiveRange();
+				const auto lastOffset = this->gdp->getPrimitiveMap().lastOffset();
 
-			processResult = SwitchVisibleInput(convexRange, originalRange, lastOffset, currentTime);
-			if (processResult != ENUMS::MethodProcessResult::SUCCESS) return error();
+				success = this->gdp->copy(*this->_originalGDP, GEO_CopyMethod::GEO_COPY_END);
+				if (success)
+				{
+					const auto originalRange = this->gdp->getPrimitiveRangeSlice(this->gdp->primitiveIndex(lastOffset));
+
+					processResult = SwitchVisibleInput(convexRange, originalRange, lastOffset, currentTime);
+					if (processResult != ENUMS::MethodProcessResult::SUCCESS) return error();
+				}
+				else
+				{
+					this->addError(SOP_MESSAGE, "Failed to merge original geometry input.");
+					return error();
+				}
+			}
+			else
+			{
+				this->addError(SOP_MESSAGE, "Failed to merge convex hulls input.");
+				return error();
+			}
 		}
-		else this->gdp->copy(*this->_convexGDP, GEO_CopyMethod::GEO_COPY_ONCE);
+		else
+		{
+			success = this->gdp->copy(*this->_convexGDP, GEO_CopyMethod::GEO_COPY_ONCE);
+			if (!success)
+			{
+				this->addError(SOP_MESSAGE, "Failed to merge convex hulls input.");
+				return error();
+			}
+		}
 	}
 
 	return error();

@@ -30,15 +30,18 @@ INCLUDES                                                           |
 // SESI
 #include <UT/UT_DSOVersion.h>
 #include <OP/OP_OperatorTable.h>
+#include <DM/DM_RenderTable.h>
 
 // this
 #include "SOP_VHACDDebug.h"
+#include "GUI_VHACDDebug.h"
 
 /* -----------------------------------------------------------------
 DEFINES                                                            |
 ----------------------------------------------------------------- */
 
 #define SOP_Operator		GET_SOP_Namespace()::SOP_VHACDDebug
+#define GUI_Hook			GET_GUI_Namespace()::GUI_VHACDDebug
 #define COMMON_NAMES		GET_SOP_Namespace()::COMMON_NAMES
 #define ENUMS				GET_Base_Namespace()::Enums
 
@@ -69,9 +72,36 @@ newSopOperator(OP_OperatorTable* table)
 }
 
 /* -----------------------------------------------------------------
+HOOK                                                               |
+----------------------------------------------------------------- */
+
+void newRenderHook(DM_RenderTable* table)
+{
+	// the priority only matters if multiple hooks are assigned to the same
+	// primitive type. If this is the case, the hook with the highest priority
+	// (largest priority value) is processed first.
+	const int priority = 0;
+
+	// register the actual hook
+	auto success = table->registerGTHook(new GUI_Hook(), GT_PRIM_POLYGON_MESH, priority, GUI_HOOK_FLAG_PRIM_FILTER);
+	if (!success) return;
+
+	// because we hook into the refinement loop, when the option is
+	// changed a refine must be performed. By default a custom option
+	// does not trigger a refine.
+	success = table->installGeometryOption
+	(
+		COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::GUI_DEBUG_SMALLNAME),
+		COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::GUI_DEBUG_BIGNAME),
+		GUI_GeometryOptionFlags(GUI_GEO_OPT_REFINE_ON_ACTIVATION | GUI_GEO_OPT_REFINE_ON_DEACTIVATION | GUI_GEO_OPT_GLOBAL_TOGGLE_VALUE)
+	);
+}
+
+/* -----------------------------------------------------------------
 UNDEFINES                                                          |
 ----------------------------------------------------------------- */
 
 #undef ENUMS
 #undef COMMON_NAMES
+#undef GUI_Hook
 #undef SOP_Operator
