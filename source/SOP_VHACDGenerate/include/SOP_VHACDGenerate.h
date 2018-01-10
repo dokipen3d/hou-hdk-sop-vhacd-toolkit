@@ -106,8 +106,9 @@ DECLARE_SOP_Namespace_Start()
 
 		ENUMS::MethodProcessResult	DrawConvexHull(GU_Detail* detail, const VHACD::IVHACD::ConvexHull& hull, UT_AutoInterrupt progress);
 		ENUMS::MethodProcessResult	GenerateConvexHulls(GU_Detail* detail, UT_AutoInterrupt progress);
-		ENUMS::MethodProcessResult	MergeCurrentDetail(const GU_Detail* detail, exint detailscount = 1, exint iteration = 0);
 		ENUMS::MethodProcessResult	ProcessCurrentDetail(GU_Detail* detail, UT_AutoInterrupt progress, ENUMS::ProcessedOutputType processedoutputtype, exint iteration, fpreal time);
+		ENUMS::MethodProcessResult	MergeCurrentDetail(const GU_Detail* detail, exint detailscount = 1, exint iteration = 0);
+		ENUMS::MethodProcessResult	MergeCurrentDetails(UT_AutoInterrupt progress, UT_Array<GU_Detail*>& details);
 
 		ENUMS::MethodProcessResult	WhenAsWhole(UT_AutoInterrupt progress, ENUMS::ProcessedOutputType processedoutputtype, fpreal time);
 		ENUMS::MethodProcessResult	WhenPerElement(UT_AutoInterrupt progress, ENUMS::ProcessedOutputType processedoutputtype, fpreal time);

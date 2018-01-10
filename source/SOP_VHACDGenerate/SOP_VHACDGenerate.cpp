@@ -546,43 +546,6 @@ SOP_Operator::GenerateConvexHulls(GU_Detail* detail, UT_AutoInterrupt progress)
 }
 
 ENUMS::MethodProcessResult
-SOP_Operator::MergeCurrentDetail(const GU_Detail* detail, exint detailscount /* = 1 */, exint iteration /* = 0 */)
-{
-	auto success = false;
-
-#define THIS_MERGE_FAILURE(node, errormessage) if (!success) { node->addError(SOP_MESSAGE, errormessage); return ENUMS::MethodProcessResult::FAILURE; }
-
-	// merge current detail into main detail
-	if (detailscount > 1)
-	{
-		if (iteration == 0)
-		{
-			success = this->gdp->copy(*detail, GEO_CopyMethod::GEO_COPY_START);
-			THIS_MERGE_FAILURE(this ,"Geometry merge failure on GEO_COPY_START")
-		}
-		else if (iteration == detailscount - 1)
-		{
-			success = this->gdp->copy(*detail, GEO_CopyMethod::GEO_COPY_END);
-			THIS_MERGE_FAILURE(this, "Geometry merge failure on GEO_COPY_END")
-		}
-		else
-		{
-			success = this->gdp->copy(*detail, GEO_CopyMethod::GEO_COPY_ADD);
-			THIS_MERGE_FAILURE(this, "Geometry merge failure on GEO_COPY_ADD")
-		}
-	}
-	else
-	{
-		success = this->gdp->copy(*detail, GEO_CopyMethod::GEO_COPY_ONCE);
-		THIS_MERGE_FAILURE(this, "Geometry merge failure on GEO_COPY_ONCE")
-	}
-
-#undef THIS_MERGE_FAILURE
-
-	return ENUMS::MethodProcessResult::SUCCESS;
-}
-
-ENUMS::MethodProcessResult
 SOP_Operator::ProcessCurrentDetail(GU_Detail* detail, UT_AutoInterrupt progress, ENUMS::ProcessedOutputType processedoutputtype, exint iteration, fpreal time)
 {
 	// handle convex hulls
@@ -612,6 +575,63 @@ SOP_Operator::ProcessCurrentDetail(GU_Detail* detail, UT_AutoInterrupt progress,
 		auto errorMessage = std::string("Failed to add \"") + std::string(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_ID)) + std::string("\" attribute.");
 		addError(SOP_MESSAGE, errorMessage.c_str());
 		return ENUMS::MethodProcessResult::FAILURE;
+	}
+
+	return ENUMS::MethodProcessResult::SUCCESS;
+}
+
+ENUMS::MethodProcessResult
+SOP_Operator::MergeCurrentDetail(const GU_Detail* detail, exint detailscount /* = 1 */, exint iteration /* = 0 */)
+{
+	auto success = false;
+
+#define THIS_MERGE_FAILURE(node, errormessage) if (!success) { node->addError(SOP_MESSAGE, errormessage); return ENUMS::MethodProcessResult::FAILURE; }
+
+	// merge current detail into main detail
+	if (detailscount > 1)
+	{
+		if (iteration == 0)
+		{
+			success = this->gdp->copy(*detail, GEO_CopyMethod::GEO_COPY_START);
+			THIS_MERGE_FAILURE(this, "Geometry merge failure on GEO_COPY_START")
+		}
+		else if (iteration == detailscount - 1)
+		{
+			success = this->gdp->copy(*detail, GEO_CopyMethod::GEO_COPY_END);
+			THIS_MERGE_FAILURE(this, "Geometry merge failure on GEO_COPY_END")
+		}
+		else
+		{
+			success = this->gdp->copy(*detail, GEO_CopyMethod::GEO_COPY_ADD);
+			THIS_MERGE_FAILURE(this, "Geometry merge failure on GEO_COPY_ADD")
+		}
+	}
+	else
+	{
+		success = this->gdp->copy(*detail, GEO_CopyMethod::GEO_COPY_ONCE);
+		THIS_MERGE_FAILURE(this, "Geometry merge failure on GEO_COPY_ONCE")
+	}
+
+#undef THIS_MERGE_FAILURE
+
+	return ENUMS::MethodProcessResult::SUCCESS;
+}
+
+ENUMS::MethodProcessResult
+SOP_Operator::MergeCurrentDetails(UT_AutoInterrupt progress, UT_Array<GU_Detail*>& details)
+{
+	// merge all details
+	this->gdp->clear();
+	auto currIter = 0;
+
+	for (auto detail : details)
+	{
+		PROGRESS_WAS_INTERRUPTED_WITH_ERROR_AND_OBJECT(this, progress, ENUMS::MethodProcessResult::FAILURE)
+
+		const auto processResult = MergeCurrentDetail(detail, details.size(), currIter);
+		if (processResult != ENUMS::MethodProcessResult::SUCCESS) return processResult;
+
+		currIter++;
 	}
 
 	return ENUMS::MethodProcessResult::SUCCESS;
@@ -657,7 +677,7 @@ SOP_Operator::WhenPerElement(UT_AutoInterrupt progress, ENUMS::ProcessedOutputTy
 	auto primClassifier = GEO_PrimClassifier();	
 	primClassifier.classifyBySharedPoints(*this->_inputGDP);	
 	
-	// group primitives by class and...
+	// group primitives by class
 	this->_gop = GroupCreator(this->_inputGDP);
 
 	UT_Map<exint, GA_PrimitiveGroup*> mappedGroups;
@@ -679,7 +699,7 @@ SOP_Operator::WhenPerElement(UT_AutoInterrupt progress, ENUMS::ProcessedOutputTy
 		return ENUMS::MethodProcessResult::FAILURE;
 	}
 
-	// ... then start the real job	
+	// now start the real job	
 	UT_Array<GU_Detail*> processedDetails;
 	exint currIter = 0;
 
@@ -711,20 +731,9 @@ SOP_Operator::WhenPerElement(UT_AutoInterrupt progress, ENUMS::ProcessedOutputTy
 		addError(SOP_MESSAGE, "Failed to process details.");
 		return ENUMS::MethodProcessResult::FAILURE;
 	}
-
+	
 	// merge all details
-	this->gdp->clear();
-	currIter = 0;
-
-	for (auto detail : processedDetails)
-	{
-		PROGRESS_WAS_INTERRUPTED_WITH_ERROR_AND_OBJECT(this, progress, ENUMS::MethodProcessResult::FAILURE)
-
-		processResult = MergeCurrentDetail(detail, processedDetails.size(), currIter);
-		if (processResult != ENUMS::MethodProcessResult::SUCCESS) return processResult;
-
-		currIter++;
-	}
+	if (processedDetails.size() > 0) processResult = MergeCurrentDetails(progress, processedDetails);
 
 	return processResult;
 }
@@ -777,26 +786,9 @@ SOP_Operator::WhenPerGroup(UT_AutoInterrupt progress, ENUMS::ProcessedOutputType
 			currIter++;
 		}
 	}
-		
-	if (processedDetails.size() == 0)
-	{
-		addError(SOP_MESSAGE, "Failed to process details.");
-		return ENUMS::MethodProcessResult::FAILURE;
-	}	
 	
 	// merge all details
-	this->gdp->clear();	
-	currIter = 0;
-	
-	for (auto detail : processedDetails)
-	{
-		PROGRESS_WAS_INTERRUPTED_WITH_ERROR_AND_OBJECT(this, progress, ENUMS::MethodProcessResult::FAILURE)
-
-		processResult = MergeCurrentDetail(detail, processedDetails.size(), currIter);
-		if (processResult != ENUMS::MethodProcessResult::SUCCESS) return processResult;
-
-		currIter++;
-	}
+	if (processedDetails.size() > 0) processResult = MergeCurrentDetails(progress, processedDetails);
 	
 	return processResult;
 }
