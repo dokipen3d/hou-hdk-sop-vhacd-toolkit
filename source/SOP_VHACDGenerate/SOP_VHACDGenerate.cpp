@@ -620,10 +620,9 @@ SOP_Operator::MergeCurrentDetail(const GU_Detail* detail, exint detailscount /* 
 ENUMS::MethodProcessResult
 SOP_Operator::MergeCurrentDetails(UT_AutoInterrupt progress, UT_Array<GU_Detail*>& details)
 {
-	// merge all details
 	this->gdp->clear();
-	auto currIter = 0;
 
+	auto currIter = 0;
 	for (auto detail : details)
 	{
 		PROGRESS_WAS_INTERRUPTED_WITH_ERROR_AND_OBJECT(this, progress, ENUMS::MethodProcessResult::FAILURE)
