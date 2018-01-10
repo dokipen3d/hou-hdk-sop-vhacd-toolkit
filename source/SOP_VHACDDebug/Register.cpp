@@ -89,12 +89,13 @@ void newRenderHook(DM_RenderTable* table)
 	// because we hook into the refinement loop, when the option is
 	// changed a refine must be performed. By default a custom option
 	// does not trigger a refine.
+	/*
 	success = table->installGeometryOption
 	(
 		COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::GUI_DEBUG_SMALLNAME),
 		COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::GUI_DEBUG_BIGNAME),
 		GUI_GeometryOptionFlags(GUI_GEO_OPT_REFINE_ON_ACTIVATION | GUI_GEO_OPT_REFINE_ON_DEACTIVATION | GUI_GEO_OPT_GLOBAL_TOGGLE_VALUE)
-	);
+	);*/
 }
 
 /* -----------------------------------------------------------------

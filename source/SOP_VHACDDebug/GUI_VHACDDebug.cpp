@@ -62,17 +62,17 @@ MAIN                                                               |
 ----------------------------------------------------------------- */
 
 GT_PrimitiveHandle
-GUI_Hook::filterPrimitive(const GT_PrimitiveHandle &gt_prm, const GEO_Primitive* geo_prm, const GR_RenderInfo* info, GR_PrimAcceptResult& processed)
+GUI_Hook::filterPrimitive(const GT_PrimitiveHandle& gt_prm, const GEO_Primitive* geo_prm, const GR_RenderInfo* info, GR_PrimAcceptResult& processed)
 {
     GT_PrimitiveHandle ph;
 
+	/*
     if(!info->getDisplayOption()->getUserOptionState(COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::GUI_DEBUG_SMALLNAME)))
     {
-	// we're interested in this prim, but are not doing anything with it
-	// at this time. Mark it as processed but don't return a new prim.
 	processed = GR_PROCESSED;
 	return ph;
     }
+	*/
 
     // As this was registered for a GT prim type, a valid GT prim should be
     // passed to filterPrimitive(), not a GEO primitive.
@@ -81,8 +81,8 @@ GUI_Hook::filterPrimitive(const GT_PrimitiveHandle &gt_prm, const GEO_Primitive*
 
     if(!gt_prm)
     {
-	processed = GR_NOT_PROCESSED;
-	return ph;
+		processed = GR_NOT_PROCESSED;
+		return ph;
     }
 
     // Fetch the point normals (N) from the polygon mesh.
@@ -140,8 +140,8 @@ GUI_Hook::filterPrimitive(const GT_PrimitiveHandle &gt_prm, const GEO_Primitive*
 	{
 	    // Add Cd to the point attribute list, replacing it if Cd already
 	    // exists.
-	    GT_AttributeListHandle ah =
-		gt_prm->getPointAttributes()->addAttribute("Cd", cdh, true);
+		const auto ah = gt_prm->getPointAttributes()->addAttribute("Cd", cdh, true);
+
 	    ph = new GT_PrimPolygonMesh(*mesh,
 					ah,
 					mesh->getVertexAttributes(),
@@ -152,8 +152,8 @@ GUI_Hook::filterPrimitive(const GT_PrimitiveHandle &gt_prm, const GEO_Primitive*
 	{
 	    // Add Cd to the vertex attribute list, replacing it if Cd already
 	    // exists.
-		const GT_AttributeListHandle ah =
-		gt_prm->getVertexAttributes()->addAttribute("Cd", cdh, true);
+		const auto ah = gt_prm->getVertexAttributes()->addAttribute("Cd", cdh, true);
+
 	    ph = new GT_PrimPolygonMesh(*mesh,
 					mesh->getPointAttributes(),
 					ah,

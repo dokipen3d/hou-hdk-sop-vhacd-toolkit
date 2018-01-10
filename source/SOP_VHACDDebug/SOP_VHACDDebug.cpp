@@ -105,6 +105,9 @@ SOP_Operator::updateParmsFlags()
 
 	bool cuspVertexNormalsValue;
 	PRM_ACCESS::Get::IntPRM(this, cuspVertexNormalsValue, UI::cuspVertexNormalsToggle_Parameter, currentTime);
+	cuspVertexNormalsValue = false;
+	changed |= setVisibleState(UI::cuspVertexNormalsToggle_Parameter.getToken(), cuspVertexNormalsValue);
+	changed |= setVisibleState(UI::cuspVertexNormalsSeparator_Parameter.getToken(), cuspVertexNormalsValue);
 	changed |= setVisibleState(UI::specifyCuspAngleFloat_Parameter.getToken(), cuspVertexNormalsValue);
 
 	// update description active state
@@ -165,6 +168,11 @@ HELPERS                                                            |
 ENUMS::MethodProcessResult
 SOP_Operator::CuspConvexInputVertexNormals(GU_Detail* detail, fpreal time)
 {
+	exint switchVisibleInputValue;
+	PRM_ACCESS::Get::IntPRM(this, switchVisibleInputValue, UI::switchVisibleInputChoiceMenu_Parameter, time);
+
+	if (switchVisibleInputValue > 0) return ENUMS::MethodProcessResult::SUCCESS;
+
 	// do we want to cusp normals of convex hulls?
 	bool cuspVertexNormalsValue;
 	PRM_ACCESS::Get::IntPRM(this, cuspVertexNormalsValue, UI::cuspVertexNormalsToggle_Parameter, time);
