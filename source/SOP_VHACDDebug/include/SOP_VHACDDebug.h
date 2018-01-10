@@ -44,7 +44,6 @@ INCLUDES                                                           |
 // this
 #include "SOP_VHACDNode.h"
 #include "ProcessedInputType.h"
-#include "ProcessedOutputType.h"
 
 /* -----------------------------------------------------------------
 FORWARDS                                                           |
@@ -75,14 +74,19 @@ DECLARE_SOP_Namespace_Start()
 	protected:
 		~SOP_VHACDDebug() override;
 		SOP_VHACDDebug(OP_Network* network, const char* name, OP_Operator* op);
-		const char*					inputLabel(unsigned input) const override;
+		const char*					inputLabel(unsigned input) const override;		
 
 	public:
 		static OP_Node*				CreateMe(OP_Network* network, const char* name, OP_Operator* op);
 
 		static PRM_Template			parametersList[];
 
+		static int					CallbackSpecifyCuspAngle(void* data, int index, float time, const PRM_Template* tmp);
+
 	private:
+		ENUMS::MethodProcessResult	CuspConvexInputVertexNormals(GU_Detail* detail, fpreal time);
+		ENUMS::MethodProcessResult	SwitchVisibleInput(const GA_Range convexrange, const GA_Range originalrange, GA_Offset lastoffset, fpreal time);
+
 		GU_Detail*					_convexGDP;
 		GU_Detail*					_originalGDP;
 	};

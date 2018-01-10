@@ -47,7 +47,6 @@ INCLUDES                                                           |
 #include "Parameters.h"
 #include "FilterModeOption.h"
 #include <Utility/GA_AttributeMismatchTester.h>
-#include <Utility/GA_AttributeMismatchTester.h>
 
 /* -----------------------------------------------------------------
 DEFINES                                                            |
@@ -71,6 +70,9 @@ PARAMETERS                                                         |
 ----------------------------------------------------------------- */
 
 PARAMETERLIST_Start(SOP_Operator)
+
+	UI::filterSectionSwitcher_Parameter,
+	UI::switchVisibleInputChoiceMenu_Parameter,
 
 	UI::mainSectionSwitcher_Parameter,
 	UI::showHullIDAttributeToggle_Parameter,
@@ -98,13 +100,11 @@ SOP_Operator::updateParmsFlags()
 	DEFAULTS_UpdateParmsFlags(SOP_Base_Operator)
 
 	// is input connected?
-	const exint is0Connected = this->getInput(0) == nullptr ? 0 : 1;
-
-	/* ---------------------------- Set Global Visibility ---------------------------- */
-
-	visibilityState = is0Connected ? 1 : 0;
+	const exint is1Connected = this->getInput(static_cast<exint>(ENUMS::ProcessedInputType::ORIGINAL_GEOMETRY)) == nullptr ? 0 : 1;
 
 	/* ---------------------------- Set States --------------------------------------- */
+
+	changed |= enableParm(UI::switchVisibleInputChoiceMenu_Parameter.getToken(), is1Connected);
 
 	bool cuspVertexNormalsValue;
 	PRM_ACCESS::Get::IntPRM(this, cuspVertexNormalsValue, UI::cuspVertexNormalsToggle_Parameter, currentTime);
@@ -121,6 +121,19 @@ CALLBACKS                                                          |
 ----------------------------------------------------------------- */
 
 IMPLEMENT_DescriptionPRM_Callback(SOP_Operator, UI)
+
+int
+SOP_Operator::CallbackSpecifyCuspAngle(void* data, int index, float time, const PRM_Template* tmp)
+{
+	const auto me = reinterpret_cast<SOP_Operator*>(data);
+	if (!me) return 0;
+
+	// TODO: figure out why restoreFactoryDefaults() doesn't work
+	auto defVal = static_cast<exint>(UI::specifyCuspAngleFloat_Parameter.getFactoryDefaults()->getFloat());
+	PRM_ACCESS::Set::IntPRM(me, defVal, UI::specifyCuspAngleFloat_Parameter, time);
+
+	return 1;
+}
 
 /* -----------------------------------------------------------------
 OPERATOR INITIALIZATION                                            |
@@ -140,13 +153,80 @@ SOP_Operator::CreateMe(OP_Network* network, const char* name, OP_Operator* op)
 
 const char* 
 SOP_Operator::inputLabel(unsigned input) const
-{ return std::to_string(input).c_str(); }
+{
+	switch (input)
+	{
+		case 0: return COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::SOP_OUTPUTNAME_CONVEXHULLS);
+		default: return COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::SOP_OUTPUTNAME_ORIGINALGEOMETRY);
+	}
+}
 
 /* -----------------------------------------------------------------
 HELPERS                                                            |
 ----------------------------------------------------------------- */
 
-// YOUR CODE GOES HERE...
+ENUMS::MethodProcessResult
+SOP_Operator::CuspConvexInputVertexNormals(GU_Detail* detail, fpreal time)
+{
+	// do we want to cusp normals of convex hulls?
+	bool cuspVertexNormalsValue;
+	PRM_ACCESS::Get::IntPRM(this, cuspVertexNormalsValue, UI::cuspVertexNormalsToggle_Parameter, time);
+	if (cuspVertexNormalsValue)
+	{
+		fpreal specifyCuspAngleValue;
+		PRM_ACCESS::Get::FloatPRM(this, specifyCuspAngleValue, UI::specifyCuspAngleFloat_Parameter, time);
+
+		const auto vertexNormalHandle = GA_RWHandleV3(detail->addFloatTuple(GA_AttributeOwner::GA_ATTRIB_VERTEX, "N", 3));
+		if (vertexNormalHandle.isInvalid())
+		{
+			this->addError(SOP_MESSAGE, "Failed to add vertex normal attribute.");
+			return ENUMS::MethodProcessResult::FAILURE;
+		}
+			
+		GEOcomputeNormals(*detail, vertexNormalHandle, nullptr, specifyCuspAngleValue);
+	}
+
+	return ENUMS::MethodProcessResult::SUCCESS;
+}
+
+ENUMS::MethodProcessResult
+SOP_Operator::SwitchVisibleInput(const GA_Range convexrange, const GA_Range originalrange, GA_Offset lastoffset, fpreal time)
+{
+	/*
+		:note:
+		This could be simply achieved by not copying second input.
+		But as an example for the future generations, we do this this way.
+	*/
+	exint switchVisibleInputValue;
+	PRM_ACCESS::Get::IntPRM(this, switchVisibleInputValue, UI::switchVisibleInputChoiceMenu_Parameter, time);
+
+	switch (switchVisibleInputValue)
+	{
+		case static_cast<exint>(ENUMS::ProcessedInputType::CONVEX_HULLS) :
+		case static_cast<exint>(ENUMS::ProcessedInputType::ORIGINAL_GEOMETRY) :
+		{
+			auto hiddenInput = this->gdp->newPrimitiveGroup(GU_HIDDEN_3D_PRIMS_GROUP);
+			if (hiddenInput)
+			{
+				if (switchVisibleInputValue == static_cast<exint>(ENUMS::ProcessedInputType::CONVEX_HULLS))
+				{
+					hiddenInput->addRange(originalrange);
+					hiddenInput->removeOffset(lastoffset);
+				}
+				else hiddenInput->addRange(convexrange);
+			}
+			else
+			{
+				this->addError(SOP_MESSAGE, "Failed to create hidden group.");
+				return ENUMS::MethodProcessResult::FAILURE;
+			}
+		} break;
+
+		default: /* do nothing */ break;
+	}
+
+	return ENUMS::MethodProcessResult::SUCCESS;
+}
 
 /* -----------------------------------------------------------------
 MAIN                                                               |
@@ -167,23 +247,21 @@ SOP_Operator::cookMySop(OP_Context& context)
 	// we can work with only first input geometry
 	if (this->_convexGDP&& error() <= UT_ErrorSeverity::UT_ERROR_WARNING)
 	{
-		// do we want to cusp normals of convex hulls?
-		bool cuspVertexNormalsValue;
-		PRM_ACCESS::Get::IntPRM(this, cuspVertexNormalsValue, UI::cuspVertexNormalsToggle_Parameter, currentTime);
-		if (cuspVertexNormalsValue)
-		{
-			fpreal specifyCuspAngleValue;
-			PRM_ACCESS::Get::FloatPRM(this, specifyCuspAngleValue, UI::specifyCuspAngleFloat_Parameter, currentTime);
-
-			const auto vertexNormalHandle = GA_RWHandleV3(this->_convexGDP->addFloatTuple(GA_AttributeOwner::GA_ATTRIB_VERTEX, "N", 3));
-			GEOcomputeNormals(*this->_convexGDP, vertexNormalHandle, nullptr, specifyCuspAngleValue);
-		}
+		auto processResult = CuspConvexInputVertexNormals(this->_convexGDP, currentTime);
+		if (processResult != ENUMS::MethodProcessResult::SUCCESS) return error();
 	
 		if (this->_originalGDP)
-		{
-			std::cout << "Copying both" << std::endl;
+		{			
+			// merge geometry
 			this->gdp->copy(*this->_convexGDP, GEO_CopyMethod::GEO_COPY_START);
+			const auto convexRange = this->gdp->getPrimitiveRange();
+			const auto lastOffset = this->gdp->getPrimitiveMap().lastOffset();
+			
 			this->gdp->copy(*this->_originalGDP, GEO_CopyMethod::GEO_COPY_END);
+			const auto originalRange = this->gdp->getPrimitiveRangeSlice(this->gdp->primitiveIndex(lastOffset));
+
+			processResult = SwitchVisibleInput(convexRange, originalRange, lastOffset, currentTime);
+			if (processResult != ENUMS::MethodProcessResult::SUCCESS) return error();
 		}
 		else this->gdp->copy(*this->_convexGDP, GEO_CopyMethod::GEO_COPY_ONCE);
 	}
