@@ -23,115 +23,97 @@
 	THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#pragma once
+#ifndef ____sop_vhacd_transform_h____
+#define ____sop_vhacd_transform_h____
+
 /* -----------------------------------------------------------------
 INCLUDES                                                           |
 ----------------------------------------------------------------- */
 
 // SESI
-#include <UT/UT_DSOVersion.h>
-#include <OP/OP_OperatorTable.h>
-#include <BM/BM_ResourceManager.h>
+#include <MSS/MSS_ReusableSelector.h>
+
+// hou-hdk-common
+#include <Macros/CookMySop.h>
+#include <Macros/DescriptionPRM.h>
+#include <Macros/Namespace.h>
+#include <Macros/UpdateParmsFlags.h>
+#include <Enums/MethodProcessResult.h>
 
 // this
-#include "SOP_VHACDDelete.h"
+#include "SOP_VHACDNode.h"
+#include "ProcessedInputType.h"
+#include "ProcessedOutputType.h"
+
+/* -----------------------------------------------------------------
+FORWARDS                                                           |
+----------------------------------------------------------------- */
+
+class UT_AutoInterrupt;
 
 /* -----------------------------------------------------------------
 DEFINES                                                            |
 ----------------------------------------------------------------- */
 
-#define SOP_Operator		GET_SOP_Namespace()::SOP_VHACDDelete
-#define MSS_Selector		GET_SOP_Namespace()::MSS_VHACDDelete
-#define COMMON_NAMES		GET_SOP_Namespace()::COMMON_NAMES
-#define ENUMS				GET_Base_Namespace()::Enums
+#define CONTAINERS					GET_Base_Namespace()::Containers
+#define ENUMS						GET_Base_Namespace()::Enums
 
 /* -----------------------------------------------------------------
-OPERATOR                                                           |
+DECLARATION                                                        |
 ----------------------------------------------------------------- */
 
-void 
-newSopOperator(OP_OperatorTable* table)
-{	
-	const auto sop = new OP_Operator
-	(
-		COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::SOP_DELETE_SMALLNAME),
-		COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::SOP_DELETE_BIGNAME),
-		SOP_Operator::CreateMe,
-		SOP_Operator::parametersList,
-		2,								// min inputs 
-		2,								// max inputs
-		nullptr,
-		0,								// type of node OP_FLAG_GENERATOR (BE CAREFUL WITH THIS LITTLE FUCKER)
-		nullptr,
-		2,								// outputs count
-		COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::TOOLKIT_TABMENU_PATH)
-	);
+DECLARE_SOP_Namespace_Start()
 
-	auto success = table->addOperator(sop);
-	//table->addOpHidden(sop->getName());
-}
+	class SOP_VHACDTransform final : public SOP_VHACDNode
+	{
+		DECLARE_CookMySop_Multi()
+		DECLARE_UpdateParmsFlags()
+
+		DECLARE_DescriptionPRM_Callback()
+
+	protected:
+		~SOP_VHACDTransform() override;
+		SOP_VHACDTransform(OP_Network* network, const char* name, OP_Operator* op);
+		const char*					inputLabel(unsigned input) const override;
+
+	public:
+		static OP_Node*				CreateMe(OP_Network* network, const char* name, OP_Operator* op);
+		OP_ERROR					cookInputGroups(OP_Context& context, int alone = 0) override;
+
+		static PRM_Template			parametersList[];
+
+	private:		
+		ENUMS::ProcessedInputType   _processedInputType;
+
+		GU_Detail*					_convexGDP;
+		GU_Detail*					_originalGDP;
+
+		const GA_PrimitiveGroup*	_primitiveGroupInput0;
+		const GA_PrimitiveGroup*	_primitiveGroupInput1;
+	};
 
 /* -----------------------------------------------------------------
-SELECTOR                                                           |
+SELECTOR DECLARATION                                               |
 ----------------------------------------------------------------- */
 
-void
-newSelector(BM_ResourceManager* manager)
-{
-	// find operator
-	const auto sopOperator = OP_Network::getOperatorTable(SOP_TABLE_NAME)->getOperator(COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::SOP_GENERATE_SMALLNAME));
-	if (!sopOperator)
+	class MSS_VHACDTransform : public MSS_ReusableSelector
 	{
-		UT_ASSERT(!"Could not find required operator!");
-		return;
-	}
+	public:
+		virtual ~MSS_VHACDTransform();
+		MSS_VHACDTransform(OP3D_View& viewer, PI_SelectorTemplate& templ);
 
-	// create selector
-	auto sopSelector = new PI_SelectorTemplate
-	(
-		COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::MSS_DELETE_SMALLNAME),
-		COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::MSS_DELETE_BIGNAME),
-		SOP_TABLE_NAME
-	);
+		static BM_InputSelector*	CreateMe(BM_View& Viewer, PI_SelectorTemplate& templ);
+		const char*					className() const override;
+	};
 
-	if (sopOperator)
-	{
-		// setup selector
-#if _WIN32		
-		sopSelector->constructor(static_cast<void*>(&MSS_Selector::CreateMe));
-#else
-		sopSelector->constructor((void*)&MSS_Selector::CreateMe);
-#endif
-
-		sopSelector->data(OP3DthePrimSelTypes);
-
-		auto success = manager->registerSelector(sopSelector);
-		if (!success) return;
-
-		// bind selector		
-		success = manager->bindSelector
-		(
-			sopOperator,
-			COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::MSS_DELETE_SMALLNAME),
-			COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::MSS_DELETE_BIGNAME),
-			COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::MSS_DELETE_PROMPT),
-			COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::SOP_DELETE_GROUP_PRMNAME),
-			0,								// Input number to wire up.
-			1,								// 1 means this input is required.
-			"0x000000ff",					// Prim/point mask selection.
-			0,
-			nullptr,
-			0,
-			nullptr,
-			false
-		);
-	}
-}
+DECLARE_SOP_Namespace_End
 
 /* -----------------------------------------------------------------
 UNDEFINES                                                          |
 ----------------------------------------------------------------- */
 
 #undef ENUMS
-#undef COMMON_NAMES
-#undef MSS_Selector
-#undef SOP_Operator
+#undef CONTAINERS
+
+#endif // !____sop_vhacd_transform_h____

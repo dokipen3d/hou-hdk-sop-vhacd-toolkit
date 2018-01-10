@@ -198,7 +198,7 @@ SOP_Operator::cookInputGroups(OP_Context& context, int alone)
 {	
 	const auto isOrdered = true;	
 	this->_gop = GroupCreator(this->_inputGDP);
-
+	
 	return cookInputPrimitiveGroups(context, this->_primitiveGroupInput0, alone, true, SOP_GroupFieldIndex_0, -1, true, isOrdered, this->_gop);
 }
 
@@ -249,37 +249,6 @@ SOP_Operator::PullFloatPRM(GU_Detail* geometry, const PRM_Template& parameter, f
 	else PRM_ACCESS::Get::FloatPRM(this, currentFloatValue, parameter, time);
 
 	return currentFloatValue;
-}
-
-ENUMS::MethodProcessResult
-SOP_Operator::SeparatePrimitiveRange(GU_Detail* detail)
-{
-	auto processReult = ENUMS::MethodProcessResult::SUCCESS;
-
-	if (this->_primitiveGroupInput0 && this->_primitiveGroupInput0->entries() > 0)
-	{
-		const auto killPrimiGroup = new GA_PrimitiveGroup(*detail);
-		if (killPrimiGroup)
-		{
-			killPrimiGroup->addRange(detail->getPrimitiveRange());
-			killPrimiGroup->removeRange(detail->getPrimitiveRange(this->_primitiveGroupInput0));
-
-			detail->deletePrimitives(*killPrimiGroup, true);
-		}
-		else
-		{
-			delete killPrimiGroup;
-			this->addError(SOP_MESSAGE, "Failed to create separation group.");
-			processReult = ENUMS::MethodProcessResult::FAILURE;
-		}
-		
-		delete killPrimiGroup;
-	}
-
-	// make sure there are no empty groups after this operation
-	detail->destroyAllEmptyGroups();
-
-	return processReult;
 }
 
 ENUMS::MethodProcessResult
@@ -427,7 +396,7 @@ SOP_Operator::GatherDataForVHACD(GU_Detail* detail, UT_AutoInterrupt progress, f
 	}
 	else
 	{
-		this->addError(SOP_MESSAGE, "Failed to find position attribute.");
+		addError(SOP_MESSAGE, "Failed to find position attribute.");
 		return ENUMS::MethodProcessResult::FAILURE;
 	}
 
@@ -505,13 +474,12 @@ SOP_Operator::DrawConvexHull(GU_Detail* detail, const VHACD::IVHACD::ConvexHull&
 
 ENUMS::MethodProcessResult
 SOP_Operator::GenerateConvexHulls(GU_Detail* detail, UT_AutoInterrupt progress)
-{	
+{
 	// get interface	
-	//this->_interfaceVHACD = VHACD::CreateVHACD_ASYNC();
-	this->_interfaceVHACD = VHACD::CreateVHACD();
-
+	this->_interfaceVHACD = VHACD::CreateVHACD_ASYNC();
+	//this->_interfaceVHACD = VHACD::CreateVHACD();
 	const auto success = this->_interfaceVHACD->Compute(&this->_pointPositions[0], static_cast<unsigned int>(this->_pointPositions.size()) / 3, reinterpret_cast<const uint32_t*>(&this->_triangleIndexes[0]), static_cast<unsigned int>(this->_triangleIndexes.size()) / 3, this->_parametersVHACD);
-
+	
 	/*		
 		TODO:	
 		This is shitty hack, just to use async version of this->_interfaceVHACD
@@ -519,18 +487,18 @@ SOP_Operator::GenerateConvexHulls(GU_Detail* detail, UT_AutoInterrupt progress)
 
 		Can it be done at all ?! x_X
 	 */
-	//while (!this->_interfaceVHACD->IsReady()) PROGRESS_WAS_INTERRUPTED_WITH_OBJECT(this, progress, ENUMS::MethodProcessResult::FAILURE)
+	while (!this->_interfaceVHACD->IsReady()) PROGRESS_WAS_INTERRUPTED_WITH_OBJECT(this, progress, ENUMS::MethodProcessResult::FAILURE)
 
 	if (success)
 	{
-		//if (this->_interfaceVHACD->IsReady())
+		if (this->_interfaceVHACD->IsReady())
 		{
 			// add hull/bundle attributes
 			this->_hullMassCenterHandle = GA_RWHandleV3(detail->addFloatTuple(GA_AttributeOwner::GA_ATTRIB_PRIMITIVE, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_MASS_CENTER), 3));
 			if (this->_hullMassCenterHandle.isInvalid())
 			{
 				auto errorMessage = std::string("Failed to create \"") + std::string(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_MASS_CENTER)) + std::string("\" attribute.");
-				this->addError(SOP_MESSAGE, errorMessage.c_str());
+				addError(SOP_MESSAGE, errorMessage.c_str());
 				return ENUMS::MethodProcessResult::FAILURE;
 			}
 
@@ -538,10 +506,10 @@ SOP_Operator::GenerateConvexHulls(GU_Detail* detail, UT_AutoInterrupt progress)
 			if (this->_bundleMassCenterHandle.isInvalid())
 			{
 				auto errorMessage = std::string("Failed to create \"") + std::string(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_MASS_CENTER)) + std::string("\" attribute.");
-				this->addError(SOP_MESSAGE, errorMessage.c_str());
+				addError(SOP_MESSAGE, errorMessage.c_str());
 				return ENUMS::MethodProcessResult::FAILURE;
 			}
-
+			
 			// generate hulls
 			const auto hullCount = this->_interfaceVHACD->GetNConvexHulls();
 			for (auto id = 0; id < hullCount; ++id)
@@ -559,7 +527,7 @@ SOP_Operator::GenerateConvexHulls(GU_Detail* detail, UT_AutoInterrupt progress)
 
 				this->_interfaceVHACD->GetConvexHull(id, currentHull);
 				if (!currentHull.m_nPoints || !currentHull.m_nTriangles) continue;
-
+				
 				const auto processResult = DrawConvexHull(detail, currentHull, progress);
 				if (processResult != ENUMS::MethodProcessResult::SUCCESS && error() > UT_ErrorSeverity::UT_ERROR_NONE) return processResult;
 			}
@@ -573,7 +541,7 @@ SOP_Operator::GenerateConvexHulls(GU_Detail* detail, UT_AutoInterrupt progress)
 
 	this->_interfaceVHACD->Clean();
 	this->_interfaceVHACD->Release();	
-
+	
 	return ENUMS::MethodProcessResult::SUCCESS;
 }
 
@@ -582,46 +550,34 @@ SOP_Operator::MergeCurrentDetail(const GU_Detail* detail, exint detailscount /* 
 {
 	auto success = false;
 
+#define THIS_MERGE_FAILURE(node, errormessage) if (!success) { node->addError(SOP_MESSAGE, errormessage); return ENUMS::MethodProcessResult::FAILURE; }
+
 	// merge current detail into main detail
 	if (detailscount > 1)
 	{
 		if (iteration == 0)
 		{
 			success = this->gdp->copy(*detail, GEO_CopyMethod::GEO_COPY_START);
-			if (!success)
-			{
-				this->addError(SOP_MESSAGE, "Geometry merge failure on GEO_COPY_START");
-				return ENUMS::MethodProcessResult::FAILURE;
-			}
+			THIS_MERGE_FAILURE(this ,"Geometry merge failure on GEO_COPY_START")
 		}
 		else if (iteration == detailscount - 1)
 		{
 			success = this->gdp->copy(*detail, GEO_CopyMethod::GEO_COPY_END);
-			if (!success)
-			{
-				this->addError(SOP_MESSAGE, "Geometry merge failure on GEO_COPY_END");
-				return ENUMS::MethodProcessResult::FAILURE;
-			}
+			THIS_MERGE_FAILURE(this, "Geometry merge failure on GEO_COPY_END")
 		}
 		else
 		{
 			success = this->gdp->copy(*detail, GEO_CopyMethod::GEO_COPY_ADD);
-			if (!success)
-			{
-				this->addError(SOP_MESSAGE, "Geometry merge failure on GEO_COPY_ADD");
-				return ENUMS::MethodProcessResult::FAILURE;
-			}
+			THIS_MERGE_FAILURE(this, "Geometry merge failure on GEO_COPY_ADD")
 		}
 	}
 	else
 	{
 		success = this->gdp->copy(*detail, GEO_CopyMethod::GEO_COPY_ONCE);
-		if (!success)
-		{
-			this->addError(SOP_MESSAGE, "Geometry merge failure on GEO_COPY_ONCE");
-			return ENUMS::MethodProcessResult::FAILURE;
-		}
+		THIS_MERGE_FAILURE(this, "Geometry merge failure on GEO_COPY_ONCE")
 	}
+
+#undef THIS_MERGE_FAILURE
 
 	return ENUMS::MethodProcessResult::SUCCESS;
 }
@@ -641,10 +597,10 @@ SOP_Operator::ProcessCurrentDetail(GU_Detail* detail, UT_AutoInterrupt progress,
 
 		processResult = GatherDataForVHACD(detail, progress, time);
 		if (processResult != ENUMS::MethodProcessResult::SUCCESS || error() > OP_ERROR::UT_ERROR_WARNING) return processResult;
-
+		
 		// lets make some hulls!
 		detail->clear();
-
+		
 		processResult = GenerateConvexHulls(detail, progress);
 		if (processResult != ENUMS::MethodProcessResult::SUCCESS || error() > OP_ERROR::UT_ERROR_WARNING) return processResult;
 	}
@@ -654,7 +610,7 @@ SOP_Operator::ProcessCurrentDetail(GU_Detail* detail, UT_AutoInterrupt progress,
 	if (this->_bundleIDHandle.isInvalid())
 	{
 		auto errorMessage = std::string("Failed to add \"") + std::string(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_ID)) + std::string("\" attribute.");
-		this->addError(SOP_MESSAGE, errorMessage.c_str());
+		addError(SOP_MESSAGE, errorMessage.c_str());
 		return ENUMS::MethodProcessResult::FAILURE;
 	}
 
@@ -664,16 +620,39 @@ SOP_Operator::ProcessCurrentDetail(GU_Detail* detail, UT_AutoInterrupt progress,
 ENUMS::MethodProcessResult
 SOP_Operator::WhenAsWhole(UT_AutoInterrupt progress, ENUMS::ProcessedOutputType processedoutputtype, fpreal time)
 {
-	const auto processResult = ProcessCurrentDetail(this->_inputGDP, progress, processedoutputtype, 0, time);
+	auto processResult = ENUMS::MethodProcessResult::SUCCESS;
+
+	// separate range of geometry we want to work on
+	if (this->_primitiveGroupInput0 && this->_primitiveGroupInput0->entries() > 0)
+	{
+		processResult = UTILS::GU_DetailModifier::SeparatePrimitives(this, this->_inputGDP, this->_primitiveGroupInput0);
+		if (processResult != ENUMS::MethodProcessResult::SUCCESS || error() > OP_ERROR::UT_ERROR_WARNING) return processResult;
+	}
+
+	// this time we do steps backwards, by first merging...
+	this->gdp->clear();
+
+	processResult = MergeCurrentDetail(this->_inputGDP);
 	if (processResult != ENUMS::MethodProcessResult::SUCCESS) return processResult;
 	
-	// merge into this->gdp
-	return MergeCurrentDetail(this->_inputGDP);
+	// ... and the processing mesh
+	processResult = ProcessCurrentDetail(this->gdp, progress, processedoutputtype, 0, time);
+
+	return processResult;
 }
 
 ENUMS::MethodProcessResult
 SOP_Operator::WhenPerElement(UT_AutoInterrupt progress, ENUMS::ProcessedOutputType processedoutputtype, fpreal time)
 {
+	auto processResult = ENUMS::MethodProcessResult::SUCCESS;
+
+	// separate range of geometry we want to work on
+	if (this->_primitiveGroupInput0 && this->_primitiveGroupInput0->entries() > 0)
+	{
+		processResult = UTILS::GU_DetailModifier::SeparatePrimitives(this, this->_inputGDP, this->_primitiveGroupInput0);
+		if (processResult != ENUMS::MethodProcessResult::SUCCESS || error() > OP_ERROR::UT_ERROR_WARNING) return processResult;
+	}
+
 	// @CLASS of 1999
 	auto primClassifier = GEO_PrimClassifier();	
 	primClassifier.classifyBySharedPoints(*this->_inputGDP);	
@@ -696,7 +675,7 @@ SOP_Operator::WhenPerElement(UT_AutoInterrupt progress, ENUMS::ProcessedOutputTy
 	
 	if (mappedGroups.size() < 1)
 	{
-		this->addError(SOP_MESSAGE, "There is no geometry to process.");
+		addError(SOP_MESSAGE, "There is no geometry to process.");
 		return ENUMS::MethodProcessResult::FAILURE;
 	}
 
@@ -716,7 +695,7 @@ SOP_Operator::WhenPerElement(UT_AutoInterrupt progress, ENUMS::ProcessedOutputTy
 		// create separate detail from it
 		const auto currDetail = new GU_Detail(this->_inputGDP, currGroup);
 
-		const auto processResult = ProcessCurrentDetail(currDetail, progress, processedoutputtype, currIter, time);
+		processResult = ProcessCurrentDetail(currDetail, progress, processedoutputtype, currIter, time);
 		if (processResult != ENUMS::MethodProcessResult::SUCCESS)
 		{
 			delete currDetail;
@@ -729,11 +708,11 @@ SOP_Operator::WhenPerElement(UT_AutoInterrupt progress, ENUMS::ProcessedOutputTy
 
 	if (processedDetails.size() == 0)
 	{
-		this->addError(SOP_MESSAGE, "Failed to process details.");
+		addError(SOP_MESSAGE, "Failed to process details.");
 		return ENUMS::MethodProcessResult::FAILURE;
 	}
 
-	// merge all details into this->gdp
+	// merge all details
 	this->gdp->clear();
 	currIter = 0;
 
@@ -741,26 +720,20 @@ SOP_Operator::WhenPerElement(UT_AutoInterrupt progress, ENUMS::ProcessedOutputTy
 	{
 		PROGRESS_WAS_INTERRUPTED_WITH_ERROR_AND_OBJECT(this, progress, ENUMS::MethodProcessResult::FAILURE)
 
-		MergeCurrentDetail(detail, processedDetails.size(), currIter);
+		processResult = MergeCurrentDetail(detail, processedDetails.size(), currIter);
+		if (processResult != ENUMS::MethodProcessResult::SUCCESS) return processResult;
+
 		currIter++;
 	}
 
-	return ENUMS::MethodProcessResult::SUCCESS;
+	return processResult;
 }
 
 ENUMS::MethodProcessResult
 SOP_Operator::WhenPerGroup(UT_AutoInterrupt progress, ENUMS::ProcessedOutputType processedoutputtype, fpreal time)
 {
-	// make sure we have any primitive group at all and...
-	auto allPrimGroups = this->_inputGDP->primitiveGroups();
-	if (allPrimGroups.entries() < 1)
-	{
-		this->addError(SOP_MESSAGE, "Didn't found any primitive groups to process.");
-		return ENUMS::MethodProcessResult::FAILURE;
-	}
-
-	// ... then start the real job
 	auto					processResult = ENUMS::MethodProcessResult::SUCCESS;
+	
 	UT_String				input0PrimitiveGroupNameValue;
 	UT_StringList			tokens;
 	UT_Array<GU_Detail*>	processedDetails;
@@ -769,31 +742,26 @@ SOP_Operator::WhenPerGroup(UT_AutoInterrupt progress, ENUMS::ProcessedOutputType
 	tokens.clear();
 	processedDetails.clear();
 
-	PRM_ACCESS::Get::StringPRM(this, input0PrimitiveGroupNameValue, UI::input0PrimitiveGroup_Parameter, time);	
-	input0PrimitiveGroupNameValue.tokenizeInPlace(tokens, " ");		
+	PRM_ACCESS::Get::StringPRM(this, input0PrimitiveGroupNameValue, UI::input0PrimitiveGroup_Parameter, time);
+	input0PrimitiveGroupNameValue.tokenizeInPlace(tokens, " ");
 
-	for (auto groupIt = allPrimGroups.beginTraverse(); !groupIt.atEnd(); ++groupIt)
-	{		
+	if (tokens.size() < 1)
+	{
+		// just merge and don't do anything
+		processResult = MergeCurrentDetail(this->_inputGDP);
+		if (processResult != ENUMS::MethodProcessResult::SUCCESS) return processResult;
+
+		addWarning(SOP_ERR_BADGROUP);
+		return processResult;
+	}
+	
+	for (auto token : tokens)
+	{
 		PROGRESS_WAS_INTERRUPTED_WITH_ERROR_AND_OBJECT(this, progress, ENUMS::MethodProcessResult::FAILURE)
-		
-		// get group and...		
-		const auto currGroup = groupIt.group();		
-		if (!currGroup->isInternal())
-		{			
-			// ... make sure we don't process groups specified in this->_primitiveGroupInput0
-			auto canContinue = true;
-			for (auto token : tokens)
-			{
-				PROGRESS_WAS_INTERRUPTED_WITH_ERROR_AND_OBJECT(this, progress, ENUMS::MethodProcessResult::FAILURE)
 
-				if (std::string(currGroup->getName()).compare(token) == 0)
-				{
-					canContinue = false;
-					break;
-				}				
-			}
-			if (!canContinue) continue;
-
+		const auto currGroup = this->_inputGDP->findPrimitiveGroup(token);
+		if (currGroup && !currGroup->isEmpty())
+		{
 			// create separate detail from it
 			const auto currDetail = new GU_Detail(this->_inputGDP, currGroup);
 			
@@ -801,29 +769,32 @@ SOP_Operator::WhenPerGroup(UT_AutoInterrupt progress, ENUMS::ProcessedOutputType
 			if (processResult != ENUMS::MethodProcessResult::SUCCESS)
 			{
 				delete currDetail;
+				processedDetails.clear();
 				return processResult;
 			}
-	
+			
 			processedDetails.append(currDetail);
 			currIter++;
-		}		
+		}
 	}
 		
 	if (processedDetails.size() == 0)
 	{
-		this->addError(SOP_MESSAGE, "Failed to process details.");
+		addError(SOP_MESSAGE, "Failed to process details.");
 		return ENUMS::MethodProcessResult::FAILURE;
 	}	
 	
-	// merge all details into this->gdp
+	// merge all details
 	this->gdp->clear();	
 	currIter = 0;
-
+	
 	for (auto detail : processedDetails)
 	{
 		PROGRESS_WAS_INTERRUPTED_WITH_ERROR_AND_OBJECT(this, progress, ENUMS::MethodProcessResult::FAILURE)
 
-		MergeCurrentDetail(detail, processedDetails.size(), currIter);
+		processResult = MergeCurrentDetail(detail, processedDetails.size(), currIter);
+		if (processResult != ENUMS::MethodProcessResult::SUCCESS) return processResult;
+
 		currIter++;
 	}
 	
@@ -838,23 +809,21 @@ OP_ERROR
 SOP_Operator::cookMySop(OP_Context& context)
 {
 	DEFAULTS_CookMySop()
-
+	
 	this->_inputGDP = new GU_Detail(inputGeo(0, context));
 	if (this->_inputGDP && error() < OP_ERROR::UT_ERROR_WARNING && cookInputGroups(context) < OP_ERROR::UT_ERROR_WARNING)
 	{
-		// separate range of geometry we want to work on
-		auto processResult = SeparatePrimitiveRange(this->_inputGDP);
-		if (processResult != ENUMS::MethodProcessResult::SUCCESS || error() > OP_ERROR::UT_ERROR_WARNING) return error();
-
+		auto processResult = ENUMS::MethodProcessResult::SUCCESS;
+		
 		// process geometry
 		exint processModeChoiceMenuValue;
 		PRM_ACCESS::Get::IntPRM(this, processModeChoiceMenuValue, UI::processModeChoiceMenu_Parameter, currentTime);			
 
 		switch(processModeChoiceMenuValue)
 		{
-			case static_cast<exint>(ENUMS::ProcessModeOption::AS_WHOLE) :			{ processResult = WhenAsWhole(progress, ENUMS::ProcessedOutputType::CONVEX_HULLS, currentTime); } break;
-			case static_cast<exint>(ENUMS::ProcessModeOption::PER_ELEMENT) :		{ processResult = WhenPerElement(progress, ENUMS::ProcessedOutputType::CONVEX_HULLS, currentTime); } break;
-			case static_cast<exint>(ENUMS::ProcessModeOption::PER_GROUP) :			{ processResult = WhenPerGroup(progress, ENUMS::ProcessedOutputType::CONVEX_HULLS, currentTime); } break;
+			case static_cast<exint>(ENUMS::ProcessModeOption::AS_WHOLE) :		{ processResult = WhenAsWhole(progress, ENUMS::ProcessedOutputType::CONVEX_HULLS, currentTime); } break;
+			case static_cast<exint>(ENUMS::ProcessModeOption::PER_ELEMENT) :	{ processResult = WhenPerElement(progress, ENUMS::ProcessedOutputType::CONVEX_HULLS, currentTime); } break;
+			case static_cast<exint>(ENUMS::ProcessModeOption::PER_GROUP) :		{ processResult = WhenPerGroup(progress, ENUMS::ProcessedOutputType::CONVEX_HULLS, currentTime); } break;
 		}
 	}
 	
@@ -865,13 +834,11 @@ GU_DetailHandle
 SOP_Operator::cookMySopOutput(OP_Context& context, int outputidx, SOP_Node* interests)
 {
 	DEFAULTS_CookMySopOutput()
-		
+	
 	this->_inputGDP = new GU_Detail(inputGeo(0, context));
 	if (this->_inputGDP && error() < OP_ERROR::UT_ERROR_WARNING && cookInputGroups(context) < OP_ERROR::UT_ERROR_WARNING)
 	{		
-		// separate range of geometry we want to work on
-		auto processResult = SeparatePrimitiveRange(this->_inputGDP);
-		if (processResult != ENUMS::MethodProcessResult::SUCCESS || error() > OP_ERROR::UT_ERROR_WARNING) return result;
+		auto processResult = ENUMS::MethodProcessResult::SUCCESS;
 
 		// process geometry		
 		exint processModeChoiceMenuValue;
@@ -879,9 +846,9 @@ SOP_Operator::cookMySopOutput(OP_Context& context, int outputidx, SOP_Node* inte
 		
 		switch (processModeChoiceMenuValue)
 		{
-			case static_cast<exint>(ENUMS::ProcessModeOption::AS_WHOLE) :			{ processResult = WhenAsWhole(progress, ENUMS::ProcessedOutputType::ORIGINAL_GEOMETRY, currentTime); } break;
-			case static_cast<exint>(ENUMS::ProcessModeOption::PER_ELEMENT) :		{ processResult = WhenPerElement(progress, ENUMS::ProcessedOutputType::ORIGINAL_GEOMETRY, currentTime); } break;
-			case static_cast<exint>(ENUMS::ProcessModeOption::PER_GROUP) :			{ processResult = WhenPerGroup(progress, ENUMS::ProcessedOutputType::ORIGINAL_GEOMETRY, currentTime); } break;
+			case static_cast<exint>(ENUMS::ProcessModeOption::AS_WHOLE) :		{ processResult = WhenAsWhole(progress, ENUMS::ProcessedOutputType::ORIGINAL_GEOMETRY, currentTime); } break;
+			case static_cast<exint>(ENUMS::ProcessModeOption::PER_ELEMENT) :	{ processResult = WhenPerElement(progress, ENUMS::ProcessedOutputType::ORIGINAL_GEOMETRY, currentTime); } break;
+			case static_cast<exint>(ENUMS::ProcessModeOption::PER_GROUP) :		{ processResult = WhenPerGroup(progress, ENUMS::ProcessedOutputType::ORIGINAL_GEOMETRY, currentTime); } break;
 		}
 	}
 

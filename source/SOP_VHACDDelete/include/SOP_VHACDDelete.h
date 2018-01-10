@@ -83,7 +83,12 @@ DECLARE_SOP_Namespace_Start()
 
 		static PRM_Template			parametersList[];
 
-	private:		
+	private:
+		ENUMS::MethodProcessResult	SeparatePrimitiveRange(GU_Detail* detail, const GA_PrimitiveGroup* primitivegroup);
+
+		GU_Detail*					_convexGDP;
+		GU_Detail*					_originalGDP;
+
 		const GA_PrimitiveGroup*	_primitiveGroupInput0;
 		const GA_PrimitiveGroup*	_primitiveGroupInput1;
 	};

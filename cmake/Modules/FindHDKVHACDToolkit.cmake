@@ -103,6 +103,7 @@ COLLECT NODE PROJECT DATA                                          |
 	HDK_MODULE_GET_NODE_FILES("SOP_VHACDScoutJunior")
 	HDK_MODULE_GET_NODE_FILES("SOP_VHACDScoutSenior")
 	HDK_MODULE_GET_NODE_FILES("SOP_VHACDSetup")
+	HDK_MODULE_GET_NODE_FILES("SOP_VHACDTransform")
 	
 else()
 	Message(STATUS "Didn't found ${____module_name_toupper____}")

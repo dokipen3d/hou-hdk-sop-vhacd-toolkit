@@ -33,14 +33,14 @@ INCLUDES                                                           |
 #include <BM/BM_ResourceManager.h>
 
 // this
-#include "SOP_VHACDDelete.h"
+#include "SOP_VHACDTransform.h"
 
 /* -----------------------------------------------------------------
 DEFINES                                                            |
 ----------------------------------------------------------------- */
 
-#define SOP_Operator		GET_SOP_Namespace()::SOP_VHACDDelete
-#define MSS_Selector		GET_SOP_Namespace()::MSS_VHACDDelete
+#define SOP_Operator		GET_SOP_Namespace()::SOP_VHACDTransform
+#define MSS_Selector		GET_SOP_Namespace()::MSS_VHACDTransform
 #define COMMON_NAMES		GET_SOP_Namespace()::COMMON_NAMES
 #define ENUMS				GET_Base_Namespace()::Enums
 
@@ -53,8 +53,8 @@ newSopOperator(OP_OperatorTable* table)
 {	
 	const auto sop = new OP_Operator
 	(
-		COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::SOP_DELETE_SMALLNAME),
-		COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::SOP_DELETE_BIGNAME),
+		COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::SOP_TRANSFORM_SMALLNAME),
+		COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::SOP_TRANSFORM_BIGNAME),
 		SOP_Operator::CreateMe,
 		SOP_Operator::parametersList,
 		2,								// min inputs 
@@ -78,7 +78,7 @@ void
 newSelector(BM_ResourceManager* manager)
 {
 	// find operator
-	const auto sopOperator = OP_Network::getOperatorTable(SOP_TABLE_NAME)->getOperator(COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::SOP_GENERATE_SMALLNAME));
+	const auto sopOperator = OP_Network::getOperatorTable(SOP_TABLE_NAME)->getOperator(COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::SOP_TRANSFORM_SMALLNAME));
 	if (!sopOperator)
 	{
 		UT_ASSERT(!"Could not find required operator!");
@@ -88,8 +88,8 @@ newSelector(BM_ResourceManager* manager)
 	// create selector
 	auto sopSelector = new PI_SelectorTemplate
 	(
-		COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::MSS_DELETE_SMALLNAME),
-		COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::MSS_DELETE_BIGNAME),
+		COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::MSS_TRANSFORM_SMALLNAME),
+		COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::MSS_TRANSFORM_BIGNAME),
 		SOP_TABLE_NAME
 	);
 
@@ -111,10 +111,10 @@ newSelector(BM_ResourceManager* manager)
 		success = manager->bindSelector
 		(
 			sopOperator,
-			COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::MSS_DELETE_SMALLNAME),
-			COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::MSS_DELETE_BIGNAME),
-			COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::MSS_DELETE_PROMPT),
-			COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::SOP_DELETE_GROUP_PRMNAME),
+			COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::MSS_TRANSFORM_SMALLNAME),
+			COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::MSS_TRANSFORM_BIGNAME),
+			COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::MSS_TRANSFORM_PROMPT),
+			COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::SOP_TRANSFORM_GROUP_PRMNAME),
 			0,								// Input number to wire up.
 			1,								// 1 means this input is required.
 			"0x000000ff",					// Prim/point mask selection.

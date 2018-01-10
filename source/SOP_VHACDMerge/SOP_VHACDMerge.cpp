@@ -172,14 +172,14 @@ SOP_Operator::CallbackAttributeMismatchErrorModeChoiceMenu(void* data, int index
 	{
 		// TODO: figure out why restoreFactoryDefaults() doesn't work
 		auto defVal0 = static_cast<exint>(UI::hullCountMismatchErrorModeChoiceMenu_Parameter.getFactoryDefaults()->getOrdinal());
-		auto defVal1 = static_cast<exint>(UI::hullCountMismatchErrorModeChoiceMenu_Parameter.getFactoryDefaults()->getOrdinal());
-		auto defVal2 = static_cast<exint>(UI::hullCountMismatchErrorModeChoiceMenu_Parameter.getFactoryDefaults()->getOrdinal());
-		auto defVal3 = static_cast<exint>(UI::hullCountMismatchErrorModeChoiceMenu_Parameter.getFactoryDefaults()->getOrdinal());
+		auto defVal1 = static_cast<exint>(UI::hullIDMismatchErrorModeChoiceMenu_Parameter.getFactoryDefaults()->getOrdinal());
+		auto defVal2 = static_cast<exint>(UI::bundleCountMismatchErrorModeChoiceMenu_Parameter.getFactoryDefaults()->getOrdinal());
+		auto defVal3 = static_cast<exint>(UI::bundleIDMismatchErrorModeChoiceMenu_Parameter.getFactoryDefaults()->getOrdinal());
 
 		PRM_ACCESS::Set::IntPRM(me, defVal0, UI::hullCountMismatchErrorModeChoiceMenu_Parameter, time);
-		PRM_ACCESS::Set::IntPRM(me, defVal0, UI::hullIDMismatchErrorModeChoiceMenu_Parameter, time);
-		PRM_ACCESS::Set::IntPRM(me, defVal0, UI::bundleCountMismatchErrorModeChoiceMenu_Parameter, time);
-		PRM_ACCESS::Set::IntPRM(me, defVal0, UI::bundleIDMismatchErrorModeChoiceMenu_Parameter, time);
+		PRM_ACCESS::Set::IntPRM(me, defVal1, UI::hullIDMismatchErrorModeChoiceMenu_Parameter, time);
+		PRM_ACCESS::Set::IntPRM(me, defVal2, UI::bundleCountMismatchErrorModeChoiceMenu_Parameter, time);
+		PRM_ACCESS::Set::IntPRM(me, defVal3, UI::bundleIDMismatchErrorModeChoiceMenu_Parameter, time);
 	}	
 
 	return 1;
@@ -443,46 +443,34 @@ SOP_Operator::MergeCurrentDetail(const GU_Detail* detail, exint iteration, exint
 {
 	auto success = false;
 
+#define THIS_MERGE_FAILURE(node, errormessage) if (!success) { node->addError(SOP_MESSAGE, errormessage); return ENUMS::MethodProcessResult::FAILURE; }
+
 	// merge current detail into main detail
 	if (detailscount > 1)
 	{
 		if (iteration == 0)
 		{
 			success = this->gdp->copy(*detail, GEO_CopyMethod::GEO_COPY_START);
-			if (!success)
-			{
-				this->addError(SOP_MESSAGE, "Geometry merge failure on GEO_COPY_START");
-				return ENUMS::MethodProcessResult::FAILURE;
-			}			
+			THIS_MERGE_FAILURE(this, "Geometry merge failure on GEO_COPY_START")
 		}
 		else if (iteration == detailscount - 1)
 		{
 			success = this->gdp->copy(*detail, GEO_CopyMethod::GEO_COPY_END);
-			if (!success)
-			{
-				this->addError(SOP_MESSAGE, "Geometry merge failure on GEO_COPY_END");
-				return ENUMS::MethodProcessResult::FAILURE;
-			}			
+			THIS_MERGE_FAILURE(this, "Geometry merge failure on GEO_COPY_END")
 		}
 		else
 		{
 			success = this->gdp->copy(*detail, GEO_CopyMethod::GEO_COPY_ADD);
-			if (!success)
-			{
-				this->addError(SOP_MESSAGE, "Geometry merge failure on GEO_COPY_ADD");
-				return ENUMS::MethodProcessResult::FAILURE;
-			}
+			THIS_MERGE_FAILURE(this, "Geometry merge failure on GEO_COPY_ADD")
 		}
 	}
 	else
 	{
 		success = this->gdp->copy(*detail, GEO_CopyMethod::GEO_COPY_ONCE);
-		if (!success)
-		{
-			this->addError(SOP_MESSAGE, "Geometry merge failure on GEO_COPY_ONCE");
-			return ENUMS::MethodProcessResult::FAILURE;
-		}
+		THIS_MERGE_FAILURE(this, "Geometry merge failure on GEO_COPY_ONCE")
 	}
+
+#undef THIS_MERGE_FAILURE
 
 	return ENUMS::MethodProcessResult::SUCCESS;
 }

@@ -41,20 +41,18 @@ INCLUDES                                                           |
 #include <Utility/PRM_TemplateAccessors.h>
 #include <Utility/GA_AttributeAccessors.h>
 #include <Utility/GU_DetailCalculator.h>
-#include <Utility/GU_DetailModifier.h>
 
 // this
 #include "Parameters.h"
 #include "FilterModeOption.h"
-#include <Utility/GA_AttributeAccessors.h>
 
 /* -----------------------------------------------------------------
 DEFINES                                                            |
 ----------------------------------------------------------------- */
 
-#define SOP_Operator			GET_SOP_Namespace()::SOP_VHACDDelete
+#define SOP_Operator			GET_SOP_Namespace()::SOP_VHACDTransform
 #define SOP_Base_Operator		SOP_VHACDNode
-#define MSS_Selector			GET_SOP_Namespace()::MSS_VHACDDelete
+#define MSS_Selector			GET_SOP_Namespace()::MSS_VHACDTransform
 
 // very important
 #define SOP_GroupFieldIndex_0	2
@@ -117,15 +115,16 @@ IMPLEMENT_DescriptionPRM_Callback(SOP_Operator, UI)
 OPERATOR INITIALIZATION                                            |
 ----------------------------------------------------------------- */
 
-SOP_Operator::~SOP_VHACDDelete() { }
+SOP_Operator::~SOP_VHACDTransform() { }
 
-SOP_Operator::SOP_VHACDDelete(OP_Network* network, const char* name, OP_Operator* op) :
+SOP_Operator::SOP_VHACDTransform(OP_Network* network, const char* name, OP_Operator* op) :
 SOP_Base_Operator(network, name, op),
+_processedInputType(ENUMS::ProcessedInputType::NO_TYPE),
 _convexGDP(nullptr),
 _originalGDP(nullptr),
 _primitiveGroupInput0(nullptr),
 _primitiveGroupInput1(nullptr)
-{ op->setIconName(COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::SOP_DELETE_ICONNAME)); }
+{ op->setIconName(COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::SOP_TRANSFORM_ICONNAME)); }
 
 OP_Node* 
 SOP_Operator::CreateMe(OP_Network* network, const char* name, OP_Operator* op) 
@@ -185,33 +184,7 @@ SOP_Operator::cookInputGroups(OP_Context& context, int alone)
 HELPERS                                                            |
 ----------------------------------------------------------------- */
 
-ENUMS::MethodProcessResult
-SOP_Operator::SeparatePrimitiveRange(GU_Detail* detail, const GA_PrimitiveGroup* primitivegroup)
-{
-	auto processReult = ENUMS::MethodProcessResult::SUCCESS;
-
-	const auto killPrimiGroup = new GA_PrimitiveGroup(*detail);
-	if (killPrimiGroup)
-	{
-		killPrimiGroup->addRange(detail->getPrimitiveRange());
-		killPrimiGroup->removeRange(detail->getPrimitiveRange(primitivegroup));
-
-		detail->deletePrimitives(*killPrimiGroup, true);
-	}
-	else
-	{
-		delete killPrimiGroup;
-		this->addError(SOP_MESSAGE, "Failed to create separation group.");
-		processReult = ENUMS::MethodProcessResult::FAILURE;
-	}
-
-	delete killPrimiGroup;
-
-	// make sure there are no empty groups after this operation
-	detail->destroyAllEmptyGroups();
-
-	return processReult;
-}
+// YOUR CODE GOES HERE...
 
 /* -----------------------------------------------------------------
 MAIN                                                               |
@@ -222,42 +195,13 @@ SOP_Operator::cookMySop(OP_Context& context)
 {
 	DEFAULTS_CookMySop()
 
+	this->_processedInputType = ENUMS::ProcessedInputType::CONVEX_HULLS;
+
 	if (duplicateSource(static_cast<exint>(ENUMS::ProcessedInputType::CONVEX_HULLS), context) < OP_ERROR::UT_ERROR_WARNING && error() < OP_ERROR::UT_ERROR_WARNING && cookInputGroups(context) < OP_ERROR::UT_ERROR_WARNING)
 	{		
-		if (!this->_primitiveGroupInput0 || this->_primitiveGroupInput0->isEmpty())
+		if (this->_primitiveGroupInput0)
 		{
-			this->addWarning(SOP_ERR_BADGROUP);
-			return error();
-		}
-
-		exint filterModeOptionValue;
-		PRM_ACCESS::Get::IntPRM(this, filterModeOptionValue, UI::filterModeChoiceMenu_Parameter, currentTime);
-
-		switch (filterModeOptionValue)
-		{
-		case static_cast<exint>(ENUMS::FilterModeOption::BY_BUNDLE_ID) : break;
-		default: break;
-		}
-
-		//auto processResult = UTILS::GU_DetailModifier::SeparatePrimitiveRange(this, this->_convexGDP, this->_primitiveGroupInput0);
-		auto processResult = SeparatePrimitiveRange(this->_convexGDP, this->_primitiveGroupInput0);
-		if (processResult != ENUMS::MethodProcessResult::SUCCESS || error() > UT_ErrorSeverity::UT_ERROR_NONE) return error();
-	}
-
-	return error();
-}
-
-GU_DetailHandle
-SOP_Operator::cookMySopOutput(OP_Context& context, int outputidx, SOP_Node* interests)
-{
-	DEFAULTS_CookMySopOutput()
-			
-	if (duplicateSource(static_cast<exint>(ENUMS::ProcessedInputType::ORIGINAL_GEOMETRY), context) < OP_ERROR::UT_ERROR_WARNING && error() < OP_ERROR::UT_ERROR_WARNING && cookInputGroups(context) < OP_ERROR::UT_ERROR_WARNING)
-	{
-		if (!this->_primitiveGroupInput1 || this->_primitiveGroupInput1->isEmpty())
-		{
-			this->addWarning(SOP_ERR_BADGROUP);
-			return result;
+			std::cout << "Convex: " << this->_primitiveGroupInput0->entries() << std::endl;
 		}
 
 		exint filterModeOptionValue;
@@ -268,10 +212,33 @@ SOP_Operator::cookMySopOutput(OP_Context& context, int outputidx, SOP_Node* inte
 			case static_cast<exint>(ENUMS::FilterModeOption::BY_BUNDLE_ID) : break;
 			default: break;
 		}
+	}
 
-		//auto processResult = UTILS::GU_DetailModifier::SeparatePrimitiveRange(this, this->_originalGDP, this->_primitiveGroupInput1);
-		auto processResult = SeparatePrimitiveRange(this->_originalGDP, this->_primitiveGroupInput1);
-		if (processResult != ENUMS::MethodProcessResult::SUCCESS || error() > UT_ErrorSeverity::UT_ERROR_NONE) return result;
+	return error();
+}
+
+GU_DetailHandle
+SOP_Operator::cookMySopOutput(OP_Context& context, int outputidx, SOP_Node* interests)
+{
+	DEFAULTS_CookMySopOutput()
+			
+	this->_processedInputType = ENUMS::ProcessedInputType::ORIGINAL_GEOMETRY;
+
+	if (duplicateSource(static_cast<exint>(ENUMS::ProcessedInputType::ORIGINAL_GEOMETRY), context) < OP_ERROR::UT_ERROR_WARNING && error() < OP_ERROR::UT_ERROR_WARNING && cookInputGroups(context) < OP_ERROR::UT_ERROR_WARNING)
+	{
+		if (this->_primitiveGroupInput1)
+		{
+			std::cout << "Original: " << this->_primitiveGroupInput1->entries() << std::endl;
+		}
+
+		exint filterModeOptionValue;
+		PRM_ACCESS::Get::IntPRM(this, filterModeOptionValue, UI::filterModeChoiceMenu_Parameter, currentTime);
+
+		switch (filterModeOptionValue)
+		{
+			case static_cast<exint>(ENUMS::FilterModeOption::BY_BUNDLE_ID) : break;
+			default: break;
+		}
 	}
 
 	return result;
@@ -281,10 +248,10 @@ SOP_Operator::cookMySopOutput(OP_Context& context, int outputidx, SOP_Node* inte
 SELECTOR IMPLEMENTATION                                            |
 ----------------------------------------------------------------- */
 
-MSS_Selector::~MSS_VHACDDelete() { }
+MSS_Selector::~MSS_VHACDTransform() { }
 
-MSS_Selector::MSS_VHACDDelete(OP3D_View& viewer, PI_SelectorTemplate& templ) 
-: MSS_ReusableSelector(viewer, templ, COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::SOP_DELETE_SMALLNAME), COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::SOP_DELETE_GROUP_PRMNAME), nullptr, true)
+MSS_Selector::MSS_VHACDTransform(OP3D_View& viewer, PI_SelectorTemplate& templ) 
+: MSS_ReusableSelector(viewer, templ, COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::SOP_TRANSFORM_SMALLNAME), COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::SOP_TRANSFORM_GROUP_PRMNAME), nullptr, true)
 { this->setAllowUseExistingSelection(false); }
 
 BM_InputSelector*
@@ -293,7 +260,7 @@ MSS_Selector::CreateMe(BM_View& viewer, PI_SelectorTemplate& templ)
 
 const char*
 MSS_Selector::className() const
-{ return "MSS_VHACDDelete"; }
+{ return "MSS_VHACDTransform"; }
 
 /* -----------------------------------------------------------------
 UNDEFINES                                                          |
