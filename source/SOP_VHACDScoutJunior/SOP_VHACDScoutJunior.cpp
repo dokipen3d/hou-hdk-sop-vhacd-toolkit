@@ -159,7 +159,7 @@ SOP_Operator::~SOP_VHACDScoutJunior() { }
 
 SOP_Operator::SOP_VHACDScoutJunior(OP_Network* network, const char* name, OP_Operator* op)
 : SOP_Base_Operator(network, name, op)
-{ op->setIconName(COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::SOP_SCOUT_JUNIOR_ICONNAME)); }
+{ }
 
 OP_Node* 
 SOP_Operator::CreateMe(OP_Network* network, const char* name, OP_Operator* op) 
@@ -241,13 +241,13 @@ SOP_Operator::AddHullVolumeATT(UT_AutoInterrupt progress, const GEO_PrimClassifi
 		this->addError(SOP_MESSAGE, errorMessage.c_str());
 		return ENUMS::MethodProcessResult::FAILURE;
 	}
-
+	
 	// calculate and update hull_volume attribute
 	for (const auto map : mappedData)
-	{
+	{		
 		PROGRESS_WAS_INTERRUPTED_WITH_ERROR_AND_OBJECT(this, progress, ENUMS::MethodProcessResult::INTERRUPT)
 
-		fpreal64 hullVolume;
+		fpreal64 hullVolume;		
 		const auto processResult = UTILS::GU_DetailCalculator::TriangleMeshSignedVolume(this, progress, this->gdp, map.second, hullVolume, ENUMS::NodeErrorLevel::ERROR);
 		if (processResult != ENUMS::MethodProcessResult::SUCCESS) return processResult;
 
@@ -370,15 +370,12 @@ SOP_Operator::cookMySop(OP_Context& context)
 		auto		addHullIDAttributeValue = false;
 		auto		addHullVolumeAttributeValue = false;
 		auto		groupPerHullValue = false;
-		auto		pointPerHullMassCenterValue = false;
-
-		UT_String	partialHullGroupNameValue;
+		auto		pointPerHullMassCenterValue = false;		
 
 		PRM_ACCESS::Get::IntPRM(this, addHullCountAttributeValue, UI::addHullCountAttributeToggle_Parameter, currentTime);
 		PRM_ACCESS::Get::IntPRM(this, addHullIDAttributeValue, UI::addHullIDAttributeToggle_Parameter, currentTime);
 		PRM_ACCESS::Get::IntPRM(this, addHullVolumeAttributeValue, UI::addHullVolumeAttributeToggle_Parameter, currentTime);
-		PRM_ACCESS::Get::IntPRM(this, groupPerHullValue, UI::groupPerHullToggle_Parameter, currentTime);
-		PRM_ACCESS::Get::StringPRM(this, partialHullGroupNameValue, UI::specifyHullGroupNameString_Parameter, currentTime);
+		PRM_ACCESS::Get::IntPRM(this, groupPerHullValue, UI::groupPerHullToggle_Parameter, currentTime);		
 		PRM_ACCESS::Get::IntPRM(this, pointPerHullMassCenterValue, UI::pointPerHullCenterToggle_Parameter, currentTime);
 
 		if (addHullCountAttributeValue || addHullIDAttributeValue || addHullVolumeAttributeValue || groupPerHullValue || pointPerHullMassCenterValue)
@@ -410,6 +407,9 @@ SOP_Operator::cookMySop(OP_Context& context)
 
 			if (groupPerHullValue)
 			{
+				UT_String	partialHullGroupNameValue;
+				PRM_ACCESS::Get::StringPRM(this, partialHullGroupNameValue, UI::specifyHullGroupNameString_Parameter, currentTime);
+
 				processResult = GRPPerHull(progress, partialHullGroupNameValue, primClassifier, currentTime);
 				if (processResult != ENUMS::MethodProcessResult::SUCCESS) return error();
 			}

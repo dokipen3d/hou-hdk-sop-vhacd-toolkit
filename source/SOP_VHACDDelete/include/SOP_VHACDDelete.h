@@ -1,5 +1,6 @@
 /*
-	Base node class for VHACD toolkit.
+	Volumetric-Hierarchical Approximate Convex Decomposition.
+	Based on https://github.com/kmammou/v-hacd
 
 	IMPORTANT! ------------------------------------------
 	* Macros starting and ending with '____' shouldn't be used anywhere outside of this file.
@@ -10,7 +11,7 @@
 
 	LICENSE ------------------------------------------
 
-	Copyright (c) 2016-2017 SWANN
+	Copyright (c) 2016-2018 SWANN
 	All rights reserved.
 
 	Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -23,72 +24,88 @@
 */
 
 #pragma once
-#ifndef ____sop_vhacd_node_h____
-#define ____sop_vhacd_node_h____
+#ifndef ____sop_vhacd_delete_h____
+#define ____sop_vhacd_delete_h____
 
 /* -----------------------------------------------------------------
 INCLUDES                                                           |
 ----------------------------------------------------------------- */
 
 // SESI
-#include <SOP/SOP_Node.h>
+#include <MSS/MSS_ReusableSelector.h>
 
 // hou-hdk-common
+#include <Macros/CookMySop.h>
+#include <Macros/DescriptionPRM.h>
 #include <Macros/Namespace.h>
-#include <Macros/ProgressEscape.h>
+#include <Macros/UpdateParmsFlags.h>
+#include <Enums/MethodProcessResult.h>
 
 // this
-#include "VHACDCommonName.h"
-#include "VHACDCommonParameterName.h"
-#include "VHACDCommonAttributeName.h"
+#include "SOP_VHACDNode.h"
+#include "ProcessedInputType.h"
+#include "ProcessedOutputType.h"
+
+/* -----------------------------------------------------------------
+FORWARDS                                                           |
+----------------------------------------------------------------- */
+
+class UT_AutoInterrupt;
 
 /* -----------------------------------------------------------------
 DEFINES                                                            |
 ----------------------------------------------------------------- */
 
-#define CONTAINERS				GET_Base_Namespace()::Containers
-#define ENUMS					GET_Base_Namespace()::Enums
-
-/* -----------------------------------------------------------------
-DEFAULT VARIABLES                                                  |
------------------------------------------------------------------ */
-
-DECLARE_SOP_Namespace_Start()
-
-// set here to be easily available for everything out there, by just accessing namespace
-static CONTAINERS::VHACDCommonName				COMMON_NAMES = CONTAINERS::VHACDCommonName();
-static CONTAINERS::VHACDCommonParameterName		COMMON_PRM_NAMES = CONTAINERS::VHACDCommonParameterName();
+#define CONTAINERS					GET_Base_Namespace()::Containers
+#define ENUMS						GET_Base_Namespace()::Enums
 
 /* -----------------------------------------------------------------
 DECLARATION                                                        |
 ----------------------------------------------------------------- */
 
-class SOP_VHACDNode : public SOP_Node
-{
-protected:
-	SOP_VHACDNode(OP_Network* network, const char* name, OP_Operator* op) : SOP_Node(network, name, op)
+DECLARE_SOP_Namespace_Start()
+
+	class SOP_VHACDDelete final : public SOP_VHACDNode
 	{
-		// defaut node color
-		this->setColor(UT_Color(UT_ColorType::UT_RGB, 0.0, 0.0, 0.0));
+		DECLARE_CookMySop_Multi()
+		DECLARE_UpdateParmsFlags()
 
-		// default node icon
-		op->setIconName(COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::TOOLKIT_ICONNAME));
-	}
-	
-	CONTAINERS::VHACDCommonAttributeName		_commonAttributeNames = CONTAINERS::VHACDCommonAttributeName();
-	
-	GA_ROHandleI								_convexBundleIDHandle;
-	GA_ROHandleI								_originalBundleIDHandle;
+		DECLARE_DescriptionPRM_Callback()
 
-	GA_RWHandleI								_hullCountHandle;
-	GA_RWHandleI								_hullIDHandle;
-	GA_RWHandleD								_hullVolumeHandle;
-	GA_RWHandleV3								_hullMassCenterHandle;
+	protected:
+		~SOP_VHACDDelete() override;
+		SOP_VHACDDelete(OP_Network* network, const char* name, OP_Operator* op);
+		const char*					inputLabel(unsigned input) const override;
 
-	GA_RWHandleI								_bundleCountHandle;
-	GA_RWHandleI								_bundleIDHandle;
-	GA_RWHandleV3								_bundleMassCenterHandle;
-};
+	public:
+		static OP_Node*				CreateMe(OP_Network* network, const char* name, OP_Operator* op);
+		OP_ERROR					cookInputGroups(OP_Context& context, int alone = 0) override;
+
+		static PRM_Template			parametersList[];
+
+	private:
+		ENUMS::MethodProcessResult	SeparatePrimitiveRange(GU_Detail* detail, const GA_PrimitiveGroup* primitivegroup);
+
+		GU_Detail*					_convexGDP;
+		GU_Detail*					_originalGDP;
+
+		const GA_PrimitiveGroup*	_primitiveGroupInput0;
+		const GA_PrimitiveGroup*	_primitiveGroupInput1;
+	};
+
+/* -----------------------------------------------------------------
+SELECTOR DECLARATION                                               |
+----------------------------------------------------------------- */
+
+	class MSS_VHACDDelete : public MSS_ReusableSelector
+	{
+	public:
+		virtual ~MSS_VHACDDelete();
+		MSS_VHACDDelete(OP3D_View& viewer, PI_SelectorTemplate& templ);
+
+		static BM_InputSelector*	CreateMe(BM_View& Viewer, PI_SelectorTemplate& templ);
+		const char*					className() const override;
+	};
 
 DECLARE_SOP_Namespace_End
 
@@ -99,4 +116,4 @@ UNDEFINES                                                          |
 #undef ENUMS
 #undef CONTAINERS
 
-#endif // !____sop_vhacd_node_h____
+#endif // !____sop_vhacd_delete_h____

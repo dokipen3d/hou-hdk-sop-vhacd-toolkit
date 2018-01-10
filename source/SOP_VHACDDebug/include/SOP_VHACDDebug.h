@@ -1,8 +1,9 @@
 /*
-	Enum for common names.
+	Volumetric-Hierarchical Approximate Convex Decomposition.
+	Based on https://github.com/kmammou/v-hacd
 
 	IMPORTANT! ------------------------------------------
-	* this should be synchronized with VHACDCommonName.h
+	* Macros starting and ending with '____' shouldn't be used anywhere outside of this file.
 	-----------------------------------------------------
 
 	Author: 	SWANN
@@ -23,96 +24,76 @@
 */
 
 #pragma once
-#ifndef ____vhacd_common_name_option_h____
-#define ____vhacd_common_name_option_h____
+#ifndef ____sop_vhacd_debug_h____
+#define ____sop_vhacd_debug_h____
 
 /* -----------------------------------------------------------------
 INCLUDES                                                           |
 ----------------------------------------------------------------- */
 
 // SESI
-#if _WIN32		
-	#include <sys/SYS_Types.h>
-#else
-	#include <SYS/SYS_Types.h>
-#endif
+#include <MSS/MSS_ReusableSelector.h>
 
 // hou-hdk-common
-#include "Macros/Namespace.h"
+#include <Macros/CookMySop.h>
+#include <Macros/DescriptionPRM.h>
+#include <Macros/Namespace.h>
+#include <Macros/UpdateParmsFlags.h>
+#include <Enums/MethodProcessResult.h>
+
+// this
+#include "SOP_VHACDNode.h"
+#include "ProcessedInputType.h"
+#include "ProcessedOutputType.h"
 
 /* -----------------------------------------------------------------
-ENUM                                                               |
+FORWARDS                                                           |
 ----------------------------------------------------------------- */
 
-DECLARE_Base_Namespace_Start()
-namespace Enums
-{
-	enum class VHACDCommonNameOption : exint
+class UT_AutoInterrupt;
+
+/* -----------------------------------------------------------------
+DEFINES                                                            |
+----------------------------------------------------------------- */
+
+#define CONTAINERS					GET_Base_Namespace()::Containers
+#define ENUMS						GET_Base_Namespace()::Enums
+
+/* -----------------------------------------------------------------
+DECLARATION                                                        |
+----------------------------------------------------------------- */
+
+DECLARE_SOP_Namespace_Start()
+
+	class SOP_VHACDDebug final : public SOP_VHACDNode
 	{
-		// toolkit global
-		TOOLKIT_TABMENU_PATH,
-		TOOLKIT_ICONNAME,
+		DECLARE_CookMySop()
+		DECLARE_UpdateParmsFlags()
 
-		SOP_OUTPUTNAME_CONVEXHULLS,
-		SOP_OUTPUTNAME_ORIGINALGEOMETRY,
+		DECLARE_DescriptionPRM_Callback()
 
-		// SOP_VHACDDelete only
-		SOP_DEBUG_ICONNAME,
-		SOP_DEBUG_SMALLNAME,
-		SOP_DEBUG_BIGNAME,
+	protected:
+		~SOP_VHACDDebug() override;
+		SOP_VHACDDebug(OP_Network* network, const char* name, OP_Operator* op);
+		const char*					inputLabel(unsigned input) const override;
 
-		// SOP_VHACDDelete only
-		SOP_DELETE_ICONNAME,
-		SOP_DELETE_SMALLNAME,
-		SOP_DELETE_BIGNAME,	
-		SOP_DELETE_GROUP_PRMNAME,
-		MSS_DELETE_SMALLNAME,
-		MSS_DELETE_BIGNAME,
-		MSS_DELETE_PROMPT,
+	public:
+		static OP_Node*				CreateMe(OP_Network* network, const char* name, OP_Operator* op);
 
-		// SOP_VHACDGenerate only
-		SOP_GENERATE_ICONNAME,
-		SOP_GENERATE_SMALLNAME,
-		SOP_GENERATE_BIGNAME,
-		SOP_GENERATE_GROUP_PRMNAME,
-		MSS_GENERATE_SMALLNAME,
-		MSS_GENERATE_BIGNAME,
-		MSS_GENERATE_PROMPT,
+		static PRM_Template			parametersList[];
 
-		// SOP_VHACDScoutJunior only
-		SOP_SCOUT_JUNIOR_ICONNAME,
-		SOP_SCOUT_JUNIOR_SMALLNAME,
-		SOP_SCOUT_JUNIOR_BIGNAME,
-
-		// SOP_VHACDScoutSenior only
-		SOP_SCOUT_SENIOR_ICONNAME,
-		SOP_SCOUT_SENIOR_SMALLNAME,
-		SOP_SCOUT_SENIOR_BIGNAME,
-
-		// SOP_VHACDSetup only
-		SOP_SETUP_ICONNAME,
-		SOP_SETUP_SMALLNAME,
-		SOP_SETUP_BIGNAME,
-		SOP_SETUP_GROUP_PRMNAME,
-		MSS_SETUP_SMALLNAME,
-		MSS_SETUP_BIGNAME,
-		MSS_SETUP_PROMPT,
-
-		// SOP_VHACDMerge only
-		SOP_MERGE_ICONNAME,
-		SOP_MERGE_SMALLNAME,
-		SOP_MERGE_BIGNAME,
-
-		// SOP_VHACDTransform only
-		SOP_TRANSFORM_ICONNAME,
-		SOP_TRANSFORM_SMALLNAME,
-		SOP_TRANSFORM_BIGNAME,
-		SOP_TRANSFORM_GROUP_PRMNAME,
-		MSS_TRANSFORM_SMALLNAME,
-		MSS_TRANSFORM_BIGNAME,
-		MSS_TRANSFORM_PROMPT
+	private:
+		GU_Detail*					_convexGDP;
+		GU_Detail*					_originalGDP;
 	};
-}
-DECLARE_Base_Namespace_End
 
-#endif // !____vhacd_common_name_option_h____
+DECLARE_SOP_Namespace_End
+
+/* -----------------------------------------------------------------
+UNDEFINES                                                          |
+----------------------------------------------------------------- */
+
+#undef ENUMS
+#undef CONTAINERS
+
+#endif // !____sop_vhacd_debug_h____

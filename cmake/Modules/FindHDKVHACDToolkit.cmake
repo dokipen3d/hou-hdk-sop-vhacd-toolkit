@@ -97,13 +97,14 @@ if(EXISTS ${____module_source_dir____} AND EXISTS ${____module_3rdparty_dir____}
 COLLECT NODE PROJECT DATA                                          |
 ------------------------------------------------------------------]]
 			
-	#HDK_MODULE_GET_NODE_FILES("SOP_VHACDDelete")
+	HDK_MODULE_GET_NODE_FILES("SOP_VHACDDebug")
+	HDK_MODULE_GET_NODE_FILES("SOP_VHACDDelete")
 	HDK_MODULE_GET_NODE_FILES("SOP_VHACDGenerate")	
 	HDK_MODULE_GET_NODE_FILES("SOP_VHACDMerge")
 	HDK_MODULE_GET_NODE_FILES("SOP_VHACDScoutJunior")
 	HDK_MODULE_GET_NODE_FILES("SOP_VHACDScoutSenior")
 	HDK_MODULE_GET_NODE_FILES("SOP_VHACDSetup")
-	#HDK_MODULE_GET_NODE_FILES("SOP_VHACDTransform")
+	HDK_MODULE_GET_NODE_FILES("SOP_VHACDTransform")
 	
 else()
 	Message(STATUS "Didn't found ${____module_name_toupper____}")

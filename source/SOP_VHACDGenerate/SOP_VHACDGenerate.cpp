@@ -173,9 +173,7 @@ SOP_Base_Operator(network, name, op),
 _inputGDP(nullptr),
 _primitiveGroupInput0(nullptr),
 _interfaceVHACD(nullptr)
-{
-	op->setIconName(COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::SOP_GENERATE_ICONNAME));
-
+{	
 	exint toggleFlag = 1;
 	auto message = UT_String("Version 2.0 is still work in progress. \nThis is full C++ rewrite of Generate node. \nOpen issue if you found some error https://github.com/sebastianswann/hou-hdk-sop-vhacd-toolkit/issues.");
 	for (auto p : parametersList)

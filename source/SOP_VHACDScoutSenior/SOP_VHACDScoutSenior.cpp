@@ -119,7 +119,7 @@ SOP_Operator::SOP_VHACDScoutSenior(OP_Network* network, const char* name, OP_Ope
 : SOP_Base_Operator(network, name, op),
 _addBundleCountAttributeValue(false),
 _groupPerBundleValue(false)
-{ op->setIconName(COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::SOP_SCOUT_SENIOR_ICONNAME)); }
+{ }
 
 OP_Node* 
 SOP_Operator::CreateMe(OP_Network* network, const char* name, OP_Operator* op) 

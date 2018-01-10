@@ -145,7 +145,7 @@ _createHullCount(false),
 _createHullID(false), 
 _createBundleCount(false),
 _createBundleID(false)
-{ op->setIconName(COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::SOP_MERGE_ICONNAME)); }
+{ }
 
 OP_Node* 
 SOP_Operator::CreateMe(OP_Network* network, const char* name, OP_Operator* op) 

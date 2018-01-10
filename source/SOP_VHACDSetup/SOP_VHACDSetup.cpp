@@ -246,7 +246,7 @@ SOP_Operator::~SOP_VHACDSetup() { }
 SOP_Operator::SOP_VHACDSetup(OP_Network* network, const char* name, OP_Operator* op) 
 : SOP_Base_Operator(network, name, op), 
 _primitiveGroupInput0(nullptr)
-{ op->setIconName(COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::SOP_SETUP_ICONNAME)); }
+{ }
 
 OP_Node* 
 SOP_Operator::CreateMe(OP_Network* network, const char* name, OP_Operator* op) { return new SOP_Operator(network, name, op); }

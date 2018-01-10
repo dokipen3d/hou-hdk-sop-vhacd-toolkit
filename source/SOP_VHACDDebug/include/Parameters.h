@@ -1,5 +1,6 @@
 /*
-	Base node class for VHACD toolkit.
+	Volumetric-Hierarchical Approximate Convex Decomposition.
+	Based on https://github.com/kmammou/v-hacd
 
 	IMPORTANT! ------------------------------------------
 	* Macros starting and ending with '____' shouldn't be used anywhere outside of this file.
@@ -10,7 +11,7 @@
 
 	LICENSE ------------------------------------------
 
-	Copyright (c) 2016-2017 SWANN
+	Copyright (c) 2016-2018 SWANN
 	All rights reserved.
 
 	Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -23,73 +24,52 @@
 */
 
 #pragma once
-#ifndef ____sop_vhacd_node_h____
-#define ____sop_vhacd_node_h____
+#ifndef ____prms_vhacd_debug_h____
+#define ____prms_vhacd_debug_h____
 
 /* -----------------------------------------------------------------
 INCLUDES                                                           |
 ----------------------------------------------------------------- */
 
-// SESI
-#include <SOP/SOP_Node.h>
-
 // hou-hdk-common
-#include <Macros/Namespace.h>
-#include <Macros/ProgressEscape.h>
+#include <Macros/SwitcherPRM.h>
+//#include <Macros/GroupMenuPRM.h>
+#include <Macros/TogglePRM.h>
+#include <Macros/FloatPRM.h>
+#include <Macros/StringPRM.h>
 
 // this
-#include "VHACDCommonName.h"
-#include "VHACDCommonParameterName.h"
-#include "VHACDCommonAttributeName.h"
+#include "SOP_VHACDDebug.h"
 
 /* -----------------------------------------------------------------
 DEFINES                                                            |
 ----------------------------------------------------------------- */
 
-#define CONTAINERS				GET_Base_Namespace()::Containers
-#define ENUMS					GET_Base_Namespace()::Enums
+#define SOP_Operator		GET_SOP_Namespace()::SOP_VHACDDebug
+#define CONTAINERS			GET_Base_Namespace()::Containers
+#define ENUMS				GET_Base_Namespace()::Enums
 
 /* -----------------------------------------------------------------
-DEFAULT VARIABLES                                                  |
+PARAMETERS                                                         |
 ----------------------------------------------------------------- */
 
 DECLARE_SOP_Namespace_Start()
 
-// set here to be easily available for everything out there, by just accessing namespace
-static CONTAINERS::VHACDCommonName				COMMON_NAMES = CONTAINERS::VHACDCommonName();
-static CONTAINERS::VHACDCommonParameterName		COMMON_PRM_NAMES = CONTAINERS::VHACDCommonParameterName();
-
-/* -----------------------------------------------------------------
-DECLARATION                                                        |
------------------------------------------------------------------ */
-
-class SOP_VHACDNode : public SOP_Node
+namespace UI
 {
-protected:
-	SOP_VHACDNode(OP_Network* network, const char* name, OP_Operator* op) : SOP_Node(network, name, op)
-	{
-		// defaut node color
-		this->setColor(UT_Color(UT_ColorType::UT_RGB, 0.0, 0.0, 0.0));
+	__DECLARE_Main_Section_PRM(10)
+	DECLARE_Toggle_with_Separator_OFF_PRM("showhullid", "Show Hull ID ATT", "showhullidseparator", 0, "Visualize 'hull_id' attribute by assigning random color to each convex hull ID.", showHullIDAttribute)
+	DECLARE_Toggle_with_Separator_OFF_PRM("showbundleid", "Show Bundle ID ATT", "showbundleidseparator", 0, "Visualize 'bundle_id' attribute by assigning random color to each bundle ID.", showBundleIDAttribute)
+	DECLARE_Toggle_with_Separator_OFF_PRM("showwhullvolume", "Show Hull Volume ATT", "showwhullvolumeseparator", 0, "Visualize 'hull_volume' attribute.", showHullVolumeAttribute)
+	DECLARE_Toggle_with_Separator_OFF_PRM("explodehullid", "Explode By Hull ID ATT", "explodehullidseparator", 0, "Explode geometry from convex hulls input by using 'hull_id' attribute.", explodeByHullIDAttribute)
+	DECLARE_Toggle_with_Separator_OFF_PRM("explodebundleid", "Explode By Bundle ID ATT", "explodebundleidseparator", 0, "Explode geometry by using 'bundle_id' attribute.", explodeByBundleIDAttribute)
 
-		// default node icon
-		op->setIconName(COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::TOOLKIT_ICONNAME));
-	}
-	
-	CONTAINERS::VHACDCommonAttributeName		_commonAttributeNames = CONTAINERS::VHACDCommonAttributeName();
-	
-	GA_ROHandleI								_convexBundleIDHandle;
-	GA_ROHandleI								_originalBundleIDHandle;
-
-	GA_RWHandleI								_hullCountHandle;
-	GA_RWHandleI								_hullIDHandle;
-	GA_RWHandleD								_hullVolumeHandle;
-	GA_RWHandleV3								_hullMassCenterHandle;
-
-	GA_RWHandleI								_bundleCountHandle;
-	GA_RWHandleI								_bundleIDHandle;
-	GA_RWHandleV3								_bundleMassCenterHandle;
-};
-
+	__DECLARE_Additional_Section_PRM(7)
+	DECLARE_Toggle_with_Separator_OFF_PRM("cuspnormals", "Cusp Normals", "cuspnormalsseparator", 0, "Cusp vertex normals.", cuspVertexNormals)
+	DECLARE_Custom_Float_0R_to_MaxR_PRM("specifycuspandgle", "Angle", 180.0f, 40.0f, 0, "Specify cusp angle.", specifyCuspAngle)
+	DECLARE_DescriptionPRM(SOP_Operator)	
+}
+		
 DECLARE_SOP_Namespace_End
 
 /* -----------------------------------------------------------------
@@ -98,5 +78,6 @@ UNDEFINES                                                          |
 
 #undef ENUMS
 #undef CONTAINERS
+#undef SOP_Operator
 
-#endif // !____sop_vhacd_node_h____
+#endif // !____prms_vhacd_debug_h____
