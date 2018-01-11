@@ -83,8 +83,7 @@ DECLARE_SOP_Namespace_Start()
 		
 		static int					CallbackSwitchVisibleInput(void* data, int index, float time, const PRM_Template* tmp);
 		static int					CallbackCuspVertexNormal(void* data, int index, float time, const PRM_Template* tmp);
-		
-		static void					CallbackVisualizeAttributeMenu(void* data, PRM_Name* choicenames, int listsize, const PRM_SpareData* spare, const PRM_Parm* parm);
+				
 	private:
 		ENUMS::MethodProcessResult	CuspConvexInputVertexNormals(GU_Detail* detail, fpreal time);
 		
@@ -92,7 +91,7 @@ DECLARE_SOP_Namespace_Start()
 		ENUMS::MethodProcessResult	PrepareFloatATTForGUI(UT_AutoInterrupt& progress, ENUMS::VHACDCommonAttributeNameOption attributename, GA_RWHandleD& attributehandle);
 
 		ENUMS::MethodProcessResult	WhenConvexHullsInput(OP_Context& context, UT_AutoInterrupt& progress, fpreal time);
-		ENUMS::MethodProcessResult	WhenOriginalGeometryInput(OP_Context& context, fpreal time);
+		ENUMS::MethodProcessResult	WhenOriginalGeometryInput(OP_Context& context, UT_AutoInterrupt& progress, fpreal time);
 		ENUMS::MethodProcessResult	WhenBothInputs(OP_Context& context, fpreal time);		
 	};
 

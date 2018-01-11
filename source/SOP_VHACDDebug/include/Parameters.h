@@ -69,7 +69,7 @@ namespace UI
 	static auto		switchVisibleInputChoiceMenuParm_ChoiceList = PRM_ChoiceList(PRM_CHOICELIST_SINGLE, switchVisibleInputChoiceMenuParm_Choices);
 	auto			switchVisibleInputChoiceMenu_Parameter = PRM_Template(PRM_ORD, 1, &switchVisibleInputChoiceMenuParm_Name, nullptr, &switchVisibleInputChoiceMenuParm_ChoiceList, &switchVisibleInputChoiceMenuParm_Range, &SOP_Operator::CallbackSwitchVisibleInput, nullptr, 1, "Specify geometry of which input should be visible.");
 	
-	__DECLARE_Main_Section_PRM(5)
+	__DECLARE_Main_Section_PRM(7)
 	static auto		visualizeAttributeChoiceMenuParm_Name = PRM_Name("visualizeattribute", "Visualize ATT");
 	static auto		visualizeAttributeChoiceMenuParm_Range = PRM_Range(PRM_RANGE_RESTRICTED, 0, PRM_RANGE_RESTRICTED, 3);
 	static PRM_Name visualizeAttributeChoiceMenuParm_Choices[] =
@@ -83,6 +83,7 @@ namespace UI
 	static auto		visualizeAttributeChoiceMenuParm_ChoiceList = PRM_ChoiceList(PRM_CHOICELIST_SINGLE, visualizeAttributeChoiceMenuParm_Choices);
 	auto			visualizeAttributeChoiceMenu_Parameter = PRM_Template(PRM_ORD, 1, &visualizeAttributeChoiceMenuParm_Name, nullptr, &visualizeAttributeChoiceMenuParm_ChoiceList, &visualizeAttributeChoiceMenuParm_Range, 0, nullptr, 1, "Specify geometry of which input should be visible.");
 	
+	DECLARE_Toggle_with_Separator_OFF_PRM("visualizebundleid", "Visualize Bundle ID ATT", "visualizebundleidseparator", 0, "Visualize in viewport 'bundle_id' attribute by assigning random color to each detected ID.", visualizeBundleIDAttribute)
 	DECLARE_Toggle_with_Separator_OFF_PRM("explodehullid", "Explode By Hull ID ATT", "explodehullidseparator", 0, "Explode geometry from convex hulls input by using 'hull_id' attribute.", explodeByHullIDAttribute)
 	DECLARE_Toggle_with_Separator_OFF_PRM("explodebundleid", "Explode By Bundle ID ATT", "explodebundleidseparator", 0, "Explode geometry by using 'bundle_id' attribute.", explodeByBundleIDAttribute)
 
