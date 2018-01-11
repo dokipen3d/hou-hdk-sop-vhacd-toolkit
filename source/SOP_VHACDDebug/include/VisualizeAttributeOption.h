@@ -47,12 +47,23 @@ ENUM                                                               |
 DECLARE_Base_Namespace_Start()
 namespace Enums
 {
-	enum class VisualizeAttributeOption : exint
+	enum class ConvexVisualizeAttributeOption : exint
 	{
 		NONE,
 		HULL_ID,
 		HULL_VOLUME,
 		BUNDLE_ID
+	};
+
+	enum class OriginalVisualizeAttributeOption : exint
+	{
+		NONE,
+		BUNDLE_ID
+	};
+
+	enum class BothlVisualizeAttributeOption : exint
+	{
+		NONE
 	};
 }
 DECLARE_Base_Namespace_End

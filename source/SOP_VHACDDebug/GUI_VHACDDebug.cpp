@@ -69,12 +69,20 @@ GUI_Hook::ProcessAttribute(const GT_DataArrayHandle& datahandle, GT_Real16Array*
 	GT_DataArrayHandle vertexColors = vertexcolors;
 
 	const exint BUFFER_SIZE = 1;
+	
+	UT_Vector3 col;
 	for (auto i = 0; i < datahandle->entries(); i++)
 	{			
 		BufferValueType currVal[BUFFER_SIZE];
 		datahandle->import(i, currVal, BUFFER_SIZE);
 
 		std::cout << currVal[0] << std::endl;
+
+		const auto now = new UT_Vector3(col);
+		UT_Color::getRandomContrastingColor(now, 0, col);
+		std::cout << col.x() << "," << col.y() << "," << col.z() << std::endl;
+
+		delete now;
 		//col.normalize();
 
 		//cd->getData(i)[0] = col.x() *0.5 + 0.5;

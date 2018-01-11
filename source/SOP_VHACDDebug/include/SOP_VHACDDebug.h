@@ -83,6 +83,8 @@ DECLARE_SOP_Namespace_Start()
 		
 		static int					CallbackSwitchVisibleInput(void* data, int index, float time, const PRM_Template* tmp);
 		static int					CallbackCuspVertexNormal(void* data, int index, float time, const PRM_Template* tmp);
+
+		static void					CallbakcVisualizeAttributeMenu(void* data, PRM_Name* choicenames, int listsize, const PRM_SpareData* spare, const PRM_Parm* parm);
 				
 	private:
 		ENUMS::MethodProcessResult	CuspConvexInputVertexNormals(GU_Detail* detail, fpreal time);

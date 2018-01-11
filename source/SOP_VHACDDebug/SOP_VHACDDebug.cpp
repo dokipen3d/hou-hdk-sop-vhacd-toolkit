@@ -78,8 +78,6 @@ PARAMETERLIST_Start(SOP_Operator)
 	UI::visualizeAttributeChoiceMenu_Parameter,
 	UI::explodeByHullIDAttributeToggle_Parameter,
 	UI::explodeByHullIDAttributeSeparator_Parameter,
-	UI::visualizeBundleIDAttributeToggle_Parameter,
-	UI::visualizeBundleIDAttributeSeparator_Parameter,
 	UI::explodeByBundleIDAttributeToggle_Parameter,
 	UI::explodeByBundleIDAttributeSeparator_Parameter,
 
@@ -98,21 +96,32 @@ SOP_Operator::updateParmsFlags()
 	
 	const auto is1connected = this->getInput(static_cast<exint>(ENUMS::ProcessedInputType::ORIGINAL_GEOMETRY)) == nullptr ? 0 : 1;
 
-	// additional section
+	// filter section
 	activeState = is1connected;
 	changed |= enableParm(UI::switchVisibleInputChoiceMenu_Parameter.getToken(), activeState);
 
+	// main section
 	exint switchVisibleInputMenyValue;
 	PRM_ACCESS::Get::IntPRM(this, switchVisibleInputMenyValue, UI::switchVisibleInputChoiceMenu_Parameter, currentTime);
-	activeState = is1connected && (switchVisibleInputMenyValue != static_cast<exint>(ENUMS::VisibleInputOption::CONVEX_HULLS))? 0 : 1;
-	changed |= setVisibleState(UI::visualizeAttributeChoiceMenu_Parameter.getToken(), activeState);
+
+	activeState = is1connected && (switchVisibleInputMenyValue != static_cast<exint>(ENUMS::VisibleInputOption::CONVEX_HULLS))? 0 : 1;	
 	changed |= setVisibleState(UI::explodeByHullIDAttributeToggle_Parameter.getToken(), activeState);
-	changed |= setVisibleState(UI::explodeByHullIDAttributeSeparator_Parameter.getToken(), activeState);			
+	changed |= setVisibleState(UI::explodeByHullIDAttributeSeparator_Parameter.getToken(), activeState);
 
-	activeState = is1connected && (switchVisibleInputMenyValue != static_cast<exint>(ENUMS::VisibleInputOption::ORIGINAL_GEOMETRY)) ? 0 : (!is1connected? 0 : 1);
-	changed |= setVisibleState(UI::visualizeBundleIDAttributeToggle_Parameter.getToken(), activeState);
-	changed |= setVisibleState(UI::visualizeBundleIDAttributeSeparator_Parameter.getToken(), activeState);
+	activeState = is1connected && (switchVisibleInputMenyValue != static_cast<exint>(ENUMS::VisibleInputOption::BOTH)) ? 1 : (!is1connected ? 1 : 0);
+	changed |= enableParm(UI::visualizeAttributeChoiceMenu_Parameter.getToken(), activeState);
+	
+	exint explodeByHullIDValue;
+	exint explodeByBundleIDValue;
+	PRM_ACCESS::Get::IntPRM(this, explodeByHullIDValue, UI::explodeByHullIDAttributeToggle_Parameter, currentTime);
+	PRM_ACCESS::Get::IntPRM(this, explodeByBundleIDValue, UI::explodeByBundleIDAttributeToggle_Parameter, currentTime);
 
+	activeState = explodeByBundleIDValue ? 0 : 1;
+	changed |= enableParm(UI::explodeByHullIDAttributeToggle_Parameter.getToken(), activeState);
+	activeState = explodeByHullIDValue ? 0 : 1;
+	changed |= enableParm(UI::explodeByBundleIDAttributeToggle_Parameter.getToken(), activeState);
+
+	// additional section
 	bool cuspVertexNormalsValue;
 	PRM_ACCESS::Get::IntPRM(this, cuspVertexNormalsValue, UI::cuspVertexNormalsToggle_Parameter, currentTime);	
 	changed |= setVisibleState(UI::specifyCuspAngleFloat_Parameter.getToken(), cuspVertexNormalsValue);
@@ -149,8 +158,6 @@ SOP_Operator::CallbackSwitchVisibleInput(void* data, int index, float time, cons
 			auto cuspAngleValue = 0.0;			
 			PRM_ACCESS::Set::IntPRM(me, newValue, UI::cuspVertexNormalsToggle_Parameter, time);
 			PRM_ACCESS::Set::FloatPRM(me, cuspAngleValue, UI::specifyCuspAngleFloat_Parameter, time);
-			newValue = 0;
-			PRM_ACCESS::Set::IntPRM(me, newValue, UI::visualizeBundleIDAttributeToggle_Parameter, time);
 		} break;
 
 		case static_cast<exint>(ENUMS::VisibleInputOption::ORIGINAL_GEOMETRY) :
@@ -167,8 +174,7 @@ SOP_Operator::CallbackSwitchVisibleInput(void* data, int index, float time, cons
 			newValue = 0;
 			PRM_ACCESS::Set::IntPRM(me, newValue, UI::cuspVertexNormalsToggle_Parameter, time);
 			PRM_ACCESS::Set::IntPRM(me, newValue, UI::visualizeAttributeChoiceMenu_Parameter, time);
-			PRM_ACCESS::Set::IntPRM(me, newValue, UI::explodeByHullIDAttributeToggle_Parameter, time);
-			PRM_ACCESS::Set::IntPRM(me, newValue, UI::visualizeBundleIDAttributeToggle_Parameter, time);			
+			PRM_ACCESS::Set::IntPRM(me, newValue, UI::explodeByHullIDAttributeToggle_Parameter, time);		
 			CallbackCuspVertexNormal(data, index, time, tmp);
 		} break;
 	}
@@ -187,6 +193,47 @@ SOP_Operator::CallbackCuspVertexNormal(void* data, int index, float time, const 
 	PRM_ACCESS::Set::FloatPRM(me, cuspAngleValue, UI::specifyCuspAngleFloat_Parameter, time);
 
 	return 1;
+}
+
+void
+SOP_Operator::CallbakcVisualizeAttributeMenu(void* data, PRM_Name* choicenames, int listsize, const PRM_SpareData* spare, const PRM_Parm* parm)
+{	
+	const auto me = reinterpret_cast<SOP_Operator*>(data);	
+	if (me)
+	{
+		exint switchVisibleInputMenuValue;
+		PRM_ACCESS::Get::IntPRM(me, switchVisibleInputMenuValue, UI::switchVisibleInputChoiceMenu_Parameter);
+
+		switch (switchVisibleInputMenuValue)
+		{
+			case static_cast<exint>(ENUMS::VisibleInputOption::CONVEX_HULLS) :
+			{
+				choicenames[0].setTokenAndLabel("0", "None");
+				choicenames[1].setTokenAndLabel("1", "Hull ID");
+				choicenames[2].setTokenAndLabel("2", "Hull Volume");
+				choicenames[3].setTokenAndLabel("3", "Bundle ID");
+				choicenames[4].setTokenAndLabel(nullptr, nullptr);
+			} break;
+
+			case static_cast<exint>(ENUMS::VisibleInputOption::ORIGINAL_GEOMETRY) :
+			{
+				choicenames[0].setTokenAndLabel("0", "None");				
+				choicenames[1].setTokenAndLabel("1", "Bundle ID");
+				choicenames[2].setTokenAndLabel(nullptr, nullptr);
+			} break;
+
+			case static_cast<exint>(ENUMS::VisibleInputOption::BOTH) :
+			{
+				choicenames[0].setTokenAndLabel("0", "None");				
+				choicenames[1].setTokenAndLabel(nullptr, nullptr);
+			} break;
+		}
+	}
+	else
+	{
+		choicenames[0].setToken(nullptr);
+		choicenames[0].setLabel(nullptr);
+	}
 }
 
 /* -----------------------------------------------------------------
@@ -226,7 +273,6 @@ SOP_Operator::inputConnectChanged(int which)
 			exint defVal = 0;			
 			PRM_ACCESS::Set::IntPRM(this, defVal, UI::switchVisibleInputChoiceMenu_Parameter);			
 			PRM_ACCESS::Set::IntPRM(this, defVal, UI::visualizeAttributeChoiceMenu_Parameter);
-			PRM_ACCESS::Set::IntPRM(this, defVal, UI::visualizeBundleIDAttributeToggle_Parameter);
 			
 			exint cuspVertexNormalValue = 1;
 			auto cuspAngleValue = 0.0;
@@ -331,7 +377,7 @@ ENUMS::MethodProcessResult
 SOP_Operator::WhenConvexHullsInput(OP_Context& context, UT_AutoInterrupt& progress, fpreal time)
 {
 	if (duplicateSource(static_cast<exint>(ENUMS::ProcessedInputType::CONVEX_HULLS), context) <= UT_ErrorSeverity::UT_ERROR_WARNING && error() <= UT_ErrorSeverity::UT_ERROR_WARNING)
-	{
+	{		
 		// cusp vertex normals
 		auto processResult = CuspConvexInputVertexNormals(this->gdp, time);
 		if (processResult != ENUMS::MethodProcessResult::SUCCESS) return processResult;
@@ -341,16 +387,16 @@ SOP_Operator::WhenConvexHullsInput(OP_Context& context, UT_AutoInterrupt& progre
 		PRM_ACCESS::Get::IntPRM(this, visualizeAttributeChoiceMenuValue, UI::visualizeAttributeChoiceMenu_Parameter, time);
 
 		switch (visualizeAttributeChoiceMenuValue)
-		{
-			default: /* do nothing */ break;
-			case static_cast<exint>(ENUMS::VisualizeAttributeOption::HULL_ID) :			{ processResult = PrepareIntATTForGUI(progress, ENUMS::VHACDCommonAttributeNameOption::HULL_ID, this->_hullIDHandle); } break;
-			case static_cast<exint>(ENUMS::VisualizeAttributeOption::HULL_VOLUME) :		{ processResult = PrepareFloatATTForGUI(progress, ENUMS::VHACDCommonAttributeNameOption::HULL_VOLUME, this->_hullVolumeHandle); } break;
-			case static_cast<exint>(ENUMS::VisualizeAttributeOption::BUNDLE_ID) :		{ processResult = PrepareIntATTForGUI(progress, ENUMS::VHACDCommonAttributeNameOption::BUNDLE_ID, this->_bundleIDHandle); } break;
+		{			
+			default: /* do nothing */ break;			
+			case static_cast<exint>(ENUMS::ConvexVisualizeAttributeOption::HULL_ID) :		{ processResult = PrepareIntATTForGUI(progress, ENUMS::VHACDCommonAttributeNameOption::HULL_ID, this->_hullIDHandle); } break;
+			case static_cast<exint>(ENUMS::ConvexVisualizeAttributeOption::HULL_VOLUME) :	{ processResult = PrepareFloatATTForGUI(progress, ENUMS::VHACDCommonAttributeNameOption::HULL_VOLUME, this->_hullVolumeHandle); } break;
+			case static_cast<exint>(ENUMS::ConvexVisualizeAttributeOption::BUNDLE_ID) :		{ processResult = PrepareIntATTForGUI(progress, ENUMS::VHACDCommonAttributeNameOption::BUNDLE_ID, this->_bundleIDHandle); } break;
 		}
-	}
 
-	// explode by 'hull_id'
-	// explode by 'bundle_id'
+		// explode by 'hull_id'
+		// explode by 'bundle_id'
+	}
 
 	return ENUMS::MethodProcessResult::SUCCESS;
 }
@@ -363,12 +409,17 @@ SOP_Operator::WhenOriginalGeometryInput(OP_Context& context, UT_AutoInterrupt& p
 		auto processResult = ENUMS::MethodProcessResult::SUCCESS;
 
 		// visualize attribute
-		exint visualizeAttributeToggleValue;
-		PRM_ACCESS::Get::IntPRM(this, visualizeAttributeToggleValue, UI::visualizeBundleIDAttributeToggle_Parameter, time);
-		if (visualizeAttributeToggleValue) processResult = PrepareIntATTForGUI(progress, ENUMS::VHACDCommonAttributeNameOption::BUNDLE_ID, this->_bundleIDHandle);
-	}
+		exint visualizeAttributeChoiceMenuValue;
+		PRM_ACCESS::Get::IntPRM(this, visualizeAttributeChoiceMenuValue, UI::visualizeAttributeChoiceMenu_Parameter, time);
 
-	// explode by 'bundle_id'
+		switch (visualizeAttributeChoiceMenuValue)
+		{
+			default: /* do nothing */ break;
+			case static_cast<exint>(ENUMS::OriginalVisualizeAttributeOption::BUNDLE_ID) :	{ processResult = PrepareIntATTForGUI(progress, ENUMS::VHACDCommonAttributeNameOption::BUNDLE_ID, this->_bundleIDHandle); } break;
+		}				
+
+		// explode by 'bundle_id'
+	}		
 
 	return ENUMS::MethodProcessResult::SUCCESS;
 }
@@ -428,23 +479,10 @@ SOP_Operator::cookMySop(OP_Context& context)
 
 	switch (switchVisibleInputValue)
 	{
-		case static_cast<exint>(ENUMS::VisibleInputOption::CONVEX_HULLS) :
-		{
-			processResult = WhenConvexHullsInput(context, progress, currentTime);
-			if (processResult != ENUMS::MethodProcessResult::SUCCESS) return error();
-		} break;
-
-		case static_cast<exint>(ENUMS::VisibleInputOption::ORIGINAL_GEOMETRY) :
-		{
-			processResult = WhenOriginalGeometryInput(context, progress, currentTime);
-			if (processResult != ENUMS::MethodProcessResult::SUCCESS) return error();
-		} break;
-
-		case static_cast<exint>(ENUMS::VisibleInputOption::BOTH) :
-		{
-			processResult = WhenBothInputs(context, currentTime);
-			if (processResult != ENUMS::MethodProcessResult::SUCCESS) return error();
-		} break;
+		default: /* do nothing */ break;
+		case static_cast<exint>(ENUMS::VisibleInputOption::CONVEX_HULLS) :			{ processResult = WhenConvexHullsInput(context, progress, currentTime); if (processResult != ENUMS::MethodProcessResult::SUCCESS) return error(); } break;
+		case static_cast<exint>(ENUMS::VisibleInputOption::ORIGINAL_GEOMETRY) :		{ processResult = WhenOriginalGeometryInput(context, progress, currentTime); if (processResult != ENUMS::MethodProcessResult::SUCCESS) return error(); } break;
+		case static_cast<exint>(ENUMS::VisibleInputOption::BOTH) :					{ processResult = WhenBothInputs(context, currentTime); if (processResult != ENUMS::MethodProcessResult::SUCCESS) return error(); } break;
 	}
 
 	return error();
