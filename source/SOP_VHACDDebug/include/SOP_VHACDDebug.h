@@ -74,6 +74,7 @@ DECLARE_SOP_Namespace_Start()
 		~SOP_VHACDDebug() override;
 		SOP_VHACDDebug(OP_Network* network, const char* name, OP_Operator* op);
 		const char*					inputLabel(unsigned input) const override;		
+		void						inputConnectChanged(int which) override;
 
 	public:
 		static OP_Node*				CreateMe(OP_Network* network, const char* name, OP_Operator* op);
@@ -82,17 +83,17 @@ DECLARE_SOP_Namespace_Start()
 		
 		static int					CallbackSwitchVisibleInput(void* data, int index, float time, const PRM_Template* tmp);
 		static int					CallbackCuspVertexNormal(void* data, int index, float time, const PRM_Template* tmp);
-
+		
+		static void					CallbackVisualizeAttributeMenu(void* data, PRM_Name* choicenames, int listsize, const PRM_SpareData* spare, const PRM_Parm* parm);
 	private:
 		ENUMS::MethodProcessResult	CuspConvexInputVertexNormals(GU_Detail* detail, fpreal time);
+		
+		ENUMS::MethodProcessResult	PrepareIntATTForGUI(UT_AutoInterrupt& progress, ENUMS::VHACDCommonAttributeNameOption attributename, GA_RWHandleI& attributehandle);
+		ENUMS::MethodProcessResult	PrepareFloatATTForGUI(UT_AutoInterrupt& progress, ENUMS::VHACDCommonAttributeNameOption attributename, GA_RWHandleD& attributehandle);
 
-		ENUMS::MethodProcessResult	WhenConvexHullsInput(OP_Context& context, fpreal time);
+		ENUMS::MethodProcessResult	WhenConvexHullsInput(OP_Context& context, UT_AutoInterrupt& progress, fpreal time);
 		ENUMS::MethodProcessResult	WhenOriginalGeometryInput(OP_Context& context, fpreal time);
 		ENUMS::MethodProcessResult	WhenBothInputs(OP_Context& context, fpreal time);		
-
-		GA_RWHandleI				_pointHullIDHandle;
-		GA_RWHandleD				_pointHullVolumeHandle;
-		GA_RWHandleI				_pointBundleIDHandle;
 	};
 
 DECLARE_SOP_Namespace_End

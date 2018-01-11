@@ -1,6 +1,5 @@
 /*
-	Volumetric-Hierarchical Approximate Convex Decomposition.
-	Based on https://github.com/kmammou/v-hacd
+	Enum.
 
 	IMPORTANT! ------------------------------------------
 	* Macros starting and ending with '____' shouldn't be used anywhere outside of this file.
@@ -24,66 +23,38 @@
 */
 
 #pragma once
-#ifndef ____gui_vhacd_debug_h____
-#define ____gui_vhacd_debug_h____
+#ifndef ___visualize_attribute_option_h____
+#define ___visualize_attribute_option_h____
 
 /* -----------------------------------------------------------------
 INCLUDES                                                           |
 ----------------------------------------------------------------- */
 
 // SESI
-#include <GUI/GUI_PrimitiveHook.h>
-#include <GT/GT_DANumeric.h>
+#if _WIN32		
+#include <sys/SYS_Types.h>
+#else
+#include <SYS/SYS_Types.h>
+#endif
 
 // hou-hdk-common
-#include <Macros/Namespace.h>
-#include <Enums/AttributeClass.h>
-
-// this
-#include "VHACDCommonAttributeName.h"
-#include "Enums/MethodProcessResult.h"
+#include "Macros/Namespace.h"
 
 /* -----------------------------------------------------------------
-DEFINES                                                            |
+ENUM                                                               |
 ----------------------------------------------------------------- */
 
-#define CONTAINERS			GET_Base_Namespace()::Containers
-#define ENUMS				GET_Base_Namespace()::Enums
-
-/* -----------------------------------------------------------------
-DECLARATION                                                        |
------------------------------------------------------------------ */
-
-DECLARE_GUI_Namespace_Start()
-
-	class GUI_VHACDDebug : public GUI_PrimitiveHook
+DECLARE_Base_Namespace_Start()
+namespace Enums
+{
+	enum class VisualizeAttributeOption : exint
 	{
-	public:
-		GUI_VHACDDebug();
-		~GUI_VHACDDebug();
-
-		/// The main virtual for filtering GT or GEO primitives. If the hook is
-		/// interested in the primitive, it should set 'processed' to  GR_PROCESSED,
-		/// even if it is not actively modifying the primitive (in which case
-		/// return a NULL primitive handle). This ensures that the primitive will
-		/// be updated when its display option is toggled. If not interested in the
-		/// primitive at all, set 'processed' to GR_NOT_PROCESSED.
-		GT_PrimitiveHandle							filterPrimitive(const GT_PrimitiveHandle& primhandle, const GEO_Primitive* primitive, const GR_RenderInfo* info, GR_PrimAcceptResult& processed) override;
-
-	private:
-		template<typename BufferValueType>
-		ENUMS::MethodProcessResult					ProcessAttribute(const GT_DataArrayHandle& datahandle, GT_Real16Array* vertexcolors);
-
-		CONTAINERS::VHACDCommonAttributeName		_commonAttributeNames = CONTAINERS::VHACDCommonAttributeName();
+		NONE,
+		HULL_ID,
+		HULL_VOLUME,
+		BUNDLE_ID
 	};
+}
+DECLARE_Base_Namespace_End
 
-DECLARE_GUI_Namespace_End
-
-/* -----------------------------------------------------------------
-UNDEFINES                                                          |
------------------------------------------------------------------ */
-
-#undef ENUMS
-#undef CONTAINERS
-
-#endif // !____gui_vhacd_debug_h____
+#endif // !___visualize_attribute_option_h____

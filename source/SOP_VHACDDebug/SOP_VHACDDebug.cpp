@@ -41,13 +41,12 @@ INCLUDES                                                           |
 #include <Macros/ProgressEscape.h>
 #include <Utility/PRM_TemplateAccessors.h>
 #include <Utility/GA_AttributeAccessors.h>
-//#include <Utility/GU_DetailCalculator.h>
 
 // this
 #include "Parameters.h"
 #include "ProcessedInputType.h"
-//#include "FilterModeOption.h"
 #include "VisibleInputOption.h"
+#include "VisualizeAttributeOption.h"
 
 /* -----------------------------------------------------------------
 DEFINES                                                            |
@@ -76,12 +75,7 @@ PARAMETERLIST_Start(SOP_Operator)
 	UI::switchVisibleInputChoiceMenu_Parameter,
 
 	UI::mainSectionSwitcher_Parameter,
-	UI::showHullIDAttributeToggle_Parameter,
-	UI::showHullIDAttributeSeparator_Parameter,
-	UI::showBundleIDAttributeToggle_Parameter,
-	UI::showBundleIDAttributeSeparator_Parameter,
-	UI::showHullVolumeAttributeToggle_Parameter,
-	UI::showHullVolumeAttributeSeparator_Parameter,
+	UI::visualizeAttributeChoiceMenu_Parameter,
 	UI::explodeByHullIDAttributeToggle_Parameter,
 	UI::explodeByHullIDAttributeSeparator_Parameter,
 	UI::explodeByBundleIDAttributeToggle_Parameter,
@@ -99,11 +93,10 @@ bool
 SOP_Operator::updateParmsFlags()
 {
 	DEFAULTS_UpdateParmsFlags(SOP_Base_Operator)
-
-	/* ---------------------------- Set States --------------------------------------- */
-
-	const exint is1Connected = this->getInput(static_cast<exint>(ENUMS::ProcessedInputType::ORIGINAL_GEOMETRY)) == nullptr ? 0 : 1;	
-	changed |= setVisibleState(UI::filterSectionSwitcher_Parameter.getToken(), is1Connected);
+	
+	// additional section
+	activeState = this->getInput(static_cast<exint>(ENUMS::ProcessedInputType::ORIGINAL_GEOMETRY)) == nullptr ? 0 : 1;	
+	changed |= enableParm(UI::switchVisibleInputChoiceMenu_Parameter.getToken(), activeState);
 
 	bool cuspVertexNormalsValue;
 	PRM_ACCESS::Get::IntPRM(this, cuspVertexNormalsValue, UI::cuspVertexNormalsToggle_Parameter, currentTime);	
@@ -128,7 +121,7 @@ SOP_Operator::CallbackSwitchVisibleInput(void* data, int index, float time, cons
 	if (!me) return 0;
 
 	// // set vertex normals option	
-	exint cuspVertexNormalValue = static_cast<exint>(UI::cuspVertexNormalsToggle_Parameter.getFactoryDefaults()->getOrdinal());
+	exint newValue = static_cast<exint>(UI::cuspVertexNormalsToggle_Parameter.getFactoryDefaults()->getOrdinal());
 
 	exint switchVisibleInputValue;
 	PRM_ACCESS::Get::IntPRM(me, switchVisibleInputValue, UI::switchVisibleInputChoiceMenu_Parameter, time);
@@ -137,23 +130,23 @@ SOP_Operator::CallbackSwitchVisibleInput(void* data, int index, float time, cons
 	{
 		case static_cast<exint>(ENUMS::VisibleInputOption::CONVEX_HULLS) :
 		{
-			cuspVertexNormalValue = 1;
+			newValue = 1;
 			auto cuspAngleValue = 0.0;			
-			PRM_ACCESS::Set::IntPRM(me, cuspVertexNormalValue, UI::cuspVertexNormalsToggle_Parameter, time);
+			PRM_ACCESS::Set::IntPRM(me, newValue, UI::cuspVertexNormalsToggle_Parameter, time);
 			PRM_ACCESS::Set::FloatPRM(me, cuspAngleValue, UI::specifyCuspAngleFloat_Parameter, time);
 		} break;
 
 		case static_cast<exint>(ENUMS::VisibleInputOption::ORIGINAL_GEOMETRY) :
 		{
-			cuspVertexNormalValue = 0;	
-			PRM_ACCESS::Set::IntPRM(me, cuspVertexNormalValue, UI::cuspVertexNormalsToggle_Parameter, time);
+			newValue = 0;
+			PRM_ACCESS::Set::IntPRM(me, newValue, UI::cuspVertexNormalsToggle_Parameter, time);
 			CallbackCuspVertexNormal(data, index, time, tmp);			
 		} break;
 
 		case static_cast<exint>(ENUMS::VisibleInputOption::BOTH) :
 		{
-			cuspVertexNormalValue = 0;
-			PRM_ACCESS::Set::IntPRM(me, cuspVertexNormalValue, UI::cuspVertexNormalsToggle_Parameter, time);
+			newValue = 0;
+			PRM_ACCESS::Set::IntPRM(me, newValue, UI::cuspVertexNormalsToggle_Parameter, time);
 			CallbackCuspVertexNormal(data, index, time, tmp);
 		} break;
 	}
@@ -172,6 +165,13 @@ SOP_Operator::CallbackCuspVertexNormal(void* data, int index, float time, const 
 	PRM_ACCESS::Set::FloatPRM(me, cuspAngleValue, UI::specifyCuspAngleFloat_Parameter, time);
 
 	return 1;
+}
+
+void
+SOP_Operator::CallbackVisualizeAttributeMenu(void* data, PRM_Name* choicenames, int listsize, const PRM_SpareData* spare, const PRM_Parm* parm)
+{
+	const auto me = reinterpret_cast<SOP_Operator*>(data);
+	if (!me) return;
 }
 
 /* -----------------------------------------------------------------
@@ -193,6 +193,30 @@ SOP_Operator::inputLabel(unsigned input) const
 	{
 		case 0: return COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::SOP_OUTPUTNAME_CONVEXHULLS);
 		default: return COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::SOP_OUTPUTNAME_ORIGINALGEOMETRY);
+	}
+}
+
+void
+SOP_Operator::inputConnectChanged(int which)
+{
+	if (which == static_cast<exint>(ENUMS::ProcessedInputType::ORIGINAL_GEOMETRY))
+	{
+		// reset choice menu
+		exint switchVisibleInputValue;
+		PRM_ACCESS::Get::IntPRM(this, switchVisibleInputValue, UI::switchVisibleInputChoiceMenu_Parameter);
+
+		if (switchVisibleInputValue == static_cast<exint>(ENUMS::VisibleInputOption::ORIGINAL_GEOMETRY) || switchVisibleInputValue == static_cast<exint>(ENUMS::VisibleInputOption::BOTH))
+		{
+			//exint defVal = static_cast<exint>(UI::switchVisibleInputChoiceMenu_Parameter.getFactoryDefaults()->getOrdinal());
+			exint defVal = 0;			
+			PRM_ACCESS::Set::IntPRM(this, defVal, UI::switchVisibleInputChoiceMenu_Parameter);			
+			PRM_ACCESS::Set::IntPRM(this, defVal, UI::visualizeAttributeChoiceMenu_Parameter);
+
+			exint cuspVertexNormalValue = 1;
+			auto cuspAngleValue = 0.0;
+			PRM_ACCESS::Set::IntPRM(this, cuspVertexNormalValue, UI::cuspVertexNormalsToggle_Parameter);
+			PRM_ACCESS::Set::FloatPRM(this, cuspAngleValue, UI::specifyCuspAngleFloat_Parameter);
+		}
 	}
 }
 
@@ -230,7 +254,65 @@ SOP_Operator::CuspConvexInputVertexNormals(GU_Detail* detail, fpreal time)
 }
 
 ENUMS::MethodProcessResult
-SOP_Operator::WhenConvexHullsInput(OP_Context& context, fpreal time)
+SOP_Operator::PrepareIntATTForGUI(UT_AutoInterrupt& progress, ENUMS::VHACDCommonAttributeNameOption attributename, GA_RWHandleI& attributehandle)
+{
+	const auto success = ATTRIB_ACCESS::Find::IntATT(this, this->gdp, GA_AttributeOwner::GA_ATTRIB_PRIMITIVE, this->_commonAttributeNames.Get(attributename), attributehandle);
+	if (!success)
+	{
+		addWarning(SOP_ATTRIBUTE_INVALID);
+		return ENUMS::MethodProcessResult::FAILURE;
+	}
+	
+	auto pointAttributeHandle = GA_RWHandleI(this->gdp->addIntTuple(GA_AttributeOwner::GA_ATTRIB_POINT, attributehandle->getScope(), this->_commonAttributeNames.Get(attributename), 1));
+	if (pointAttributeHandle.isValid())
+	{
+		for (auto primIt : this->gdp->getPrimitiveRange())
+		{
+			PROGRESS_WAS_INTERRUPTED_WITH_ERROR_AND_OBJECT(this, progress, ENUMS::MethodProcessResult::INTERRUPT)
+
+			const auto currPrim = this->gdp->getPrimitive(primIt);
+			if (currPrim)
+			{
+				const auto currVal = attributehandle.get(primIt);				
+				for (auto pointIt : currPrim->getPointRange()) pointAttributeHandle.set(pointIt, currVal);
+			}
+		}
+	}
+
+	return ENUMS::MethodProcessResult::SUCCESS;
+}
+
+ENUMS::MethodProcessResult
+SOP_Operator::PrepareFloatATTForGUI(UT_AutoInterrupt& progress, ENUMS::VHACDCommonAttributeNameOption attributename, GA_RWHandleD& attributehandle)
+{
+	const auto success = ATTRIB_ACCESS::Find::FloatATT(this, this->gdp, GA_AttributeOwner::GA_ATTRIB_PRIMITIVE, this->_commonAttributeNames.Get(attributename), attributehandle);
+	if (!success)
+	{
+		addWarning(SOP_ATTRIBUTE_INVALID);
+		return ENUMS::MethodProcessResult::FAILURE;
+	}
+
+	auto pointAttributeHandle = GA_RWHandleD(this->gdp->addFloatTuple(GA_AttributeOwner::GA_ATTRIB_POINT, attributehandle->getScope(), this->_commonAttributeNames.Get(attributename), 1));
+	if (pointAttributeHandle.isValid())
+	{
+		for (auto primIt : this->gdp->getPrimitiveRange())
+		{
+			PROGRESS_WAS_INTERRUPTED_WITH_ERROR_AND_OBJECT(this, progress, ENUMS::MethodProcessResult::INTERRUPT)
+
+			const auto currPrim = this->gdp->getPrimitive(primIt);
+			if (currPrim)
+			{
+				const auto currVal = attributehandle.get(primIt);
+				for (auto pointIt : currPrim->getPointRange()) pointAttributeHandle.set(pointIt, currVal);
+			}
+		}
+	}
+
+	return ENUMS::MethodProcessResult::SUCCESS;
+}
+
+ENUMS::MethodProcessResult
+SOP_Operator::WhenConvexHullsInput(OP_Context& context, UT_AutoInterrupt& progress, fpreal time)
 {
 	if (duplicateSource(static_cast<exint>(ENUMS::ProcessedInputType::CONVEX_HULLS), context) <= UT_ErrorSeverity::UT_ERROR_WARNING && error() <= UT_ErrorSeverity::UT_ERROR_WARNING)
 	{
@@ -238,13 +320,21 @@ SOP_Operator::WhenConvexHullsInput(OP_Context& context, fpreal time)
 		auto processResult = CuspConvexInputVertexNormals(this->gdp, time);
 		if (processResult != ENUMS::MethodProcessResult::SUCCESS) return processResult;
 
-		ATTRIB_ACCESS::Find::IntATT(this, this->gdp, GA_AttributeOwner::GA_ATTRIB_PRIMITIVE, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_ID), this->_hullIDHandle);
-		ATTRIB_ACCESS::Find::FloatATT(this, this->gdp, GA_AttributeOwner::GA_ATTRIB_PRIMITIVE, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_VOLUME), this->_hullVolumeHandle);
-		ATTRIB_ACCESS::Find::IntATT(this, this->gdp, GA_AttributeOwner::GA_ATTRIB_PRIMITIVE, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_ID), this->_bundleIDHandle);
-		// create vertex 'hull_id' from primitive hull_id
-		// create vertex 'hull_volume' from primitive hull_volume
-		// create vertex 'bundle_id' from primitive bundle_id		
+		// get parameters
+		exint visualizeAttributeChoiceMenuValue;
+		PRM_ACCESS::Get::IntPRM(this, visualizeAttributeChoiceMenuValue, UI::visualizeAttributeChoiceMenu_Parameter, time);
+
+		switch (visualizeAttributeChoiceMenuValue)
+		{
+			default: /* do nothing */ break;
+			case static_cast<exint>(ENUMS::VisualizeAttributeOption::HULL_ID) :			{ processResult = PrepareIntATTForGUI(progress, ENUMS::VHACDCommonAttributeNameOption::HULL_ID, this->_hullIDHandle); } break;
+			case static_cast<exint>(ENUMS::VisualizeAttributeOption::HULL_VOLUME) :		{ processResult = PrepareFloatATTForGUI(progress, ENUMS::VHACDCommonAttributeNameOption::HULL_VOLUME, this->_hullVolumeHandle); } break;
+			case static_cast<exint>(ENUMS::VisualizeAttributeOption::BUNDLE_ID) :		{ processResult = PrepareIntATTForGUI(progress, ENUMS::VHACDCommonAttributeNameOption::BUNDLE_ID, this->_bundleIDHandle); } break;
+		}
 	}
+
+	// explode by 'hull_id'
+	// explode by 'bundle_id'
 
 	return ENUMS::MethodProcessResult::SUCCESS;
 }
@@ -254,31 +344,10 @@ SOP_Operator::WhenOriginalGeometryInput(OP_Context& context, fpreal time)
 {
 	if (duplicateSource(static_cast<exint>(ENUMS::ProcessedInputType::ORIGINAL_GEOMETRY), context) <= UT_ErrorSeverity::UT_ERROR_WARNING && error() <= UT_ErrorSeverity::UT_ERROR_WARNING)
 	{
-		ATTRIB_ACCESS::Find::IntATT(this, this->gdp, GA_AttributeOwner::GA_ATTRIB_PRIMITIVE, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_ID), this->_bundleIDHandle);
-
-		if (this->_bundleIDHandle.isValid())
-		{
-			this->_pointBundleIDHandle = GA_RWHandleI(this->gdp->addIntTuple(GA_AttributeOwner::GA_ATTRIB_POINT, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_ID), 1));
-			if (this->_pointBundleIDHandle.isInvalid())
-			{
-				addError(SOP_MESSAGE, "Failed to convert 'bunlde_id' to vertex attribute.");
-				return ENUMS::MethodProcessResult::FAILURE;
-			}
-		}
-		
-		if (this->_pointBundleIDHandle.isValid())
-		{
-			for (auto offset : this->gdp->getPrimitiveRange())
-			{
-				const auto currPrim = this->gdp->getPrimitive(offset);
-				if (currPrim)
-				{
-					const auto currBundlID = this->_bundleIDHandle.get(offset);
-					for (auto vtxoffset : currPrim->getPointRange()) this->_pointBundleIDHandle.set(vtxoffset, currBundlID);
-				}
-			}
-		}
+		//processResult = PrepareIntATTForGUI(progress, ENUMS::VHACDCommonAttributeNameOption::BUNDLE_ID, this->_bundleIDHandle);
 	}
+
+	// explode by 'bundle_id'
 
 	return ENUMS::MethodProcessResult::SUCCESS;
 }
@@ -340,7 +409,7 @@ SOP_Operator::cookMySop(OP_Context& context)
 	{
 		case static_cast<exint>(ENUMS::VisibleInputOption::CONVEX_HULLS) :
 		{
-			processResult = WhenConvexHullsInput(context, currentTime);
+			processResult = WhenConvexHullsInput(context, progress, currentTime);
 			if (processResult != ENUMS::MethodProcessResult::SUCCESS) return error();
 		} break;
 

@@ -68,11 +68,21 @@ namespace UI
 	};
 	static auto		switchVisibleInputChoiceMenuParm_ChoiceList = PRM_ChoiceList(PRM_CHOICELIST_SINGLE, switchVisibleInputChoiceMenuParm_Choices);
 	auto			switchVisibleInputChoiceMenu_Parameter = PRM_Template(PRM_ORD, 1, &switchVisibleInputChoiceMenuParm_Name, nullptr, &switchVisibleInputChoiceMenuParm_ChoiceList, &switchVisibleInputChoiceMenuParm_Range, &SOP_Operator::CallbackSwitchVisibleInput, nullptr, 1, "Specify geometry of which input should be visible.");
-
-	__DECLARE_Main_Section_PRM(10)
-	DECLARE_Toggle_with_Separator_OFF_PRM("showhullid", "Show Hull ID ATT", "showhullidseparator", 0, "Visualize 'hull_id' attribute by assigning random color to each convex hull ID.", showHullIDAttribute)
-	DECLARE_Toggle_with_Separator_OFF_PRM("showbundleid", "Show Bundle ID ATT", "showbundleidseparator", 0, "Visualize 'bundle_id' attribute by assigning random color to each bundle ID.", showBundleIDAttribute)
-	DECLARE_Toggle_with_Separator_OFF_PRM("showwhullvolume", "Show Hull Volume ATT", "showwhullvolumeseparator", 0, "Visualize 'hull_volume' attribute.", showHullVolumeAttribute)
+	
+	__DECLARE_Main_Section_PRM(5)
+	static auto		visualizeAttributeChoiceMenuParm_Name = PRM_Name("visualizeattribute", "Visualize ATT");
+	static auto		visualizeAttributeChoiceMenuParm_Range = PRM_Range(PRM_RANGE_RESTRICTED, 0, PRM_RANGE_RESTRICTED, 3);
+	static PRM_Name visualizeAttributeChoiceMenuParm_Choices[] =
+	{
+		PRM_Name("0", "None"),
+		PRM_Name("1", "Hull ID"),
+		PRM_Name("2", "Hull Volume"),
+		PRM_Name("3", "Bundle ID"),
+		PRM_Name(nullptr)
+	};
+	static auto		visualizeAttributeChoiceMenuParm_ChoiceList = PRM_ChoiceList(PRM_CHOICELIST_SINGLE, visualizeAttributeChoiceMenuParm_Choices);
+	auto			visualizeAttributeChoiceMenu_Parameter = PRM_Template(PRM_ORD, 1, &visualizeAttributeChoiceMenuParm_Name, nullptr, &visualizeAttributeChoiceMenuParm_ChoiceList, &visualizeAttributeChoiceMenuParm_Range, 0, nullptr, 1, "Specify geometry of which input should be visible.");
+	
 	DECLARE_Toggle_with_Separator_OFF_PRM("explodehullid", "Explode By Hull ID ATT", "explodehullidseparator", 0, "Explode geometry from convex hulls input by using 'hull_id' attribute.", explodeByHullIDAttribute)
 	DECLARE_Toggle_with_Separator_OFF_PRM("explodebundleid", "Explode By Bundle ID ATT", "explodebundleidseparator", 0, "Explode geometry by using 'bundle_id' attribute.", explodeByBundleIDAttribute)
 
