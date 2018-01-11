@@ -41,11 +41,13 @@ INCLUDES                                                           |
 #include <Macros/ProgressEscape.h>
 #include <Utility/PRM_TemplateAccessors.h>
 #include <Utility/GA_AttributeAccessors.h>
-#include <Utility/GU_DetailCalculator.h>
+//#include <Utility/GU_DetailCalculator.h>
 
 // this
 #include "Parameters.h"
-#include "FilterModeOption.h"
+#include "ProcessedInputType.h"
+//#include "FilterModeOption.h"
+#include "VisibleInputOption.h"
 
 /* -----------------------------------------------------------------
 DEFINES                                                            |
@@ -104,10 +106,7 @@ SOP_Operator::updateParmsFlags()
 	changed |= setVisibleState(UI::filterSectionSwitcher_Parameter.getToken(), is1Connected);
 
 	bool cuspVertexNormalsValue;
-	PRM_ACCESS::Get::IntPRM(this, cuspVertexNormalsValue, UI::cuspVertexNormalsToggle_Parameter, currentTime);
-	cuspVertexNormalsValue = false;
-	changed |= setVisibleState(UI::cuspVertexNormalsToggle_Parameter.getToken(), cuspVertexNormalsValue);
-	changed |= setVisibleState(UI::cuspVertexNormalsSeparator_Parameter.getToken(), cuspVertexNormalsValue);
+	PRM_ACCESS::Get::IntPRM(this, cuspVertexNormalsValue, UI::cuspVertexNormalsToggle_Parameter, currentTime);	
 	changed |= setVisibleState(UI::specifyCuspAngleFloat_Parameter.getToken(), cuspVertexNormalsValue);
 
 	// update description active state
@@ -123,14 +122,54 @@ CALLBACKS                                                          |
 IMPLEMENT_DescriptionPRM_Callback(SOP_Operator, UI)
 
 int
-SOP_Operator::CallbackSpecifyCuspAngle(void* data, int index, float time, const PRM_Template* tmp)
+SOP_Operator::CallbackSwitchVisibleInput(void* data, int index, float time, const PRM_Template* tmp)
+{
+	const auto me = reinterpret_cast<SOP_Operator*>(data);
+	if (!me) return 0;
+
+	// // set vertex normals option	
+	exint cuspVertexNormalValue = static_cast<exint>(UI::cuspVertexNormalsToggle_Parameter.getFactoryDefaults()->getOrdinal());
+
+	exint switchVisibleInputValue;
+	PRM_ACCESS::Get::IntPRM(me, switchVisibleInputValue, UI::switchVisibleInputChoiceMenu_Parameter, time);
+
+	switch (switchVisibleInputValue)
+	{
+		case static_cast<exint>(ENUMS::VisibleInputOption::CONVEX_HULLS) :
+		{
+			cuspVertexNormalValue = 1;
+			auto cuspAngleValue = 0.0;			
+			PRM_ACCESS::Set::IntPRM(me, cuspVertexNormalValue, UI::cuspVertexNormalsToggle_Parameter, time);
+			PRM_ACCESS::Set::FloatPRM(me, cuspAngleValue, UI::specifyCuspAngleFloat_Parameter, time);
+		} break;
+
+		case static_cast<exint>(ENUMS::VisibleInputOption::ORIGINAL_GEOMETRY) :
+		{
+			cuspVertexNormalValue = 0;	
+			PRM_ACCESS::Set::IntPRM(me, cuspVertexNormalValue, UI::cuspVertexNormalsToggle_Parameter, time);
+			CallbackCuspVertexNormal(data, index, time, tmp);			
+		} break;
+
+		case static_cast<exint>(ENUMS::VisibleInputOption::BOTH) :
+		{
+			cuspVertexNormalValue = 0;
+			PRM_ACCESS::Set::IntPRM(me, cuspVertexNormalValue, UI::cuspVertexNormalsToggle_Parameter, time);
+			CallbackCuspVertexNormal(data, index, time, tmp);
+		} break;
+	}
+
+	return 1;
+}
+
+int
+SOP_Operator::CallbackCuspVertexNormal(void* data, int index, float time, const PRM_Template* tmp)
 {
 	const auto me = reinterpret_cast<SOP_Operator*>(data);
 	if (!me) return 0;
 
 	// TODO: figure out why restoreFactoryDefaults() doesn't work
-	auto defVal = static_cast<exint>(UI::specifyCuspAngleFloat_Parameter.getFactoryDefaults()->getFloat());
-	PRM_ACCESS::Set::IntPRM(me, defVal, UI::specifyCuspAngleFloat_Parameter, time);
+	auto cuspAngleValue = static_cast<fpreal>(UI::specifyCuspAngleFloat_Parameter.getFactoryDefaults()->getFloat());
+	PRM_ACCESS::Set::FloatPRM(me, cuspAngleValue, UI::specifyCuspAngleFloat_Parameter, time);
 
 	return 1;
 }
@@ -141,11 +180,7 @@ OPERATOR INITIALIZATION                                            |
 
 SOP_Operator::~SOP_VHACDDebug() { }
 
-SOP_Operator::SOP_VHACDDebug(OP_Network* network, const char* name, OP_Operator* op) :
-SOP_Base_Operator(network, name, op),
-_convexGDP(nullptr),
-_originalGDP(nullptr)
-{ }
+SOP_Operator::SOP_VHACDDebug(OP_Network* network, const char* name, OP_Operator* op) : SOP_Base_Operator(network, name, op) { }
 
 OP_Node* 
 SOP_Operator::CreateMe(OP_Network* network, const char* name, OP_Operator* op) 
@@ -195,34 +230,93 @@ SOP_Operator::CuspConvexInputVertexNormals(GU_Detail* detail, fpreal time)
 }
 
 ENUMS::MethodProcessResult
-SOP_Operator::SwitchVisibleInput(const GA_Range convexrange, const GA_Range originalrange, GA_Offset lastoffset, fpreal time)
+SOP_Operator::WhenConvexHullsInput(OP_Context& context, fpreal time)
 {
-	exint switchVisibleInputValue;
-	PRM_ACCESS::Get::IntPRM(this, switchVisibleInputValue, UI::switchVisibleInputChoiceMenu_Parameter, time);
-
-	switch (switchVisibleInputValue)
+	if (duplicateSource(static_cast<exint>(ENUMS::ProcessedInputType::CONVEX_HULLS), context) <= UT_ErrorSeverity::UT_ERROR_WARNING && error() <= UT_ErrorSeverity::UT_ERROR_WARNING)
 	{
-		case static_cast<exint>(ENUMS::ProcessedInputType::CONVEX_HULLS) :
-		case static_cast<exint>(ENUMS::ProcessedInputType::ORIGINAL_GEOMETRY) :
+		// cusp vertex normals
+		auto processResult = CuspConvexInputVertexNormals(this->gdp, time);
+		if (processResult != ENUMS::MethodProcessResult::SUCCESS) return processResult;
+
+		ATTRIB_ACCESS::Find::IntATT(this, this->gdp, GA_AttributeOwner::GA_ATTRIB_PRIMITIVE, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_ID), this->_hullIDHandle);
+		ATTRIB_ACCESS::Find::FloatATT(this, this->gdp, GA_AttributeOwner::GA_ATTRIB_PRIMITIVE, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_VOLUME), this->_hullVolumeHandle);
+		ATTRIB_ACCESS::Find::IntATT(this, this->gdp, GA_AttributeOwner::GA_ATTRIB_PRIMITIVE, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_ID), this->_bundleIDHandle);
+		// create vertex 'hull_id' from primitive hull_id
+		// create vertex 'hull_volume' from primitive hull_volume
+		// create vertex 'bundle_id' from primitive bundle_id		
+	}
+
+	return ENUMS::MethodProcessResult::SUCCESS;
+}
+
+ENUMS::MethodProcessResult
+SOP_Operator::WhenOriginalGeometryInput(OP_Context& context, fpreal time)
+{
+	if (duplicateSource(static_cast<exint>(ENUMS::ProcessedInputType::ORIGINAL_GEOMETRY), context) <= UT_ErrorSeverity::UT_ERROR_WARNING && error() <= UT_ErrorSeverity::UT_ERROR_WARNING)
+	{
+		ATTRIB_ACCESS::Find::IntATT(this, this->gdp, GA_AttributeOwner::GA_ATTRIB_PRIMITIVE, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_ID), this->_bundleIDHandle);
+
+		if (this->_bundleIDHandle.isValid())
 		{
-			auto hiddenInput = this->gdp->newPrimitiveGroup(GU_HIDDEN_3D_PRIMS_GROUP);
-			if (hiddenInput)
+			this->_pointBundleIDHandle = GA_RWHandleI(this->gdp->addIntTuple(GA_AttributeOwner::GA_ATTRIB_POINT, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_ID), 1));
+			if (this->_pointBundleIDHandle.isInvalid())
 			{
-				if (switchVisibleInputValue == static_cast<exint>(ENUMS::ProcessedInputType::CONVEX_HULLS))
-				{
-					hiddenInput->addRange(originalrange);
-					hiddenInput->removeOffset(lastoffset);
-				}
-				else hiddenInput->addRange(convexrange);
-			}
-			else
-			{
-				this->addError(SOP_MESSAGE, "Failed to create hidden group.");
+				addError(SOP_MESSAGE, "Failed to convert 'bunlde_id' to vertex attribute.");
 				return ENUMS::MethodProcessResult::FAILURE;
 			}
-		} break;
+		}
+		
+		if (this->_pointBundleIDHandle.isValid())
+		{
+			for (auto offset : this->gdp->getPrimitiveRange())
+			{
+				const auto currPrim = this->gdp->getPrimitive(offset);
+				if (currPrim)
+				{
+					const auto currBundlID = this->_bundleIDHandle.get(offset);
+					for (auto vtxoffset : currPrim->getPointRange()) this->_pointBundleIDHandle.set(vtxoffset, currBundlID);
+				}
+			}
+		}
+	}
 
-		default: /* do nothing */ break;
+	return ENUMS::MethodProcessResult::SUCCESS;
+}
+
+ENUMS::MethodProcessResult
+SOP_Operator::WhenBothInputs(OP_Context& context, fpreal time)
+{
+	const auto is1connected = this->getInput(static_cast<exint>(ENUMS::ProcessedInputType::ORIGINAL_GEOMETRY)) == nullptr ? false : true;
+	if (!is1connected)
+	{
+		addError(SOP_MESSAGE, "Both inputs have to be connected in this visibility mode.");
+		return ENUMS::MethodProcessResult::FAILURE;
+	}
+	
+	const auto convexGDP = new GU_Detail(inputGeo(static_cast<exint>(ENUMS::ProcessedInputType::CONVEX_HULLS), context));
+	const auto originalGDP = new GU_Detail(inputGeo(static_cast<exint>(ENUMS::ProcessedInputType::ORIGINAL_GEOMETRY), context));	
+	if (convexGDP && originalGDP && error() <= UT_ErrorSeverity::UT_ERROR_WARNING)
+	{
+		auto success = this->gdp->copy(*convexGDP, GEO_CopyMethod::GEO_COPY_START);
+		if (!success)
+		{
+			addError(SOP_MESSAGE, "Failed to merge convex hulls into current detail.");
+			return ENUMS::MethodProcessResult::FAILURE;
+		}
+
+		success = this->gdp->copy(*originalGDP, GEO_CopyMethod::GEO_COPY_END);
+		if (!success)
+		{
+			addError(SOP_MESSAGE, "Failed to merge original geometry into current detail.");
+			return ENUMS::MethodProcessResult::FAILURE;
+		}
+
+		delete convexGDP;
+		delete originalGDP;
+
+		//auto processResult = CuspConvexInputVertexNormals(convexGDP, time);
+		//if (processResult != ENUMS::MethodProcessResult::SUCCESS) return processResult;
+
 	}
 
 	return ENUMS::MethodProcessResult::SUCCESS;
@@ -237,60 +331,30 @@ SOP_Operator::cookMySop(OP_Context& context)
 {
 	DEFAULTS_CookMySop()
 		
-	// duplicate first input
-	this->_convexGDP = new GU_Detail(inputGeo(static_cast<exint>(ENUMS::ProcessedInputType::CONVEX_HULLS), context));
-	
-	// duplicate second input
-	auto success = this->getInput(static_cast<exint>(ENUMS::ProcessedInputType::ORIGINAL_GEOMETRY)) == nullptr ? false : true;
-	if (success) this->_originalGDP = new GU_Detail(inputGeo(static_cast<exint>(ENUMS::ProcessedInputType::ORIGINAL_GEOMETRY), context));
+	exint switchVisibleInputValue;
+	PRM_ACCESS::Get::IntPRM(this, switchVisibleInputValue, UI::switchVisibleInputChoiceMenu_Parameter, currentTime);
 
-	// we can work with only first input geometry
-	if (this->_convexGDP&& error() <= UT_ErrorSeverity::UT_ERROR_WARNING)
+	auto processResult = ENUMS::MethodProcessResult::SUCCESS;
+
+	switch (switchVisibleInputValue)
 	{
-		auto processResult = CuspConvexInputVertexNormals(this->_convexGDP, currentTime);
-		if (processResult != ENUMS::MethodProcessResult::SUCCESS) return error();
-			
-		/* 			
-			this could be simply achieved by not copying second input,
-			but as an example for the future generations, we do this this way
-		*/
-		if (this->_originalGDP)
-		{						
-			success = this->gdp->copy(*this->_convexGDP, GEO_CopyMethod::GEO_COPY_START);
-			if (success)
-			{
-				const auto convexRange = this->gdp->getPrimitiveRange();
-				const auto lastOffset = this->gdp->getPrimitiveMap().lastOffset();
-
-				success = this->gdp->copy(*this->_originalGDP, GEO_CopyMethod::GEO_COPY_END);
-				if (success)
-				{
-					const auto originalRange = this->gdp->getPrimitiveRangeSlice(this->gdp->primitiveIndex(lastOffset));
-
-					processResult = SwitchVisibleInput(convexRange, originalRange, lastOffset, currentTime);
-					if (processResult != ENUMS::MethodProcessResult::SUCCESS) return error();
-				}
-				else
-				{
-					this->addError(SOP_MESSAGE, "Failed to merge original geometry input.");
-					return error();
-				}
-			}
-			else
-			{
-				this->addError(SOP_MESSAGE, "Failed to merge convex hulls input.");
-				return error();
-			}
-		}
-		else
+		case static_cast<exint>(ENUMS::VisibleInputOption::CONVEX_HULLS) :
 		{
-			success = this->gdp->copy(*this->_convexGDP, GEO_CopyMethod::GEO_COPY_ONCE);
-			if (!success)
-			{
-				this->addError(SOP_MESSAGE, "Failed to merge convex hulls input.");
-				return error();
-			}
-		}
+			processResult = WhenConvexHullsInput(context, currentTime);
+			if (processResult != ENUMS::MethodProcessResult::SUCCESS) return error();
+		} break;
+
+		case static_cast<exint>(ENUMS::VisibleInputOption::ORIGINAL_GEOMETRY) :
+		{
+			processResult = WhenOriginalGeometryInput(context, currentTime);
+			if (processResult != ENUMS::MethodProcessResult::SUCCESS) return error();
+		} break;
+
+		case static_cast<exint>(ENUMS::VisibleInputOption::BOTH) :
+		{
+			processResult = WhenBothInputs(context, currentTime);
+			if (processResult != ENUMS::MethodProcessResult::SUCCESS) return error();
+		} break;
 	}
 
 	return error();

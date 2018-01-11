@@ -28,12 +28,9 @@ INCLUDES                                                           |
 ----------------------------------------------------------------- */
 
 // SESI
-#include <GR/GR_DisplayOption.h>
 #include <GT/GT_PrimPolygonMesh.h>
 #include <GT/GT_AttributeList.h>
 #include <GT/GT_DANumeric.h>
-
-// hou-hdk-common
 
 // this
 #include "GUI_VHACDDebug.h"
@@ -45,6 +42,7 @@ DEFINES                                                            |
 
 #define GUI_Hook			GET_GUI_Namespace()::GUI_VHACDDebug
 #define COMMON_NAMES		GET_SOP_Namespace()::COMMON_NAMES
+#define CONTAINERS			GET_Base_Namespace()::Containers
 #define ENUMS				GET_Base_Namespace()::Enums
 
 /* -----------------------------------------------------------------
@@ -62,48 +60,63 @@ MAIN                                                               |
 ----------------------------------------------------------------- */
 
 GT_PrimitiveHandle
-GUI_Hook::filterPrimitive(const GT_PrimitiveHandle& gt_prm, const GEO_Primitive* geo_prm, const GR_RenderInfo* info, GR_PrimAcceptResult& processed)
+GUI_Hook::filterPrimitive(const GT_PrimitiveHandle& primhandle, const GEO_Primitive* primitive, const GR_RenderInfo* info, GR_PrimAcceptResult& processed)
 {
-    GT_PrimitiveHandle ph;
-
-	/*
-    if(!info->getDisplayOption()->getUserOptionState(COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::GUI_DEBUG_SMALLNAME)))
-    {
-	processed = GR_PROCESSED;
-	return ph;
-    }
-	*/
+    GT_PrimitiveHandle primitiveHandle;
 
     // As this was registered for a GT prim type, a valid GT prim should be
     // passed to filterPrimitive(), not a GEO primitive.
-    UT_ASSERT(geo_prm == NULL);
-    UT_ASSERT(gt_prm);
+    UT_ASSERT(primitive == NULL);
+    UT_ASSERT(primhandle);
 
-    if(!gt_prm)
+    if(!primhandle)
     {
 		processed = GR_NOT_PROCESSED;
-		return ph;
+		return primitiveHandle;
     }
+
+	// only if we have any of those attributes
+	const auto pointAttribs = primhandle->getPointAttributes();
+	if (pointAttribs)
+	{		
+		const auto hullIDHandle = pointAttribs->get(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_ID));
+		if (hullIDHandle)
+		{
+			std::cout << "Found 'hull_id'" << std::endl;
+		}
+
+		const auto hullVolumeHandle = pointAttribs->get(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_VOLUME));
+		if (hullVolumeHandle)
+		{
+			std::cout << "Found 'hull_volume'" << std::endl;
+		}
+
+		const auto bundlIDHandle = pointAttribs->get(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_ID));
+		if (bundlIDHandle)
+		{
+			std::cout << "Found 'bundle_id'" << std::endl;
+		}
+	}
 
     // Fetch the point normals (N) from the polygon mesh.
     GT_DataArrayHandle nh;
     bool point_normals = false;
-
+	
     // Check to see if vertex normals are present.
-    if(gt_prm->getVertexAttributes())
-	nh = gt_prm->getVertexAttributes()->get("N");
+    if(primhandle->getVertexAttributes())
+	nh = primhandle->getVertexAttributes()->get("N");
 
     // If no vertex normals, check point normals.
     if(!nh)
     {
-	if(gt_prm->getPointAttributes())
-	    nh = gt_prm->getPointAttributes()->get("N");
+	if(primhandle->getPointAttributes())
+	    nh = primhandle->getPointAttributes()->get("N");
 
 	// If no point normals, generate smooth point normals from P and the
 	// connectivity.
 	if(!nh)
 	{
-		const auto mesh = UTverify_cast<const GT_PrimPolygonMesh *>(gt_prm.get());
+		const auto mesh = UTverify_cast<const GT_PrimPolygonMesh *>(primhandle.get());
 	    if(mesh)
 		nh = mesh->createPointNormals();
 	}
@@ -134,15 +147,15 @@ GUI_Hook::filterPrimitive(const GT_PrimitiveHandle& gt_prm, const GEO_Primitive*
 
 	// Copy the input mesh, replacing either its vertex or point attribute
 	// list.
-	    const auto mesh=UTverify_cast<const GT_PrimPolygonMesh *>(gt_prm.get());
+	    const auto mesh=UTverify_cast<const GT_PrimPolygonMesh *>(primhandle.get());
 
 	if(point_normals)
 	{
 	    // Add Cd to the point attribute list, replacing it if Cd already
 	    // exists.
-		const auto ah = gt_prm->getPointAttributes()->addAttribute("Cd", cdh, true);
+		const auto ah = primhandle->getPointAttributes()->addAttribute("Cd", cdh, true);
 
-	    ph = new GT_PrimPolygonMesh(*mesh,
+		primitiveHandle = new GT_PrimPolygonMesh(*mesh,
 					ah,
 					mesh->getVertexAttributes(),
 					mesh->getUniformAttributes(),
@@ -152,9 +165,9 @@ GUI_Hook::filterPrimitive(const GT_PrimitiveHandle& gt_prm, const GEO_Primitive*
 	{
 	    // Add Cd to the vertex attribute list, replacing it if Cd already
 	    // exists.
-		const auto ah = gt_prm->getVertexAttributes()->addAttribute("Cd", cdh, true);
+		const auto ah = primhandle->getVertexAttributes()->addAttribute("Cd", cdh, true);
 
-	    ph = new GT_PrimPolygonMesh(*mesh,
+		primitiveHandle = new GT_PrimPolygonMesh(*mesh,
 					mesh->getPointAttributes(),
 					ah,
 					mesh->getUniformAttributes(),
@@ -164,7 +177,7 @@ GUI_Hook::filterPrimitive(const GT_PrimitiveHandle& gt_prm, const GEO_Primitive*
     }
 
     // return a new polygon mesh with modified Cd attribute.
-    return ph;
+    return primitiveHandle;
 }
 
 /* -----------------------------------------------------------------
@@ -172,5 +185,6 @@ UNDEFINES                                                          |
 ----------------------------------------------------------------- */
 
 #undef ENUMS
+#undef CONTAINERS
 #undef COMMON_NAMES
 #undef GUI_Hook

@@ -43,7 +43,6 @@ INCLUDES                                                           |
 
 // this
 #include "SOP_VHACDNode.h"
-#include "ProcessedInputType.h"
 
 /* -----------------------------------------------------------------
 FORWARDS                                                           |
@@ -80,15 +79,20 @@ DECLARE_SOP_Namespace_Start()
 		static OP_Node*				CreateMe(OP_Network* network, const char* name, OP_Operator* op);
 
 		static PRM_Template			parametersList[];
-
-		static int					CallbackSpecifyCuspAngle(void* data, int index, float time, const PRM_Template* tmp);
+		
+		static int					CallbackSwitchVisibleInput(void* data, int index, float time, const PRM_Template* tmp);
+		static int					CallbackCuspVertexNormal(void* data, int index, float time, const PRM_Template* tmp);
 
 	private:
 		ENUMS::MethodProcessResult	CuspConvexInputVertexNormals(GU_Detail* detail, fpreal time);
-		ENUMS::MethodProcessResult	SwitchVisibleInput(const GA_Range convexrange, const GA_Range originalrange, GA_Offset lastoffset, fpreal time);
 
-		GU_Detail*					_convexGDP;
-		GU_Detail*					_originalGDP;
+		ENUMS::MethodProcessResult	WhenConvexHullsInput(OP_Context& context, fpreal time);
+		ENUMS::MethodProcessResult	WhenOriginalGeometryInput(OP_Context& context, fpreal time);
+		ENUMS::MethodProcessResult	WhenBothInputs(OP_Context& context, fpreal time);		
+
+		GA_RWHandleI				_pointHullIDHandle;
+		GA_RWHandleD				_pointHullVolumeHandle;
+		GA_RWHandleI				_pointBundleIDHandle;
 	};
 
 DECLARE_SOP_Namespace_End

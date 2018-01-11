@@ -74,7 +74,7 @@ protected:
 		// default node icon
 		op->setIconName(COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::TOOLKIT_ICONNAME));
 	}
-	
+
 	CONTAINERS::VHACDCommonAttributeName		_commonAttributeNames = CONTAINERS::VHACDCommonAttributeName();
 	
 	GA_ROHandleI								_convexBundleIDHandle;

@@ -45,7 +45,6 @@ DEFINES                                                            |
 ----------------------------------------------------------------- */
 
 #define SOP_Operator		GET_SOP_Namespace()::SOP_VHACDDebug
-#define COMMON_NAMES		GET_SOP_Namespace()::COMMON_NAMES
 #define CONTAINERS			GET_Base_Namespace()::Containers
 #define ENUMS				GET_Base_Namespace()::Enums
 
@@ -62,13 +61,13 @@ namespace UI
 	static auto		switchVisibleInputChoiceMenuParm_Range = PRM_Range(PRM_RANGE_RESTRICTED, 0, PRM_RANGE_RESTRICTED, 2);
 	static PRM_Name switchVisibleInputChoiceMenuParm_Choices[] =
 	{
-		PRM_Name("0", COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::SOP_OUTPUTNAME_CONVEXHULLS)),
-		PRM_Name("1", COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::SOP_OUTPUTNAME_ORIGINALGEOMETRY)),
+		PRM_Name("0", "Convex Hulls"),
+		PRM_Name("1", "Original Geometry"),
 		PRM_Name("2", "Both"),
 		PRM_Name(nullptr)
 	};
 	static auto		switchVisibleInputChoiceMenuParm_ChoiceList = PRM_ChoiceList(PRM_CHOICELIST_SINGLE, switchVisibleInputChoiceMenuParm_Choices);
-	auto			switchVisibleInputChoiceMenu_Parameter = PRM_Template(PRM_ORD, 1, &switchVisibleInputChoiceMenuParm_Name, nullptr, &switchVisibleInputChoiceMenuParm_ChoiceList, &switchVisibleInputChoiceMenuParm_Range, 0, nullptr, 1, "Specify geometry of which input should be visible.");
+	auto			switchVisibleInputChoiceMenu_Parameter = PRM_Template(PRM_ORD, 1, &switchVisibleInputChoiceMenuParm_Name, nullptr, &switchVisibleInputChoiceMenuParm_ChoiceList, &switchVisibleInputChoiceMenuParm_Range, &SOP_Operator::CallbackSwitchVisibleInput, nullptr, 1, "Specify geometry of which input should be visible.");
 
 	__DECLARE_Main_Section_PRM(10)
 	DECLARE_Toggle_with_Separator_OFF_PRM("showhullid", "Show Hull ID ATT", "showhullidseparator", 0, "Visualize 'hull_id' attribute by assigning random color to each convex hull ID.", showHullIDAttribute)
@@ -78,8 +77,8 @@ namespace UI
 	DECLARE_Toggle_with_Separator_OFF_PRM("explodebundleid", "Explode By Bundle ID ATT", "explodebundleidseparator", 0, "Explode geometry by using 'bundle_id' attribute.", explodeByBundleIDAttribute)
 
 	__DECLARE_Additional_Section_PRM(7)
-	DECLARE_Toggle_with_Separator_ON_PRM("cuspvertexnormals", "Cusp Normals", "cuspvertexnormalsseparator", &SOP_Operator::CallbackSpecifyCuspAngle, "Cusp vertex normals. Affects only convex hulls input geometry.", cuspVertexNormals)
-	DECLARE_Custom_Float_0R_to_MaxR_PRM("specifycuspangle", "Angle", 180.0f, 0.0f, 0, "Specify cusp angle.", specifyCuspAngle)
+	DECLARE_Toggle_with_Separator_OFF_PRM("cuspvertexnormals", "Cusp Normals", "cuspvertexnormalsseparator", &SOP_Operator::CallbackCuspVertexNormal, "Cusp vertex normals. Affects only convex hulls input geometry.", cuspVertexNormals)
+	DECLARE_Custom_Float_0R_to_MaxR_PRM("specifycuspangle", "Angle", 180.0f, 40.0f, 0, "Specify cusp angle.", specifyCuspAngle)
 	DECLARE_DescriptionPRM(SOP_Operator)	
 }
 		
@@ -91,7 +90,6 @@ UNDEFINES                                                          |
 
 #undef ENUMS
 #undef CONTAINERS
-#undef COMMON_NAMES
 #undef SOP_Operator
 
 #endif // !____prms_vhacd_debug_h____
