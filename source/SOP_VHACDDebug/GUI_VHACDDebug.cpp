@@ -31,9 +31,19 @@ INCLUDES                                                           |
 #include <GT/GT_PrimPolygonMesh.h>
 #include <GT/GT_AttributeList.h>
 #include <OP/OP_Director.h>
+#include <UT/UT_Map.h>
+#include <UT/UT_Set.h>
+#include <GEO/GEO_Primitive.h>
+
+#if _WIN32		
+#include <sys/SYS_Types.h>
+#else
+#include <SYS/SYS_Types.h>
+#endif
 
 // hou-hdk-common
 #include <Utility/OP_NodeTester.h>
+#include <Containers/OP_NodeTypeCommonName.h>
 
 // this
 #include "GUI_VHACDDebug.h"
@@ -66,32 +76,27 @@ HELPERS                                                            |
 
 template<typename BufferValueType>
 ENUMS::MethodProcessResult
-GUI_Hook::ProcessAttribute(const GT_DataArrayHandle& datahandle, GT_Real16Array* vertexcolors)
+GUI_Hook::ProcessAttribute(const GT_DataArrayHandle& datahandle, GT_DataArrayHandle& newvertexcolors) const
 {
-	vertexcolors = new GT_Real16Array(datahandle->entries(), 3, GT_TYPE_COLOR);
-	GT_DataArrayHandle vertexColors = vertexcolors;
+	auto vertexColors = new GT_Real16Array(datahandle->entries(), 3, GT_TYPE_COLOR);	
 
-	const exint BUFFER_SIZE = 1;
-	
-	UT_Vector3 col;
+	const exint BUFFER_SIZE = 3;
 	for (auto i = 0; i < datahandle->entries(); i++)
 	{			
-		BufferValueType currVal[BUFFER_SIZE];
-		datahandle->import(i, currVal, BUFFER_SIZE);
-
-		std::cout << currVal[0] << std::endl;
-
-		const auto now = new UT_Vector3(col);
-		UT_Color::getRandomContrastingColor(now, 0, col);
-		std::cout << col.x() << "," << col.y() << "," << col.z() << std::endl;
-
-		delete now;
-		//col.normalize();
-
-		//cd->getData(i)[0] = col.x() *0.5 + 0.5;
-		//cd->getData(i)[1] = col.y() *0.5 + 0.5;
-		//cd->getData(i)[2] = col.z() *0.5 + 0.5;
+		// get current attribute value
+		UT_Vector3F currAttributeValue;
+		datahandle->import(i, currAttributeValue.data(), 3);
+		
+		// assign color			
+		vertexColors->getData(i)[0] = currAttributeValue.x();
+		vertexColors->getData(i)[1] = currAttributeValue.y();
+		vertexColors->getData(i)[2] = currAttributeValue.z();
 	}
+
+	//std::cout << mappedColors.size() << std::endl;
+	//for (auto col : mappedColors) std::cout << col.second.x() << "," << col.second.y() << "," << col.second.z() << std::endl;
+
+	newvertexcolors = vertexColors;
 
 	return ENUMS::MethodProcessResult::SUCCESS;
 }
@@ -103,135 +108,73 @@ MAIN                                                               |
 GT_PrimitiveHandle
 GUI_Hook::filterPrimitive(const GT_PrimitiveHandle& primhandle, const GEO_Primitive* primitive, const GR_RenderInfo* info, GR_PrimAcceptResult& processed)
 {
-    GT_PrimitiveHandle primitiveHandle;
-
-	// turn it ON only when on proper operator
+    GT_PrimitiveHandle newPrimitiveHandle;
+	
+	// turn it ON only when proper operator is selected
 	auto processResult = UTILS::OP_NodeTester::IsProperOperator(ENUMS::OP_NodeTypeCommonNameOption::SOP, COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::SOP_DEBUG_SMALLNAME), info->getNodePath().c_str());
 	if (processResult != ENUMS::MethodProcessResult::SUCCESS)
 	{
 		processed = GR_PROCESSED;
-		return primitiveHandle;
+		return newPrimitiveHandle;
 	}
 
-    // As this was registered for a GT prim type, a valid GT prim should be
-    // passed to filterPrimitive(), not a GEO primitive.
+    // as this was registered for a GT prim type, a valid GT prim should be passed to filterPrimitive(), not a GEO primitive.
     UT_ASSERT(primitive == NULL);
-    UT_ASSERT(primhandle);
+    UT_ASSERT(primhandle);	
 	
     if(!primhandle)
     {
 		processed = GR_NOT_PROCESSED;
-		return primitiveHandle;
+		return newPrimitiveHandle;
     }
 	
 	// only if we have any of those attributes
 	const auto pointAttribs = primhandle->getPointAttributes();
 	if (pointAttribs)
-	{	
-		GT_Real16Array* vertexColors = nullptr;
-
+	{
+		GT_DataArrayHandle newVertexColors = nullptr;
+		
 		const auto bundlIDHandle = pointAttribs->get(this->_vhacdCommonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_ID));
-		if (bundlIDHandle) ProcessAttribute<exint>(bundlIDHandle, vertexColors);
+		if (bundlIDHandle) processResult = ProcessAttribute<exint>(bundlIDHandle, newVertexColors);
 
 		const auto hullIDHandle = pointAttribs->get(this->_vhacdCommonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_ID));
-		if (hullIDHandle && !bundlIDHandle) ProcessAttribute<exint>(hullIDHandle, vertexColors);
+		if (hullIDHandle && !bundlIDHandle) processResult = ProcessAttribute<exint>(hullIDHandle, newVertexColors);
 
 		const auto hullVolumeHandle = pointAttribs->get(this->_vhacdCommonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_VOLUME));
-		if (hullVolumeHandle && !hullIDHandle && !bundlIDHandle) ProcessAttribute<fpreal64>(hullVolumeHandle, vertexColors);
-
-		if (vertexColors != nullptr)
+		if (hullVolumeHandle && !hullIDHandle && !bundlIDHandle) processResult = ProcessAttribute<fpreal64>(hullVolumeHandle, newVertexColors);
+		
+		if (processResult == ENUMS::MethodProcessResult::SUCCESS && newVertexColors != nullptr)
 		{
-			// Copy the input mesh, replacing either its vertex or point attribute list.
-			//const auto mesh = UTverify_cast<const GT_PrimPolygonMesh *>(primhandle.get());
-
-			// Add Cd to the point attribute list, replacing it if Cd already
-			// exists.
-			//const auto ah = primhandle->getPointAttributes()->addAttribute("Cd", cdh, true);
-			//primitiveHandle = new GT_PrimPolygonMesh(*mesh, ah, mesh->getVertexAttributes(), mesh->getUniformAttributes(), mesh->getDetailAttributes());
-			
-		}
-	}
-
-    // Fetch the point normals (N) from the polygon mesh.
-    GT_DataArrayHandle nh;
-    bool point_normals = false;
-	
-    // Check to see if vertex normals are present.
-    if(primhandle->getVertexAttributes())
-	nh = primhandle->getVertexAttributes()->get("N");
-
-    // If no vertex normals, check point normals.
-    if(!nh)
-    {
-		if(primhandle->getPointAttributes()) nh = primhandle->getPointAttributes()->get("N");
-
-		// If no point normals, generate smooth point normals from P and the
-		// connectivity.
-		if(!nh)
-		{
-			const auto mesh = UTverify_cast<const GT_PrimPolygonMesh *>(primhandle.get());
-			if(mesh)
-			nh = mesh->createPointNormals();
-		}
-
-		point_normals = true;
-    }
-
-    // Normals found: generate Cd from them.
-    if(nh)
-    {
-		// Create a new data array for Cd (vec3 in FP16 format) and map the
-		// normalized normal values from [-1,1] to [0,1].
-		auto *cd =
-		  new GT_Real16Array(nh->entries(), 3, GT_TYPE_COLOR);
-		GT_DataArrayHandle cdh = cd;
-	
-		for(int i=0; i<nh->entries(); i++)
-		{
-			UT_Vector3F col;
-
-			nh->import(i, col.data(), 3);
-			col.normalize();
-
-			cd->getData(i)[0]= col.x() *0.5 + 0.5;
-			cd->getData(i)[1]= col.y() *0.5 + 0.5;
-			cd->getData(i)[2]= col.z() *0.5 + 0.5;
-		}
-
-		// Copy the input mesh, replacing either its vertex or point attribute
-		// list.
-	    const auto mesh=UTverify_cast<const GT_PrimPolygonMesh *>(primhandle.get());
-
-		if(point_normals)
-		{
-			// Add Cd to the point attribute list, replacing it if Cd already
-			// exists.
-			const auto ah = primhandle->getPointAttributes()->addAttribute("Cd", cdh, true);
-
-			primitiveHandle = new GT_PrimPolygonMesh(*mesh,
-						ah,
-						mesh->getVertexAttributes(),
-						mesh->getUniformAttributes(),
-						mesh->getDetailAttributes());
+			// copy the input mesh, replacing either its vertex or point attribute list
+			const auto mesh = UTverify_cast<const GT_PrimPolygonMesh*>(primhandle.get());
+			if (mesh)
+			{
+				// add Cd to the point attribute list, replacing it if Cd already exists
+				const auto ah = primhandle->getPointAttributes()->addAttribute("Cd", newVertexColors, true);
+				newPrimitiveHandle = new GT_PrimPolygonMesh(*mesh, ah, mesh->getVertexAttributes(), mesh->getUniformAttributes(), mesh->getDetailAttributes());				
+			}
+			else
+			{
+				processed = GR_NOT_PROCESSED;
+				return newPrimitiveHandle;
+			}
 		}
 		else
 		{
-			// Add Cd to the vertex attribute list, replacing it if Cd already
-			// exists.
-			const auto ah = primhandle->getVertexAttributes()->addAttribute("Cd", cdh, true);
-
-			primitiveHandle = new GT_PrimPolygonMesh(*mesh,
-						mesh->getPointAttributes(),
-						ah,
-						mesh->getUniformAttributes(),
-						mesh->getDetailAttributes());
+			processed = GR_NOT_PROCESSED;
+			return newPrimitiveHandle;
 		}
+	}
+	else
+	{
+		processed = GR_NOT_PROCESSED;
+		return newPrimitiveHandle;
+	}
 
-		processed = GR_PROCESSED;
-    }
-
-    // return a new polygon mesh with modified Cd attribute.
-    return primitiveHandle;
+	// return a new polygon mesh with modified Cd attribute.
+	processed = GR_PROCESSED;
+    
+    return newPrimitiveHandle;
 }
 
 /* -----------------------------------------------------------------

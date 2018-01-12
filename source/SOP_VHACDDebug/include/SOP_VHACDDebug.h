@@ -87,6 +87,8 @@ DECLARE_SOP_Namespace_Start()
 		static void					CallbakcVisualizeAttributeMenu(void* data, PRM_Name* choicenames, int listsize, const PRM_SpareData* spare, const PRM_Parm* parm);
 				
 	private:
+		static void					GenerateUniqueColorRecurse(UT_Vector3* templatecolor, UT_Set<UT_Vector3>& colors, UT_Vector3& newcolor);
+
 		ENUMS::MethodProcessResult	CuspConvexInputVertexNormals(GU_Detail* detail, fpreal time);		
 		ENUMS::MethodProcessResult	PrepareIntATTForGUI(UT_AutoInterrupt& progress, ENUMS::VHACDCommonAttributeNameOption attributename, GA_RWHandleI& attributehandle);
 		ENUMS::MethodProcessResult	PrepareFloatATTForGUI(UT_AutoInterrupt& progress, ENUMS::VHACDCommonAttributeNameOption attributename, GA_RWHandleD& attributehandle);

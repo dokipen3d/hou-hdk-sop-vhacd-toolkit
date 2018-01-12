@@ -37,12 +37,10 @@ INCLUDES                                                           |
 
 // hou-hdk-common
 #include <Macros/Namespace.h>
-//#include <Enums/AttributeClass.h>
-#include <Containers/OP_NodeTypeCommonName.h>
+#include "Enums/MethodProcessResult.h"
 
 // this
 #include "VHACDCommonAttributeName.h"
-#include "Enums/MethodProcessResult.h"
 
 /* -----------------------------------------------------------------
 DEFINES                                                            |
@@ -69,17 +67,15 @@ DECLARE_GUI_Namespace_Start()
 		/// return a NULL primitive handle). This ensures that the primitive will
 		/// be updated when its display option is toggled. If not interested in the
 		/// primitive at all, set 'processed' to GR_NOT_PROCESSED.
-		GT_PrimitiveHandle							filterPrimitive(const GT_PrimitiveHandle& primhandle, const GEO_Primitive* primitive, const GR_RenderInfo* info, GR_PrimAcceptResult& processed) override;
-
+		GT_PrimitiveHandle							filterPrimitive(const GT_PrimitiveHandle& primhandle, const GEO_Primitive* primitive, const GR_RenderInfo* info, GR_PrimAcceptResult& processed) override;		
+		
 	private:
 		template<typename BufferValueType>
-		ENUMS::MethodProcessResult					ProcessAttribute(const GT_DataArrayHandle& datahandle, GT_Real16Array* vertexcolors);
+		ENUMS::MethodProcessResult					ProcessAttribute(const GT_DataArrayHandle& datahandle, GT_DataArrayHandle& newvertexcolors) const;
 
 		CONTAINERS::VHACDCommonAttributeName		_vhacdCommonAttributeNames = CONTAINERS::VHACDCommonAttributeName();
-		CONTAINERS::OP_NodeTypeCommonName			_commonOperatorTypeNames = CONTAINERS::OP_NodeTypeCommonName();
-
 	};
-
+	
 DECLARE_GUI_Namespace_End
 
 /* -----------------------------------------------------------------

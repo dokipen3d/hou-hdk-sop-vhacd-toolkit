@@ -36,6 +36,9 @@ INCLUDES                                                           |
 #include <PRM/PRM_Include.h>
 #include <GEO/GEO_Normal.h>
 
+// std
+#include <random>
+
 // hou-hdk-common
 #include <Macros/ParameterList.h>
 #include <Macros/ProgressEscape.h>
@@ -242,7 +245,9 @@ OPERATOR INITIALIZATION                                            |
 
 SOP_Operator::~SOP_VHACDDebug() { }
 
-SOP_Operator::SOP_VHACDDebug(OP_Network* network, const char* name, OP_Operator* op) : SOP_Base_Operator(network, name, op) { }
+SOP_Operator::SOP_VHACDDebug(OP_Network* network, const char* name, OP_Operator* op) : SOP_Base_Operator(network, name, op)
+{ 
+}
 
 OP_Node* 
 SOP_Operator::CreateMe(OP_Network* network, const char* name, OP_Operator* op) 
@@ -260,7 +265,7 @@ SOP_Operator::inputLabel(unsigned input) const
 
 void
 SOP_Operator::inputConnectChanged(int which)
-{
+{	
 	if (which == static_cast<exint>(ENUMS::ProcessedInputType::ORIGINAL_GEOMETRY))
 	{
 		// reset choice menu
@@ -285,6 +290,17 @@ SOP_Operator::inputConnectChanged(int which)
 /* -----------------------------------------------------------------
 HELPERS                                                            |
 ----------------------------------------------------------------- */
+
+void
+SOP_Operator::GenerateUniqueColorRecurse(UT_Vector3* templatecolor, UT_Set<UT_Vector3>& colors, UT_Vector3& newcolor)
+{
+	UT_Color::getRandomContrastingColor(templatecolor, 0, newcolor);
+	
+	const auto currSize = colors.size();
+	colors.insert(newcolor);
+
+	if (currSize == colors.size()) GenerateUniqueColorRecurse(new UT_Vector3(newcolor), colors, newcolor);
+}
 
 ENUMS::MethodProcessResult
 SOP_Operator::CuspConvexInputVertexNormals(GU_Detail* detail, fpreal time)
@@ -325,9 +341,15 @@ SOP_Operator::PrepareIntATTForGUI(UT_AutoInterrupt& progress, ENUMS::VHACDCommon
 		return ENUMS::MethodProcessResult::FAILURE;
 	}
 	
-	auto pointAttributeHandle = GA_RWHandleI(this->gdp->addIntTuple(GA_AttributeOwner::GA_ATTRIB_POINT, attributehandle->getScope(), this->_commonAttributeNames.Get(attributename), 1));
+	auto pointAttributeHandle = GA_RWHandleV3(this->gdp->addFloatTuple(GA_AttributeOwner::GA_ATTRIB_POINT, GA_AttributeScope::GA_SCOPE_PUBLIC, this->_commonAttributeNames.Get(attributename), 3));
 	if (pointAttributeHandle.isValid())
 	{
+		UT_Map<exint, UT_Vector3>	mappedColors;
+		UT_Set<UT_Vector3>			uniqueColors;
+
+		mappedColors.clear();
+		uniqueColors.clear();
+
 		for (auto primIt : this->gdp->getPrimitiveRange())
 		{
 			PROGRESS_WAS_INTERRUPTED_WITH_ERROR_AND_OBJECT(this, progress, ENUMS::MethodProcessResult::INTERRUPT)
@@ -335,12 +357,23 @@ SOP_Operator::PrepareIntATTForGUI(UT_AutoInterrupt& progress, ENUMS::VHACDCommon
 			const auto currPrim = this->gdp->getPrimitive(primIt);
 			if (currPrim)
 			{
-				const auto currVal = attributehandle.get(primIt);				
-				for (auto pointIt : currPrim->getPointRange()) pointAttributeHandle.set(pointIt, currVal);
+				const auto currVal = attributehandle.get(primIt);
+
+				// generate color for it
+				if (!mappedColors.contains(currVal))
+				{
+					UT_Vector3 currUniqueColor;
+					GenerateUniqueColorRecurse(nullptr, uniqueColors, currUniqueColor);					
+					
+					mappedColors[currVal] = currUniqueColor;
+					uniqueColors.insert(currUniqueColor);
+				}
+
+				for (auto pointIt : currPrim->getPointRange()) pointAttributeHandle.set(pointIt, mappedColors[currVal]);
 			}
 		}
 	}
-
+	
 	return ENUMS::MethodProcessResult::SUCCESS;
 }
 
@@ -354,9 +387,15 @@ SOP_Operator::PrepareFloatATTForGUI(UT_AutoInterrupt& progress, ENUMS::VHACDComm
 		return ENUMS::MethodProcessResult::FAILURE;
 	}
 
-	auto pointAttributeHandle = GA_RWHandleD(this->gdp->addFloatTuple(GA_AttributeOwner::GA_ATTRIB_POINT, attributehandle->getScope(), this->_commonAttributeNames.Get(attributename), 1));
+	auto pointAttributeHandle = GA_RWHandleV3(this->gdp->addFloatTuple(GA_AttributeOwner::GA_ATTRIB_POINT, GA_AttributeScope::GA_SCOPE_PUBLIC, this->_commonAttributeNames.Get(attributename), 3));
 	if (pointAttributeHandle.isValid())
 	{
+		UT_Map<exint, UT_Vector3>	mappedColors;
+		UT_Set<UT_Vector3>			uniqueColors;
+
+		mappedColors.clear();
+		uniqueColors.clear();
+
 		for (auto primIt : this->gdp->getPrimitiveRange())
 		{
 			PROGRESS_WAS_INTERRUPTED_WITH_ERROR_AND_OBJECT(this, progress, ENUMS::MethodProcessResult::INTERRUPT)
@@ -365,7 +404,18 @@ SOP_Operator::PrepareFloatATTForGUI(UT_AutoInterrupt& progress, ENUMS::VHACDComm
 			if (currPrim)
 			{
 				const auto currVal = attributehandle.get(primIt);
-				for (auto pointIt : currPrim->getPointRange()) pointAttributeHandle.set(pointIt, currVal);
+
+				// generate color for it
+				if (!mappedColors.contains(currVal))
+				{
+					UT_Vector3 currUniqueColor;
+					GenerateUniqueColorRecurse(nullptr, uniqueColors, currUniqueColor);
+
+					mappedColors[currVal] = currUniqueColor;
+					uniqueColors.insert(currUniqueColor);
+				}
+
+				for (auto pointIt : currPrim->getPointRange()) pointAttributeHandle.set(pointIt, mappedColors[currVal]);
 			}
 		}
 	}
@@ -472,6 +522,8 @@ MAIN                                                               |
 OP_ERROR 
 SOP_Operator::cookMySop(OP_Context& context)
 {
+	
+	//mySopFlags.setManagesDataIDs(true);
 	DEFAULTS_CookMySop()
 		
 	exint switchVisibleInputValue;

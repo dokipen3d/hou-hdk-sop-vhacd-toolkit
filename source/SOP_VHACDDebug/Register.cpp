@@ -77,11 +77,9 @@ HOOK                                                               |
 
 void newRenderHook(DM_RenderTable* table)
 {
-	// the priority only matters if multiple hooks are assigned to the same
-	// primitive type. If this is the case, the hook with the highest priority
-	// (largest priority value) is processed first.
+	// the priority only matters if multiple hooks are assigned to the same primitive type. If this is the case, the hook with the highest priority (largest priority value) is processed first.
 	const int priority = 0;
-
+	
 	// register the actual hook
 	const auto success = table->registerGTHook(new GUI_Hook(), GT_PRIM_POLYGON_MESH, priority, GUI_HOOK_FLAG_PRIM_FILTER);
 }
