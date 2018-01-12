@@ -37,7 +37,8 @@ INCLUDES                                                           |
 
 // hou-hdk-common
 #include <Macros/Namespace.h>
-#include <Enums/AttributeClass.h>
+//#include <Enums/AttributeClass.h>
+#include <Containers/OP_NodeTypeCommonName.h>
 
 // this
 #include "VHACDCommonAttributeName.h"
@@ -74,7 +75,9 @@ DECLARE_GUI_Namespace_Start()
 		template<typename BufferValueType>
 		ENUMS::MethodProcessResult					ProcessAttribute(const GT_DataArrayHandle& datahandle, GT_Real16Array* vertexcolors);
 
-		CONTAINERS::VHACDCommonAttributeName		_commonAttributeNames = CONTAINERS::VHACDCommonAttributeName();
+		CONTAINERS::VHACDCommonAttributeName		_vhacdCommonAttributeNames = CONTAINERS::VHACDCommonAttributeName();
+		CONTAINERS::OP_NodeTypeCommonName			_commonOperatorTypeNames = CONTAINERS::OP_NodeTypeCommonName();
+
 	};
 
 DECLARE_GUI_Namespace_End

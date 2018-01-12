@@ -75,7 +75,7 @@ SELECTOR                                                           |
 
 void
 newSelector(BM_ResourceManager* manager)
-{
+{	
 	// find operator
 	const auto sopOperator = OP_Network::getOperatorTable(SOP_TABLE_NAME)->getOperator(COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::SOP_GENERATE_SMALLNAME));
 	if (!sopOperator)

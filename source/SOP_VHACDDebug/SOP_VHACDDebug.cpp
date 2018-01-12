@@ -305,7 +305,7 @@ SOP_Operator::CuspConvexInputVertexNormals(GU_Detail* detail, fpreal time)
 		const auto vertexNormalHandle = GA_RWHandleV3(detail->addFloatTuple(GA_AttributeOwner::GA_ATTRIB_VERTEX, "N", 3));
 		if (vertexNormalHandle.isInvalid())
 		{
-			this->addError(SOP_MESSAGE, "Failed to add vertex normal attribute.");
+			addError(SOP_MESSAGE, "Failed to add vertex normal attribute.");
 			return ENUMS::MethodProcessResult::FAILURE;
 		}
 			
@@ -381,7 +381,7 @@ SOP_Operator::WhenConvexHullsInput(OP_Context& context, UT_AutoInterrupt& progre
 		// cusp vertex normals
 		auto processResult = CuspConvexInputVertexNormals(this->gdp, time);
 		if (processResult != ENUMS::MethodProcessResult::SUCCESS) return processResult;
-
+		
 		// visualize attributes
 		exint visualizeAttributeChoiceMenuValue;
 		PRM_ACCESS::Get::IntPRM(this, visualizeAttributeChoiceMenuValue, UI::visualizeAttributeChoiceMenu_Parameter, time);
@@ -396,6 +396,8 @@ SOP_Operator::WhenConvexHullsInput(OP_Context& context, UT_AutoInterrupt& progre
 
 		// explode by 'hull_id'
 		// explode by 'bundle_id'
+
+		//gdp->enlargeBoundingBox()
 	}
 
 	return ENUMS::MethodProcessResult::SUCCESS;
@@ -417,7 +419,7 @@ SOP_Operator::WhenOriginalGeometryInput(OP_Context& context, UT_AutoInterrupt& p
 			default: /* do nothing */ break;
 			case static_cast<exint>(ENUMS::OriginalVisualizeAttributeOption::BUNDLE_ID) :	{ processResult = PrepareIntATTForGUI(progress, ENUMS::VHACDCommonAttributeNameOption::BUNDLE_ID, this->_bundleIDHandle); } break;
 		}				
-
+		
 		// explode by 'bundle_id'
 	}		
 

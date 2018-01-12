@@ -87,8 +87,7 @@ DECLARE_SOP_Namespace_Start()
 		static void					CallbakcVisualizeAttributeMenu(void* data, PRM_Name* choicenames, int listsize, const PRM_SpareData* spare, const PRM_Parm* parm);
 				
 	private:
-		ENUMS::MethodProcessResult	CuspConvexInputVertexNormals(GU_Detail* detail, fpreal time);
-		
+		ENUMS::MethodProcessResult	CuspConvexInputVertexNormals(GU_Detail* detail, fpreal time);		
 		ENUMS::MethodProcessResult	PrepareIntATTForGUI(UT_AutoInterrupt& progress, ENUMS::VHACDCommonAttributeNameOption attributename, GA_RWHandleI& attributehandle);
 		ENUMS::MethodProcessResult	PrepareFloatATTForGUI(UT_AutoInterrupt& progress, ENUMS::VHACDCommonAttributeNameOption attributename, GA_RWHandleD& attributehandle);
 

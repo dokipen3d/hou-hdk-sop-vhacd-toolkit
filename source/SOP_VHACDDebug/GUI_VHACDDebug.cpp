@@ -30,9 +30,10 @@ INCLUDES                                                           |
 // SESI
 #include <GT/GT_PrimPolygonMesh.h>
 #include <GT/GT_AttributeList.h>
+#include <OP/OP_Director.h>
 
 // hou-hdk-common
-#include <Macros/ProgressEscape.h>
+#include <Utility/OP_NodeTester.h>
 
 // this
 #include "GUI_VHACDDebug.h"
@@ -43,7 +44,9 @@ DEFINES                                                            |
 ----------------------------------------------------------------- */
 
 #define GUI_Hook			GET_GUI_Namespace()::GUI_VHACDDebug
+
 #define COMMON_NAMES		GET_SOP_Namespace()::COMMON_NAMES
+#define UTILS				GET_Base_Namespace()::Utility
 #define CONTAINERS			GET_Base_Namespace()::Containers
 #define ENUMS				GET_Base_Namespace()::Enums
 
@@ -102,30 +105,38 @@ GUI_Hook::filterPrimitive(const GT_PrimitiveHandle& primhandle, const GEO_Primit
 {
     GT_PrimitiveHandle primitiveHandle;
 
+	// turn it ON only when on proper operator
+	auto processResult = UTILS::OP_NodeTester::IsProperOperator(ENUMS::OP_NodeTypeCommonNameOption::SOP, COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::SOP_DEBUG_SMALLNAME), info->getNodePath().c_str());
+	if (processResult != ENUMS::MethodProcessResult::SUCCESS)
+	{
+		processed = GR_PROCESSED;
+		return primitiveHandle;
+	}
+
     // As this was registered for a GT prim type, a valid GT prim should be
     // passed to filterPrimitive(), not a GEO primitive.
     UT_ASSERT(primitive == NULL);
     UT_ASSERT(primhandle);
-
+	
     if(!primhandle)
     {
 		processed = GR_NOT_PROCESSED;
 		return primitiveHandle;
     }
-
+	
 	// only if we have any of those attributes
 	const auto pointAttribs = primhandle->getPointAttributes();
 	if (pointAttribs)
 	{	
 		GT_Real16Array* vertexColors = nullptr;
 
-		const auto bundlIDHandle = pointAttribs->get(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_ID));
+		const auto bundlIDHandle = pointAttribs->get(this->_vhacdCommonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_ID));
 		if (bundlIDHandle) ProcessAttribute<exint>(bundlIDHandle, vertexColors);
 
-		const auto hullIDHandle = pointAttribs->get(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_ID));
+		const auto hullIDHandle = pointAttribs->get(this->_vhacdCommonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_ID));
 		if (hullIDHandle && !bundlIDHandle) ProcessAttribute<exint>(hullIDHandle, vertexColors);
 
-		const auto hullVolumeHandle = pointAttribs->get(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_VOLUME));
+		const auto hullVolumeHandle = pointAttribs->get(this->_vhacdCommonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_VOLUME));
 		if (hullVolumeHandle && !hullIDHandle && !bundlIDHandle) ProcessAttribute<fpreal64>(hullVolumeHandle, vertexColors);
 
 		if (vertexColors != nullptr)
@@ -229,5 +240,7 @@ UNDEFINES                                                          |
 
 #undef ENUMS
 #undef CONTAINERS
+#undef UTILS
 #undef COMMON_NAMES
+
 #undef GUI_Hook
