@@ -823,7 +823,8 @@ SELECTOR IMPLEMENTATION                                            |
 
 MSS_Selector::~MSS_VHACDGenerate() { }
 
-MSS_Selector::MSS_VHACDGenerate(OP3D_View& viewer, PI_SelectorTemplate& templ) : MSS_ReusableSelector(viewer, templ, COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::SOP_GENERATE_SMALLNAME), COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::SOP_GENERATE_GROUP_PRMNAME), nullptr, true)
+MSS_Selector::MSS_VHACDGenerate(OP3D_View& viewer, PI_SelectorTemplate& templ) 
+: MSS_ReusableSelector(viewer, templ, COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::SOP_GENERATE_SMALLNAME), COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::SOP_GENERATE_GROUP_PRMNAME), nullptr, true)	
 { this->setAllowUseExistingSelection(false); }
 
 BM_InputSelector*

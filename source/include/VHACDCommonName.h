@@ -83,12 +83,12 @@ namespace Containers
 
 			// SOP_VHACDGenerate only			
 			this->Add(ENUMS::VHACDCommonNameOption::SOP_GENERATE_ICONNAME,				this->Get(ENUMS::VHACDCommonNameOption::TOOLKIT_ICONNAME));
-			this->Add(ENUMS::VHACDCommonNameOption::SOP_GENERATE_SMALLNAME,				"hidden::generate::2.0");			
+			this->Add(ENUMS::VHACDCommonNameOption::SOP_GENERATE_SMALLNAME,				"hidden::generate::2.0");
 			this->Add(ENUMS::VHACDCommonNameOption::SOP_GENERATE_BIGNAME,				"Generate v2.0 (v-hacd)");
 			this->Add(ENUMS::VHACDCommonNameOption::SOP_GENERATE_GROUP_PRMNAME,			CONST_PrimitiveGroupInput0_Name);
 			this->Add(ENUMS::VHACDCommonNameOption::MSS_GENERATE_SMALLNAME,				"vhacd::generateselector::2.0");
 			this->Add(ENUMS::VHACDCommonNameOption::MSS_GENERATE_BIGNAME,				"Generate v2.0 (v-hacd selector)");
-			this->Add(ENUMS::VHACDCommonNameOption::MSS_GENERATE_PROMPT,				"Select primitives. Press <enter> to accept.");
+			this->Add(ENUMS::VHACDCommonNameOption::MSS_GENERATE_PROMPT,				"Select primitives. Press <enter> to accept.");			
 			this->Add(ENUMS::VHACDCommonNameOption::SOP_GENERATE_OTL_SMALLNAME,			"vhacd::generate::2.0");	// TODO: remove this when selector crash for operator will be solved
 
 			// SOP_VHACDScoutJunior only
