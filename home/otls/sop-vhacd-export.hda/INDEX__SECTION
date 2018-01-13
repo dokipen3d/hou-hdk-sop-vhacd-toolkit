@@ -1,7 +1,7 @@
 Operator:     vhacd::export::1.0
 Label:        Export (v-hacd)
 Path:         oplib:/vhacd::Sop/export::1.0?vhacd::Sop/export::1.0
-Icon:         opdef:/vhacd::Sop/export::1.0?IconImage
+Icon:         SOP_VHACD.png
 Table:        Sop
 License:      
 Extra:        
@@ -10,5 +10,5 @@ Inputs:       1 to 1
 Subnet:       true
 Python:       false
 Empty:        false
-Modified:     Sun May 21 20:01:02 2017
+Modified:     Sat Jan 13 23:37:42 2018
 

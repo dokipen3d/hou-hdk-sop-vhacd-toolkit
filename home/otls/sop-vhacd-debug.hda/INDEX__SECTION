@@ -1,7 +1,7 @@
 Operator:     vhacd::debug::1.0
 Label:        Debug (v-hacd)
 Path:         oplib:/vhacd::Sop/debug::1.0?vhacd::Sop/debug::1.0
-Icon:         opdef:/vhacd::Sop/debug::1.0?IconImage
+Icon:         SOP_VHACD.png
 Table:        Sop
 License:      
 Extra:        
@@ -10,5 +10,5 @@ Inputs:       1 to 2
 Subnet:       true
 Python:       false
 Empty:        false
-Modified:     Sat Jan 13 21:10:25 2018
+Modified:     Sat Jan 13 23:35:55 2018
 

@@ -20,26 +20,23 @@ Content-Type: text/plain
 
 sopflags sopflags = 
 comment ""
-position -0.62765 -8.86368
-connectornextid 2
+position 2.43393 8.25132
+connectornextid 0
 flags =  lock off model off template off footprint off xray off bypass off display off render off highlight off unload off savedata off compress on colordefault on exposed on
 outputsNamed3
 {
-1 "output1"
 }
 inputsNamed3
 {
-0 	scout1 2 1 "input1"
 }
 inputs
 {
-0 	scout1 0 1
 }
 stat
 {
-  create 1495073773
-  modify 1495389616
-  author nodeway@lv-426
+  create 1515856855
+  modify 1515883062
+  author swann@lv-426
   access 0777
 }
 color UT_Color RGB 0.8 0.8 0.8 
@@ -162,7 +159,7 @@ Content-Type: text/plain
 {
 	"___Version___":{
 		"type":"string",
-		"value":"16.0.557"
+		"value":"16.5.268"
 	},
 	"nodeshape":{
 		"type":"string",
@@ -229,7 +226,7 @@ Content-Type: text/plain
 {
 	"___Version___":{
 		"type":"string",
-		"value":"16.0.557"
+		"value":"16.5.268"
 	},
 	"nodeshape":{
 		"type":"string",
@@ -336,7 +333,7 @@ Content-Type: text/plain
 {
 	"___Version___":{
 		"type":"string",
-		"value":"16.0.557"
+		"value":"16.5.268"
 	},
 	"nodeshape":{
 		"type":"string",
@@ -389,40 +386,40 @@ Content-Disposition: attachment; filename="hdaroot/foreach_begin1_metadata1.spar
 Content-Type: text/plain
 
     groupsimple {
-	name	"userdata"
-	label	"User Data"
+        name    "userdata"
+        label   "User Data"
 
-	parm {
-	    name	"parm"
-	    label	"Label"
-	    type	string
-	    default	{ "`opname(\".\")`" }
-	}
+        parm {
+            name    "parm"
+            label   "Label"
+            type    string
+            default { "`opname(\".\")`" }
+        }
     }
 
     parm {
-	name	"method"
-	baseparm
-	label	"Method"
-	export	none
+        name    "method"
+        baseparm
+        label   "Method"
+        export  none
     }
     parm {
-	name	"blockpath"
-	baseparm
-	label	"Block Path"
-	export	none
+        name    "blockpath"
+        baseparm
+        label   "Block Path"
+        export  none
     }
     parm {
-	name	"createmetablock"
-	baseparm
-	label	"Create Meta Import Node"
-	export	none
+        name    "createmetablock"
+        baseparm
+        label   "Create Meta Import Node"
+        export  none
     }
     parm {
-	name	"label1"
-	baseparm
-	label	"Detail Attributes:"
-	export	none
+        name    "label1"
+        baseparm
+        label   "Detail Attributes:"
+        export  none
     }
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
@@ -462,7 +459,7 @@ Content-Type: text/plain
 {
 	"___Version___":{
 		"type":"string",
-		"value":"16.0.557"
+		"value":"16.5.268"
 	},
 	"nodeshape":{
 		"type":"string",
@@ -533,7 +530,7 @@ Content-Type: text/plain
 {
 	"___Version___":{
 		"type":"string",
-		"value":"16.0.557"
+		"value":"16.5.268"
 	},
 	"nodeshape":{
 		"type":"string",
@@ -612,7 +609,7 @@ Content-Type: text/plain
 {
 	"___Version___":{
 		"type":"string",
-		"value":"16.0.557"
+		"value":"16.5.268"
 	},
 	"nodeshape":{
 		"type":"string",
@@ -675,7 +672,7 @@ Content-Type: text/plain
 {
 	"___Version___":{
 		"type":"string",
-		"value":"16.0.557"
+		"value":"16.5.268"
 	},
 	"nodeshape":{
 		"type":"string",
@@ -728,26 +725,26 @@ Content-Disposition: attachment; filename="hdaroot/make_sure_attributes_exist.sp
 Content-Type: text/plain
 
     groupsimple {
-	name	"userdata"
-	label	"User Data"
+        name    "userdata"
+        label   "User Data"
 
-	parm {
-	    name	"filtermode"
-	    label	"Mode"
-	    type	ordinal
-	    default	{ "0" }
-	    menu	{
-		"0"	"Bundle ID"
-		"1"	"Hull ID"
-	    }
-	}
+        parm {
+            name    "filtermode"
+            label   "Mode"
+            type    ordinal
+            default { "0" }
+            menu {
+                "0" "Bundle ID"
+                "1" "Hull ID"
+            }
+        }
     }
 
     parm {
-	name	"python"
-	baseparm
-	label	"Python Code"
-	export	none
+        name    "python"
+        baseparm
+        label   "Python Code"
+        export  none
     }
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
@@ -796,7 +793,7 @@ Content-Type: text/plain
 {
 	"___Version___":{
 		"type":"string",
-		"value":"16.0.557"
+		"value":"16.5.268"
 	}
 }
 
@@ -847,58 +844,58 @@ Content-Disposition: attachment; filename="hdaroot/py_compose_proper_path.sparep
 Content-Type: text/plain
 
     groupsimple {
-	name	"userdata"
-	label	"User Data"
+        name    "userdata"
+        label   "User Data"
 
-	parm {
-	    name	"filtermode"
-	    label	"Mode"
-	    type	ordinal
-	    default	{ "0" }
-	    menu	{
-		"0"	"Bundle ID"
-		"1"	"Hull ID"
-	    }
-	}
-	parm {
-	    name	"outputpath"
-	    label	"Output Path"
-	    type	string
-	    default	{ "" }
-	}
-	parm {
-	    name	"appendattributenametopath"
-	    label	"Append ATT Name To path"
-	    type	toggle
-	    joinnext
-	    default	{ "0" }
-	}
-	parm {
-	    name	"sepparm"
-	    label	"Separator"
-	    type	separator
-	    default	{ "" }
-	}
-	parm {
-	    name	"createjsonconfigfile"
-	    label	"Create JSON Config File"
-	    type	toggle
-	    joinnext
-	    default	{ "0" }
-	}
-	parm {
-	    name	"sepparm2"
-	    label	"Separator"
-	    type	separator
-	    default	{ "" }
-	}
+        parm {
+            name    "filtermode"
+            label   "Mode"
+            type    ordinal
+            default { "0" }
+            menu {
+                "0" "Bundle ID"
+                "1" "Hull ID"
+            }
+        }
+        parm {
+            name    "outputpath"
+            label   "Output Path"
+            type    string
+            default { "" }
+        }
+        parm {
+            name    "appendattributenametopath"
+            label   "Append ATT Name To path"
+            type    toggle
+            joinnext
+            default { "0" }
+        }
+        parm {
+            name    "sepparm"
+            label   "Separator"
+            type    separator
+            default { "" }
+        }
+        parm {
+            name    "createjsonconfigfile"
+            label   "Create JSON Config File"
+            type    toggle
+            joinnext
+            default { "0" }
+        }
+        parm {
+            name    "sepparm2"
+            label   "Separator"
+            type    separator
+            default { "" }
+        }
     }
 
     parm {
-	name	"python"
-	baseparm
-	label	"Python Code"
-	export	none
+        name    "python"
+        baseparm
+        label   "Python Code"
+        export  none
     }
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
@@ -1032,7 +1029,7 @@ Content-Type: text/plain
 {
 	"___Version___":{
 		"type":"string",
-		"value":"16.0.557"
+		"value":"16.5.268"
 	},
 	"nodeshape":{
 		"type":"string",
@@ -1113,7 +1110,7 @@ Content-Type: text/plain
 {
 	"___Version___":{
 		"type":"string",
-		"value":"16.0.557"
+		"value":"16.5.268"
 	}
 }
 
@@ -1190,7 +1187,7 @@ Content-Type: text/plain
 {
 	"___Version___":{
 		"type":"string",
-		"value":"16.0.557"
+		"value":"16.5.268"
 	}
 }
 

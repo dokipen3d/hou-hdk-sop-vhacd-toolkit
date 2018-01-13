@@ -1,7 +1,7 @@
 Operator:     vhacd::transform::1.0
 Label:        Transform (v-hacd)
 Path:         oplib:/vhacd::Sop/transform::1.0?vhacd::Sop/transform::1.0
-Icon:         opdef:/vhacd::Sop/transform::1.0?IconImage
+Icon:         SOP_VHACD.png
 Table:        Sop
 License:      
 Extra:        
@@ -11,5 +11,5 @@ Outputs:      2
 Subnet:       true
 Python:       false
 Empty:        false
-Modified:     Sat Jan 13 20:53:38 2018
+Modified:     Sat Jan 13 23:36:42 2018
 
