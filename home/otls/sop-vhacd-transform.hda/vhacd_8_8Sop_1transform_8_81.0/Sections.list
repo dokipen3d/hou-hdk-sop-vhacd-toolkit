@@ -10,4 +10,5 @@ DescriptiveParmName	DescriptiveParmName
 MessageNodes	MessageNodes
 IconImage	IconImage
 PythonModule	PythonModule
+OnCreated	OnCreated
 ExtraFileOptions	ExtraFileOptions

@@ -126,8 +126,7 @@ DECLARE_SOP_Namespace_Start()
 		VHACDTriangleIndexes		_triangleIndexes;
 		VHACDPointPositions			_pointPositions;
 
-		GA_RWHandleV3				_positionHandle;		
-		GA_RWHandleV3				_hullCenterHandle;		
+		GA_RWHandleV3				_positionHandle;
 	};
 
 /* -----------------------------------------------------------------

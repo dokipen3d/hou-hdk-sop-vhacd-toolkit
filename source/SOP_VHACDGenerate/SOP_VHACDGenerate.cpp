@@ -434,10 +434,6 @@ SOP_Operator::DrawConvexHull(GU_Detail* detail, const VHACD::IVHACD::ConvexHull&
 
 		pointIt.advance();
 	}
-	
-	// calculate 'bundle_mass_center' center	
-	double centerOfMass[3];
-	const auto addMassCenter = this->_interfaceVHACD->ComputeCenterOfMass(centerOfMass);
 
 	// draw hull
 	for (unsigned int t = 0; t < hull.m_nTriangles * 3; t += 3)
@@ -459,12 +455,6 @@ SOP_Operator::DrawConvexHull(GU_Detail* detail, const VHACD::IVHACD::ConvexHull&
 		polygon->appendVertex(pointOffsets[hull.m_triangles[t + 0]]);
 
 		polygon->close();
-
-		// set 'hull_volume' and 'hull_center' attributes
-		const auto currPolyOffset = polygon->getMapOffset();
-
-		if (this->_hullMassCenterHandle.isValid()) this->_hullMassCenterHandle.set(currPolyOffset, UT_Vector3(hull.m_center[0], hull.m_center[1], hull.m_center[2]));
-		if (this->_bundleMassCenterHandle.isValid() && addMassCenter) this->_bundleMassCenterHandle.set(currPolyOffset, UT_Vector3(centerOfMass[0], centerOfMass[1], centerOfMass[2]));
 	}
 
 	return ENUMS::MethodProcessResult::SUCCESS;
@@ -491,23 +481,6 @@ SOP_Operator::GenerateConvexHulls(GU_Detail* detail, UT_AutoInterrupt progress)
 	{
 		if (this->_interfaceVHACD->IsReady())
 		{
-			// add hull/bundle attributes
-			this->_hullMassCenterHandle = GA_RWHandleV3(detail->addFloatTuple(GA_AttributeOwner::GA_ATTRIB_PRIMITIVE, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_MASS_CENTER), 3));
-			if (this->_hullMassCenterHandle.isInvalid())
-			{
-				auto errorMessage = std::string("Failed to create \"") + std::string(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_MASS_CENTER)) + std::string("\" attribute.");
-				addError(SOP_MESSAGE, errorMessage.c_str());
-				return ENUMS::MethodProcessResult::FAILURE;
-			}
-
-			this->_bundleMassCenterHandle = GA_RWHandleV3(detail->addFloatTuple(GA_AttributeOwner::GA_ATTRIB_PRIMITIVE, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_MASS_CENTER), 3));
-			if (this->_bundleMassCenterHandle.isInvalid())
-			{
-				auto errorMessage = std::string("Failed to create \"") + std::string(this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_MASS_CENTER)) + std::string("\" attribute.");
-				addError(SOP_MESSAGE, errorMessage.c_str());
-				return ENUMS::MethodProcessResult::FAILURE;
-			}
-			
 			// generate hulls
 			const auto hullCount = this->_interfaceVHACD->GetNConvexHulls();
 			for (auto id = 0; id < hullCount; ++id)
@@ -646,15 +619,15 @@ SOP_Operator::WhenAsWhole(UT_AutoInterrupt progress, ENUMS::ProcessedOutputType 
 		if (processResult != ENUMS::MethodProcessResult::SUCCESS || error() > OP_ERROR::UT_ERROR_WARNING) return processResult;
 	}
 
-	// this time we do steps backwards, by first merging...
+	// this time we do steps backwards, by first merging...	
 	this->gdp->clear();
-
+	
 	processResult = MergeCurrentDetail(this->_inputGDP);
 	if (processResult != ENUMS::MethodProcessResult::SUCCESS) return processResult;
 	
 	// ... and the processing mesh
 	processResult = ProcessCurrentDetail(this->gdp, progress, processedoutputtype, 0, time);
-
+	
 	return processResult;
 }
 
@@ -801,7 +774,7 @@ SOP_Operator::cookMySop(OP_Context& context)
 	
 	this->_inputGDP = new GU_Detail(inputGeo(0, context));
 	if (this->_inputGDP && error() < OP_ERROR::UT_ERROR_WARNING && cookInputGroups(context) < OP_ERROR::UT_ERROR_WARNING)
-	{
+	{		
 		auto processResult = ENUMS::MethodProcessResult::SUCCESS;
 		
 		// process geometry
@@ -815,7 +788,7 @@ SOP_Operator::cookMySop(OP_Context& context)
 			case static_cast<exint>(ENUMS::ProcessModeOption::PER_GROUP) :		{ processResult = WhenPerGroup(progress, ENUMS::ProcessedOutputType::CONVEX_HULLS, currentTime); } break;
 		}
 	}
-	
+		
 	return error();
 }
 
@@ -840,7 +813,7 @@ SOP_Operator::cookMySopOutput(OP_Context& context, int outputidx, SOP_Node* inte
 			case static_cast<exint>(ENUMS::ProcessModeOption::PER_GROUP) :		{ processResult = WhenPerGroup(progress, ENUMS::ProcessedOutputType::ORIGINAL_GEOMETRY, currentTime); } break;
 		}
 	}
-
+	
 	return result;
 }
 

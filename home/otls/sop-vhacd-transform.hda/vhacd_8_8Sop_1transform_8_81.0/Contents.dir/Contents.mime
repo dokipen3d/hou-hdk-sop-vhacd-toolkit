@@ -20,9 +20,9 @@ Content-Type: text/plain
 
 sopflags sopflags = 
 comment ""
-position -5.1301 -2.23078
+position 1.09528 1.73413
 connectornextid 4
-flags =  lock off model off template off footprint off xray off bypass off display off render off highlight off unload off savedata off compress on colordefault on exposed on
+flags =  lock off model off template off footprint off xray off bypass off display off render off highlight off unload off savedata off compress on colordefault off exposed on
 outputsNamed3
 {
 2 "output1"
@@ -30,22 +30,22 @@ outputsNamed3
 }
 inputsNamed3
 {
-0 	generate1 1 1 "input1"
-1 	generate1 2 1 "input2"
+0 	scoutsenior1 2 1 "input1"
+1 	groupdelete1 1 1 "input2"
 }
 inputs
 {
-0 	generate1 0 1
-1 	generate1 1 1
+0 	scoutsenior1 0 1
+1 	groupdelete1 0 1
 }
 stat
 {
-  create 1494386989
-  modify 1494389800
-  author nodeway@lv-426
+  create 1515835400
+  modify 1515873207
+  author swann@lv-426
   access 0777
 }
-color UT_Color RGB 0.8 0.8 0.8 
+color UT_Color RGB 0 0 0 
 delscript ""
 exprlanguage hscript
 end
@@ -84,7 +84,7 @@ sopflags sopflags =
 comment ""
 position 0.433533 3.59899
 connectornextid 0
-flags =  lock off model off template off footprint off xray off bypass off display off render off highlight off unload off savedata off compress on colordefault off exposed on
+flags =  lock off model off template off footprint off xray off bypass off display off render off highlight off unload off savedata off compress on colordefault off exposed off
 outputsNamed3
 {
 1 "output1"
@@ -100,7 +100,7 @@ inputs
 stat
 {
   create 1463960333
-  modify 1465253538
+  modify 1515873212
   author nodeway@lv-422
   access 0777
 }
@@ -253,12 +253,21 @@ group	[ 8	locks=0	autoscope=1 ]	(	[ group	__transform__ ] 	)
 grouptype	[ 0	locks=0 ]	(	[ grouptype	0 ] 	)
 xOrd	[ 0	locks=0 ]	(	[ xOrd	0 ] 	)
 rOrd	[ 0	locks=0 ]	(	[ rOrd	0 ] 	)
-t	[ 0	locks=0 ]	(	[ tx	-4.4000000000000004 ] 	[ ty	0 ] 	[ tz	0.20000000000000001 ] 	)
-r	[ 8	locks=0 ]	(	[ rx	0 ] 	[ ry	0 ] 	[ rz	0 ] 	)
-s	[ 0	locks=0 ]	(	[ sx	1 ] 	[ sy	1 ] 	[ sz	1 ] 	)
-shear	[ 0	locks=0 ]	(	[ shear1	0 ] 	[ shear2	0 ] 	[ shear3	0 ] 	)
-p	[ 0	locks=0 ]	(	[ px	0 ] 	[ py	0 ] 	[ pz	0 ] 	)
+t	[ 8	locks=0 ]	(	[ tx	0 ] 	[ ty	2.29 ] 	[ tz	1.3999999999999999 ] 	)
+r	[ 8	locks=0 ]	(	[ rx	90 ] 	[ ry	72.599999999999994 ] 	[ rz	60 ] 	)
+s	[ 8	locks=0 ]	(	[ sx	1 ] 	[ sy	3.3999999999999999 ] 	[ sz	1 ] 	)
+shear	[ 8	locks=0 ]	(	[ shear1	0.59999999999999998 ] 	[ shear2	0 ] 	[ shear3	0 ] 	)
 scale	[ 0	locks=0 ]	(	[ scale	1 ] 	)
+parmgroup_pivotxform	[ 0	locks=0 ]	(	0	)
+p	[ 0	locks=0 ]	(	[ px	0 ] 	[ py	0 ] 	[ pz	0 ] 	)
+pr	[ 0	locks=0 ]	(	0	0	0	)
+parmgroup_prexform	[ 0	locks=0 ]	(	0	)
+prexform_xOrd	[ 0	locks=0 ]	(	"srt"	)
+prexform_rOrd	[ 0	locks=0 ]	(	"xyz"	)
+prexform_t	[ 0	locks=0 ]	(	0	0	0	)
+prexform_r	[ 0	locks=0 ]	(	0	0	0	)
+prexform_s	[ 0	locks=0 ]	(	1	1	1	)
+prexform_shear	[ 0	locks=0 ]	(	0	0	0	)
 movecentroid	[ 0	locks=0 ]	(	0	)
 attribs	[ 0	locks=0 ]	(	*	)
 updatenmls	[ 0	locks=0 ]	(	"off"	)
@@ -274,129 +283,7 @@ Content-Type: text/plain
 {
 	"___Version___":{
 		"type":"string",
-		"value":"16.0.557"
-	}
-}
-
---HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="hdaroot/IN_CONVEX_HULLS.init"
-Content-Type: text/plain
-
-type = null
-matchesdef = 0
-
---HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="hdaroot/IN_CONVEX_HULLS.def"
-Content-Type: text/plain
-
-sopflags sopflags = 
-comment ""
-position 0.449343 8.61053
-connectornextid 2
-flags =  lock off model off template off footprint off xray off bypass off display off render off highlight off unload off savedata off compress on colordefault off exposed on
-outputsNamed3
-{
-1 "output1"
-}
-inputsNamed3
-{
-0 	(0) "" 1 "input1"
-}
-inputs
-{
-0 	(0) 0 1
-}
-stat
-{
-  create 1463960362
-  modify 1465253871
-  author nodeway@lv-422
-  access 0777
-}
-color UT_Color RGB 0 0 0 
-delscript ""
-exprlanguage hscript
-end
-
---HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="hdaroot/IN_CONVEX_HULLS.parm"
-Content-Type: text/plain
-
-{
-version 0.8
-copyinput	[ 0	locks=0 ]	(	"on"	)
-cacheinput	[ 0	locks=0 ]	(	"off"	)
-}
-
---HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="hdaroot/IN_CONVEX_HULLS.userdata"
-Content-Type: text/plain
-
-{
-	"___Version___":{
-		"type":"string",
-		"value":"16.0.557"
-	}
-}
-
---HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="hdaroot/IN_ORIGINAL_GEOMETRY.init"
-Content-Type: text/plain
-
-type = null
-matchesdef = 0
-
---HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="hdaroot/IN_ORIGINAL_GEOMETRY.def"
-Content-Type: text/plain
-
-sopflags sopflags = 
-comment ""
-position 8.36998 8.41869
-connectornextid 2
-flags =  lock off model off template off footprint off xray off bypass off display off render off highlight off unload off savedata off compress on colordefault off exposed on
-outputsNamed3
-{
-1 "output1"
-}
-inputsNamed3
-{
-0 	(1) "" 1 "input1"
-}
-inputs
-{
-0 	(1) 1 1
-}
-stat
-{
-  create 1463960362
-  modify 1465253473
-  author nodeway@lv-422
-  access 0777
-}
-color UT_Color RGB 0 0 0 
-delscript ""
-exprlanguage hscript
-end
-
---HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="hdaroot/IN_ORIGINAL_GEOMETRY.parm"
-Content-Type: text/plain
-
-{
-version 0.8
-copyinput	[ 0	locks=0 ]	(	"on"	)
-cacheinput	[ 0	locks=0 ]	(	"off"	)
-}
-
---HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
-Content-Disposition: attachment; filename="hdaroot/IN_ORIGINAL_GEOMETRY.userdata"
-Content-Type: text/plain
-
-{
-	"___Version___":{
-		"type":"string",
-		"value":"16.0.557"
+		"value":"16.5.268"
 	}
 }
 
@@ -415,7 +302,7 @@ sopflags sopflags =
 comment ""
 position 8.36998 3.5998
 connectornextid 2
-flags =  lock off model off template off footprint off xray off bypass off display off render off highlight off unload off savedata off compress on colordefault off exposed on
+flags =  lock off model off template off footprint off xray off bypass off display off render off highlight off unload off savedata off compress on colordefault off exposed off
 outputsNamed3
 {
 1 "output1"
@@ -431,7 +318,7 @@ inputs
 stat
 {
   create 1463960395
-  modify 1465253588
+  modify 1515873214
   author nodeway@lv-422
   access 0777
 }
@@ -584,12 +471,21 @@ group	[ 8	locks=0	autoscope=1 ]	(	[ group	__transform__ ] 	)
 grouptype	[ 8	locks=0 ]	(	[ grouptype	0 ] 	)
 xOrd	[ 8	locks=0 ]	(	[ xOrd	0 ] 	)
 rOrd	[ 8	locks=0 ]	(	[ rOrd	0 ] 	)
-t	[ 8	locks=0 ]	(	[ tx	5.5999999999999996 ] 	[ ty	0 ] 	[ tz	0 ] 	)
-r	[ 8	locks=0 ]	(	[ rx	70 ] 	[ ry	0 ] 	[ rz	0 ] 	)
-s	[ 8	locks=0 ]	(	[ sx	1 ] 	[ sy	1 ] 	[ sz	1 ] 	)
-shear	[ 8	locks=0 ]	(	[ shear1	0 ] 	[ shear2	0 ] 	[ shear3	0 ] 	)
-p	[ 8	locks=0 ]	(	[ px	0 ] 	[ py	0 ] 	[ pz	0 ] 	)
+t	[ 8	locks=0 ]	(	[ tx	0 ] 	[ ty	2.29 ] 	[ tz	1.3999999999999999 ] 	)
+r	[ 8	locks=0 ]	(	[ rx	90 ] 	[ ry	72.599999999999994 ] 	[ rz	60 ] 	)
+s	[ 8	locks=0 ]	(	[ sx	1 ] 	[ sy	3.3999999999999999 ] 	[ sz	1 ] 	)
+shear	[ 8	locks=0 ]	(	[ shear1	0.59999999999999998 ] 	[ shear2	0 ] 	[ shear3	0 ] 	)
 scale	[ 8	locks=0 ]	(	[ scale	1 ] 	)
+parmgroup_pivotxform	[ 0	locks=0 ]	(	0	)
+p	[ 8	locks=0 ]	(	[ px	0 ] 	[ py	0 ] 	[ pz	0 ] 	)
+pr	[ 0	locks=0 ]	(	0	0	0	)
+parmgroup_prexform	[ 0	locks=0 ]	(	0	)
+prexform_xOrd	[ 0	locks=0 ]	(	"srt"	)
+prexform_rOrd	[ 0	locks=0 ]	(	"xyz"	)
+prexform_t	[ 0	locks=0 ]	(	0	0	0	)
+prexform_r	[ 0	locks=0 ]	(	0	0	0	)
+prexform_s	[ 0	locks=0 ]	(	1	1	1	)
+prexform_shear	[ 0	locks=0 ]	(	0	0	0	)
 movecentroid	[ 0	locks=0 ]	(	0	)
 attribs	[ 0	locks=0 ]	(	*	)
 updatenmls	[ 0	locks=0 ]	(	"off"	)
@@ -605,7 +501,7 @@ Content-Type: text/plain
 {
 	"___Version___":{
 		"type":"string",
-		"value":"16.0.557"
+		"value":"16.5.268"
 	}
 }
 
@@ -665,7 +561,7 @@ Content-Type: text/plain
 {
 	"___Version___":{
 		"type":"string",
-		"value":"16.0.557"
+		"value":"16.5.268"
 	}
 }
 
@@ -725,7 +621,7 @@ Content-Type: text/plain
 {
 	"___Version___":{
 		"type":"string",
-		"value":"16.0.557"
+		"value":"16.5.268"
 	}
 }
 
@@ -744,7 +640,7 @@ sopflags sopflags =
 comment ""
 position 2.42878 5.61456
 connectornextid 0
-flags =  lock off model off template off footprint off xray off bypass off display off render off highlight on unload off savedata off compress on colordefault off exposed on
+flags =  lock off model off template off footprint off xray off bypass off display off render off highlight on unload off savedata off compress on colordefault off exposed off
 outputsNamed3
 {
 2 "output1"
@@ -760,7 +656,7 @@ inputs
 stat
 {
   create 1465251339
-  modify 1465253538
+  modify 1515873212
   author nodeway@lv-422
   access 0777
 }
@@ -774,493 +670,494 @@ Content-Disposition: attachment; filename="hdaroot/group_by_pattern_1.spareparmd
 Content-Type: text/plain
 
     parm {
-	name	"group"
-	baseparm
-	label	"Group"
-	invisible
-	export	none
+        name    "group"
+        baseparm
+        label   "Group"
+        invisible
+        export  none
     }
     groupsimple {
-	name	"userdata"
-	label	"User Data"
+        name    "userdata"
+        label   "User Data"
 
-	parm {
-	    name	"bundleidpattern"
-	    label	"Pattern"
-	    type	string
-	    default	{ "" }
-	    range	{ 0 1 }
-	}
+        parm {
+            name    "bundleidpattern"
+            label   "Pattern"
+            type    string
+            default { "" }
+            range   { 0 1 }
+        }
     }
 
     group {
-	name	"stdswitcher4"
-	label	"Create"
+        name    "stdswitcher4"
+        label   "Create"
 
-	parm {
-	    name	"docreategrp"
-	    baseparm
-	    label	"Create Groups"
-	    joinnext
-	    export	none
-	}
-	parm {
-	    name	"crname"
-	    baseparm
-	    label	"Group Name"
-	    export	all
-	}
-	parm {
-	    name	"entity"
-	    baseparm
-	    label	"Entity"
-	    export	all
-	}
-	parm {
-	    name	"geotype"
-	    baseparm
-	    label	"Geometry Type"
-	    export	none
-	}
-	parm {
-	    name	"mergeop"
-	    baseparm
-	    label	"Merge Operation"
-	    export	none
-	}
-	group {
-	    name	"switcher4"
-	    label	"Number"
+        parm {
+            name    "docreategrp"
+            baseparm
+            label   "Create Groups"
+            nolabel
+            joinnext
+            export  none
+        }
+        parm {
+            name    "crname"
+            baseparm
+            label   "Group Name"
+            export  all
+        }
+        parm {
+            name    "entity"
+            baseparm
+            label   "Entity"
+            export  all
+        }
+        parm {
+            name    "geotype"
+            baseparm
+            label   "Geometry Type"
+            export  none
+        }
+        parm {
+            name    "mergeop"
+            baseparm
+            label   "Merge Operation"
+            export  none
+        }
+        group {
+            name    "switcher4"
+            label   "Number"
 
-	    parm {
-		name	"groupnumber"
-		baseparm
-		label	"Enable"
-		export	none
-	    }
-	    parm {
-		name	"ordered"
-		baseparm
-		label	"Create Ordered"
-		export	none
-	    }
-	    parm {
-		name	"groupop"
-		baseparm
-		label	"Operation"
-		export	none
-	    }
-	    parm {
-		name	"filter"
-		baseparm
-		label	"Filter Expression"
-		export	none
-	    }
-	    parm {
-		name	"pattern"
-		baseparm
-		label	"Pattern"
-		export	none
-		bindselector prims_points_edges "Group Geometry"
-		    "Select the points/primitives/edges to group and press Enter to complete."
-		    0 1 0xffffffff 0 entity 0
-	    }
-	    parm {
-		name	"range"
-		baseparm
-		label	"Start / End"
-		export	none
-	    }
-	    parm {
-		name	"select"
-		baseparm
-		label	"Select _ of _"
-		export	none
-	    }
-	}
+            parm {
+                name    "groupnumber"
+                baseparm
+                label   "Enable"
+                export  none
+            }
+            parm {
+                name    "ordered"
+                baseparm
+                label   "Create Ordered"
+                export  none
+            }
+            parm {
+                name    "groupop"
+                baseparm
+                label   "Operation"
+                export  none
+            }
+            parm {
+                name    "filter"
+                baseparm
+                label   "Filter Expression"
+                export  none
+            }
+            parm {
+                name    "pattern"
+                baseparm
+                label   "Pattern"
+                export  none
+                bindselector ordered_prims_points_edges "Group Geometry"
+                    "Select the points/primitives/edges to group and press Enter to complete."
+                    0 1 0xffffffff 0 entity 0
+            }
+            parm {
+                name    "range"
+                baseparm
+                label   "Start / End"
+                export  none
+            }
+            parm {
+                name    "select"
+                baseparm
+                label   "Select _ of _"
+                export  none
+            }
+        }
 
-	group {
-	    name	"switcher4_1"
-	    label	"Bounding"
+        group {
+            name    "switcher4_1"
+            label   "Bounding"
 
-	    parm {
-		name	"groupbounding"
-		baseparm
-		label	"Enable"
-		export	none
-	    }
-	    parm {
-		name	"boundtype"
-		baseparm
-		label	"Bounding Type"
-		export	all
-	    }
-	    parm {
-		name	"size"
-		baseparm
-		label	"Size"
-		export	none
-	    }
-	    parm {
-		name	"t"
-		baseparm
-		label	"Center"
-		export	none
-	    }
-	    parm {
-		name	"iso"
-		baseparm
-		label	"Iso Surface"
-		export	none
-	    }
-	    parm {
-		name	"invertvolume"
-		baseparm
-		label	"Invert"
-		export	none
-	    }
-	    parm {
-		name	"includenotwhollycontained"
-		baseparm
-		label	"Include Entities Not Wholly Contained"
-		export	none
-	    }
-	}
+            parm {
+                name    "groupbounding"
+                baseparm
+                label   "Enable"
+                export  none
+            }
+            parm {
+                name    "boundtype"
+                baseparm
+                label   "Bounding Type"
+                export  all
+            }
+            parm {
+                name    "size"
+                baseparm
+                label   "Size"
+                export  none
+            }
+            parm {
+                name    "t"
+                baseparm
+                label   "Center"
+                export  none
+            }
+            parm {
+                name    "iso"
+                baseparm
+                label   "Iso Surface"
+                export  none
+            }
+            parm {
+                name    "invertvolume"
+                baseparm
+                label   "Invert"
+                export  none
+            }
+            parm {
+                name    "includenotwhollycontained"
+                baseparm
+                label   "Include Entities Not Wholly Contained"
+                export  none
+            }
+        }
 
-	group {
-	    name	"switcher4_2"
-	    label	"Normal"
+        group {
+            name    "switcher4_2"
+            label   "Normal"
 
-	    parm {
-		name	"groupnormal"
-		baseparm
-		label	"Enable"
-		export	none
-	    }
-	    parm {
-		name	"dir"
-		baseparm
-		label	"Direction"
-		export	none
-	    }
-	    parm {
-		name	"angle"
-		baseparm
-		label	"Spread Angle"
-		export	none
-	    }
-	    parm {
-		name	"camerapath"
-		baseparm
-		label	"Backface from"
-		export	none
-	    }
-	    parm {
-		name	"nonplanar"
-		baseparm
-		label	"Non-Planar Polygons"
-		joinnext
-		export	none
-	    }
-	    parm {
-		name	"nonplanartol"
-		baseparm
-		label	"Non-Planar Polygons Tolerance"
-		export	none
-	    }
-	}
+            parm {
+                name    "groupnormal"
+                baseparm
+                label   "Enable"
+                export  none
+            }
+            parm {
+                name    "dir"
+                baseparm
+                label   "Direction"
+                export  none
+            }
+            parm {
+                name    "angle"
+                baseparm
+                label   "Spread Angle"
+                export  none
+            }
+            parm {
+                name    "camerapath"
+                baseparm
+                label   "Backface from"
+                export  none
+            }
+            parm {
+                name    "nonplanar"
+                baseparm
+                label   "Non-Planar Polygons"
+                joinnext
+                export  none
+            }
+            parm {
+                name    "nonplanartol"
+                baseparm
+                label   "Non-Planar Polygons Tolerance"
+                export  none
+            }
+        }
 
-	group {
-	    name	"switcher4_3"
-	    label	"Edges"
+        group {
+            name    "switcher4_3"
+            label   "Edges"
 
-	    parm {
-		name	"groupedges"
-		baseparm
-		label	"Enable"
-		export	none
-	    }
-	    parm {
-		name	"dominedgeangle"
-		baseparm
-		label	"Min Edge Angle"
-		joinnext
-		export	none
-	    }
-	    parm {
-		name	"minedgeangle"
-		baseparm
-		label	"Min Edge Angle"
-		export	none
-	    }
-	    parm {
-		name	"domaxedgeangle"
-		baseparm
-		label	"Max Edge Angle"
-		joinnext
-		export	none
-	    }
-	    parm {
-		name	"maxedgeangle"
-		baseparm
-		label	"Max Edge Angle"
-		export	none
-	    }
-	    parm {
-		name	"edgeanglebetweenedges"
-		baseparm
-		label	"Edge Angle Uses Angle Between Edges"
-		export	none
-	    }
-	    parm {
-		name	"dominedgelen"
-		baseparm
-		label	"Min Edge Length"
-		joinnext
-		export	none
-	    }
-	    parm {
-		name	"minedgelen"
-		baseparm
-		label	"Min Edge Length"
-		export	none
-	    }
-	    parm {
-		name	"domaxedgelen"
-		baseparm
-		label	"Max Edge Length"
-		joinnext
-		export	none
-	    }
-	    parm {
-		name	"maxedgelen"
-		baseparm
-		label	"Max Edge Length"
-		export	none
-	    }
-	    parm {
-		name	"dodepth"
-		baseparm
-		label	"Edge Depth"
-		joinnext
-		export	none
-	    }
-	    parm {
-		name	"edgestep"
-		baseparm
-		label	"Edge Depth"
-		export	none
-	    }
-	    parm {
-		name	"edgeptgrp"
-		baseparm
-		label	"Point Group"
-		export	none
-	    }
-	    parm {
-		name	"unshared"
-		baseparm
-		label	"Unshared Edges"
-		export	none
-	    }
-	    parm {
-		name	"boundarygroups"
-		baseparm
-		label	"Create Boundary Groups"
-		export	none
-	    }
-	}
+            parm {
+                name    "groupedges"
+                baseparm
+                label   "Enable"
+                export  none
+            }
+            parm {
+                name    "dominedgeangle"
+                baseparm
+                label   "Min Edge Angle"
+                joinnext
+                export  none
+            }
+            parm {
+                name    "minedgeangle"
+                baseparm
+                label   "Min Edge Angle"
+                export  none
+            }
+            parm {
+                name    "domaxedgeangle"
+                baseparm
+                label   "Max Edge Angle"
+                joinnext
+                export  none
+            }
+            parm {
+                name    "maxedgeangle"
+                baseparm
+                label   "Max Edge Angle"
+                export  none
+            }
+            parm {
+                name    "edgeanglebetweenedges"
+                baseparm
+                label   "Edge Angle Uses Angle Between Edges"
+                export  none
+            }
+            parm {
+                name    "dominedgelen"
+                baseparm
+                label   "Min Edge Length"
+                joinnext
+                export  none
+            }
+            parm {
+                name    "minedgelen"
+                baseparm
+                label   "Min Edge Length"
+                export  none
+            }
+            parm {
+                name    "domaxedgelen"
+                baseparm
+                label   "Max Edge Length"
+                joinnext
+                export  none
+            }
+            parm {
+                name    "maxedgelen"
+                baseparm
+                label   "Max Edge Length"
+                export  none
+            }
+            parm {
+                name    "dodepth"
+                baseparm
+                label   "Edge Depth"
+                joinnext
+                export  none
+            }
+            parm {
+                name    "edgestep"
+                baseparm
+                label   "Edge Depth"
+                export  none
+            }
+            parm {
+                name    "edgeptgrp"
+                baseparm
+                label   "Point Group"
+                export  none
+            }
+            parm {
+                name    "unshared"
+                baseparm
+                label   "Unshared Edges"
+                export  none
+            }
+            parm {
+                name    "boundarygroups"
+                baseparm
+                label   "Create Boundary Groups"
+                export  none
+            }
+        }
 
     }
 
     group {
-	name	"stdswitcher4_1"
-	label	"Combine"
+        name    "stdswitcher4_1"
+        label   "Combine"
 
-	parm {
-	    name	"combineentity"
-	    baseparm
-	    label	"Combine Entity"
-	    export	none
-	}
-	parm {
-	    name	"grpequal"
-	    baseparm
-	    label	"Group"
-	    joinnext
-	    export	none
-	}
-	parm {
-	    name	"not1"
-	    baseparm
-	    label	"Not"
-	    nolabel
-	    joinnext
-	    export	none
-	}
-	parm {
-	    name	"grp1"
-	    baseparm
-	    label	"Group 1"
-	    nolabel
-	    export	none
-	}
-	parm {
-	    name	"op1"
-	    baseparm
-	    label	"Operation"
-	    nolabel
-	    joinnext
-	    export	none
-	}
-	parm {
-	    name	"not2"
-	    baseparm
-	    label	"Not"
-	    nolabel
-	    joinnext
-	    export	none
-	}
-	parm {
-	    name	"grp2"
-	    baseparm
-	    label	"Group 2"
-	    nolabel
-	    export	none
-	}
-	parm {
-	    name	"op2"
-	    baseparm
-	    label	"Operation"
-	    nolabel
-	    joinnext
-	    export	none
-	}
-	parm {
-	    name	"not3"
-	    baseparm
-	    label	"Not"
-	    nolabel
-	    joinnext
-	    export	none
-	}
-	parm {
-	    name	"grp3"
-	    baseparm
-	    label	"Group 3"
-	    nolabel
-	    export	none
-	}
-	parm {
-	    name	"op3"
-	    baseparm
-	    label	"Operation"
-	    nolabel
-	    joinnext
-	    export	none
-	}
-	parm {
-	    name	"not4"
-	    baseparm
-	    label	"Not"
-	    nolabel
-	    joinnext
-	    export	none
-	}
-	parm {
-	    name	"grp4"
-	    baseparm
-	    label	"Group 4"
-	    nolabel
-	    export	none
-	}
+        parm {
+            name    "combineentity"
+            baseparm
+            label   "Combine Entity"
+            export  none
+        }
+        parm {
+            name    "grpequal"
+            baseparm
+            label   "Group"
+            joinnext
+            export  none
+        }
+        parm {
+            name    "not1"
+            baseparm
+            label   "Not"
+            nolabel
+            joinnext
+            export  none
+        }
+        parm {
+            name    "grp1"
+            baseparm
+            label   "Group 1"
+            nolabel
+            export  none
+        }
+        parm {
+            name    "op1"
+            baseparm
+            label   "Operation"
+            nolabel
+            joinnext
+            export  none
+        }
+        parm {
+            name    "not2"
+            baseparm
+            label   "Not"
+            nolabel
+            joinnext
+            export  none
+        }
+        parm {
+            name    "grp2"
+            baseparm
+            label   "Group 2"
+            nolabel
+            export  none
+        }
+        parm {
+            name    "op2"
+            baseparm
+            label   "Operation"
+            nolabel
+            joinnext
+            export  none
+        }
+        parm {
+            name    "not3"
+            baseparm
+            label   "Not"
+            nolabel
+            joinnext
+            export  none
+        }
+        parm {
+            name    "grp3"
+            baseparm
+            label   "Group 3"
+            nolabel
+            export  none
+        }
+        parm {
+            name    "op3"
+            baseparm
+            label   "Operation"
+            nolabel
+            joinnext
+            export  none
+        }
+        parm {
+            name    "not4"
+            baseparm
+            label   "Not"
+            nolabel
+            joinnext
+            export  none
+        }
+        parm {
+            name    "grp4"
+            baseparm
+            label   "Group 4"
+            nolabel
+            export  none
+        }
     }
 
     group {
-	name	"stdswitcher4_2"
-	label	"Edit"
+        name    "stdswitcher4_2"
+        label   "Edit"
 
-	group {
-	    name	"switcher5"
-	    label	"Rename"
+        group {
+            name    "switcher5"
+            label   "Rename"
 
-	    parm {
-		name	"oldname"
-		baseparm
-		label	"Group"
-		export	none
-	    }
-	    parm {
-		name	"newname"
-		baseparm
-		label	"New Name"
-		export	none
-	    }
-	}
+            parm {
+                name    "oldname"
+                baseparm
+                label   "Group"
+                export  none
+            }
+            parm {
+                name    "newname"
+                baseparm
+                label   "New Name"
+                export  none
+            }
+        }
 
-	group {
-	    name	"switcher5_1"
-	    label	"Convert"
+        group {
+            name    "switcher5_1"
+            label   "Convert"
 
-	    parm {
-		name	"cnvfromtype"
-		baseparm
-		label	"Convert From"
-		joinnext
-		export	none
-	    }
-	    parm {
-		name	"cnvtotype"
-		baseparm
-		label	"To"
-		export	none
-	    }
-	    parm {
-		name	"convertg"
-		baseparm
-		label	"Group"
-		export	none
-	    }
-	    parm {
-		name	"cnvtname"
-		baseparm
-		label	"Convert Name"
-		export	none
-	    }
-	    parm {
-		name	"preserve"
-		baseparm
-		label	"Preserve Original"
-		export	none
-	    }
-	    parm {
-		name	"primswithallpts"
-		baseparm
-		label	"Omit Entities in New Group not Wholly Contained in the Old Group"
-		export	none
-	    }
-	}
+            parm {
+                name    "cnvfromtype"
+                baseparm
+                label   "Convert From"
+                joinnext
+                export  none
+            }
+            parm {
+                name    "cnvtotype"
+                baseparm
+                label   "To"
+                export  none
+            }
+            parm {
+                name    "convertg"
+                baseparm
+                label   "Group"
+                export  none
+            }
+            parm {
+                name    "cnvtname"
+                baseparm
+                label   "Convert Name"
+                export  none
+            }
+            parm {
+                name    "preserve"
+                baseparm
+                label   "Preserve Original"
+                export  none
+            }
+            parm {
+                name    "primswithallpts"
+                baseparm
+                label   "Omit Entities in New Group not Wholly Contained in the Old Group"
+                export  none
+            }
+        }
 
-	group {
-	    name	"switcher5_2"
-	    label	"Delete"
+        group {
+            name    "switcher5_2"
+            label   "Delete"
 
-	    parm {
-		name	"destroyname"
-		baseparm
-		label	"Group"
-		export	none
-	    }
-	}
+            parm {
+                name    "destroyname"
+                baseparm
+                label   "Group"
+                export  none
+            }
+        }
 
     }
 
     parm {
-	name	"type"
-	baseparm
-	label	"group type"
-	invisible
-	export	none
+        name    "type"
+        baseparm
+        label   "group type"
+        invisible
+        export  none
     }
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
@@ -1318,7 +1215,7 @@ switcher2	[ 0	locks=0 ]	(	0	0	0	0	)
 groupnumber	[ 0	locks=0 ]	(	"on"	)
 ordered	[ 0	locks=0 ]	(	"off"	)
 groupop	[ 0	locks=0 ]	(	"grpexpression"	)
-filter	[ 8	locks=0 ]	(	[ filter	0 ] 	)
+filter	[ 8	locks=0 ]	(	[ filter	1 ] 	)
 pattern	[ 0	locks=0 ]	(	""	)
 range	[ 8	locks=0 ]	(	0	[ rangeend	0 ] 	)
 select	[ 0	locks=0 ]	(	1	2	)
@@ -1375,7 +1272,7 @@ primswithallpts	[ 0	locks=0 ]	(	"off"	)
 destroyname	[ 0	locks=0 ]	(	""	)
 type	[ 0	locks=0 ]	(	1	)
 userdata	[ 0	locks=0 ]	(	0	)
-bundleidpattern	[ 0	locks=0	autoscope=1 ]	(	[ bundleidpattern	0 ] 	)
+bundleidpattern	[ 0	locks=0	autoscope=1 ]	(	[ bundleidpattern	"0 1" ] 	)
 stdswitcher4	[ 0	locks=0 ]	(	0	0	0	)
 switcher4	[ 0	locks=0 ]	(	0	0	0	0	)
 switcher5	[ 0	locks=0 ]	(	0	0	0	)
@@ -1388,7 +1285,7 @@ Content-Type: text/plain
 {
 	"___Version___":{
 		"type":"string",
-		"value":"16.0.557"
+		"value":"16.5.268"
 	}
 }
 
@@ -1407,7 +1304,7 @@ sopflags sopflags =
 comment ""
 position 0.433533 4.59839
 connectornextid 3
-flags =  lock off model off template off footprint off xray off bypass off display off render off highlight off unload off savedata off compress on colordefault off exposed on
+flags =  lock off model off template off footprint off xray off bypass off display off render off highlight off unload off savedata off compress on colordefault off exposed off
 outputsNamed3
 {
 0 "output1"
@@ -1425,7 +1322,7 @@ inputs
 stat
 {
   create 1465252094
-  modify 1465258520
+  modify 1515873212
   author nodeway@lv-422
   access 0777
 }
@@ -1463,7 +1360,7 @@ Content-Type: text/plain
 {
 	"___Version___":{
 		"type":"string",
-		"value":"16.0.557"
+		"value":"16.5.268"
 	}
 }
 
@@ -1482,23 +1379,23 @@ sopflags sopflags =
 comment ""
 position 0.433533 6.60665
 connectornextid 2
-flags =  lock off model off template off footprint off xray off bypass off display off render off highlight off unload off savedata off compress on colordefault off exposed on
+flags =  lock off model off template off footprint off xray off bypass off display off render off highlight off unload off savedata off compress on colordefault off exposed off
 outputsNamed3
 {
 0 "output1"
 }
 inputsNamed3
 {
-1 	IN_CONVEX_HULLS 1 1 "input1"
+1 	(0) "" 1 "input1"
 }
 inputs
 {
-0 	IN_CONVEX_HULLS 0 1
+0 	(0) 0 1
 }
 stat
 {
   create 1465252201
-  modify 1465253524
+  modify 1515873212
   author nodeway@lv-422
   access 0777
 }
@@ -1514,84 +1411,25 @@ Content-Type: text/plain
 {
 version 0.8
 python	[ 0	locks=0 ]	(	"# ---------------------------------------------------------------------
-# VARIABLES
+# IMPORTS                                                             |
 # ---------------------------------------------------------------------
+
+from vhacd.common import NameGenerator as gen
+reload(gen)
+
+# ---------------------------------------------------------------------
+# VARIABLES                                                           |
+# ---------------------------------------------------------------------
+
 node = hou.pwd()
 geo = node.geometry()
 parent = node.parent()
 
 # ---------------------------------------------------------------------
-# HELPERS
-# ---------------------------------------------------------------------
-class NameGenerator():
-    @staticmethod  
-    def __new_unique_name__(name, step, type):
-        '''
-        '''
-        
-        uniqueName = ''
-        
-        if step == 0: uniqueName = name
-        else: uniqueName = '{0}{1}'.format(name, step)        
-        
-        wasSuccess = None
-        try: 
-            if type == 'pointgroup':
-                wasSuccess = geo.findPointGroup(uniqueName) 
-            elif type == 'edgegroup':
-                wasSuccess = geo.findEdgeGroup(uniqueName) 
-            elif type == 'primitivegroup':
-                wasSuccess = geo.findPrimGroup(uniqueName) 
-            elif type == 'vertexattribute':
-                wasSuccess = geo.findVertexAttrib(uniqueName)                
-            elif type == 'pointattribute':
-                wasSuccess = geo.findPointAttrib(uniqueName)
-            elif type == 'primitiveattribute':
-                wasSuccess = geo.findPrimAttrib(uniqueName)
-            elif type == 'detailattribute':
-                wasSuccess = geo.findGlobalAttrib(uniqueName)
-                   
-        except: wasSuccess = None
-        
-        if wasSuccess != None:
-            step += 1
-            uniqueName = NameGenerator.__new_unique_name__(name, step, type)
-        
-        return uniqueName
-
-    @staticmethod        
-    def UniquePointGroupName(name, step = 0):
-        return NameGenerator.__new_unique_name__(name, step, 'pointgroup')
-    
-    @staticmethod        
-    def UniqueEdgeGroupName(name, step = 0):
-        return NameGenerator.__new_unique_name__(name, step, 'edgegroup')
-        
-    @staticmethod        
-    def UniquePrimitiveGroupName(name, step = 0):
-        return NameGenerator.__new_unique_name__(name, step, 'primitivegroup')
-        
-    @staticmethod        
-    def UniqueVertexAttibName(name, step = 0):
-        return NameGenerator.__new_unique_name__(name, step, 'vertexattribute')
-        
-    @staticmethod        
-    def UniquePointAttibName(name, step = 0):
-        return NameGenerator.__new_unique_name__(name, step, 'pointattribute')
-
-    @staticmethod        
-    def UniquePrimitiveAttribName(name, step = 0):
-        return NameGenerator.__new_unique_name__(name, step, 'primitiveattribute')
-    
-    @staticmethod        
-    def UniqueDetailAttribName(name, step = 0):
-        return NameGenerator.__new_unique_name__(name, step, 'detailattribute')          
-        
-# ---------------------------------------------------------------------
-# MAIN
+# MAIN                                                                |
 # ---------------------------------------------------------------------
 
-name = NameGenerator().UniquePrimitiveGroupName('__transform__')
+name = gen.NameGenerator().UniquePrimitiveGroupName('__transform__')
 parent.parm('uniquetransformgroupname1').set(name)"	)
 }
 
@@ -1602,7 +1440,7 @@ Content-Type: text/plain
 {
 	"___Version___":{
 		"type":"string",
-		"value":"16.0.557"
+		"value":"16.5.268"
 	}
 }
 
@@ -1621,7 +1459,7 @@ sopflags sopflags =
 comment ""
 position -1.57566 5.61456
 connectornextid 1
-flags =  lock off model off template off footprint off xray off bypass off display off render off highlight on unload off savedata off compress on colordefault off exposed on
+flags =  lock off model off template off footprint off xray off bypass off display off render off highlight on unload off savedata off compress on colordefault off exposed off
 outputsNamed3
 {
 2 "output1"
@@ -1637,7 +1475,7 @@ inputs
 stat
 {
   create 1465253078
-  modify 1465253888
+  modify 1515873212
   author nodeway@lv-422
   access 0777
 }
@@ -1729,7 +1567,7 @@ boundarygroups	[ 0	locks=0 ]	(	"off"	)
 combineentity	[ 0	locks=0 ]	(	"guess"	)
 grpequal	[ 0	locks=0	autoscope=1 ]	(	[ grpequal	__transform__ ] 	)
 not1	[ 0	locks=0 ]	(	"off"	)
-grp1	[ 0	locks=0	autoscope=1 ]	(	[ grp1	* ] 	)
+grp1	[ 0	locks=0	autoscope=1 ]	(	[ grp1	bundle_0 ] 	)
 op1	[ 0	locks=0 ]	(	"none"	)
 not2	[ 0	locks=0 ]	(	"off"	)
 grp2	[ 0	locks=0 ]	(	""	)
@@ -1759,7 +1597,7 @@ Content-Type: text/plain
 {
 	"___Version___":{
 		"type":"string",
-		"value":"16.0.557"
+		"value":"16.5.268"
 	}
 }
 
@@ -1778,7 +1616,7 @@ sopflags sopflags =
 comment ""
 position 0.443054 2.61722
 connectornextid 2
-flags =  lock off model off template off footprint off xray off bypass off display off render off highlight on unload off savedata off compress on colordefault off exposed on
+flags =  lock off model off template off footprint off xray off bypass off display off render off highlight on unload off savedata off compress on colordefault off exposed off
 outputsNamed3
 {
 0 "output1"
@@ -1794,7 +1632,7 @@ inputs
 stat
 {
   create 1465253259
-  modify 1465253538
+  modify 1515873212
   author nodeway@lv-422
   access 0777
 }
@@ -1916,7 +1754,7 @@ Content-Type: text/plain
 {
 	"___Version___":{
 		"type":"string",
-		"value":"16.0.557"
+		"value":"16.5.268"
 	}
 }
 
@@ -1935,7 +1773,7 @@ sopflags sopflags =
 comment ""
 position 8.41949 2.61722
 connectornextid 2
-flags =  lock off model off template off footprint off xray off bypass off display off render off highlight on unload off savedata off compress on colordefault off exposed on
+flags =  lock off model off template off footprint off xray off bypass off display off render off highlight on unload off savedata off compress on colordefault off exposed off
 outputsNamed3
 {
 0 "output1"
@@ -1951,7 +1789,7 @@ inputs
 stat
 {
   create 1465253259
-  modify 1465253597
+  modify 1515873214
   author nodeway@lv-422
   access 0777
 }
@@ -2073,7 +1911,7 @@ Content-Type: text/plain
 {
 	"___Version___":{
 		"type":"string",
-		"value":"16.0.557"
+		"value":"16.5.268"
 	}
 }
 
@@ -2092,7 +1930,7 @@ sopflags sopflags =
 comment ""
 position 10.4216 5.59161
 connectornextid 0
-flags =  lock off model off template off footprint off xray off bypass off display off render off highlight on unload off savedata off compress on colordefault off exposed on
+flags =  lock off model off template off footprint off xray off bypass off display off render off highlight on unload off savedata off compress on colordefault off exposed off
 outputsNamed3
 {
 2 "output1"
@@ -2108,7 +1946,7 @@ inputs
 stat
 {
   create 1465251339
-  modify 1465253610
+  modify 1515873214
   author nodeway@lv-422
   access 0777
 }
@@ -2122,493 +1960,494 @@ Content-Disposition: attachment; filename="hdaroot/group_by_pattern_2.spareparmd
 Content-Type: text/plain
 
     parm {
-	name	"group"
-	baseparm
-	label	"Group"
-	invisible
-	export	none
+        name    "group"
+        baseparm
+        label   "Group"
+        invisible
+        export  none
     }
     groupsimple {
-	name	"userdata"
-	label	"User Data"
+        name    "userdata"
+        label   "User Data"
 
-	parm {
-	    name	"bundleidpattern"
-	    label	"Pattern"
-	    type	string
-	    default	{ "" }
-	    range	{ 0 1 }
-	}
+        parm {
+            name    "bundleidpattern"
+            label   "Pattern"
+            type    string
+            default { "" }
+            range   { 0 1 }
+        }
     }
 
     group {
-	name	"stdswitcher4"
-	label	"Create"
+        name    "stdswitcher4"
+        label   "Create"
 
-	parm {
-	    name	"docreategrp"
-	    baseparm
-	    label	"Create Groups"
-	    joinnext
-	    export	none
-	}
-	parm {
-	    name	"crname"
-	    baseparm
-	    label	"Group Name"
-	    export	all
-	}
-	parm {
-	    name	"entity"
-	    baseparm
-	    label	"Entity"
-	    export	all
-	}
-	parm {
-	    name	"geotype"
-	    baseparm
-	    label	"Geometry Type"
-	    export	none
-	}
-	parm {
-	    name	"mergeop"
-	    baseparm
-	    label	"Merge Operation"
-	    export	none
-	}
-	group {
-	    name	"switcher4"
-	    label	"Number"
+        parm {
+            name    "docreategrp"
+            baseparm
+            label   "Create Groups"
+            nolabel
+            joinnext
+            export  none
+        }
+        parm {
+            name    "crname"
+            baseparm
+            label   "Group Name"
+            export  all
+        }
+        parm {
+            name    "entity"
+            baseparm
+            label   "Entity"
+            export  all
+        }
+        parm {
+            name    "geotype"
+            baseparm
+            label   "Geometry Type"
+            export  none
+        }
+        parm {
+            name    "mergeop"
+            baseparm
+            label   "Merge Operation"
+            export  none
+        }
+        group {
+            name    "switcher4"
+            label   "Number"
 
-	    parm {
-		name	"groupnumber"
-		baseparm
-		label	"Enable"
-		export	none
-	    }
-	    parm {
-		name	"ordered"
-		baseparm
-		label	"Create Ordered"
-		export	none
-	    }
-	    parm {
-		name	"groupop"
-		baseparm
-		label	"Operation"
-		export	none
-	    }
-	    parm {
-		name	"filter"
-		baseparm
-		label	"Filter Expression"
-		export	none
-	    }
-	    parm {
-		name	"pattern"
-		baseparm
-		label	"Pattern"
-		export	none
-		bindselector prims_points_edges "Group Geometry"
-		    "Select the points/primitives/edges to group and press Enter to complete."
-		    0 1 0xffffffff 0 entity 0
-	    }
-	    parm {
-		name	"range"
-		baseparm
-		label	"Start / End"
-		export	none
-	    }
-	    parm {
-		name	"select"
-		baseparm
-		label	"Select _ of _"
-		export	none
-	    }
-	}
+            parm {
+                name    "groupnumber"
+                baseparm
+                label   "Enable"
+                export  none
+            }
+            parm {
+                name    "ordered"
+                baseparm
+                label   "Create Ordered"
+                export  none
+            }
+            parm {
+                name    "groupop"
+                baseparm
+                label   "Operation"
+                export  none
+            }
+            parm {
+                name    "filter"
+                baseparm
+                label   "Filter Expression"
+                export  none
+            }
+            parm {
+                name    "pattern"
+                baseparm
+                label   "Pattern"
+                export  none
+                bindselector ordered_prims_points_edges "Group Geometry"
+                    "Select the points/primitives/edges to group and press Enter to complete."
+                    0 1 0xffffffff 0 entity 0
+            }
+            parm {
+                name    "range"
+                baseparm
+                label   "Start / End"
+                export  none
+            }
+            parm {
+                name    "select"
+                baseparm
+                label   "Select _ of _"
+                export  none
+            }
+        }
 
-	group {
-	    name	"switcher4_1"
-	    label	"Bounding"
+        group {
+            name    "switcher4_1"
+            label   "Bounding"
 
-	    parm {
-		name	"groupbounding"
-		baseparm
-		label	"Enable"
-		export	none
-	    }
-	    parm {
-		name	"boundtype"
-		baseparm
-		label	"Bounding Type"
-		export	all
-	    }
-	    parm {
-		name	"size"
-		baseparm
-		label	"Size"
-		export	none
-	    }
-	    parm {
-		name	"t"
-		baseparm
-		label	"Center"
-		export	none
-	    }
-	    parm {
-		name	"iso"
-		baseparm
-		label	"Iso Surface"
-		export	none
-	    }
-	    parm {
-		name	"invertvolume"
-		baseparm
-		label	"Invert"
-		export	none
-	    }
-	    parm {
-		name	"includenotwhollycontained"
-		baseparm
-		label	"Include Entities Not Wholly Contained"
-		export	none
-	    }
-	}
+            parm {
+                name    "groupbounding"
+                baseparm
+                label   "Enable"
+                export  none
+            }
+            parm {
+                name    "boundtype"
+                baseparm
+                label   "Bounding Type"
+                export  all
+            }
+            parm {
+                name    "size"
+                baseparm
+                label   "Size"
+                export  none
+            }
+            parm {
+                name    "t"
+                baseparm
+                label   "Center"
+                export  none
+            }
+            parm {
+                name    "iso"
+                baseparm
+                label   "Iso Surface"
+                export  none
+            }
+            parm {
+                name    "invertvolume"
+                baseparm
+                label   "Invert"
+                export  none
+            }
+            parm {
+                name    "includenotwhollycontained"
+                baseparm
+                label   "Include Entities Not Wholly Contained"
+                export  none
+            }
+        }
 
-	group {
-	    name	"switcher4_2"
-	    label	"Normal"
+        group {
+            name    "switcher4_2"
+            label   "Normal"
 
-	    parm {
-		name	"groupnormal"
-		baseparm
-		label	"Enable"
-		export	none
-	    }
-	    parm {
-		name	"dir"
-		baseparm
-		label	"Direction"
-		export	none
-	    }
-	    parm {
-		name	"angle"
-		baseparm
-		label	"Spread Angle"
-		export	none
-	    }
-	    parm {
-		name	"camerapath"
-		baseparm
-		label	"Backface from"
-		export	none
-	    }
-	    parm {
-		name	"nonplanar"
-		baseparm
-		label	"Non-Planar Polygons"
-		joinnext
-		export	none
-	    }
-	    parm {
-		name	"nonplanartol"
-		baseparm
-		label	"Non-Planar Polygons Tolerance"
-		export	none
-	    }
-	}
+            parm {
+                name    "groupnormal"
+                baseparm
+                label   "Enable"
+                export  none
+            }
+            parm {
+                name    "dir"
+                baseparm
+                label   "Direction"
+                export  none
+            }
+            parm {
+                name    "angle"
+                baseparm
+                label   "Spread Angle"
+                export  none
+            }
+            parm {
+                name    "camerapath"
+                baseparm
+                label   "Backface from"
+                export  none
+            }
+            parm {
+                name    "nonplanar"
+                baseparm
+                label   "Non-Planar Polygons"
+                joinnext
+                export  none
+            }
+            parm {
+                name    "nonplanartol"
+                baseparm
+                label   "Non-Planar Polygons Tolerance"
+                export  none
+            }
+        }
 
-	group {
-	    name	"switcher4_3"
-	    label	"Edges"
+        group {
+            name    "switcher4_3"
+            label   "Edges"
 
-	    parm {
-		name	"groupedges"
-		baseparm
-		label	"Enable"
-		export	none
-	    }
-	    parm {
-		name	"dominedgeangle"
-		baseparm
-		label	"Min Edge Angle"
-		joinnext
-		export	none
-	    }
-	    parm {
-		name	"minedgeangle"
-		baseparm
-		label	"Min Edge Angle"
-		export	none
-	    }
-	    parm {
-		name	"domaxedgeangle"
-		baseparm
-		label	"Max Edge Angle"
-		joinnext
-		export	none
-	    }
-	    parm {
-		name	"maxedgeangle"
-		baseparm
-		label	"Max Edge Angle"
-		export	none
-	    }
-	    parm {
-		name	"edgeanglebetweenedges"
-		baseparm
-		label	"Edge Angle Uses Angle Between Edges"
-		export	none
-	    }
-	    parm {
-		name	"dominedgelen"
-		baseparm
-		label	"Min Edge Length"
-		joinnext
-		export	none
-	    }
-	    parm {
-		name	"minedgelen"
-		baseparm
-		label	"Min Edge Length"
-		export	none
-	    }
-	    parm {
-		name	"domaxedgelen"
-		baseparm
-		label	"Max Edge Length"
-		joinnext
-		export	none
-	    }
-	    parm {
-		name	"maxedgelen"
-		baseparm
-		label	"Max Edge Length"
-		export	none
-	    }
-	    parm {
-		name	"dodepth"
-		baseparm
-		label	"Edge Depth"
-		joinnext
-		export	none
-	    }
-	    parm {
-		name	"edgestep"
-		baseparm
-		label	"Edge Depth"
-		export	none
-	    }
-	    parm {
-		name	"edgeptgrp"
-		baseparm
-		label	"Point Group"
-		export	none
-	    }
-	    parm {
-		name	"unshared"
-		baseparm
-		label	"Unshared Edges"
-		export	none
-	    }
-	    parm {
-		name	"boundarygroups"
-		baseparm
-		label	"Create Boundary Groups"
-		export	none
-	    }
-	}
+            parm {
+                name    "groupedges"
+                baseparm
+                label   "Enable"
+                export  none
+            }
+            parm {
+                name    "dominedgeangle"
+                baseparm
+                label   "Min Edge Angle"
+                joinnext
+                export  none
+            }
+            parm {
+                name    "minedgeangle"
+                baseparm
+                label   "Min Edge Angle"
+                export  none
+            }
+            parm {
+                name    "domaxedgeangle"
+                baseparm
+                label   "Max Edge Angle"
+                joinnext
+                export  none
+            }
+            parm {
+                name    "maxedgeangle"
+                baseparm
+                label   "Max Edge Angle"
+                export  none
+            }
+            parm {
+                name    "edgeanglebetweenedges"
+                baseparm
+                label   "Edge Angle Uses Angle Between Edges"
+                export  none
+            }
+            parm {
+                name    "dominedgelen"
+                baseparm
+                label   "Min Edge Length"
+                joinnext
+                export  none
+            }
+            parm {
+                name    "minedgelen"
+                baseparm
+                label   "Min Edge Length"
+                export  none
+            }
+            parm {
+                name    "domaxedgelen"
+                baseparm
+                label   "Max Edge Length"
+                joinnext
+                export  none
+            }
+            parm {
+                name    "maxedgelen"
+                baseparm
+                label   "Max Edge Length"
+                export  none
+            }
+            parm {
+                name    "dodepth"
+                baseparm
+                label   "Edge Depth"
+                joinnext
+                export  none
+            }
+            parm {
+                name    "edgestep"
+                baseparm
+                label   "Edge Depth"
+                export  none
+            }
+            parm {
+                name    "edgeptgrp"
+                baseparm
+                label   "Point Group"
+                export  none
+            }
+            parm {
+                name    "unshared"
+                baseparm
+                label   "Unshared Edges"
+                export  none
+            }
+            parm {
+                name    "boundarygroups"
+                baseparm
+                label   "Create Boundary Groups"
+                export  none
+            }
+        }
 
     }
 
     group {
-	name	"stdswitcher4_1"
-	label	"Combine"
+        name    "stdswitcher4_1"
+        label   "Combine"
 
-	parm {
-	    name	"combineentity"
-	    baseparm
-	    label	"Combine Entity"
-	    export	none
-	}
-	parm {
-	    name	"grpequal"
-	    baseparm
-	    label	"Group"
-	    joinnext
-	    export	none
-	}
-	parm {
-	    name	"not1"
-	    baseparm
-	    label	"Not"
-	    nolabel
-	    joinnext
-	    export	none
-	}
-	parm {
-	    name	"grp1"
-	    baseparm
-	    label	"Group 1"
-	    nolabel
-	    export	none
-	}
-	parm {
-	    name	"op1"
-	    baseparm
-	    label	"Operation"
-	    nolabel
-	    joinnext
-	    export	none
-	}
-	parm {
-	    name	"not2"
-	    baseparm
-	    label	"Not"
-	    nolabel
-	    joinnext
-	    export	none
-	}
-	parm {
-	    name	"grp2"
-	    baseparm
-	    label	"Group 2"
-	    nolabel
-	    export	none
-	}
-	parm {
-	    name	"op2"
-	    baseparm
-	    label	"Operation"
-	    nolabel
-	    joinnext
-	    export	none
-	}
-	parm {
-	    name	"not3"
-	    baseparm
-	    label	"Not"
-	    nolabel
-	    joinnext
-	    export	none
-	}
-	parm {
-	    name	"grp3"
-	    baseparm
-	    label	"Group 3"
-	    nolabel
-	    export	none
-	}
-	parm {
-	    name	"op3"
-	    baseparm
-	    label	"Operation"
-	    nolabel
-	    joinnext
-	    export	none
-	}
-	parm {
-	    name	"not4"
-	    baseparm
-	    label	"Not"
-	    nolabel
-	    joinnext
-	    export	none
-	}
-	parm {
-	    name	"grp4"
-	    baseparm
-	    label	"Group 4"
-	    nolabel
-	    export	none
-	}
+        parm {
+            name    "combineentity"
+            baseparm
+            label   "Combine Entity"
+            export  none
+        }
+        parm {
+            name    "grpequal"
+            baseparm
+            label   "Group"
+            joinnext
+            export  none
+        }
+        parm {
+            name    "not1"
+            baseparm
+            label   "Not"
+            nolabel
+            joinnext
+            export  none
+        }
+        parm {
+            name    "grp1"
+            baseparm
+            label   "Group 1"
+            nolabel
+            export  none
+        }
+        parm {
+            name    "op1"
+            baseparm
+            label   "Operation"
+            nolabel
+            joinnext
+            export  none
+        }
+        parm {
+            name    "not2"
+            baseparm
+            label   "Not"
+            nolabel
+            joinnext
+            export  none
+        }
+        parm {
+            name    "grp2"
+            baseparm
+            label   "Group 2"
+            nolabel
+            export  none
+        }
+        parm {
+            name    "op2"
+            baseparm
+            label   "Operation"
+            nolabel
+            joinnext
+            export  none
+        }
+        parm {
+            name    "not3"
+            baseparm
+            label   "Not"
+            nolabel
+            joinnext
+            export  none
+        }
+        parm {
+            name    "grp3"
+            baseparm
+            label   "Group 3"
+            nolabel
+            export  none
+        }
+        parm {
+            name    "op3"
+            baseparm
+            label   "Operation"
+            nolabel
+            joinnext
+            export  none
+        }
+        parm {
+            name    "not4"
+            baseparm
+            label   "Not"
+            nolabel
+            joinnext
+            export  none
+        }
+        parm {
+            name    "grp4"
+            baseparm
+            label   "Group 4"
+            nolabel
+            export  none
+        }
     }
 
     group {
-	name	"stdswitcher4_2"
-	label	"Edit"
+        name    "stdswitcher4_2"
+        label   "Edit"
 
-	group {
-	    name	"switcher5"
-	    label	"Rename"
+        group {
+            name    "switcher5"
+            label   "Rename"
 
-	    parm {
-		name	"oldname"
-		baseparm
-		label	"Group"
-		export	none
-	    }
-	    parm {
-		name	"newname"
-		baseparm
-		label	"New Name"
-		export	none
-	    }
-	}
+            parm {
+                name    "oldname"
+                baseparm
+                label   "Group"
+                export  none
+            }
+            parm {
+                name    "newname"
+                baseparm
+                label   "New Name"
+                export  none
+            }
+        }
 
-	group {
-	    name	"switcher5_1"
-	    label	"Convert"
+        group {
+            name    "switcher5_1"
+            label   "Convert"
 
-	    parm {
-		name	"cnvfromtype"
-		baseparm
-		label	"Convert From"
-		joinnext
-		export	none
-	    }
-	    parm {
-		name	"cnvtotype"
-		baseparm
-		label	"To"
-		export	none
-	    }
-	    parm {
-		name	"convertg"
-		baseparm
-		label	"Group"
-		export	none
-	    }
-	    parm {
-		name	"cnvtname"
-		baseparm
-		label	"Convert Name"
-		export	none
-	    }
-	    parm {
-		name	"preserve"
-		baseparm
-		label	"Preserve Original"
-		export	none
-	    }
-	    parm {
-		name	"primswithallpts"
-		baseparm
-		label	"Omit Entities in New Group not Wholly Contained in the Old Group"
-		export	none
-	    }
-	}
+            parm {
+                name    "cnvfromtype"
+                baseparm
+                label   "Convert From"
+                joinnext
+                export  none
+            }
+            parm {
+                name    "cnvtotype"
+                baseparm
+                label   "To"
+                export  none
+            }
+            parm {
+                name    "convertg"
+                baseparm
+                label   "Group"
+                export  none
+            }
+            parm {
+                name    "cnvtname"
+                baseparm
+                label   "Convert Name"
+                export  none
+            }
+            parm {
+                name    "preserve"
+                baseparm
+                label   "Preserve Original"
+                export  none
+            }
+            parm {
+                name    "primswithallpts"
+                baseparm
+                label   "Omit Entities in New Group not Wholly Contained in the Old Group"
+                export  none
+            }
+        }
 
-	group {
-	    name	"switcher5_2"
-	    label	"Delete"
+        group {
+            name    "switcher5_2"
+            label   "Delete"
 
-	    parm {
-		name	"destroyname"
-		baseparm
-		label	"Group"
-		export	none
-	    }
-	}
+            parm {
+                name    "destroyname"
+                baseparm
+                label   "Group"
+                export  none
+            }
+        }
 
     }
 
     parm {
-	name	"type"
-	baseparm
-	label	"group type"
-	invisible
-	export	none
+        name    "type"
+        baseparm
+        label   "group type"
+        invisible
+        export  none
     }
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
@@ -2666,7 +2505,7 @@ switcher2	[ 0	locks=0 ]	(	0	0	0	0	)
 groupnumber	[ 0	locks=0 ]	(	"on"	)
 ordered	[ 0	locks=0 ]	(	"off"	)
 groupop	[ 0	locks=0 ]	(	"grpexpression"	)
-filter	[ 8	locks=0 ]	(	[ filter	0 ] 	)
+filter	[ 8	locks=0 ]	(	[ filter	1 ] 	)
 pattern	[ 0	locks=0 ]	(	""	)
 range	[ 8	locks=0 ]	(	0	[ rangeend	0 ] 	)
 select	[ 0	locks=0 ]	(	1	2	)
@@ -2723,7 +2562,7 @@ primswithallpts	[ 0	locks=0 ]	(	"off"	)
 destroyname	[ 0	locks=0 ]	(	""	)
 type	[ 0	locks=0 ]	(	1	)
 userdata	[ 0	locks=0 ]	(	0	)
-bundleidpattern	[ 0	locks=0	autoscope=1 ]	(	[ bundleidpattern	"" ] 	)
+bundleidpattern	[ 0	locks=0	autoscope=1 ]	(	[ bundleidpattern	"0 1" ] 	)
 stdswitcher4	[ 0	locks=0 ]	(	0	0	0	)
 switcher4	[ 0	locks=0 ]	(	0	0	0	0	)
 switcher5	[ 0	locks=0 ]	(	0	0	0	)
@@ -2736,7 +2575,7 @@ Content-Type: text/plain
 {
 	"___Version___":{
 		"type":"string",
-		"value":"16.0.557"
+		"value":"16.5.268"
 	}
 }
 
@@ -2755,7 +2594,7 @@ sopflags sopflags =
 comment ""
 position 8.36998 4.59984
 connectornextid 3
-flags =  lock off model off template off footprint off xray off bypass off display off render off highlight off unload off savedata off compress on colordefault off exposed on
+flags =  lock off model off template off footprint off xray off bypass off display off render off highlight off unload off savedata off compress on colordefault off exposed off
 outputsNamed3
 {
 0 "output1"
@@ -2773,7 +2612,7 @@ inputs
 stat
 {
   create 1465252094
-  modify 1465258523
+  modify 1515873214
   author nodeway@lv-422
   access 0777
 }
@@ -2801,7 +2640,7 @@ Content-Type: text/plain
 
 {
 version 0.8
-input	[ 8	locks=0 ]	(	[ input	1 ] 	)
+input	[ 8	locks=0 ]	(	[ input	0 ] 	)
 }
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
@@ -2811,7 +2650,7 @@ Content-Type: text/plain
 {
 	"___Version___":{
 		"type":"string",
-		"value":"16.0.557"
+		"value":"16.5.268"
 	}
 }
 
@@ -2830,23 +2669,23 @@ sopflags sopflags =
 comment ""
 position 8.36998 6.58777
 connectornextid 2
-flags =  lock off model off template off footprint off xray off bypass off display off render off highlight off unload off savedata off compress on colordefault off exposed on
+flags =  lock off model off template off footprint off xray off bypass off display off render off highlight off unload off savedata off compress on colordefault off exposed off
 outputsNamed3
 {
 0 "output1"
 }
 inputsNamed3
 {
-1 	IN_ORIGINAL_GEOMETRY 1 1 "input1"
+1 	(1) "" 1 "input1"
 }
 inputs
 {
-0 	IN_ORIGINAL_GEOMETRY 0 1
+0 	(1) 0 1
 }
 stat
 {
   create 1465252201
-  modify 1465253527
+  modify 1515873214
   author nodeway@lv-422
   access 0777
 }
@@ -2862,84 +2701,25 @@ Content-Type: text/plain
 {
 version 0.8
 python	[ 0	locks=0 ]	(	"# ---------------------------------------------------------------------
-# VARIABLES
+# IMPORTS                                                             |
 # ---------------------------------------------------------------------
+
+from vhacd.common import NameGenerator as gen
+reload(gen)
+
+# ---------------------------------------------------------------------
+# VARIABLES                                                           |
+# ---------------------------------------------------------------------
+
 node = hou.pwd()
 geo = node.geometry()
 parent = node.parent()
 
 # ---------------------------------------------------------------------
-# HELPERS
-# ---------------------------------------------------------------------
-class NameGenerator():
-    @staticmethod  
-    def __new_unique_name__(name, step, type):
-        '''
-        '''
-        
-        uniqueName = ''
-        
-        if step == 0: uniqueName = name
-        else: uniqueName = '{0}{1}'.format(name, step)        
-        
-        wasSuccess = None
-        try: 
-            if type == 'pointgroup':
-                wasSuccess = geo.findPointGroup(uniqueName) 
-            elif type == 'edgegroup':
-                wasSuccess = geo.findEdgeGroup(uniqueName) 
-            elif type == 'primitivegroup':
-                wasSuccess = geo.findPrimGroup(uniqueName) 
-            elif type == 'vertexattribute':
-                wasSuccess = geo.findVertexAttrib(uniqueName)                
-            elif type == 'pointattribute':
-                wasSuccess = geo.findPointAttrib(uniqueName)
-            elif type == 'primitiveattribute':
-                wasSuccess = geo.findPrimAttrib(uniqueName)
-            elif type == 'detailattribute':
-                wasSuccess = geo.findGlobalAttrib(uniqueName)
-                   
-        except: wasSuccess = None
-        
-        if wasSuccess != None:
-            step += 1
-            uniqueName = NameGenerator.__new_unique_name__(name, step, type)
-        
-        return uniqueName
-
-    @staticmethod        
-    def UniquePointGroupName(name, step = 0):
-        return NameGenerator.__new_unique_name__(name, step, 'pointgroup')
-    
-    @staticmethod        
-    def UniqueEdgeGroupName(name, step = 0):
-        return NameGenerator.__new_unique_name__(name, step, 'edgegroup')
-        
-    @staticmethod        
-    def UniquePrimitiveGroupName(name, step = 0):
-        return NameGenerator.__new_unique_name__(name, step, 'primitivegroup')
-        
-    @staticmethod        
-    def UniqueVertexAttibName(name, step = 0):
-        return NameGenerator.__new_unique_name__(name, step, 'vertexattribute')
-        
-    @staticmethod        
-    def UniquePointAttibName(name, step = 0):
-        return NameGenerator.__new_unique_name__(name, step, 'pointattribute')
-
-    @staticmethod        
-    def UniquePrimitiveAttribName(name, step = 0):
-        return NameGenerator.__new_unique_name__(name, step, 'primitiveattribute')
-    
-    @staticmethod        
-    def UniqueDetailAttribName(name, step = 0):
-        return NameGenerator.__new_unique_name__(name, step, 'detailattribute')          
-        
-# ---------------------------------------------------------------------
-# MAIN
+# MAIN                                                                |
 # ---------------------------------------------------------------------
 
-name = NameGenerator().UniquePrimitiveGroupName('__transform__')
+name = gen.NameGenerator().UniquePrimitiveGroupName('__transform__')
 parent.parm('uniquetransformgroupname2').set(name)"	)
 }
 
@@ -2950,7 +2730,7 @@ Content-Type: text/plain
 {
 	"___Version___":{
 		"type":"string",
-		"value":"16.0.557"
+		"value":"16.5.268"
 	}
 }
 
@@ -2969,7 +2749,7 @@ sopflags sopflags =
 comment ""
 position 6.40304 5.59161
 connectornextid 1
-flags =  lock off model off template off footprint off xray off bypass off display off render off highlight on unload off savedata off compress on colordefault off exposed on
+flags =  lock off model off template off footprint off xray off bypass off display off render off highlight on unload off savedata off compress on colordefault off exposed off
 outputsNamed3
 {
 2 "output1"
@@ -2985,7 +2765,7 @@ inputs
 stat
 {
   create 1465253078
-  modify 1465253882
+  modify 1515873214
   author nodeway@lv-422
   access 0777
 }
@@ -3077,7 +2857,7 @@ boundarygroups	[ 0	locks=0 ]	(	"off"	)
 combineentity	[ 0	locks=0 ]	(	"guess"	)
 grpequal	[ 8	locks=0	autoscope=1 ]	(	[ grpequal	__transform__ ] 	)
 not1	[ 0	locks=0 ]	(	"off"	)
-grp1	[ 0	locks=0	autoscope=1 ]	(	[ grp1	"" ] 	)
+grp1	[ 0	locks=0	autoscope=1 ]	(	[ grp1	bundle_0 ] 	)
 op1	[ 0	locks=0 ]	(	"none"	)
 not2	[ 0	locks=0 ]	(	"off"	)
 grp2	[ 0	locks=0 ]	(	""	)
@@ -3107,7 +2887,7 @@ Content-Type: text/plain
 {
 	"___Version___":{
 		"type":"string",
-		"value":"16.0.557"
+		"value":"16.5.268"
 	}
 }
 
@@ -3115,10 +2895,8 @@ Content-Type: text/plain
 Content-Disposition: attachment; filename="hdaroot.order"
 Content-Type: text/plain
 
-16
+14
 transform_1
-IN_CONVEX_HULLS
-IN_ORIGINAL_GEOMETRY
 transform_2
 OUT_CONVEX_HULLS
 OUT_ORIGINAL_GEOMETRY

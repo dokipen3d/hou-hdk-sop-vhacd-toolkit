@@ -66,28 +66,30 @@ namespace Containers
 
 			// SOP_VHACDDebug only	
 			this->Add(ENUMS::VHACDCommonNameOption::SOP_DEBUG_ICONNAME,					this->Get(ENUMS::VHACDCommonNameOption::TOOLKIT_ICONNAME));
-			this->Add(ENUMS::VHACDCommonNameOption::SOP_DEBUG_SMALLNAME,				"wip::debug::2.0");
+			this->Add(ENUMS::VHACDCommonNameOption::SOP_DEBUG_SMALLNAME,				"hidden::debug::2.0");
 			this->Add(ENUMS::VHACDCommonNameOption::SOP_DEBUG_BIGNAME,					"Debug (v-hacd)");
-			this->Add(ENUMS::VHACDCommonNameOption::GUI_DEBUG_SMALLNAME,				"wip::debughook::2.0");
+			this->Add(ENUMS::VHACDCommonNameOption::GUI_DEBUG_SMALLNAME,				"hidden::debughook::2.0");
 			this->Add(ENUMS::VHACDCommonNameOption::GUI_DEBUG_BIGNAME,					"Debug (v-hacd hook)");
 
 			// SOP_VHACDDelete only			
 			this->Add(ENUMS::VHACDCommonNameOption::SOP_DELETE_ICONNAME,				this->Get(ENUMS::VHACDCommonNameOption::TOOLKIT_ICONNAME));
-			this->Add(ENUMS::VHACDCommonNameOption::SOP_DELETE_SMALLNAME,				"vhacd::delete::2.0");
+			this->Add(ENUMS::VHACDCommonNameOption::SOP_DELETE_SMALLNAME,				"hidden::delete::2.0");
 			this->Add(ENUMS::VHACDCommonNameOption::SOP_DELETE_BIGNAME,					"Delete (v-hacd)");			
 			this->Add(ENUMS::VHACDCommonNameOption::SOP_DELETE_GROUP_PRMNAME,			CONST_PrimitiveGroupInput0_Name);
 			this->Add(ENUMS::VHACDCommonNameOption::MSS_DELETE_SMALLNAME,				"vhacd::deleteselector::2.0");
 			this->Add(ENUMS::VHACDCommonNameOption::MSS_DELETE_BIGNAME,					"Delete (v-hacd selector)");
 			this->Add(ENUMS::VHACDCommonNameOption::MSS_DELETE_PROMPT,					"Select primitives. Press <enter> to accept.");
+			this->Add(ENUMS::VHACDCommonNameOption::SOP_DELETE_OTL_SMALLNAME,			"vhacd::delete::2.0");	// TODO: remove this when selector crash for operator will be solved
 
 			// SOP_VHACDGenerate only			
 			this->Add(ENUMS::VHACDCommonNameOption::SOP_GENERATE_ICONNAME,				this->Get(ENUMS::VHACDCommonNameOption::TOOLKIT_ICONNAME));
-			this->Add(ENUMS::VHACDCommonNameOption::SOP_GENERATE_SMALLNAME,				"vhacd::generate::2.0");
+			this->Add(ENUMS::VHACDCommonNameOption::SOP_GENERATE_SMALLNAME,				"hidden::generate::2.0");			
 			this->Add(ENUMS::VHACDCommonNameOption::SOP_GENERATE_BIGNAME,				"Generate v2.0 (v-hacd)");
 			this->Add(ENUMS::VHACDCommonNameOption::SOP_GENERATE_GROUP_PRMNAME,			CONST_PrimitiveGroupInput0_Name);
 			this->Add(ENUMS::VHACDCommonNameOption::MSS_GENERATE_SMALLNAME,				"vhacd::generateselector::2.0");
 			this->Add(ENUMS::VHACDCommonNameOption::MSS_GENERATE_BIGNAME,				"Generate v2.0 (v-hacd selector)");
 			this->Add(ENUMS::VHACDCommonNameOption::MSS_GENERATE_PROMPT,				"Select primitives. Press <enter> to accept.");
+			this->Add(ENUMS::VHACDCommonNameOption::SOP_GENERATE_OTL_SMALLNAME,			"vhacd::generate::2.0");	// TODO: remove this when selector crash for operator will be solved
 
 			// SOP_VHACDScoutJunior only
 			this->Add(ENUMS::VHACDCommonNameOption::SOP_SCOUT_JUNIOR_ICONNAME,			this->Get(ENUMS::VHACDCommonNameOption::TOOLKIT_ICONNAME));
@@ -115,12 +117,13 @@ namespace Containers
 
 			// SOP_VHACDTransform only			
 			this->Add(ENUMS::VHACDCommonNameOption::SOP_TRANSFORM_ICONNAME,				this->Get(ENUMS::VHACDCommonNameOption::TOOLKIT_ICONNAME));
-			this->Add(ENUMS::VHACDCommonNameOption::SOP_TRANSFORM_SMALLNAME,			"vhacd::transfrom::2.0");
+			this->Add(ENUMS::VHACDCommonNameOption::SOP_TRANSFORM_SMALLNAME,			"hidden::transfrom::2.0");
 			this->Add(ENUMS::VHACDCommonNameOption::SOP_TRANSFORM_BIGNAME,				"Transform (v-hacd)");
 			this->Add(ENUMS::VHACDCommonNameOption::SOP_TRANSFORM_GROUP_PRMNAME,		CONST_PrimitiveGroupInput0_Name);
 			this->Add(ENUMS::VHACDCommonNameOption::MSS_TRANSFORM_SMALLNAME,			"vhacd::transfromselector::2.0");
 			this->Add(ENUMS::VHACDCommonNameOption::MSS_TRANSFORM_BIGNAME,				"Transform (v-hacd selector)");
 			this->Add(ENUMS::VHACDCommonNameOption::MSS_TRANSFORM_PROMPT,				"Select primitives. Press <enter> to accept.");
+			this->Add(ENUMS::VHACDCommonNameOption::SOP_TRANSFORM_OTL_SMALLNAME,		"vhacd::transfrom::2.0");	// TODO: remove this when selector crash for operator will be solved
 		}
 	};
 }

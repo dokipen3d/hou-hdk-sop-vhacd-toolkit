@@ -71,6 +71,7 @@ namespace Enums
 		MSS_DELETE_SMALLNAME,
 		MSS_DELETE_BIGNAME,
 		MSS_DELETE_PROMPT,
+		SOP_DELETE_OTL_SMALLNAME,		// TODO: remove this when selector crash for operator will be solved
 
 		// SOP_VHACDGenerate only
 		SOP_GENERATE_ICONNAME,
@@ -80,6 +81,7 @@ namespace Enums
 		MSS_GENERATE_SMALLNAME,
 		MSS_GENERATE_BIGNAME,
 		MSS_GENERATE_PROMPT,
+		SOP_GENERATE_OTL_SMALLNAME,		// TODO: remove this when selector crash for operator will be solved
 
 		// SOP_VHACDScoutJunior only
 		SOP_SCOUT_JUNIOR_ICONNAME,
@@ -112,7 +114,8 @@ namespace Enums
 		SOP_TRANSFORM_GROUP_PRMNAME,
 		MSS_TRANSFORM_SMALLNAME,
 		MSS_TRANSFORM_BIGNAME,
-		MSS_TRANSFORM_PROMPT
+		MSS_TRANSFORM_PROMPT,
+		SOP_TRANSFORM_OTL_SMALLNAME		// TODO: remove this when selector crash for operator will be solved
 	};
 }
 DECLARE_Base_Namespace_End

@@ -67,6 +67,7 @@ newSopOperator(OP_OperatorTable* table)
 	);
 
 	auto success = table->addOperator(sop);
+	table->addOpHidden(sop->getName());
 }
 
 /* -----------------------------------------------------------------
@@ -77,7 +78,8 @@ void
 newSelector(BM_ResourceManager* manager)
 {	
 	// find operator
-	const auto sopOperator = OP_Network::getOperatorTable(SOP_TABLE_NAME)->getOperator(COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::SOP_GENERATE_SMALLNAME));
+	// TODO: temporary assign it to OTL that is using operator under the hood, till I figure out why it's breaking in viewport
+	const auto sopOperator = OP_Network::getOperatorTable(SOP_TABLE_NAME)->getOperator(COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::SOP_GENERATE_OTL_SMALLNAME)); //SOP_GENERATE_SMALLNAME));
 	if (!sopOperator)
 	{
 		UT_ASSERT(!"Could not find required operator!");
@@ -114,9 +116,9 @@ newSelector(BM_ResourceManager* manager)
 			COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::MSS_GENERATE_BIGNAME),
 			COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::MSS_GENERATE_PROMPT),
 			COMMON_NAMES.Get(ENUMS::VHACDCommonNameOption::SOP_GENERATE_GROUP_PRMNAME),
-			0,								// Input number to wire up.
-			1,								// 1 means this input is required.
-			"0x000000ff",					// Prim/point mask selection.
+			0,																										// Input number to wire up.
+			1,																										// 1 means this input is required.
+			std::to_string(GEO_PrimTypeCompat::convertToFileFromMask(GEO_PrimTypeCompat::GEOPRIMPOLY)).c_str(),		// selection mask
 			0,
 			nullptr,
 			0,
