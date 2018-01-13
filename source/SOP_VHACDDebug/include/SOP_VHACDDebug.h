@@ -91,7 +91,6 @@ DECLARE_SOP_Namespace_Start()
 
 		ENUMS::MethodProcessResult	CuspConvexInputVertexNormals(GU_Detail* detail, fpreal time);		
 		ENUMS::MethodProcessResult	PrepareIntATTForGUI(UT_AutoInterrupt& progress, ENUMS::VHACDCommonAttributeNameOption attributename, GA_RWHandleI& attributehandle);
-		ENUMS::MethodProcessResult	PrepareFloatATTForGUI(UT_AutoInterrupt& progress, ENUMS::VHACDCommonAttributeNameOption attributename, GA_RWHandleD& attributehandle);
 
 		ENUMS::MethodProcessResult	WhenConvexHullsInput(OP_Context& context, UT_AutoInterrupt& progress, fpreal time);
 		ENUMS::MethodProcessResult	WhenOriginalGeometryInput(OP_Context& context, UT_AutoInterrupt& progress, fpreal time);

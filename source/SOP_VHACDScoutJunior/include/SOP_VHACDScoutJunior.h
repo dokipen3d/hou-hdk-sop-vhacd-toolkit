@@ -80,14 +80,12 @@ DECLARE_SOP_Namespace_Start()
 		static PRM_Template			parametersList[];		
 
 		static int					CallbackGRPPerHull(void* data, int index, float time, const PRM_Template* tmp);
-		static int					CallbackPointPerHullMassCenter(void* data, int index, float time, const PRM_Template* tmp);
 
 	private:
 		ENUMS::MethodProcessResult	AddHullCountATT(const GEO_PrimClassifier& classifier);
 		ENUMS::MethodProcessResult	AddHullIDATT(UT_AutoInterrupt progress, const GEO_PrimClassifier& classifier);
 		ENUMS::MethodProcessResult	AddHullVolumeATT(UT_AutoInterrupt progress, const GEO_PrimClassifier& classifier);
 		ENUMS::MethodProcessResult	GRPPerHull(UT_AutoInterrupt progress, const UT_String& partialhullgroupname, const GEO_PrimClassifier& classifier, fpreal time);
-		ENUMS::MethodProcessResult	PointPerHullCenter(UT_AutoInterrupt progress, const GEO_PrimClassifier& classifier);
 	};
 
 DECLARE_SOP_Namespace_End

@@ -36,9 +36,6 @@ INCLUDES                                                           |
 #include <PRM/PRM_Include.h>
 #include <GEO/GEO_Normal.h>
 
-// std
-#include <random>
-
 // hou-hdk-common
 #include <Macros/ParameterList.h>
 #include <Macros/ProgressEscape.h>
@@ -213,9 +210,8 @@ SOP_Operator::CallbakcVisualizeAttributeMenu(void* data, PRM_Name* choicenames, 
 			{
 				choicenames[0].setTokenAndLabel("0", "None");
 				choicenames[1].setTokenAndLabel("1", "Hull ID");
-				choicenames[2].setTokenAndLabel("2", "Hull Volume");
-				choicenames[3].setTokenAndLabel("3", "Bundle ID");
-				choicenames[4].setTokenAndLabel(nullptr, nullptr);
+				choicenames[2].setTokenAndLabel("3", "Bundle ID");
+				choicenames[3].setTokenAndLabel(nullptr, nullptr);
 			} break;
 
 			case static_cast<exint>(ENUMS::VisibleInputOption::ORIGINAL_GEOMETRY) :
@@ -245,9 +241,7 @@ OPERATOR INITIALIZATION                                            |
 
 SOP_Operator::~SOP_VHACDDebug() { }
 
-SOP_Operator::SOP_VHACDDebug(OP_Network* network, const char* name, OP_Operator* op) : SOP_Base_Operator(network, name, op)
-{ 
-}
+SOP_Operator::SOP_VHACDDebug(OP_Network* network, const char* name, OP_Operator* op) : SOP_Base_Operator(network, name, op) { }
 
 OP_Node* 
 SOP_Operator::CreateMe(OP_Network* network, const char* name, OP_Operator* op) 
@@ -359,15 +353,11 @@ SOP_Operator::PrepareIntATTForGUI(UT_AutoInterrupt& progress, ENUMS::VHACDCommon
 			{
 				const auto currVal = attributehandle.get(primIt);
 
-				// generate color for it
-				if (!mappedColors.contains(currVal))
-				{
-					UT_Vector3 currUniqueColor;
-					GenerateUniqueColorRecurse(nullptr, uniqueColors, currUniqueColor);					
-					
-					mappedColors[currVal] = currUniqueColor;
-					uniqueColors.insert(currUniqueColor);
-				}
+				UT_Vector3 newColor;
+				if (!mappedColors.contains(currVal)) GenerateUniqueColorRecurse(nullptr, uniqueColors, newColor);
+
+				mappedColors[currVal] = newColor;
+				uniqueColors.insert(newColor);
 
 				for (auto pointIt : currPrim->getPointRange()) pointAttributeHandle.set(pointIt, mappedColors[currVal]);
 			}
@@ -378,56 +368,19 @@ SOP_Operator::PrepareIntATTForGUI(UT_AutoInterrupt& progress, ENUMS::VHACDCommon
 }
 
 ENUMS::MethodProcessResult
-SOP_Operator::PrepareFloatATTForGUI(UT_AutoInterrupt& progress, ENUMS::VHACDCommonAttributeNameOption attributename, GA_RWHandleD& attributehandle)
-{
-	const auto success = ATTRIB_ACCESS::Find::FloatATT(this, this->gdp, GA_AttributeOwner::GA_ATTRIB_PRIMITIVE, this->_commonAttributeNames.Get(attributename), attributehandle);
-	if (!success)
-	{
-		addWarning(SOP_ATTRIBUTE_INVALID);
-		return ENUMS::MethodProcessResult::FAILURE;
-	}
-
-	auto pointAttributeHandle = GA_RWHandleV3(this->gdp->addFloatTuple(GA_AttributeOwner::GA_ATTRIB_POINT, GA_AttributeScope::GA_SCOPE_PUBLIC, this->_commonAttributeNames.Get(attributename), 3));
-	if (pointAttributeHandle.isValid())
-	{
-		UT_Map<exint, UT_Vector3>	mappedColors;
-		UT_Set<UT_Vector3>			uniqueColors;
-
-		mappedColors.clear();
-		uniqueColors.clear();
-
-		for (auto primIt : this->gdp->getPrimitiveRange())
-		{
-			PROGRESS_WAS_INTERRUPTED_WITH_ERROR_AND_OBJECT(this, progress, ENUMS::MethodProcessResult::INTERRUPT)
-
-			const auto currPrim = this->gdp->getPrimitive(primIt);
-			if (currPrim)
-			{
-				const auto currVal = attributehandle.get(primIt);
-
-				// generate color for it
-				if (!mappedColors.contains(currVal))
-				{
-					UT_Vector3 currUniqueColor;
-					GenerateUniqueColorRecurse(nullptr, uniqueColors, currUniqueColor);
-
-					mappedColors[currVal] = currUniqueColor;
-					uniqueColors.insert(currUniqueColor);
-				}
-
-				for (auto pointIt : currPrim->getPointRange()) pointAttributeHandle.set(pointIt, mappedColors[currVal]);
-			}
-		}
-	}
-
-	return ENUMS::MethodProcessResult::SUCCESS;
-}
-
-ENUMS::MethodProcessResult
 SOP_Operator::WhenConvexHullsInput(OP_Context& context, UT_AutoInterrupt& progress, fpreal time)
 {
 	if (duplicateSource(static_cast<exint>(ENUMS::ProcessedInputType::CONVEX_HULLS), context) <= UT_ErrorSeverity::UT_ERROR_WARNING && error() <= UT_ErrorSeverity::UT_ERROR_WARNING)
 	{		
+		//UT_BoundingBox bbox;
+		//this->gdp->enlargeBoundingBox(bbox, this->gdp->getPrimitiveRange());
+
+		//std::cout << bbox.centerX() << "," << bbox.centerY() << "," << bbox.centerZ() << std::endl;
+
+		//UT_Vector3 points[8];		
+		//bbox.getBBoxPoints(points);
+		//for (auto p : points) std::cout << p.x() << "," << p.y() << "," << p.z() << std::endl;
+
 		// cusp vertex normals
 		auto processResult = CuspConvexInputVertexNormals(this->gdp, time);
 		if (processResult != ENUMS::MethodProcessResult::SUCCESS) return processResult;
@@ -440,10 +393,9 @@ SOP_Operator::WhenConvexHullsInput(OP_Context& context, UT_AutoInterrupt& progre
 		{			
 			default: /* do nothing */ break;			
 			case static_cast<exint>(ENUMS::ConvexVisualizeAttributeOption::HULL_ID) :		{ processResult = PrepareIntATTForGUI(progress, ENUMS::VHACDCommonAttributeNameOption::HULL_ID, this->_hullIDHandle); } break;
-			case static_cast<exint>(ENUMS::ConvexVisualizeAttributeOption::HULL_VOLUME) :	{ processResult = PrepareFloatATTForGUI(progress, ENUMS::VHACDCommonAttributeNameOption::HULL_VOLUME, this->_hullVolumeHandle); } break;
 			case static_cast<exint>(ENUMS::ConvexVisualizeAttributeOption::BUNDLE_ID) :		{ processResult = PrepareIntATTForGUI(progress, ENUMS::VHACDCommonAttributeNameOption::BUNDLE_ID, this->_bundleIDHandle); } break;
 		}
-
+		
 		// explode by 'hull_id'
 		// explode by 'bundle_id'
 
@@ -538,7 +490,7 @@ SOP_Operator::cookMySop(OP_Context& context)
 		case static_cast<exint>(ENUMS::VisibleInputOption::ORIGINAL_GEOMETRY) :		{ processResult = WhenOriginalGeometryInput(context, progress, currentTime); if (processResult != ENUMS::MethodProcessResult::SUCCESS) return error(); } break;
 		case static_cast<exint>(ENUMS::VisibleInputOption::BOTH) :					{ processResult = WhenBothInputs(context, currentTime); if (processResult != ENUMS::MethodProcessResult::SUCCESS) return error(); } break;
 	}
-
+	
 	return error();
 }
 

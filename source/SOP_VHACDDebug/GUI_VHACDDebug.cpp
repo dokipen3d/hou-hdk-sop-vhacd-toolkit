@@ -31,15 +31,15 @@ INCLUDES                                                           |
 #include <GT/GT_PrimPolygonMesh.h>
 #include <GT/GT_AttributeList.h>
 #include <OP/OP_Director.h>
-#include <UT/UT_Map.h>
-#include <UT/UT_Set.h>
-#include <GEO/GEO_Primitive.h>
 
 #if _WIN32		
 #include <sys/SYS_Types.h>
 #else
 #include <SYS/SYS_Types.h>
 #endif
+
+// std
+#include <random>
 
 // hou-hdk-common
 #include <Utility/OP_NodeTester.h>
@@ -76,7 +76,7 @@ HELPERS                                                            |
 
 template<typename BufferValueType>
 ENUMS::MethodProcessResult
-GUI_Hook::ProcessAttribute(const GT_DataArrayHandle& datahandle, GT_DataArrayHandle& newvertexcolors) const
+GUI_Hook::ProcessAttribute(const GT_DataArrayHandle& datahandle, GT_DataArrayHandle& newvertexcolors)
 {
 	auto vertexColors = new GT_Real16Array(datahandle->entries(), 3, GT_TYPE_COLOR);	
 
@@ -84,17 +84,14 @@ GUI_Hook::ProcessAttribute(const GT_DataArrayHandle& datahandle, GT_DataArrayHan
 	for (auto i = 0; i < datahandle->entries(); i++)
 	{			
 		// get current attribute value
-		UT_Vector3F currAttributeValue;
-		datahandle->import(i, currAttributeValue.data(), 3);
-		
+		UT_Vector3 currAttributeValue;
+		datahandle->import(i, currAttributeValue.data(), BUFFER_SIZE);
+
 		// assign color			
 		vertexColors->getData(i)[0] = currAttributeValue.x();
 		vertexColors->getData(i)[1] = currAttributeValue.y();
 		vertexColors->getData(i)[2] = currAttributeValue.z();
 	}
-
-	//std::cout << mappedColors.size() << std::endl;
-	//for (auto col : mappedColors) std::cout << col.second.x() << "," << col.second.y() << "," << col.second.z() << std::endl;
 
 	newvertexcolors = vertexColors;
 
@@ -127,7 +124,7 @@ GUI_Hook::filterPrimitive(const GT_PrimitiveHandle& primhandle, const GEO_Primit
 		processed = GR_NOT_PROCESSED;
 		return newPrimitiveHandle;
     }
-	
+
 	// only if we have any of those attributes
 	const auto pointAttribs = primhandle->getPointAttributes();
 	if (pointAttribs)
@@ -150,8 +147,8 @@ GUI_Hook::filterPrimitive(const GT_PrimitiveHandle& primhandle, const GEO_Primit
 			if (mesh)
 			{
 				// add Cd to the point attribute list, replacing it if Cd already exists
-				const auto ah = primhandle->getPointAttributes()->addAttribute("Cd", newVertexColors, true);
-				newPrimitiveHandle = new GT_PrimPolygonMesh(*mesh, ah, mesh->getVertexAttributes(), mesh->getUniformAttributes(), mesh->getDetailAttributes());				
+				const auto modifiedPointAttribList = primhandle->getPointAttributes()->addAttribute("Cd", newVertexColors, true);
+				newPrimitiveHandle = new GT_PrimPolygonMesh(*mesh, modifiedPointAttribList, mesh->getVertexAttributes(), mesh->getUniformAttributes(), mesh->getDetailAttributes());
 			}
 			else
 			{

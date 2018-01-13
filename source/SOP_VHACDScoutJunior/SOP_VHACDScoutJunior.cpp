@@ -51,7 +51,6 @@ INCLUDES                                                           |
 // this
 #include "Parameters.h"
 #include "ProcessedInputType.h"
-#include "HullCenterData.h"
 
 /* -----------------------------------------------------------------
 DEFINES                                                            |
@@ -86,8 +85,6 @@ PARAMETERLIST_Start(SOP_Operator)
 	UI::groupPerHullToggle_Parameter,
 	UI::groupPerHullSeparator_Parameter,
 	UI::specifyHullGroupNameString_Parameter,
-	UI::pointPerHullCenterToggle_Parameter,
-	UI::pointPerHullCenterSeparator_Parameter,
 
 	UI::additionalSectionSwitcher_Parameter,
 	PARAMETERLIST_DescriptionPRM(UI),
@@ -103,10 +100,6 @@ SOP_Operator::updateParmsFlags()
 	bool groupPerHullValue;
 	PRM_ACCESS::Get::IntPRM(this, groupPerHullValue, UI::groupPerHullToggle_Parameter, currentTime);	
 	changed |= setVisibleState(UI::specifyHullGroupNameString_Parameter.getToken(), groupPerHullValue);
-
-	bool pointPerHullValue;
-	PRM_ACCESS::Get::IntPRM(this, pointPerHullValue, UI::pointPerHullCenterToggle_Parameter, currentTime);
-	changed |= enableParm(UI::addHullVolumeAttributeToggle_Parameter.getToken(), !pointPerHullValue);
 
 	// update description active state
 	UPDATE_DescriptionPRM_ActiveState(this, UI)
@@ -128,25 +121,6 @@ SOP_Operator::CallbackGRPPerHull(void* data, int index, float time, const PRM_Te
 
 	auto defVal1 = UT_String(UI::specifyHullGroupNameString_Parameter.getFactoryDefaults()->getString());
 	PRM_ACCESS::Set::StringPRM(me, defVal1, UI::specifyHullGroupNameString_Parameter, time);
-
-	auto defVal2 = static_cast<exint>(UI::pointPerHullCenterToggle_Parameter.getFactoryDefaults()->getOrdinal());
-	PRM_ACCESS::Set::IntPRM(me, defVal2, UI::pointPerHullCenterToggle_Parameter, time);
-
-	return 1;
-}
-
-int
-SOP_Operator::CallbackPointPerHullMassCenter(void* data, int index, float time, const PRM_Template* tmp)
-{
-	const auto me = reinterpret_cast<SOP_Operator*>(data);
-	if (!me) return 0;
-
-	// TODO: figure out why restoreFactoryDefaults() doesn't work
-	auto defVal0 = static_cast<exint>(UI::groupPerHullToggle_Parameter.getFactoryDefaults()->getOrdinal());
-	PRM_ACCESS::Set::IntPRM(me, defVal0, UI::groupPerHullToggle_Parameter, time);
-
-	auto defVal1 = static_cast<exint>(UI::addHullVolumeAttributeToggle_Parameter.getFactoryDefaults()->getOrdinal());
-	PRM_ACCESS::Set::IntPRM(me, defVal1, UI::addHullVolumeAttributeToggle_Parameter, time);
 
 	return 1;
 }
@@ -289,72 +263,6 @@ SOP_Operator::GRPPerHull(UT_AutoInterrupt progress, const UT_String& partialhull
 	return ENUMS::MethodProcessResult::SUCCESS;
 }
 
-ENUMS::MethodProcessResult
-SOP_Operator::PointPerHullCenter(UT_AutoInterrupt progress, const GEO_PrimClassifier& classifier)
-{
-	// find 'hull_center' attribute
-	GA_RWHandleV3 hullCenterHandle;
-
-	auto success = ATTRIB_ACCESS::Find::Vec3ATT(this, this->gdp, GA_AttributeOwner::GA_ATTRIB_PRIMITIVE, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_MASS_CENTER), hullCenterHandle, ENUMS::NodeErrorLevel::WARNING);
-	if (!success) return ENUMS::MethodProcessResult::FAILURE;
-
-	// find attributes that could be preserved		
-	success = ATTRIB_ACCESS::Find::IntATT(this, this->gdp, GA_AttributeOwner::GA_ATTRIB_PRIMITIVE, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_ID), this->_hullIDHandle);
-	success = ATTRIB_ACCESS::Find::IntATT(this, this->gdp, GA_AttributeOwner::GA_ATTRIB_PRIMITIVE, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_ID), this->_bundleIDHandle);
-	success = ATTRIB_ACCESS::Find::IntATT(this, this->gdp, GA_AttributeOwner::GA_ATTRIB_DETAIL, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_COUNT), this->_hullCountHandle);
-
-	// get each unique 'hull_center'
-	UT_Map<exint, CONTAINERS::HullCenterData> mappedCenters;
-	mappedCenters.clear();
-
-	for (auto primIt = GA_Iterator(this->gdp->getPrimitiveRange()); !primIt.atEnd(); primIt.advance())	
-	{
-		PROGRESS_WAS_INTERRUPTED_WITH_ERROR_AND_OBJECT(this, progress, ENUMS::MethodProcessResult::INTERRUPT)
-
-		const auto currClass = classifier.getClass(primIt.getIndex());
-		if (!mappedCenters.contains(currClass)) mappedCenters[currClass] = Containers::HullCenterData();
-
-		// collect data
-		mappedCenters[currClass].SetCenter(hullCenterHandle.get(*primIt));
-
-		if (this->_hullIDHandle.isValid()) mappedCenters[currClass].SetHullID(this->_hullIDHandle.get(*primIt));
-		if (this->_bundleIDHandle.isValid()) mappedCenters[currClass].SetBundleID(this->_bundleIDHandle.get(*primIt));
-	}
-
-	// add centers
-	this->gdp->clear();
-
-	GA_RWHandleI hullIDPointHandle;
-	GA_RWHandleI bundlIDPointHandle;
-
-	if (this->_hullIDHandle.isValid()) hullIDPointHandle = GA_RWHandleI(this->gdp->addIntTuple(GA_AttributeOwner::GA_ATTRIB_POINT, GA_AttributeScope::GA_SCOPE_PUBLIC, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_ID), 1));
-	if (this->_bundleIDHandle.isValid()) bundlIDPointHandle = GA_RWHandleI(this->gdp->addIntTuple(GA_AttributeOwner::GA_ATTRIB_POINT, GA_AttributeScope::GA_SCOPE_PUBLIC, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::BUNDLE_ID), 1));
-
-	for (auto map : mappedCenters)
-	{
-		PROGRESS_WAS_INTERRUPTED_WITH_ERROR_AND_OBJECT(this, progress, ENUMS::MethodProcessResult::INTERRUPT)
-
-		const auto currOffset = this->gdp->appendPoint();
-		this->gdp->setPos3(currOffset, map.second.GetCenter());
-
-		// add preserved attributes
-		const auto currHullID = map.second.GetHullID();
-		const auto currBundleID = map.second.GetBundleID();
-
-		if (currHullID > -1 && hullIDPointHandle.isValid()) hullIDPointHandle.set(currOffset, currHullID);
-		if (currBundleID > -1 && bundlIDPointHandle.isValid()) bundlIDPointHandle.set(currOffset, currBundleID);
-	}
-
-	// reasign 'hull_count'
-	if (success)
-	{
-		this->_hullCountHandle = GA_RWHandleI(this->gdp->addIntTuple(GA_AttributeOwner::GA_ATTRIB_DETAIL, GA_AttributeScope::GA_SCOPE_PUBLIC, this->_commonAttributeNames.Get(ENUMS::VHACDCommonAttributeNameOption::HULL_COUNT), 1));
-		if (this->_hullCountHandle.isValid()) this->_hullCountHandle.set(GA_Offset(0), classifier.getNumClass());
-	}
-
-	return ENUMS::MethodProcessResult::SUCCESS;
-}
-
 /* -----------------------------------------------------------------
 MAIN                                                               |
 ----------------------------------------------------------------- */
@@ -369,16 +277,14 @@ SOP_Operator::cookMySop(OP_Context& context)
 		auto		addHullCountAttributeValue = false;
 		auto		addHullIDAttributeValue = false;
 		auto		addHullVolumeAttributeValue = false;
-		auto		groupPerHullValue = false;
-		auto		pointPerHullMassCenterValue = false;		
+		auto		groupPerHullValue = false;	
 
 		PRM_ACCESS::Get::IntPRM(this, addHullCountAttributeValue, UI::addHullCountAttributeToggle_Parameter, currentTime);
 		PRM_ACCESS::Get::IntPRM(this, addHullIDAttributeValue, UI::addHullIDAttributeToggle_Parameter, currentTime);
 		PRM_ACCESS::Get::IntPRM(this, addHullVolumeAttributeValue, UI::addHullVolumeAttributeToggle_Parameter, currentTime);
 		PRM_ACCESS::Get::IntPRM(this, groupPerHullValue, UI::groupPerHullToggle_Parameter, currentTime);		
-		PRM_ACCESS::Get::IntPRM(this, pointPerHullMassCenterValue, UI::pointPerHullCenterToggle_Parameter, currentTime);
 
-		if (addHullCountAttributeValue || addHullIDAttributeValue || addHullVolumeAttributeValue || groupPerHullValue || pointPerHullMassCenterValue)
+		if (addHullCountAttributeValue || addHullIDAttributeValue || addHullVolumeAttributeValue || groupPerHullValue)
 		{
 			// @CLASS of 1999 (for more info check http://www.imdb.com/title/tt0099277/)
 			auto primClassifier = GEO_PrimClassifier();
@@ -411,12 +317,6 @@ SOP_Operator::cookMySop(OP_Context& context)
 				PRM_ACCESS::Get::StringPRM(this, partialHullGroupNameValue, UI::specifyHullGroupNameString_Parameter, currentTime);
 
 				processResult = GRPPerHull(progress, partialHullGroupNameValue, primClassifier, currentTime);
-				if (processResult != ENUMS::MethodProcessResult::SUCCESS) return error();
-			}
-
-			if (pointPerHullMassCenterValue)
-			{
-				processResult = PointPerHullCenter(progress, primClassifier);
 				if (processResult != ENUMS::MethodProcessResult::SUCCESS) return error();
 			}
 		}

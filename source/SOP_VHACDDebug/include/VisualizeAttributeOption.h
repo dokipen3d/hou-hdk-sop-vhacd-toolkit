@@ -50,8 +50,7 @@ namespace Enums
 	enum class ConvexVisualizeAttributeOption : exint
 	{
 		NONE,
-		HULL_ID,
-		HULL_VOLUME,
+		HULL_ID,		
 		BUNDLE_ID
 	};
 

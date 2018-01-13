@@ -71,7 +71,7 @@ DECLARE_GUI_Namespace_Start()
 		
 	private:
 		template<typename BufferValueType>
-		ENUMS::MethodProcessResult					ProcessAttribute(const GT_DataArrayHandle& datahandle, GT_DataArrayHandle& newvertexcolors) const;
+		static ENUMS::MethodProcessResult			ProcessAttribute(const GT_DataArrayHandle& datahandle, GT_DataArrayHandle& newvertexcolors);
 
 		CONTAINERS::VHACDCommonAttributeName		_vhacdCommonAttributeNames = CONTAINERS::VHACDCommonAttributeName();
 	};
