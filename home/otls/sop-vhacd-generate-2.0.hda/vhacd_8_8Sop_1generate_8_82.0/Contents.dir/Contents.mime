@@ -1,0 +1,744 @@
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY"
+
+--HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
+Content-Disposition: attachment; filename="node_type"
+Content-Type: text/plain
+
+Sop
+
+--HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
+Content-Disposition: attachment; filename="hdaroot.init"
+Content-Type: text/plain
+
+type = vhacd::generate::2.0
+matchesdef = 0
+
+--HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
+Content-Disposition: attachment; filename="hdaroot.def"
+Content-Type: text/plain
+
+sopflags sopflags = 
+comment ""
+position -0.176471 -0.458741
+connectornextid 3
+flags =  lock off model off template off footprint off xray off bypass off display off render off highlight on unload off savedata off compress on colordefault off exposed on
+outputsNamed3
+{
+1 "output1"
+2 "output2"
+}
+inputsNamed3
+{
+0 	merge1 2 1 "input1"
+}
+inputs
+{
+0 	merge1 0 1
+}
+stat
+{
+  create 1515879382
+  modify 1515879699
+  author swann@lv-426
+  access 0777
+}
+color UT_Color RGB 0 0 0 
+delscript ""
+exprlanguage hscript
+end
+
+--HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
+Content-Disposition: attachment; filename="hdaroot.userdata"
+Content-Type: text/plain
+
+{
+	"___Version___":{
+		"type":"string",
+		"value":""
+	},
+	"___toolcount___":{
+		"type":"string",
+		"value":"1"
+	},
+	"___toolid___":{
+		"type":"string",
+		"value":"vhacd::sop_generate::2.0"
+	}
+}
+
+--HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
+Content-Disposition: attachment; filename="hdaroot.inp"
+Content-Type: text/plain
+
+1
+0 -1.457167719820518e-16 8.0470588235294116 2 0 __NO_OWNER_NETWORK_BOX__ "FROMOUTPUT"
+
+--HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
+Content-Disposition: attachment; filename="hdaroot/generate1.init"
+Content-Type: text/plain
+
+type = hidden::generate::2.0
+matchesdef = 0
+
+--HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
+Content-Disposition: attachment; filename="hdaroot/generate1.def"
+Content-Type: text/plain
+
+sopflags sopflags = 
+comment ""
+position -1.11759e-08 4.34701
+connectornextid 3
+flags =  lock off model off template off footprint off xray off bypass off display on render on highlight off unload off savedata off compress on colordefault off exposed on
+outputsNamed3
+{
+1 "output1"
+2 "output2"
+}
+inputsNamed3
+{
+0 	create_internal_group 1 1 "input1"
+}
+inputs
+{
+0 	create_internal_group 0 1
+}
+stat
+{
+  create 1515876954
+  modify 1515878909
+  author swann@lv-426
+  access 0777
+}
+color UT_Color RGB 1 0 0 
+delscript ""
+exprlanguage hscript
+end
+
+--HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
+Content-Disposition: attachment; filename="hdaroot/generate1.chn"
+Content-Type: text/plain
+
+{
+    channel showprocessreport {
+      lefttype = extend
+      righttype = extend
+      default = 1
+      flags = 0
+      segment { length = 0 value = 1 1 expr = ch(\"../showprocessreport\") }
+    }
+    channel processreportmode {
+      lefttype = extend
+      righttype = extend
+      flags = 0
+      segment { length = 0 expr = ch(\"../processreportmode\") }
+    }
+    channel decompositionmode {
+      lefttype = extend
+      righttype = extend
+      flags = 0
+      segment { length = 0 expr = ch(\"../decompositionmode\") }
+    }
+    channel resolution {
+      lefttype = extend
+      righttype = extend
+      default = 100000
+      flags = 0
+      segment { length = 0 value = 100000 100000 expr = ch(\"../resolution\") }
+    }
+    channel concavity {
+      lefttype = extend
+      righttype = extend
+      default = 0.0024999999441206455
+      flags = 0
+      segment { length = 0 value = 0.0024999999441206455 0.0024999999441206455 expr = ch(\"../concavity\") }
+    }
+    channel planedownsampling {
+      lefttype = extend
+      righttype = extend
+      default = 4
+      flags = 0
+      segment { length = 0 value = 4 4 expr = ch(\"../planedownsampling\") }
+    }
+    channel convexhulldownsampling {
+      lefttype = extend
+      righttype = extend
+      default = 4
+      flags = 0
+      segment { length = 0 value = 4 4 expr = ch(\"../convexhulldownsampling\") }
+    }
+    channel alpha {
+      lefttype = extend
+      righttype = extend
+      default = 1
+      flags = 0
+      segment { length = 0 value = 1 1 expr = ch(\"../alpha\") }
+    }
+    channel beta {
+      lefttype = extend
+      righttype = extend
+      flags = 0
+      segment { length = 0 expr = ch(\"../beta\") }
+    }
+    channel maxconvexhullscount {
+      lefttype = extend
+      righttype = extend
+      default = 64
+      flags = 0
+      segment { length = 0 value = 64 64 expr = ch(\"../maxconvexhullscount\") }
+    }
+    channel maxtrianglecount {
+      lefttype = extend
+      righttype = extend
+      default = 64
+      flags = 0
+      segment { length = 0 value = 64 64 expr = ch(\"../maxtrianglecount\") }
+    }
+    channel adaptivesampling {
+      lefttype = extend
+      righttype = extend
+      default = 9.9999997473787516e-05
+      flags = 0
+      segment { length = 0 value = 9.9999997473787516e-05 9.9999997473787516e-05 expr = ch(\"../adaptivesampling\") }
+    }
+    channel convexhullapproximation {
+      lefttype = extend
+      righttype = extend
+      flags = 0
+      segment { length = 0 expr = ch(\"../convexhullapproximation\") }
+    }
+    channel projecthullvertices {
+      lefttype = extend
+      righttype = extend
+      flags = 0
+      segment { length = 0 expr = ch(\"../projecthullvertices\") }
+    }
+    channel normalizemesh {
+      lefttype = extend
+      righttype = extend
+      flags = 0
+      segment { length = 0 expr = ch(\"../normalizemesh\") }
+    }
+    channel useopencl {
+      lefttype = extend
+      righttype = extend
+      default = 1
+      flags = 0
+      segment { length = 0 value = 1 1 expr = ch(\"../useopencl\") }
+    }
+    channel processmode {
+      lefttype = extend
+      righttype = extend
+      flags = 0
+      segment { length = 0 expr = ch(\"../processmode\") }
+    }
+    channel primitivegroupinput0 {
+      lefttype = extend
+      righttype = extend
+      defaultString = chs(\"../____internalgroupname____\")
+      flags = 0
+      segment { options = {	 autoslope  ai ao }
+
+	 length = 0 accel = 0.33333333333333331 0.33333333333333331 expr = chs(\"../____internalgroupname____\") }
+    }
+  }
+
+--HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
+Content-Disposition: attachment; filename="hdaroot/generate1.parm"
+Content-Type: text/plain
+
+{
+version 0.8
+filtersection	[ 0	locks=0 ]	(	0	)
+primitivegroupinput0	[ 0	locks=0	autoscope=1 ]	(	[ primitivegroupinput0	____internal_generate_group____ ] 	)
+processmode	[ 0	locks=0 ]	(	[ processmode	2 ] 	)
+forceconverttopolygons	[ 0	locks=0 ]	(	"on"	)
+forceconverttopolygonsseparator	[ 0	locks=0 ]	(	)
+mainsection	[ 0	locks=0 ]	(	0	)
+decompositionmode	[ 0	locks=0 ]	(	[ decompositionmode	0 ] 	)
+resolution	[ 0	locks=0 ]	(	[ resolution	100000 ] 	)
+concavity	[ 0	locks=0 ]	(	[ concavity	0.0025000000000000001 ] 	)
+planedownsampling	[ 0	locks=0 ]	(	[ planedownsampling	4 ] 	)
+convexhulldownsampling	[ 0	locks=0 ]	(	[ convexhulldownsampling	4 ] 	)
+alpha	[ 0	locks=0 ]	(	[ alpha	1 ] 	)
+beta	[ 0	locks=0 ]	(	[ beta	0 ] 	)
+maxconvexhullscount	[ 0	locks=0 ]	(	[ maxconvexhullscount	64 ] 	)
+maxtrianglecount	[ 0	locks=0 ]	(	[ maxtrianglecount	64 ] 	)
+adaptivesampling	[ 0	locks=0 ]	(	[ adaptivesampling	0.0001 ] 	)
+convexhullapproximation	[ 0	locks=0 ]	(	[ convexhullapproximation	0 ] 	)
+convexhullapproximationseparator	[ 0	locks=0 ]	(	)
+projecthullvertices	[ 0	locks=0 ]	(	[ projecthullvertices	0 ] 	)
+projecthullverticesseparator	[ 0	locks=0 ]	(	)
+normalizemesh	[ 0	locks=0 ]	(	[ normalizemesh	0 ] 	)
+normalizemeshseparator	[ 0	locks=0 ]	(	)
+useopencl	[ 0	locks=0 ]	(	[ useopencl	1 ] 	)
+useopenclseparator	[ 0	locks=0 ]	(	)
+additionalsection	[ 0	locks=0 ]	(	0	)
+adddescription	[ 0	locks=0 ]	(	"on"	)
+adddescriptionseparator	[ 0	locks=0 ]	(	)
+cleandescription	[ 0	locks=0 ]	(	0	)
+descriptionmessage	[ 0	locks=0 ]	(	"Version 2.0 is still work in progress. 
+This is full C++ rewrite of Generate node. 
+Open issue if you found some error https://github.com/sebastianswann/hou-hdk-sop-vhacd-toolkit/issues."	)
+debugsection	[ 0	locks=0 ]	(	0	)
+showprocessreport	[ 0	locks=0 ]	(	[ showprocessreport	0 ] 	)
+showprocessreportseparator	[ 0	locks=0 ]	(	)
+processreportmode	[ 0	locks=0 ]	(	[ processreportmode	0 ] 	)
+}
+
+--HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
+Content-Disposition: attachment; filename="hdaroot/generate1.userdata"
+Content-Type: text/plain
+
+{
+	"___Version___":{
+		"type":"string",
+		"value":"16.5.268"
+	}
+}
+
+--HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
+Content-Disposition: attachment; filename="hdaroot/OUT_Convex_Hulls.init"
+Content-Type: text/plain
+
+type = output
+matchesdef = 0
+
+--HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
+Content-Disposition: attachment; filename="hdaroot/OUT_Convex_Hulls.def"
+Content-Type: text/plain
+
+sopflags sopflags = 
+comment ""
+position -1.3424 0.697318
+connectornextid 1
+flags =  lock off model off template off footprint off xray off bypass off display off render off highlight off unload off savedata off compress on colordefault off exposed on
+outputsNamed3
+{
+}
+inputsNamed3
+{
+0 	generate1 1 1 "input1"
+}
+inputs
+{
+0 	generate1 0 1
+}
+stat
+{
+  create 1515877048
+  modify 1515877930
+  author swann@lv-426
+  access 0777
+}
+color UT_Color RGB 0 0 0 
+delscript ""
+exprlanguage hscript
+end
+
+--HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
+Content-Disposition: attachment; filename="hdaroot/OUT_Convex_Hulls.parm"
+Content-Type: text/plain
+
+{
+version 0.8
+outputidx	[ 0	locks=0 ]	(	0	)
+}
+
+--HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
+Content-Disposition: attachment; filename="hdaroot/OUT_Convex_Hulls.userdata"
+Content-Type: text/plain
+
+{
+	"___Version___":{
+		"type":"string",
+		"value":"16.5.268"
+	}
+}
+
+--HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
+Content-Disposition: attachment; filename="hdaroot/OUT_Original_Geometry.init"
+Content-Type: text/plain
+
+type = output
+matchesdef = 0
+
+--HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
+Content-Disposition: attachment; filename="hdaroot/OUT_Original_Geometry.def"
+Content-Type: text/plain
+
+sopflags sopflags = 
+comment ""
+position 0.939956 0.276424
+connectornextid 1
+flags =  lock off model off template off footprint off xray off bypass off display off render off highlight off unload off savedata off compress on colordefault off exposed on
+outputsNamed3
+{
+}
+inputsNamed3
+{
+0 	delete_internal_group 0 1 "input1"
+}
+inputs
+{
+0 	delete_internal_group 0 1
+}
+stat
+{
+  create 1515877053
+  modify 1515877930
+  author swann@lv-426
+  access 0777
+}
+color UT_Color RGB 0 0 0 
+delscript ""
+exprlanguage hscript
+end
+
+--HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
+Content-Disposition: attachment; filename="hdaroot/OUT_Original_Geometry.parm"
+Content-Type: text/plain
+
+{
+version 0.8
+outputidx	[ 0	locks=0 ]	(	1	)
+}
+
+--HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
+Content-Disposition: attachment; filename="hdaroot/OUT_Original_Geometry.userdata"
+Content-Type: text/plain
+
+{
+	"___Version___":{
+		"type":"string",
+		"value":"16.5.268"
+	}
+}
+
+--HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
+Content-Disposition: attachment; filename="hdaroot/create_internal_group_name.init"
+Content-Type: text/plain
+
+type = python
+matchesdef = 0
+
+--HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
+Content-Disposition: attachment; filename="hdaroot/create_internal_group_name.def"
+Content-Type: text/plain
+
+sopflags sopflags = 
+comment ""
+position -1.11759e-08 6.94729
+connectornextid 2
+flags =  lock off model off template off footprint off xray off bypass off display off render off highlight off unload off savedata off compress on colordefault on exposed on
+outputsNamed3
+{
+1 "output1"
+}
+inputsNamed3
+{
+0 	(0) "" 1 "input1"
+}
+inputs
+{
+0 	(0) 0 1
+}
+stat
+{
+  create 1515877581
+  modify 1515877870
+  author swann@lv-426
+  access 0777
+}
+color UT_Color RGB 0.8 0.8 0.8 
+delscript ""
+exprlanguage hscript
+end
+
+--HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
+Content-Disposition: attachment; filename="hdaroot/create_internal_group_name.spareparmdef"
+Content-Type: text/plain
+
+    groupsimple {
+        name    "userdata"
+        label   "User Data"
+
+        parm {
+            name    "partialgroupname"
+            label   "Partial Group Name"
+            type    string
+            default { "____internal_generate_group____" }
+        }
+    }
+
+    parm {
+        name    "python"
+        baseparm
+        label   "Python Code"
+        export  none
+    }
+
+--HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
+Content-Disposition: attachment; filename="hdaroot/create_internal_group_name.parm"
+Content-Type: text/plain
+
+{
+version 0.8
+python	[ 0	locks=0 ]	(	"# ---------------------------------------------------------------------
+# IMPORTS                                                             |
+# ---------------------------------------------------------------------
+
+from vhacd.common import NameGenerator as gen
+reload(gen)
+
+# ---------------------------------------------------------------------
+# VARIABLES                                                           |
+# ---------------------------------------------------------------------
+
+node = hou.pwd()
+geo = node.geometry()
+parent = node.parent()
+
+# ---------------------------------------------------------------------
+# MAIN                                                                |
+# ---------------------------------------------------------------------
+
+name = gen.NameGenerator().UniquePrimitiveGroupName(node.evalParm('partialgroupname'))
+parent.parm('____internalgroupname____').set(name)
+"	)
+userdata	[ 0	locks=0 ]	(	0	)
+partialgroupname	[ 0	locks=0 ]	(	____internal_generate_group____	)
+}
+
+--HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
+Content-Disposition: attachment; filename="hdaroot/create_internal_group_name.userdata"
+Content-Type: text/plain
+
+{
+	"___Version___":{
+		"type":"string",
+		"value":"16.5.268"
+	}
+}
+
+--HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
+Content-Disposition: attachment; filename="hdaroot/create_internal_group.init"
+Content-Type: text/plain
+
+type = groupcreate
+matchesdef = 0
+
+--HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
+Content-Disposition: attachment; filename="hdaroot/create_internal_group.def"
+Content-Type: text/plain
+
+sopflags sopflags = 
+comment ""
+position -1.11759e-08 5.87737
+connectornextid 2
+flags =  lock off model off template off footprint off xray off bypass off display off render off highlight on unload off savedata off compress on colordefault on exposed on
+outputsNamed3
+{
+1 "output1"
+}
+inputsNamed3
+{
+0 	create_internal_group_name 1 1 "input1"
+}
+inputs
+{
+0 	create_internal_group_name 0 1
+}
+stat
+{
+  create 1515877599
+  modify 1515877895
+  author swann@lv-426
+  access 0777
+}
+color UT_Color RGB 0.8 0.8 0.8 
+delscript ""
+exprlanguage hscript
+end
+
+--HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
+Content-Disposition: attachment; filename="hdaroot/create_internal_group.chn"
+Content-Type: text/plain
+
+{
+    channel basegroup {
+      lefttype = extend
+      righttype = extend
+      defaultString = chs(\"../primitivegroupinput0\")
+      flags = 0
+      segment { options = {	 autoslope  ai ao }
+
+	 length = 0 accel = 0.33333333333333331 0.33333333333333331 expr = chs(\"../primitivegroupinput0\") }
+    }
+    channel groupname {
+      lefttype = extend
+      righttype = extend
+      defaultString = chs(\"../____internalgroupname____\")
+      flags = 0
+      segment { options = {	 autoslope  ai ao }
+
+	 length = 0 accel = 0.33333333333333331 0.33333333333333331 expr = chs(\"../____internalgroupname____\") }
+    }
+  }
+
+--HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
+Content-Disposition: attachment; filename="hdaroot/create_internal_group.parm"
+Content-Type: text/plain
+
+{
+version 0.8
+groupname	[ 0	locks=0	autoscope=1 ]	(	[ groupname	____internal_generate_group____ ] 	)
+grouptype	[ 0	locks=0 ]	(	"primitive"	)
+mergeop	[ 0	locks=0 ]	(	"replace"	)
+folder0	[ 0	locks=0 ]	(	0	)
+groupbase	[ 0	locks=0 ]	(	"on"	)
+basegroup	[ 0	locks=0	autoscope=1 ]	(	[ basegroup	"" ] 	)
+ordered	[ 0	locks=0 ]	(	"off"	)
+geotype	[ 0	locks=0 ]	(	"all"	)
+switcher3	[ 0	locks=0 ]	(	0	)
+groupbounding	[ 0	locks=0 ]	(	"off"	)
+boundtype	[ 0	locks=0 ]	(	"usebbox"	)
+size	[ 0	locks=0 ]	(	1	1	1	)
+t	[ 0	locks=0 ]	(	0	0	0	)
+includenotwhollycontained	[ 0	locks=0 ]	(	"off"	)
+iso	[ 0	locks=0 ]	(	0	)
+invertvolume	[ 0	locks=0 ]	(	"off"	)
+switcher4	[ 0	locks=0 ]	(	0	)
+groupnormal	[ 0	locks=0 ]	(	"off"	)
+camerapath	[ 0	locks=0 ]	(	""	)
+nonplanar	[ 0	locks=0 ]	(	"off"	)
+nonplanartol	[ 0	locks=0 ]	(	0.001	)
+dir	[ 0	locks=0 ]	(	0	0	1	)
+angle	[ 0	locks=0 ]	(	180	)
+switcher5	[ 0	locks=0 ]	(	0	)
+groupedges	[ 0	locks=0 ]	(	"off"	)
+dominedgeangle	[ 0	locks=0 ]	(	"off"	)
+minedgeangle	[ 0	locks=0 ]	(	20	)
+domaxedgeangle	[ 0	locks=0 ]	(	"off"	)
+maxedgeangle	[ 0	locks=0 ]	(	20	)
+edgeanglebetweenedges	[ 0	locks=0 ]	(	"off"	)
+dominedgelen	[ 0	locks=0 ]	(	"off"	)
+minedgelen	[ 0	locks=0 ]	(	0	)
+domaxedgelen	[ 0	locks=0 ]	(	"off"	)
+maxedgelen	[ 0	locks=0 ]	(	0	)
+dodepth	[ 0	locks=0 ]	(	"off"	)
+edgestep	[ 0	locks=0 ]	(	0	)
+edgeptgrp	[ 0	locks=0 ]	(	0	)
+unshared	[ 0	locks=0 ]	(	"off"	)
+boundarygroups	[ 0	locks=0 ]	(	"off"	)
+}
+
+--HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
+Content-Disposition: attachment; filename="hdaroot/create_internal_group.userdata"
+Content-Type: text/plain
+
+{
+	"___Version___":{
+		"type":"string",
+		"value":"16.5.268"
+	}
+}
+
+--HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
+Content-Disposition: attachment; filename="hdaroot/delete_internal_group.init"
+Content-Type: text/plain
+
+type = groupdelete
+matchesdef = 0
+
+--HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
+Content-Disposition: attachment; filename="hdaroot/delete_internal_group.def"
+Content-Type: text/plain
+
+sopflags sopflags = 
+comment ""
+position 0.74726 2.41525
+connectornextid 2
+flags =  lock off model off template off footprint off xray off bypass off display off render off highlight off unload off savedata off compress on colordefault on exposed on
+outputsNamed3
+{
+0 "output1"
+}
+inputsNamed3
+{
+1 	generate1 2 1 "input1"
+}
+inputs
+{
+0 	generate1 1 1
+}
+stat
+{
+  create 1515877648
+  modify 1515877935
+  author swann@lv-426
+  access 0777
+}
+color UT_Color RGB 0.8 0.8 0.8 
+delscript ""
+exprlanguage hscript
+end
+
+--HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
+Content-Disposition: attachment; filename="hdaroot/delete_internal_group.chn"
+Content-Type: text/plain
+
+{
+    channel group1 {
+      lefttype = extend
+      righttype = extend
+      defaultString = chs(\"../____internalgroupname____\")
+      flags = 0
+      segment { options = {	 autoslope  ai ao }
+
+	 length = 0 accel = 0.33333333333333331 0.33333333333333331 expr = chs(\"../____internalgroupname____\") }
+    }
+  }
+
+--HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
+Content-Disposition: attachment; filename="hdaroot/delete_internal_group.parm"
+Content-Type: text/plain
+
+{
+version 0.8
+deletions	[ 0	locks=0 ]	(	1	)
+enable1	[ 0	locks=0 ]	(	"on"	)
+grouptype1	[ 0	locks=0 ]	(	"prims"	)
+group1	[ 0	locks=0	autoscope=1 ]	(	[ group1	____internal_generate_group____ ] 	)
+}
+
+--HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
+Content-Disposition: attachment; filename="hdaroot/delete_internal_group.userdata"
+Content-Type: text/plain
+
+{
+	"___Version___":{
+		"type":"string",
+		"value":"16.5.268"
+	}
+}
+
+--HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
+Content-Disposition: attachment; filename="hdaroot.order"
+Content-Type: text/plain
+
+6
+generate1
+OUT_Convex_Hulls
+OUT_Original_Geometry
+create_internal_group_name
+create_internal_group
+delete_internal_group
+
+--HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
+Content-Disposition: attachment; filename="hdaroot.net"
+Content-Type: text/plain
+
+1
+
+--HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY--

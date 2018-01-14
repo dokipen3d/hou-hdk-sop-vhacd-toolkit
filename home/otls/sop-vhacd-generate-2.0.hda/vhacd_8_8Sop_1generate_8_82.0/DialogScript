@@ -1,0 +1,312 @@
+# Dialog script for vhacd::generate::2.0 automatically generated
+
+{
+    name	vhacd::generate::2.0
+    script	vhacd::generate::2.0
+    label	"Generate (v-hacd)"
+
+    help {
+	""
+    }
+
+    inputlabel	1	"Sub-Network Input #1"
+    inputlabel	2	"Sub-Network Input #2"
+    inputlabel	3	"Sub-Network Input #3"
+    inputlabel	4	"Sub-Network Input #4"
+
+    group {
+        name    "hidden"
+        label   "HIDDEN"
+        invisibletab
+        tabbreak
+
+        parm {
+            name    "____internalgroupname____"
+            label   "Internal Group Name"
+            type    string
+            default { "" }
+        }
+    }
+
+    groupsimple {
+        name    "filtersection"
+        label   "Filter"
+
+        parm {
+            name    "primitivegroupinput0"
+            label   "Primitive Group"
+            type    string
+            default { "" }
+            help    "Specify primitive group from first input. Leaving it empty will use whole incoming geometry."
+            menutoggle {
+                [ "from vhacd.common import GroupMenu" ]
+                [ "reload(GroupMenu)" ]
+                [ "" ]
+                [ "return GroupMenu.PrimitiveGroupMenu(kwargs)" ]
+                language python
+            }
+            parmtag { "autoscope" "0000000000000000" }
+            parmtag { "sop_input" "0" }
+            bindselector vhacd::generateselector::2.0 "Generate v2.0 (v-hacd selector)"
+                "Select primitives. Press <enter> to accept."
+                0 1 1 0 "" 0
+        }
+        parm {
+            name    "processmode"
+            label   "Process Mode"
+            type    ordinal
+            default { "0" }
+            help    "Specify process mode."
+            menu {
+                "0" "As Whole"
+                "1" "Per Element"
+                "2" "Per Group"
+            }
+            range   { 0! 2! }
+            parmtag { "autoscope" "0000000000000000" }
+        }
+    }
+
+    groupsimple {
+        name    "mainsection"
+        label   "Main"
+
+        parm {
+            name    "decompositionmode"
+            label   "Mode"
+            type    ordinal
+            default { "0" }
+            help    "0: Voxel-based approximate convex decomposition, 1: Tetrahedron-based approximate convex decomposition"
+            menu {
+                "0" "Voxel"
+                "1" "Tetrahedron"
+            }
+            range   { 0! 1! }
+            parmtag { "autoscope" "0000000000000000" }
+        }
+        parm {
+            name    "resolution"
+            label   "Resolution"
+            type    integer
+            default { "100000" }
+            help    "Maximum number of voxels generated during the voxelization stage."
+            range   { 10000! 6.4e+07! }
+            parmtag { "autoscope" "0000000000000000" }
+        }
+        parm {
+            name    "concavity"
+            label   "Concavity"
+            type    float
+            default { "0.0025" }
+            help    "Maximum concavity."
+            range   { 0! 1! }
+            parmtag { "autoscope" "0000000000000000" }
+        }
+        parm {
+            name    "planedownsampling"
+            label   "Plane Downsampling"
+            type    integer
+            default { "4" }
+            help    "Controls the granularity of the search for the 'best' clipping plane."
+            range   { 1! 16! }
+            parmtag { "autoscope" "0000000000000000" }
+        }
+        parm {
+            name    "convexhulldownsampling"
+            label   "Convex Hull Downsampling"
+            type    integer
+            default { "4" }
+            help    "Controls the precision of the convex-hull generation process during the clipping plane selection stage."
+            range   { 1! 16! }
+            parmtag { "autoscope" "0000000000000000" }
+        }
+        parm {
+            name    "alpha"
+            label   "Alpha"
+            type    float
+            default { "1" }
+            help    "Controls the bias toward clipping along symmetry planes."
+            range   { 0! 1! }
+            parmtag { "autoscope" "0000000000000000" }
+        }
+        parm {
+            name    "beta"
+            label   "Beta"
+            type    float
+            default { "0" }
+            help    "Controls the bias toward clipping along revolution axes."
+            range   { 0! 1! }
+            parmtag { "autoscope" "0000000000000000" }
+        }
+        parm {
+            name    "maxconvexhullscount"
+            label   "Max Hull Count"
+            type    integer
+            default { "64" }
+            help    "Controls the maximum amount of convex hulls that will be generated."
+            range   { 1! 1024! }
+            parmtag { "autoscope" "0000000000000000" }
+        }
+        parm {
+            name    "maxtrianglecount"
+            label   "Max Triangle Count"
+            type    integer
+            default { "64" }
+            help    "Controls the maximum number of triangles per convex-hull."
+            range   { 4! 1024! }
+            parmtag { "autoscope" "0000000000000000" }
+        }
+        parm {
+            name    "adaptivesampling"
+            label   "Adaptive Sampling"
+            type    float
+            default { "0.0001" }
+            help    "Controls the adaptive sampling of the generated convex-hulls."
+            range   { 0! 0.01! }
+            parmtag { "autoscope" "0000000000000000" }
+        }
+        parm {
+            name    "convexhullapproximation"
+            label   "Approximate Hulls"
+            type    toggle
+            joinnext
+            default { "off" }
+            help    "This will project the output convex hull vertices onto the original source mesh to increase the floating point accuracy of the results."
+            range   { 0! 1! }
+            parmtag { "autoscope" "0000000000000000" }
+        }
+        parm {
+            name    "sepparm2"
+            label   "Separator"
+            type    separator
+            default { "" }
+        }
+        parm {
+            name    "projecthullvertices"
+            label   "Project Vertices"
+            type    toggle
+            joinnext
+            default { "off" }
+            help    "WTF?"
+            range   { 0! 1! }
+            parmtag { "autoscope" "0000000000000000" }
+        }
+        parm {
+            name    "sepparm3"
+            label   "Separator"
+            type    separator
+            default { "" }
+        }
+        parm {
+            name    "normalizemesh"
+            label   "Normalize Mesh"
+            type    toggle
+            joinnext
+            default { "off" }
+            help    "Enable/disable normalizing the mesh before applying the convex decomposition."
+            range   { 0! 1! }
+            parmtag { "autoscope" "0000000000000000" }
+        }
+        parm {
+            name    "sepparm4"
+            label   "Separator"
+            type    separator
+            default { "" }
+        }
+        parm {
+            name    "useopencl"
+            label   "Use OpenCL"
+            type    toggle
+            joinnext
+            default { "on" }
+            help    "Enable/disable OpenCL acceleration."
+            range   { 0! 1! }
+            parmtag { "autoscope" "0000000000000000" }
+        }
+        parm {
+            name    "sepparm5"
+            label   "Separator"
+            type    separator
+            default { "" }
+        }
+    }
+
+    groupsimple {
+        name    "additionalsection"
+        label   "Additional"
+
+        parm {
+            name    "adddescription"
+            label   "Description"
+            type    toggle
+            joinnext
+            default { "0" }
+            parmtag { "script_callback" "hou.phm().description.Callback(kwargs)" }
+            parmtag { "script_callback_language" "python" }
+        }
+        parm {
+            name    "sepparm6"
+            label   "Separator"
+            type    separator
+            default { "" }
+        }
+        parm {
+            name    "cleandescription"
+            label   "Clean"
+            type    button
+            default { "0" }
+            hidewhen "{ adddescription == 0 }"
+            parmtag { "script_callback" "hou.phm().description.SetDefaultState(hou.pwd())" }
+            parmtag { "script_callback_language" "python" }
+        }
+        parm {
+            name    "descriptionmessage"
+            label   "Message"
+            type    string
+            default { "" }
+            hidewhen "{ adddescription == 0 }"
+            parmtag { "editor" "1" }
+            parmtag { "editorlines" "5-25" }
+        }
+    }
+
+    groupsimple {
+        name    "debugsection"
+        label   "Debug"
+
+        parm {
+            name    "showprocessreport"
+            label   "Show Detailed Report"
+            type    toggle
+            joinnext
+            default { "0" }
+            help    "Prints report in console window, which is more detailed than the information it sends to status bar."
+            range   { 0! 1! }
+            parmtag { "autoscope" "0000000000000000" }
+            parmtag { "script_callback" "hou.phm().showreport.Callback(kwargs, 'processreportmode')" }
+            parmtag { "script_callback_language" "python" }
+        }
+        parm {
+            name    "sepparm"
+            label   "Separator"
+            type    separator
+            default { "" }
+        }
+        parm {
+            name    "processreportmode"
+            label   "Mode"
+            type    ordinal
+            default { "0" }
+            help    "How detailed report will be printed."
+            hidewhen "{ showprocessreport == 0 }"
+            menu {
+                "0" "Progress Only"
+                "1" "Details Only"
+                "2" "Full"
+            }
+            range   { 0! 2! }
+            parmtag { "autoscope" "0000000000000000" }
+        }
+    }
+
+}
