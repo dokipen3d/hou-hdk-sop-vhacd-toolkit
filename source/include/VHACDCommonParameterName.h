@@ -67,7 +67,7 @@ namespace Containers
 			this->Add(ENUMS::VHACDCommonParameterNameOption::MAX_TRIANGLE_COUNT,			"maxtrianglecount");
 			this->Add(ENUMS::VHACDCommonParameterNameOption::ADAPTIVE_SAMPLING,				"adaptivesampling");
 			this->Add(ENUMS::VHACDCommonParameterNameOption::DECOMPOSITION_MODE,			"decompositionmode");
-			this->Add(ENUMS::VHACDCommonParameterNameOption::USE_OPENCL,					"useopencl");
+			this->Add(ENUMS::VHACDCommonParameterNameOption::USE_OCL,						"useopencl");
 			this->Add(ENUMS::VHACDCommonParameterNameOption::NORMALIZE_MESH,				"normalizemesh");
 			this->Add(ENUMS::VHACDCommonParameterNameOption::PLANE_DOWNSAMPLING,			"planedownsampling");
 			this->Add(ENUMS::VHACDCommonParameterNameOption::PROJECT_HULL_VERTICES,			"projecthullvertices");

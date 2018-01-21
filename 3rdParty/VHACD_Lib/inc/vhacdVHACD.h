@@ -108,7 +108,7 @@ public:
         const uint32_t* const triangles,
         const uint32_t nTriangles,
         const Parameters& params);
-    bool OCLInit(void* const oclDevice,
+    bool OCLInit(const cl_device_id oclDevice,
         IUserLogger* const logger = 0);
     bool OCLRelease(IUserLogger* const logger = 0);
 
@@ -358,7 +358,7 @@ private:
     bool m_cancel;
     int32_t m_ompNumProcessors;
 #ifdef CL_VERSION_1_1
-    cl_device_id* m_oclDevice;
+    cl_device_id m_oclDevice;
     cl_context m_oclContext;
     cl_program m_oclProgram;
     cl_command_queue* m_oclQueue;

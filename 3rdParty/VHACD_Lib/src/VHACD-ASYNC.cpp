@@ -215,7 +215,7 @@ public:
 		delete this;
 	}
 
-	virtual bool OCLInit(void* const oclDevice,
+	virtual bool OCLInit(const cl_device_id oclDevice,
 		IVHACD::IUserLogger* const logger = 0) final
 	{
 		return mVHACD->OCLInit(oclDevice, logger);

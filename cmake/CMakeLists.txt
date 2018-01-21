@@ -78,6 +78,20 @@ V-HACD GENERATE                                                    |
 	)			
 
 	Target_Link_Libraries(${CURRENT_PROJECT_NAME} PRIVATE ${HOUDINI_LIBRARIES})
+
+	# setup OpenCL
+	Find_Path(OpenCL_INCLUDE_DIR NAMES CL/cl.h 	HINTS "${HOUDINI_INCLUDE_DIRS}")
+	Find_Library(OpenCL_LIBRARY OpenCL 			HINTS ${HOUDINI_LINK_DIRS})
+	Find_Package(OpenCL)
+	if (OpenCL_FOUND)
+		Add_Definitions(		
+		-DOPENCL_FOUND=1
+		-DOPENCL_INCLUDE_DIRS="${OpenCL_INCLUDE_DIR}"
+		-DOPENCL_LIBRARY="${OpenCL_LIBRARY}"
+		-DOCL_SOURCE_FROM_FILE
+		-DOPENCL_CL_FILES="${HDK_VHACDTOOLKIT_3RDPARTY_OPENCL_KERNEL_FILES}"
+	)	
+	endif()
 	
 	# specify destination path	
 	HOU_SETUP_DSO_OUTPUTS(${CMAKE_CURRENT_SOURCE_DIR} ${CURRENT_PROJECT_NAME})	

@@ -71,6 +71,8 @@ namespace UI
 	};
 	static auto		processModeChoiceMenuParm_ChoiceList = PRM_ChoiceList(PRM_CHOICELIST_SINGLE, processModeChoiceMenuParm_Choices);
 	auto			processModeChoiceMenu_Parameter = PRM_Template(PRM_ORD, 1, &processModeChoiceMenuParm_Name, 0, &processModeChoiceMenuParm_ChoiceList, &processModeChoiceMenuParm_Range, 0, nullptr, 1, "Specify process mode.");
+
+	// TODO: remove it
 	DECLARE_Toggle_with_Separator_ON_PRM("forceconverttopolygons", "Force Convert To Polygons", "forceconverttopolygonsseparator", 0, "Force convertion of non-polygon geometry to polygons.", forceConvertToPolygons)
 	
 	__DECLARE_Main_Section_PRM(18)
@@ -83,8 +85,7 @@ namespace UI
 		PRM_Name(nullptr)
 	};
 	static auto		modeChoiceMenuParm_ChoiceList = PRM_ChoiceList(PRM_CHOICELIST_SINGLE, modeChoiceMenuParm_Choices);
-	auto			modeChoiceMenu_Parameter = PRM_Template(PRM_ORD, 1, &modeChoiceMenuParm_Name, nullptr, &modeChoiceMenuParm_ChoiceList, &modeChoiceMenuParm_Range, 0, nullptr, 1, "0: Voxel-based approximate convex decomposition, 1: Tetrahedron-based approximate convex decomposition");
-	
+	auto			modeChoiceMenu_Parameter = PRM_Template(PRM_ORD, 1, &modeChoiceMenuParm_Name, nullptr, &modeChoiceMenuParm_ChoiceList, &modeChoiceMenuParm_Range, 0, nullptr, 1, "0: Voxel-based approximate convex decomposition, 1: Tetrahedron-based approximate convex decomposition");	
 	DECLARE_Custom_Int_MinR_to_MaxR_PRM(COMMON_PRM_NAMES.Get(ENUMS::VHACDCommonParameterNameOption::RESOLUTION), "Resolution", 10000, 64000000, 100000, "Maximum number of voxels generated during the voxelization stage.", resolution)
 	DECLARE_Custom_Float_0R_to_1R_PRM(COMMON_PRM_NAMES.Get(ENUMS::VHACDCommonParameterNameOption::CONCAVITY), "Concavity", 0.0025f, 0, "Maximum concavity.", concavity)
 	DECLARE_Custom_Int_MinR_to_MaxR_PRM(COMMON_PRM_NAMES.Get(ENUMS::VHACDCommonParameterNameOption::PLANE_DOWNSAMPLING), "Plane Downsampling", 1, 16, 4, "Controls the granularity of the search for the 'best' clipping plane.", planeDownsampling)
@@ -97,14 +98,13 @@ namespace UI
 	DECLARE_Toggle_with_Separator_OFF_PRM(COMMON_PRM_NAMES.Get(ENUMS::VHACDCommonParameterNameOption::CONVEXHULL_APPROXIMATION), "Approximate Hulls", "convexhullapproximationseparator", 0, "This will project the output convex hull vertices onto the original source mesh to increase the floating point accuracy of the results.", approximateConvexHulls)
 	DECLARE_Toggle_with_Separator_OFF_PRM(COMMON_PRM_NAMES.Get(ENUMS::VHACDCommonParameterNameOption::PROJECT_HULL_VERTICES), "Project Vertices", "projecthullverticesseparator", 0, "WTF?", projectHullVertices)
 	DECLARE_Toggle_with_Separator_OFF_PRM(COMMON_PRM_NAMES.Get(ENUMS::VHACDCommonParameterNameOption::NORMALIZE_MESH), "Normalize Mesh", "normalizemeshseparator", 0, "Enable/disable normalizing the mesh before applying the convex decomposition.", normalizeMesh)
-	DECLARE_Toggle_with_Separator_ON_PRM(COMMON_PRM_NAMES.Get(ENUMS::VHACDCommonParameterNameOption::USE_OPENCL), "Use OpenCL", "useopenclseparator", 0, "Enable/disable OpenCL acceleration.", useOpenCL)
+	DECLARE_Toggle_with_Separator_ON_PRM(COMMON_PRM_NAMES.Get(ENUMS::VHACDCommonParameterNameOption::USE_OCL), "Use OpenCL", "useopenclseparator", 0, "Enable/disable OpenCL acceleration.", useOpenCL)
 
 	__DECLARE_Additional_Section_PRM(4)
 	DECLARE_DescriptionPRM(SOP_Operator)
 
 	__DECLARE_Debug_Section_PRM(3)
 	DECLARE_Toggle_with_Separator_OFF_PRM("showprocessreport", "Show Detailed Report", "showprocessreportseparator", &SOP_Operator::CallbackShowProcessReport, "Prints report in console window, which is more detailed than the information it sends to status bar.", showProcessReport)
-
 	static auto		reportModeChoiceMenuParm_Name = PRM_Name("processreportmode", "Mode");
 	static auto		reportModeChoiceMenuParm_Range = PRM_Range(PRM_RANGE_RESTRICTED, 0, PRM_RANGE_RESTRICTED, 2);
 	static auto		reportModeChoiceMenuParm_Default = PRM_Default(0);

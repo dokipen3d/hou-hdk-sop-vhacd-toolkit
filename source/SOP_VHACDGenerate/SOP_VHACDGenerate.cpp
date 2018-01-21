@@ -36,6 +36,7 @@ INCLUDES                                                           |
 #include <PRM/PRM_Include.h>
 #include <GEO/GEO_ConvertParms.h>
 #include <GEO/GEO_PrimClassifier.h>
+#include <CL/cl.h>
 
 // hou-hdk-common
 #include <Macros/ParameterList.h>
@@ -49,6 +50,7 @@ INCLUDES                                                           |
 #include "Parameters.h"
 #include "ProcessModeOption.h"
 #include "ReportModeOption.h"
+#include "OCL_Helpers.h"
 
 /* -----------------------------------------------------------------
 DEFINES                                                            |
@@ -123,7 +125,7 @@ SOP_Operator::updateParmsFlags()
 	const exint is0Connected = this->getInput(0) == nullptr ? 0 : 1;
 
 	/* ---------------------------- Set Global Visibility ---------------------------- */
-
+	
 	visibilityState = is0Connected ? 1 : 0;
 
 	/* ---------------------------- Set States --------------------------------------- */
@@ -169,19 +171,11 @@ OPERATOR INITIALIZATION                                            |
 SOP_Operator::~SOP_VHACDGenerate() { }
 
 SOP_Operator::SOP_VHACDGenerate(OP_Network* network, const char* name, OP_Operator* op) :
-SOP_Base_Operator(network, name, op), 
+SOP_Base_Operator(network, name, op),
 _inputGDP(nullptr),
 _primitiveGroupInput0(nullptr),
 _interfaceVHACD(nullptr)
-{	
-	exint toggleFlag = 1;
-	auto message = UT_String("Version 2.0 is still work in progress. \nThis is full C++ rewrite of Generate node. \nOpen issue if you found some error https://github.com/sebastianswann/hou-hdk-sop-vhacd-toolkit/issues.");
-	for (auto p : parametersList)
-	{
-		if (p.getNamePtr()->getToken() == UI::descriptionToggle_Parameter.getToken()) PRM_ACCESS::Set::IntPRM(this, toggleFlag, p);
-		else if (p.getNamePtr()->getToken() == UI::descriptionTextField_Parameter.getToken()) PRM_ACCESS::Set::StringPRM(this, message, p);
-	}
-}
+{ }
 
 OP_Node* 
 SOP_Operator::CreateMe(OP_Network* network, const char* name, OP_Operator* op) 
@@ -195,8 +189,8 @@ OP_ERROR
 SOP_Operator::cookInputGroups(OP_Context& context, int alone)
 {	
 	const auto isOrdered = true;	
-	this->_gop = GroupCreator(this->_inputGDP);
-	
+	this->_gop = GroupCreator(this->_inputGDP);	
+
 	return cookInputPrimitiveGroups(context, this->_primitiveGroupInput0, alone, true, SOP_GroupFieldIndex_0, -1, true, isOrdered, this->_gop);
 }
 
@@ -307,7 +301,7 @@ SOP_Operator::PrepareGeometry(GU_Detail* detail, UT_AutoInterrupt progress, fpre
 }
 
 void
-SOP_Operator::SetupParametersVHACD(GU_Detail* detail, fpreal time)
+SOP_Operator::SetupParametersVHACD(UT_AutoInterrupt progress, GU_Detail* detail, fpreal time)
 {
 	// logger & callback
 	this->_parametersVHACD.m_logger = &this->_loggerVHACD;
@@ -328,7 +322,7 @@ SOP_Operator::SetupParametersVHACD(GU_Detail* detail, fpreal time)
 	this->_parametersVHACD.m_projectHullVertices =		PullIntPRM(detail, UI::projectHullVerticesToggle_Parameter, time);
 	this->_parametersVHACD.m_pca =						PullIntPRM(detail, UI::normalizeMeshToggle_Parameter, time);
 
-	PRM_ACCESS::Get::IntPRM(this, this->_parametersVHACD.m_oclAcceleration, UI::useOpenCLToggle_Parameter, time);
+	//PRM_ACCESS::Get::IntPRM(this, this->_parametersVHACD.m_oclAcceleration, UI::useOpenCLToggle_Parameter, time);
 		
 	// debug parameters
 #define VHACD_ReportModeHelper(showmsg, showoverallprogress, showstageprogress, showoperationprogress) this->_loggerVHACD.showMsg = showmsg; this->_callbackVHACD.showOverallProgress = showoverallprogress; this->_callbackVHACD.showStageProgress = showstageprogress; this->_callbackVHACD.showOperationProgress = showoperationprogress;
@@ -402,6 +396,44 @@ SOP_Operator::GatherDataForVHACD(GU_Detail* detail, UT_AutoInterrupt progress, f
 }
 
 ENUMS::MethodProcessResult
+SOP_Operator::SetupOpenCL(UT_AutoInterrupt progress, VHACD::IVHACD* interface, fpreal time)
+{
+	UT_Array<CONTAINERS::OCL_PlatformData> platformQuerries;
+	platformQuerries.clear();
+	
+	const auto processResult = UTILS::OCL_Helpers::QuerryPlatforms(this, progress, platformQuerries);
+	if (processResult != ENUMS::MethodProcessResult::SUCCESS) return processResult;
+	
+	for (auto platform : platformQuerries)
+	{
+		PROGRESS_WAS_INTERRUPTED_WITH_ERROR_AND_OBJECT(this, progress, ENUMS::MethodProcessResult::INTERRUPT)
+
+		//platform.Report();
+		for (auto device : platform)
+		{
+			PROGRESS_WAS_INTERRUPTED_WITH_ERROR_AND_OBJECT(this, progress, ENUMS::MethodProcessResult::INTERRUPT)
+
+			if (device.GetType() == CL_DEVICE_TYPE_GPU)
+			{
+				if(device.GetVendor() == "Intel(R) Corporation") continue;
+				
+				if (!this->_interfaceVHACD->OCLInit(device.GetID(), &this->_loggerVHACD))
+				{
+					std::cout << "OpenCL init failed for device ID: " << device.GetID() << std::endl;					
+					this->_parametersVHACD.m_oclAcceleration = false;
+					return ENUMS::MethodProcessResult::FAILURE;
+				}
+				device.Report();
+				this->_parametersVHACD.m_oclAcceleration = true;
+				return ENUMS::MethodProcessResult::SUCCESS;
+			}
+		}
+	}
+
+	return ENUMS::MethodProcessResult::SUCCESS;
+}
+
+ENUMS::MethodProcessResult
 SOP_Operator::DrawConvexHull(GU_Detail* detail, const VHACD::IVHACD::ConvexHull& hull, UT_AutoInterrupt progress)
 {
 	// add amount of points that hull consists
@@ -420,9 +452,10 @@ SOP_Operator::DrawConvexHull(GU_Detail* detail, const VHACD::IVHACD::ConvexHull&
 	{
 		// make sure we can escape the loop
 		if (progress.wasInterrupted())
-		{
+		{			
 			this->_interfaceVHACD->Cancel();
-			addWarning(SOP_ErrorCodes::SOP_MESSAGE, "Operation interrupted");
+
+			addError(SOP_ErrorCodes::SOP_MESSAGE, "Operation interrupted");
 			return ENUMS::MethodProcessResult::FAILURE;
 		}
 
@@ -440,9 +473,10 @@ SOP_Operator::DrawConvexHull(GU_Detail* detail, const VHACD::IVHACD::ConvexHull&
 	{
 		// make sure we can escape the loop
 		if (progress.wasInterrupted())
-		{
+		{			
 			this->_interfaceVHACD->Cancel();
-			addWarning(SOP_ErrorCodes::SOP_MESSAGE, "Operation interrupted");
+
+			addError(SOP_ErrorCodes::SOP_MESSAGE, "Operation interrupted");
 			return ENUMS::MethodProcessResult::FAILURE;
 		}
 		
@@ -461,10 +495,30 @@ SOP_Operator::DrawConvexHull(GU_Detail* detail, const VHACD::IVHACD::ConvexHull&
 }
 
 ENUMS::MethodProcessResult
-SOP_Operator::GenerateConvexHulls(GU_Detail* detail, UT_AutoInterrupt progress)
-{
-	// get interface	
+SOP_Operator::GenerateConvexHulls(UT_AutoInterrupt progress, GU_Detail* detail, fpreal time)
+{	
+	auto processResult = ENUMS::MethodProcessResult::SUCCESS;		
+
+	// create V-HACD instance
 	this->_interfaceVHACD = VHACD::CreateVHACD_ASYNC();
+	
+	// setup OpenCL if available
+	bool useOpenCLToggleValue;
+	PRM_ACCESS::Get::IntPRM(this, useOpenCLToggleValue, UI::useOpenCLToggle_Parameter, time);
+
+	if (useOpenCLToggleValue)
+	{
+		processResult = SetupOpenCL(progress, this->_interfaceVHACD, time);		
+		if (processResult == ENUMS::MethodProcessResult::INTERRUPT)
+		{
+			if (this->_parametersVHACD.m_oclAcceleration) this->_interfaceVHACD->OCLRelease(&this->_loggerVHACD);
+			this->_interfaceVHACD->Clean();
+			this->_interfaceVHACD->Release();
+
+			return processResult;
+		}
+	}
+	
 	//this->_interfaceVHACD = VHACD::CreateVHACD();
 	const auto success = this->_interfaceVHACD->Compute(&this->_pointPositions[0], static_cast<unsigned int>(this->_pointPositions.size()) / 3, reinterpret_cast<const uint32_t*>(&this->_triangleIndexes[0]), static_cast<unsigned int>(this->_triangleIndexes.size()) / 3, this->_parametersVHACD);
 	
@@ -488,8 +542,10 @@ SOP_Operator::GenerateConvexHulls(GU_Detail* detail, UT_AutoInterrupt progress)
 				// make sure we can escape the loop
 				if (progress.wasInterrupted())
 				{
+					if (this->_parametersVHACD.m_oclAcceleration) this->_interfaceVHACD->OCLRelease(&this->_loggerVHACD);
 					this->_interfaceVHACD->Cancel();
-					addWarning(SOP_ErrorCodes::SOP_MESSAGE, "Operation interrupted");
+
+					addError(SOP_ErrorCodes::SOP_MESSAGE, "Operation interrupted");
 					return ENUMS::MethodProcessResult::INTERRUPT;
 				}
 
@@ -499,7 +555,7 @@ SOP_Operator::GenerateConvexHulls(GU_Detail* detail, UT_AutoInterrupt progress)
 				this->_interfaceVHACD->GetConvexHull(id, currentHull);
 				if (!currentHull.m_nPoints || !currentHull.m_nTriangles) continue;
 				
-				const auto processResult = DrawConvexHull(detail, currentHull, progress);
+				processResult = DrawConvexHull(detail, currentHull, progress);
 				if (processResult != ENUMS::MethodProcessResult::SUCCESS && error() > UT_ErrorSeverity::UT_ERROR_NONE) return processResult;
 			}
 		}
@@ -510,6 +566,8 @@ SOP_Operator::GenerateConvexHulls(GU_Detail* detail, UT_AutoInterrupt progress)
 		return ENUMS::MethodProcessResult::FAILURE;
 	}
 
+	// release V-HACD
+	if (this->_parametersVHACD.m_oclAcceleration) this->_interfaceVHACD->OCLRelease(&this->_loggerVHACD);
 	this->_interfaceVHACD->Clean();
 	this->_interfaceVHACD->Release();	
 	
@@ -527,7 +585,7 @@ SOP_Operator::ProcessCurrentDetail(GU_Detail* detail, UT_AutoInterrupt progress,
 		if (processResult != ENUMS::MethodProcessResult::SUCCESS || error() > OP_ERROR::UT_ERROR_WARNING) return processResult;
 
 		// setup V-HACD and collect all required data
-		SetupParametersVHACD(detail, time);
+		SetupParametersVHACD(progress, detail, time);
 
 		processResult = GatherDataForVHACD(detail, progress, time);
 		if (processResult != ENUMS::MethodProcessResult::SUCCESS || error() > OP_ERROR::UT_ERROR_WARNING) return processResult;
@@ -535,7 +593,7 @@ SOP_Operator::ProcessCurrentDetail(GU_Detail* detail, UT_AutoInterrupt progress,
 		// lets make some hulls!
 		detail->clear();
 		
-		processResult = GenerateConvexHulls(detail, progress);
+		processResult = GenerateConvexHulls(progress, detail, time);
 		if (processResult != ENUMS::MethodProcessResult::SUCCESS || error() > OP_ERROR::UT_ERROR_WARNING) return processResult;
 	}
 	
@@ -611,14 +669,14 @@ ENUMS::MethodProcessResult
 SOP_Operator::WhenAsWhole(UT_AutoInterrupt progress, ENUMS::ProcessedOutputType processedoutputtype, fpreal time)
 {
 	auto processResult = ENUMS::MethodProcessResult::SUCCESS;
-
+	
 	// separate range of geometry we want to work on
-	if (this->_primitiveGroupInput0 && this->_primitiveGroupInput0->entries() > 0)
+	if (this->_primitiveGroupInput0 && !this->_primitiveGroupInput0->isEmpty())
 	{
 		processResult = UTILS::GU_DetailModifier::SeparatePrimitives(this, this->_inputGDP, this->_primitiveGroupInput0);
 		if (processResult != ENUMS::MethodProcessResult::SUCCESS || error() > OP_ERROR::UT_ERROR_WARNING) return processResult;
 	}
-
+	
 	// this time we do steps backwards, by first merging...	
 	this->gdp->clear();
 	
@@ -637,7 +695,7 @@ SOP_Operator::WhenPerElement(UT_AutoInterrupt progress, ENUMS::ProcessedOutputTy
 	auto processResult = ENUMS::MethodProcessResult::SUCCESS;
 
 	// separate range of geometry we want to work on
-	if (this->_primitiveGroupInput0 && this->_primitiveGroupInput0->entries() > 0)
+	if (this->_primitiveGroupInput0 && !this->_primitiveGroupInput0->isEmpty())
 	{
 		processResult = UTILS::GU_DetailModifier::SeparatePrimitives(this, this->_inputGDP, this->_primitiveGroupInput0);
 		if (processResult != ENUMS::MethodProcessResult::SUCCESS || error() > OP_ERROR::UT_ERROR_WARNING) return processResult;
@@ -774,13 +832,13 @@ SOP_Operator::cookMySop(OP_Context& context)
 	
 	this->_inputGDP = new GU_Detail(inputGeo(0, context));
 	if (this->_inputGDP && error() < OP_ERROR::UT_ERROR_WARNING && cookInputGroups(context) < OP_ERROR::UT_ERROR_WARNING)
-	{		
+	{				
 		auto processResult = ENUMS::MethodProcessResult::SUCCESS;
 		
 		// process geometry
 		exint processModeChoiceMenuValue;
 		PRM_ACCESS::Get::IntPRM(this, processModeChoiceMenuValue, UI::processModeChoiceMenu_Parameter, currentTime);			
-
+		
 		switch(processModeChoiceMenuValue)
 		{
 			case static_cast<exint>(ENUMS::ProcessModeOption::AS_WHOLE) :		{ processResult = WhenAsWhole(progress, ENUMS::ProcessedOutputType::CONVEX_HULLS, currentTime); } break;

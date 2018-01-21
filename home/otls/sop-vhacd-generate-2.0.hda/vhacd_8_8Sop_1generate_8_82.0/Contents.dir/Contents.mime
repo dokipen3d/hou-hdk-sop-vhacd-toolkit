@@ -20,26 +20,24 @@ Content-Type: text/plain
 
 sopflags sopflags = 
 comment ""
-position -0.176471 -0.458741
-connectornextid 3
-flags =  lock off model off template off footprint off xray off bypass off display off render off highlight on unload off savedata off compress on colordefault off exposed on
+position 0 -1.51971
+connectornextid 1
+flags =  lock off model off template off footprint off xray off bypass off display on render on highlight off unload off savedata off compress on colordefault off exposed on
 outputsNamed3
 {
-1 "output1"
-2 "output2"
 }
 inputsNamed3
 {
-0 	merge1 2 1 "input1"
+0 	file1 0 1 "input1"
 }
 inputs
 {
-0 	merge1 0 1
+0 	file1 0 1
 }
 stat
 {
-  create 1515879382
-  modify 1515879699
+  create 1516384304
+  modify 1516549543
   author swann@lv-426
   access 0777
 }
@@ -106,7 +104,7 @@ inputs
 stat
 {
   create 1515876954
-  modify 1515878909
+  modify 1516549542
   author swann@lv-426
   access 0777
 }
@@ -114,6 +112,223 @@ color UT_Color RGB 1 0 0
 delscript ""
 exprlanguage hscript
 end
+
+--HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
+Content-Disposition: attachment; filename="hdaroot/generate1.spareparmdef"
+Content-Type: text/plain
+
+    groupsimple {
+        name    "filtersection2"
+        label   "Filter"
+
+        parm {
+            name    "primitivegroupinput0"
+            baseparm
+            label   "Primitive Group"
+            export  none
+        }
+        parm {
+            name    "processmode"
+            baseparm
+            label   "Process Mode"
+            export  none
+        }
+        parm {
+            name    "forceconverttopolygons"
+            baseparm
+            label   "Force Convert To Polygons"
+            joinnext
+            export  none
+        }
+        parm {
+            name    "forceconverttopolygonsseparator"
+            baseparm
+            label   ""
+            export  none
+        }
+    }
+
+    groupsimple {
+        name    "mainsection2"
+        label   "Main"
+
+        parm {
+            name    "decompositionmode"
+            baseparm
+            label   "Mode"
+            export  none
+        }
+        parm {
+            name    "resolution"
+            baseparm
+            label   "Resolution"
+            export  none
+        }
+        parm {
+            name    "concavity"
+            baseparm
+            label   "Concavity"
+            export  none
+        }
+        parm {
+            name    "planedownsampling"
+            baseparm
+            label   "Plane Downsampling"
+            export  none
+        }
+        parm {
+            name    "convexhulldownsampling"
+            baseparm
+            label   "Convex Hull Downsampling"
+            export  none
+        }
+        parm {
+            name    "alpha"
+            baseparm
+            label   "Alpha"
+            export  none
+        }
+        parm {
+            name    "beta"
+            baseparm
+            label   "Beta"
+            export  none
+        }
+        parm {
+            name    "maxconvexhullscount"
+            baseparm
+            label   "Max Hull Count"
+            export  none
+        }
+        parm {
+            name    "maxtrianglecount"
+            baseparm
+            label   "Max Triangle Count"
+            export  none
+        }
+        parm {
+            name    "adaptivesampling"
+            baseparm
+            label   "Adaptive Sampling"
+            export  none
+        }
+        parm {
+            name    "convexhullapproximation"
+            baseparm
+            label   "Approximate Hulls"
+            joinnext
+            export  none
+        }
+        parm {
+            name    "convexhullapproximationseparator"
+            baseparm
+            label   ""
+            export  none
+        }
+        parm {
+            name    "projecthullvertices"
+            baseparm
+            label   "Project Vertices"
+            joinnext
+            export  none
+        }
+        parm {
+            name    "projecthullverticesseparator"
+            baseparm
+            label   ""
+            export  none
+        }
+        parm {
+            name    "normalizemesh"
+            baseparm
+            label   "Normalize Mesh"
+            joinnext
+            export  none
+        }
+        parm {
+            name    "normalizemeshseparator"
+            baseparm
+            label   ""
+            export  none
+        }
+        parm {
+            name    "useopencl"
+            baseparm
+            label   "Use OpenCL"
+            joinnext
+            export  none
+        }
+        parm {
+            name    "useopenclseparator"
+            baseparm
+            label   ""
+            export  none
+        }
+    }
+
+    groupsimple {
+        name    "additionalsection2"
+        label   "Additional"
+
+        parm {
+            name    "adddescription"
+            baseparm
+            label   "Description"
+            joinnext
+            export  none
+        }
+        parm {
+            name    "adddescriptionseparator"
+            baseparm
+            label   ""
+            export  none
+        }
+        parm {
+            name    "cleandescription"
+            baseparm
+            label   "Clean"
+            export  none
+        }
+        parm {
+            name    "descriptionmessage"
+            baseparm
+            label   "Message"
+            export  none
+        }
+    }
+
+    groupsimple {
+        name    "debugsection2"
+        label   "Debug"
+
+        parm {
+            name    "showprocessreport"
+            baseparm
+            label   "Show Detailed Report"
+            joinnext
+            export  none
+        }
+        parm {
+            name    "showprocessreportseparator"
+            baseparm
+            label   ""
+            export  none
+        }
+        parm {
+            name    "processreportmode"
+            baseparm
+            label   "Mode"
+            export  none
+        }
+    }
+
+    parm {
+        name    "visualizeattribute"
+        label   "visualizeattribute"
+        type    float
+        default { "0" }
+        range   { 0 10 }
+    }
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY
 Content-Disposition: attachment; filename="hdaroot/generate1.chn"
@@ -251,7 +466,7 @@ Content-Type: text/plain
 version 0.8
 filtersection	[ 0	locks=0 ]	(	0	)
 primitivegroupinput0	[ 0	locks=0	autoscope=1 ]	(	[ primitivegroupinput0	____internal_generate_group____ ] 	)
-processmode	[ 0	locks=0 ]	(	[ processmode	2 ] 	)
+processmode	[ 0	locks=0 ]	(	[ processmode	0 ] 	)
 forceconverttopolygons	[ 0	locks=0 ]	(	"on"	)
 forceconverttopolygonsseparator	[ 0	locks=0 ]	(	)
 mainsection	[ 0	locks=0 ]	(	0	)
@@ -284,6 +499,11 @@ debugsection	[ 0	locks=0 ]	(	0	)
 showprocessreport	[ 0	locks=0 ]	(	[ showprocessreport	0 ] 	)
 showprocessreportseparator	[ 0	locks=0 ]	(	)
 processreportmode	[ 0	locks=0 ]	(	[ processreportmode	0 ] 	)
+filtersection2	[ 0	locks=0 ]	(	0	)
+mainsection2	[ 0	locks=0 ]	(	0	)
+additionalsection2	[ 0	locks=0 ]	(	0	)
+debugsection2	[ 0	locks=0 ]	(	0	)
+visualizeattribute	[ 0	locks=0 ]	(	0	)
 }
 
 --HOUDINIMIMEBOUNDARY0xD3ADD339-0x00000F49-0x56B122C9-0x00000001HOUDINIMIMEBOUNDARY

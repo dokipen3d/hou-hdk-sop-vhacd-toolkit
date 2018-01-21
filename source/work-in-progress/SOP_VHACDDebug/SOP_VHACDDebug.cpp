@@ -228,11 +228,7 @@ SOP_Operator::CallbakcVisualizeAttributeMenu(void* data, PRM_Name* choicenames, 
 			} break;
 		}
 	}
-	else
-	{
-		choicenames[0].setToken(nullptr);
-		choicenames[0].setLabel(nullptr);
-	}
+	else choicenames[0].setTokenAndLabel(nullptr, nullptr);
 }
 
 /* -----------------------------------------------------------------

@@ -1,8 +1,8 @@
 /*
-	Enum for common parameter names.
+	Enum..
 
 	IMPORTANT! ------------------------------------------
-	* this should be synchronized with VHACDCommonParameterName.h
+	* macros starting and ending with '____' shouldn't be used anywhere outside of this file.
 	-----------------------------------------------------
 
 	Author: 	SWANN
@@ -23,8 +23,8 @@
 */
 
 #pragma once
-#ifndef ____vhacd_common_parameter_name_option_h____
-#define ____vhacd_common_parameter_name_option_h____
+#ifndef ____ocl_version_data_type_h____
+#define ____ocl_version_data_type_h____
 
 /* -----------------------------------------------------------------
 INCLUDES                                                           |
@@ -47,29 +47,13 @@ ENUM                                                               |
 DECLARE_Base_Namespace_Start()
 namespace Enums
 {
-	enum class VHACDCommonParameterNameOption : exint
-	{	
-		// vhacd global
-		ALPHA,
-		BETA,
-		CONCAVITY,
-		CONVEXHULL_APPROXIMATION,
-		CONVEXHULL_DOWNSAMPLING,
-		MAX_CONVEXHULLS_COUNT,
-		MAX_TRIANGLE_COUNT,
-		ADAPTIVE_SAMPLING,
-		DECOMPOSITION_MODE,
-		USE_OCL,
-		NORMALIZE_MESH,
-		PLANE_DOWNSAMPLING,
-		PROJECT_HULL_VERTICES,
-		RESOLUTION,
-
-		// decomposition mode only		
-		VOXEL,
-		TETRAHEDRON
+	enum class OCL_VersionDataType : exint
+	{
+		DEVICE,
+		DRIVER,
+		OPENCL
 	};
 }
 DECLARE_Base_Namespace_End
 
-#endif // !____vhacd_common_parameter_name_option_h____
+#endif // !____ocl_version_data_type_h____

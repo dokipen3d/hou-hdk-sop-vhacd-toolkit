@@ -38,9 +38,9 @@ INCLUDES                                                           |
 #include <VHACD.h>
 
 // hou-hdk-common
+#include <Macros/Namespace.h>
 #include <Macros/CookMySop.h>
 #include <Macros/DescriptionPRM.h>
-#include <Macros/Namespace.h>
 #include <Macros/UpdateParmsFlags.h>
 #include <Enums/MethodProcessResult.h>
 
@@ -49,6 +49,7 @@ INCLUDES                                                           |
 #include "UserLogger.h"
 #include "UserCallback.h"
 #include "ProcessedOutputType.h"
+#include "OCL_PlatformData.h"
 
 /* -----------------------------------------------------------------
 FORWARDS                                                           |
@@ -94,21 +95,22 @@ DECLARE_SOP_Namespace_Start()
 
 		static PRM_Template			parametersList[];
 
-		static int					CallbackShowProcessReport(void* data, int index, float time, const PRM_Template* tmp);
+		static int					CallbackShowProcessReport(void* data, int index, float time, const PRM_Template* tmp);		
 
 	private:
 		exint						PullIntPRM(GU_Detail* geometry, const PRM_Template& parameter, fpreal time);
 		fpreal						PullFloatPRM(GU_Detail* geometry, const PRM_Template& parameter, fpreal time);
 		
-		ENUMS::MethodProcessResult	PrepareGeometry(GU_Detail* detail, UT_AutoInterrupt progress, fpreal time);
-		void						SetupParametersVHACD(GU_Detail* detail, fpreal time);
-		ENUMS::MethodProcessResult	GatherDataForVHACD(GU_Detail* detail, UT_AutoInterrupt progress, fpreal time);
+		ENUMS::MethodProcessResult	PrepareGeometry(GU_Detail* detail, UT_AutoInterrupt progress, fpreal time);		
+		void						SetupParametersVHACD(UT_AutoInterrupt progress, GU_Detail* detail, fpreal time);
+		ENUMS::MethodProcessResult	GatherDataForVHACD(GU_Detail* detail, UT_AutoInterrupt progress, fpreal time);		
+		ENUMS::MethodProcessResult	SetupOpenCL(UT_AutoInterrupt progress, VHACD::IVHACD* interface, fpreal time);
 
 		ENUMS::MethodProcessResult	DrawConvexHull(GU_Detail* detail, const VHACD::IVHACD::ConvexHull& hull, UT_AutoInterrupt progress);
-		ENUMS::MethodProcessResult	GenerateConvexHulls(GU_Detail* detail, UT_AutoInterrupt progress);
+		ENUMS::MethodProcessResult	GenerateConvexHulls(UT_AutoInterrupt progress, GU_Detail* detail, fpreal time);
 		ENUMS::MethodProcessResult	ProcessCurrentDetail(GU_Detail* detail, UT_AutoInterrupt progress, ENUMS::ProcessedOutputType processedoutputtype, exint iteration, fpreal time);
 		ENUMS::MethodProcessResult	MergeCurrentDetail(const GU_Detail* detail, exint detailscount = 1, exint iteration = 0);
-		ENUMS::MethodProcessResult	MergeCurrentDetails(UT_AutoInterrupt progress, UT_Array<GU_Detail*>& details);
+		ENUMS::MethodProcessResult	MergeCurrentDetails(UT_AutoInterrupt progress, UT_Array<GU_Detail*>& details);		
 
 		ENUMS::MethodProcessResult	WhenAsWhole(UT_AutoInterrupt progress, ENUMS::ProcessedOutputType processedoutputtype, fpreal time);
 		ENUMS::MethodProcessResult	WhenPerElement(UT_AutoInterrupt progress, ENUMS::ProcessedOutputType processedoutputtype, fpreal time);
@@ -122,7 +124,6 @@ DECLARE_SOP_Namespace_Start()
 		UserCallback				_callbackVHACD;
 		VHACD::IVHACD::Parameters	_parametersVHACD;
 		VHACD::IVHACD*				_interfaceVHACD;
-
 		VHACDTriangleIndexes		_triangleIndexes;
 		VHACDPointPositions			_pointPositions;
 

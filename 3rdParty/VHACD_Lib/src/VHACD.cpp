@@ -208,19 +208,19 @@ IVHACD* CreateVHACD(void)
 {
     return new VHACD();
 }
-bool VHACD::OCLInit(void* const oclDevice, IUserLogger* const logger)
+bool VHACD::OCLInit(const cl_device_id oclDevice, IUserLogger* const logger)
 {
 #ifdef CL_VERSION_1_1
-    m_oclDevice = (cl_device_id*)oclDevice;
+    m_oclDevice = oclDevice;
     cl_int error;
-    m_oclContext = clCreateContext(NULL, 1, m_oclDevice, NULL, NULL, &error);
+    m_oclContext = clCreateContext(nullptr, 1, &m_oclDevice, nullptr, nullptr, &error);
     if (error != CL_SUCCESS) {
         if (logger) {
             logger->Log("Couldn't create context\n");
         }
         return false;
     }
-
+	
 #ifdef OCL_SOURCE_FROM_FILE
     std::string cl_files = OPENCL_CL_FILES;
 // read kernal from file
@@ -241,7 +241,7 @@ bool VHACD::OCLInit(void* const oclDevice, IUserLogger* const logger)
     delete[] program_buffer;
 #else
     size_t program_size = strlen(oclProgramSource);
-    m_oclProgram = clCreateProgramWithSource(m_oclContext, 1, (const char**)&oclProgramSource, &program_size, &error);
+    m_oclProgram = clCreateProgramWithSource(m_oclContext, 1, static_cast<const char**>(&oclProgramSource), &program_size, &error);
 #endif
     if (error != CL_SUCCESS) {
         if (logger) {
@@ -251,15 +251,17 @@ bool VHACD::OCLInit(void* const oclDevice, IUserLogger* const logger)
     }
 
     /* Build program */
-    error = clBuildProgram(m_oclProgram, 1, m_oclDevice, "-cl-denorms-are-zero", NULL, NULL);
-    if (error != CL_SUCCESS) {
+    error = clBuildProgram(m_oclProgram, 1, &m_oclDevice, "-cl-denorms-are-zero", nullptr, nullptr);
+    if (error != CL_SUCCESS) 
+	{
+		std::cout << "YAY" << std::endl;
         size_t log_size;
         /* Find Size of log and print to std output */
-        clGetProgramBuildInfo(m_oclProgram, *m_oclDevice, CL_PROGRAM_BUILD_LOG, 0, NULL, &log_size);
+        clGetProgramBuildInfo(m_oclProgram, m_oclDevice, CL_PROGRAM_BUILD_LOG, 0, nullptr, &log_size);
         char* program_log = new char[log_size + 2];
         program_log[log_size] = '\n';
         program_log[log_size + 1] = '\0';
-        clGetProgramBuildInfo(m_oclProgram, *m_oclDevice, CL_PROGRAM_BUILD_LOG, log_size + 1, program_log, NULL);
+        clGetProgramBuildInfo(m_oclProgram, m_oclDevice, CL_PROGRAM_BUILD_LOG, log_size + 1, program_log, nullptr);
         if (logger) {
             logger->Log("Couldn't build program\n");
             logger->Log(program_log);
@@ -295,18 +297,18 @@ bool VHACD::OCLInit(void* const oclDevice, IUserLogger* const logger)
     }
 
     error = clGetKernelWorkGroupInfo(m_oclKernelComputePartialVolumes[0],
-        *m_oclDevice,
+        m_oclDevice,
         CL_KERNEL_WORK_GROUP_SIZE,
         sizeof(size_t),
         &m_oclWorkGroupSize,
-        NULL);
+		nullptr);
     size_t workGroupSize = 0;
     error = clGetKernelWorkGroupInfo(m_oclKernelComputeSum[0],
-        *m_oclDevice,
+        m_oclDevice,
         CL_KERNEL_WORK_GROUP_SIZE,
         sizeof(size_t),
         &workGroupSize,
-        NULL);
+		nullptr);
     if (error != CL_SUCCESS) {
         if (logger) {
             logger->Log("Couldn't query work group info\n");
@@ -319,7 +321,7 @@ bool VHACD::OCLInit(void* const oclDevice, IUserLogger* const logger)
     }
 
     for (int32_t k = 0; k < m_ompNumProcessors; ++k) {
-        m_oclQueue[k] = clCreateCommandQueue(m_oclContext, *m_oclDevice, 0 /*CL_QUEUE_PROFILING_ENABLE*/, &error);
+        m_oclQueue[k] = clCreateCommandQueue(m_oclContext, m_oclDevice, 0 /*CL_QUEUE_PROFILING_ENABLE*/, &error);
         if (error != CL_SUCCESS) {
             if (logger) {
                 logger->Log("Couldn't create queue\n");
@@ -327,6 +329,7 @@ bool VHACD::OCLInit(void* const oclDevice, IUserLogger* const logger)
             return false;
         }
     }
+
     return true;
 #else //CL_VERSION_1_1
     return false;
