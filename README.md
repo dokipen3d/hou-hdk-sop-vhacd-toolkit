@@ -17,6 +17,7 @@ V-HACD updates [22-12-2017](https://www.youtube.com/watch?v=h2VCUtb8UfE&feature=
 - [x] Linux
 
 **TODO:**
+- [ ] add OpenCL in SOP Generate (currently it's only placebo button)
 - [ ] add possibility to regenerate `bundle_id` attribute in `SOP Scout Sr.` from primitive groups
 - [ ] add support for `SOP Setup` generated attributes in `SOP Merge`
 - [ ] add export to `FBX` for `UE4`
